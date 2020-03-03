@@ -1,0 +1,5 @@
+include LICENSE
+include README.rst
+recursive-include kmuhelper/static *
+recursive-include kmuhelper/templates *
+recursive-include docs *
