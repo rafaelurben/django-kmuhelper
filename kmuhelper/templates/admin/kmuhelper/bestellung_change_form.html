@@ -1,0 +1,11 @@
+{% extends 'admin/change_form.html' %}
+
+{% block object-tools-items %}
+    {% if object_id %}{% if original.woocommerceid %}
+        <li><a href="{% url 'kmuhelper:wc-update-order' object_id %}">Von WooCommerce importieren und ersetzen</a></li>
+    {% endif %}{% endif %}
+    {% if object_id %}
+        <li><a href="{% url 'kmuhelper:bestellung-rechnung-ansehen' object_id %}">Rechnung</a></li>
+    {% endif %}
+    {{ block.super }}
+{% endblock %}

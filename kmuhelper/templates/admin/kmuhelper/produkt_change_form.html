@@ -1,0 +1,8 @@
+{% extends 'admin/change_form.html' %}
+
+{% block object-tools-items %}
+    {% if object_id %}{% if original.woocommerceid %}
+        <li><a href="{% url 'kmuhelper:wc-update-product' object_id %}">Von WooCommerce importieren und ersetzen</a></li>
+    {% endif %}{% endif %}
+    {{ block.super }}
+{% endblock %}
