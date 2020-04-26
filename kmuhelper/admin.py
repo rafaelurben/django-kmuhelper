@@ -113,7 +113,7 @@ class BestellungInlineBestellungskostenAdd(admin.TabularInline):
 
 @admin.register(Bestellung)
 class BestellungsAdmin(admin.ModelAdmin):
-    list_display = ('id','datum','kunde','status','zahlungsmethode','bezahlt','versendet')
+    list_display = ('id','datum','kunde','status','zahlungsmethode','bezahlt','versendet','summe_gesamt')
     list_filter = ('status','bezahlt','versendet','zahlungsmethode')
     search_fields = ['name','beschrieb','notiz','kundennotiz']
 
@@ -202,9 +202,7 @@ class KostenAdmin(admin.ModelAdmin):
         (None, {"fields": ("name", "preis", "versteuerbar")})
     ]
 
-    def has_change_permission(self, request, obj=None):
-        return False
-
+    readonly_fields = ("preis","versteuerbar")
 
 
 @admin.register(Kunde)

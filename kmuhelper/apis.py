@@ -62,11 +62,11 @@ class WooCommerce():
         product.verkaufspreis = float(newproduct["price"])
         product.bildlink = (newproduct["images"][0]["src"]) if len(newproduct["images"]) > 0 else ""
         if newproduct["date_on_sale_from_gmt"]:
-            produkt.aktion_von = newproduct["date_on_sale_from_gmt"]+"+00:00"
+            product.aktion_von = newproduct["date_on_sale_from_gmt"]+"+00:00"
         if newproduct["date_on_sale_to_gmt"]:
-            produkt.aktion_bis = newproduct["date_on_sale_to_gmt"]+"+00:00"
+            product.aktion_bis = newproduct["date_on_sale_to_gmt"]+"+00:00"
         if newproduct["sale_price"]:
-            produkt.aktion_preis = newproduct["sale_price"]
+            product.aktion_preis = newproduct["sale_price"]
         for category in newproduct["categories"]:
             tup = Kategorie.objects.get_or_create(woocommerceid=category["id"])
             if tup[1]:

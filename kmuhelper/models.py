@@ -269,7 +269,7 @@ class Bestellung(models.Model):
     summe_mwst.short_description = "Summe (nur MwSt) in CHF"
 
     def summe_gesamt(self):
-        return self.summe()+self.summe_mwst()
+        return runden(self.summe()+self.summe_mwst())
     summe_gesamt.short_description = "Summe in CHF"
 
 
@@ -345,12 +345,12 @@ class Kategorie(models.Model):
 
 
 class Kosten(models.Model):
-    name = models.CharField("Name", max_length=50, default="Zusätzliche Kosten")
+    name = models.CharField("Name", max_length=500, default="Zusätzliche Kosten")
     preis = models.FloatField("Preis", default=0.0)
     versteuerbar = models.BooleanField("Versteuerbar", default=True)
 
     def __str__(self):
-        return str(self.name)+" ("+str(self.preis)+" CHF"+(" + MwSt" if self.versteuerbar else "")+")"
+        return clean(str(self.name))+" ("+str(self.preis)+" CHF"+(" + MwSt" if self.versteuerbar else "")+")"
     __str__.short_description = "Kosten"
 
     class Meta:
@@ -509,11 +509,11 @@ class Produkt(models.Model):
     woocommerceid = models.IntegerField('WooCommerce ID', default=0)
 
     artikelnummer = models.CharField("Artikelnummer", max_length=25)
-    name = models.CharField('Name', max_length=250)
+    name = models.CharField('Name', max_length=500)
     kurzbeschrieb = models.TextField('Kurzbeschrieb', default="", blank=True)
     beschrieb = models.TextField('Beschrieb', default="", blank=True)
 
-    mengenbezeichnung = models.CharField('Mengenbezeichnung', max_length=20, default="Stück", blank=True)
+    mengenbezeichnung = models.CharField('Mengenbezeichnung', max_length=100, default="Stück", blank=True)
     verkaufspreis = models.FloatField('Normalpreis in CHF (exkl. MwSt)', default=0)
     mwstsatz = models.FloatField('Mehrwertsteuersatz', choices= MWSTSÄTZE, default=7.7)
     lagerbestand = models.IntegerField("Lagerbestand", default=0)
@@ -534,16 +534,16 @@ class Produkt(models.Model):
 
     kategorien = models.ManyToManyField("Kategorie", through="Produktkategorie", through_fields=("produkt","kategorie"), verbose_name="Kategorie")
 
-    def clean_name(self):
-        return clean(self.name)
+    def clean_name(self, lang="de"):
+        return clean(self.name,lang)
     clean_name.short_description = "Name"
 
-    def clean_kurzbeschrieb(self):
-        return clean(self.kurzbeschrieb)
+    def clean_kurzbeschrieb(self, lang="de"):
+        return clean(self.kurzbeschrieb,lang)
     clean_kurzbeschrieb.short_description = "Kurzbeschrieb"
 
-    def clean_beschrieb(self):
-        return clean(self.beschrieb)
+    def clean_beschrieb(self, lang="de"):
+        return clean(self.beschrieb,lang)
     clean_beschrieb.short_description = "Beschrieb"
 
     def in_aktion(self, zeitpunkt:datetime=datetime.now(utc)):
@@ -563,6 +563,14 @@ class Produkt(models.Model):
         return ""
     bild.short_description = "Bild"
 
+    def save(self, *args, **kwargs):
+        if self.mengenbezeichnung == "Stück":
+            self.mengenbezeichnung = "[:de]Stück[:fr]Pièce[:it]Pezzo[:en]Piece[:]"
+        elif self.mengenbezeichnung == "Flasche":
+            self.mengenbezeichnung = "[:de]Flasche[:fr]Bouteille[:it]Bottiglia[:en]Bottle[:]"
+        elif self.mengenbezeichnung == "Tube":
+            self.mengenbezeichnung = "[:de]Tube[:fr]Tube[:it]Tubetto[:en]Tube[:]"
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.clean_name()
