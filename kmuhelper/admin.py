@@ -205,13 +205,20 @@ class KostenAdmin(admin.ModelAdmin):
     readonly_fields = ("preis","versteuerbar")
 
 
+
 @admin.register(Kunde)
 class KundenAdmin(admin.ModelAdmin):
-    fieldsets = [
-        ('Infos', {'fields': ['vorname','nachname','email','benutzername','sprache']}),
-        ('Rechnungsadresse', {'fields': [('rechnungsadresse_vorname','rechnungsadresse_nachname'),'rechnungsadresse_firma',('rechnungsadresse_adresszeile1','rechnungsadresse_adresszeile2'),('rechnungsadresse_plz','rechnungsadresse_ort'),('rechnungsadresse_kanton','rechnungsadresse_land'),('rechnungsadresse_email','rechnungsadresse_telefon')]}),
-        ('Lieferadresse', {'fields': [('lieferadresse_vorname','lieferadresse_nachname'),'lieferadresse_firma',('lieferadresse_adresszeile1','lieferadresse_adresszeile2'),('lieferadresse_plz','lieferadresse_ort'),('lieferadresse_kanton','lieferadresse_land')], 'classes': ["collapse"]})
-    ]
+    def get_fieldsets(self, request, obj=None):
+        return [
+            ('Infos', {'fields': ['vorname','nachname','email','benutzername','sprache']}),
+            ('Rechnungsadresse', {'fields': [('rechnungsadresse_vorname','rechnungsadresse_nachname'),'rechnungsadresse_firma',('rechnungsadresse_adresszeile1','rechnungsadresse_adresszeile2'),('rechnungsadresse_plz','rechnungsadresse_ort'),('rechnungsadresse_kanton','rechnungsadresse_land'),('rechnungsadresse_email','rechnungsadresse_telefon')]}),
+            ('Lieferadresse', {'fields': [('lieferadresse_vorname','lieferadresse_nachname'),'lieferadresse_firma',('lieferadresse_adresszeile1','lieferadresse_adresszeile2'),('lieferadresse_plz','lieferadresse_ort'),('lieferadresse_kanton','lieferadresse_land')], 'classes': ["collapse"]})
+        ] if not obj else [
+            ('Infos', {'fields': ['vorname','nachname','email','benutzername','sprache']}),
+            ('Rechnungsadresse', {'fields': [('rechnungsadresse_vorname','rechnungsadresse_nachname'),'rechnungsadresse_firma',('rechnungsadresse_adresszeile1','rechnungsadresse_adresszeile2'),('rechnungsadresse_plz','rechnungsadresse_ort'),('rechnungsadresse_kanton','rechnungsadresse_land'),('rechnungsadresse_email','rechnungsadresse_telefon')]}),
+            ('Lieferadresse', {'fields': [('lieferadresse_vorname','lieferadresse_nachname'),'lieferadresse_firma',('lieferadresse_adresszeile1','lieferadresse_adresszeile2'),('lieferadresse_plz','lieferadresse_ort'),('lieferadresse_kanton','lieferadresse_land')], 'classes': ["collapse"]}),
+            ('Erweitert', {'fields': [('zusammenfuegen')], 'classes': ["collapse"]})
+        ]
 
     ordering = ('nachname','vorname')
 
@@ -219,6 +226,7 @@ class KundenAdmin(admin.ModelAdmin):
     search_fields = ['nachname','vorname','email','benutzername','rechnungsadresse_vorname','rechnungsadresse_nachname','rechnungsadresse_firma','rechnungsadresse_adresszeile1','rechnungsadresse_adresszeile2','rechnungsadresse_ort','rechnungsadresse_kanton','rechnungsadresse_plz','rechnungsadresse_land','rechnungsadresse_email','rechnungsadresse_telefon','lieferadresse_vorname','lieferadresse_nachname','lieferadresse_firma','lieferadresse_adresszeile1','lieferadresse_adresszeile2','lieferadresse_ort','lieferadresse_kanton','lieferadresse_kanton','lieferadresse_plz','lieferadresse_land']
 
     actions = ["wc_update"]
+
 
     def wc_update(self, request, queryset):
         result = WooCommerce.customer_bulk_update(queryset.all())

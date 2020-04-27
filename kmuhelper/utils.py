@@ -359,15 +359,15 @@ def pdf_rechnung(bestellung):
 
         # Rechnungsdaten: Texte
         t = c.beginText(12*mm, 247*mm)
-        t.setFont("Helvetica", 10)
+        t.setFont("Helvetica", 12)
         t.textLine(Headertexte[sprache][0])
         t.textLine(Headertexte[sprache][1])
         t.textLine(Headertexte[sprache][2])
         c.drawText(t)
 
         # Rechnungsdaten: Inhalt
-        t = c.beginText(56*mm, 247*mm)
-        t.setFont("Helvetica", 10)
+        t = c.beginText(64*mm, 247*mm)
+        t.setFont("Helvetica", 12)
         t.textLine(bestellung.ansprechpartner.name)
         t.textLine(bestelldatum)
         t.textLine(str(bestellung.kunde.pk).zfill(6) if bestellung.kunde else "n.a.")
@@ -375,7 +375,7 @@ def pdf_rechnung(bestellung):
 
         # Kundenadresse
         t = c.beginText(120*mm, 247*mm)
-        t.setFont("Helvetica", 10)
+        t.setFont("Helvetica", 12)
         if bestellung.rechnungsadresse_firma:
             t.textLine(bestellung.rechnungsadresse_firma)
         if bestellung.rechnungsadresse_vorname or bestellung.rechnungsadresse_nachname:
@@ -390,7 +390,7 @@ def pdf_rechnung(bestellung):
         c.setFont("Helvetica-Bold", 10)
         c.drawString(12*mm, 220*mm, Headertexte[sprache][3])
         c.setFont("Helvetica", 10)
-        c.drawString(56*mm, 220*mm, (bestellung.datum.strftime("%Y")+"-"+str(bestellung.pk).zfill(6)+(" (Online Nr. "+str(bestellung.woocommerceid)+")" if bestellung.woocommerceid else "")))
+        c.drawString(64*mm, 220*mm, (bestellung.datum.strftime("%Y")+"-"+str(bestellung.pk).zfill(6)+(" (Online Nr. "+str(bestellung.woocommerceid)+")" if bestellung.woocommerceid else "")))
 
         c.restoreState()
 

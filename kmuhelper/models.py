@@ -391,6 +391,8 @@ class Kunde(models.Model):
     lieferadresse_plz = models.CharField("Postleitzahl", max_length=50, default="", blank=True)
     lieferadresse_land = models.CharField("Land", max_length=2, default="CH", choices=LÄNDER)
 
+    zusammenfuegen = models.ForeignKey("self", on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Zusammenfügen mit", help_text="Dies kann nicht widerrufen werden! Werte im aktuellen Kunden werden bevorzugt.")
+
     registrierungsemail_gesendet = models.BooleanField("Registrierungsemail gesendet?", default=False)
 
     def avatar(self):
@@ -406,6 +408,45 @@ class Kunde(models.Model):
     class Meta:
         verbose_name = "Kunde"
         verbose_name_plural = "Kunden"
+
+    def save(self, *args, **kwargs):
+        if self.zusammenfuegen:
+            self.woocommerceid = self.woocommerceid if self.woocommerceid else self.zusammenfuegen.woocommerceid
+
+            self.email = self.email if self.email else self.zusammenfuegen.email
+            self.vorname = self.vorname if self.vorname else self.zusammenfuegen.vorname
+            self.nachname = self.nachname if self.nachname else self.zusammenfuegen.nachname
+            self.benutzername = self.benutzername if self.benutzername else self.zusammenfuegen.benutzername
+            self.avatar_url = self.avatar_url if self.avatar_url else self.zusammenfuegen.avatar_url
+            self.sprache = self.sprache if self.sprache != "de" else self.zusammenfuegen.sprache
+
+            self.rechnungsadresse_vorname = self.rechnungsadresse_vorname if self.rechnungsadresse_vorname else self.zusammenfuegen.rechnungsadresse_vorname
+            self.rechnungsadresse_nachname = self.rechnungsadresse_nachname if self.rechnungsadresse_nachname else self.zusammenfuegen.rechnungsadresse_nachname
+            self.rechnungsadresse_firma = self.rechnungsadresse_firma if self.rechnungsadresse_firma else self.zusammenfuegen.rechnungsadresse_firma
+            self.rechnungsadresse_adresszeile1 = self.rechnungsadresse_adresszeile1 if self.rechnungsadresse_adresszeile1 else self.zusammenfuegen.rechnungsadresse_adresszeile1
+            self.rechnungsadresse_adresszeile2 = self.rechnungsadresse_adresszeile2 if self.rechnungsadresse_adresszeile2 else self.zusammenfuegen.rechnungsadresse_adresszeile2
+            self.rechnungsadresse_ort = self.rechnungsadresse_ort if self.rechnungsadresse_ort else self.zusammenfuegen.rechnungsadresse_ort
+            self.rechnungsadresse_kanton = self.rechnungsadresse_kanton if self.rechnungsadresse_kanton else self.zusammenfuegen.rechnungsadresse_kanton
+            self.rechnungsadresse_plz = self.rechnungsadresse_plz if self.rechnungsadresse_plz else self.zusammenfuegen.rechnungsadresse_plz
+            self.rechnungsadresse_land = self.rechnungsadresse_land if self.rechnungsadresse_land else self.zusammenfuegen.rechnungsadresse_land
+            self.rechnungsadresse_email = self.rechnungsadresse_email if self.rechnungsadresse_email else self.zusammenfuegen.rechnungsadresse_email
+            self.rechnungsadresse_telefon = self.rechnungsadresse_telefon if self.rechnungsadresse_telefon else self.zusammenfuegen.rechnungsadresse_telefon
+
+            self.lieferadresse_vorname = self.lieferadresse_vorname if self.lieferadresse_vorname else self.zusammenfuegen.lieferadresse_vorname
+            self.lieferadresse_nachname = self.lieferadresse_nachname if self.lieferadresse_nachname else self.zusammenfuegen.lieferadresse_nachname
+            self.lieferadresse_firma = self.lieferadresse_firma if self.lieferadresse_firma else self.zusammenfuegen.lieferadresse_firma
+            self.lieferadresse_adresszeile1 = self.lieferadresse_adresszeile1 if self.lieferadresse_adresszeile1 else self.zusammenfuegen.lieferadresse_adresszeile1
+            self.lieferadresse_adresszeile2 = self.lieferadresse_adresszeile2 if self.lieferadresse_adresszeile2 else self.zusammenfuegen.lieferadresse_adresszeile2
+            self.lieferadresse_ort = self.lieferadresse_ort if self.lieferadresse_ort else self.zusammenfuegen.lieferadresse_ort
+            self.lieferadresse_kanton = self.lieferadresse_kanton if self.lieferadresse_kanton else self.zusammenfuegen.lieferadresse_kanton
+            self.lieferadresse_plz = self.lieferadresse_plz if self.lieferadresse_plz else self.zusammenfuegen.lieferadresse_plz
+            self.lieferadresse_land = self.lieferadresse_land if self.lieferadresse_land else self.zusammenfuegen.lieferadresse_land
+            for bestellung in self.zusammenfuegen.bestellung_set.all():
+                bestellung.kunde = self
+                bestellung.save()
+            self.zusammenfuegen.delete()
+            self.zusammenfuegen = None
+        super().save(*args, **kwargs)
 
     def send_register_mail(self):
         send_mail("Registrierung erfolgreich!",self.email,"kunde_registriert",
