@@ -37,10 +37,10 @@ class BestellungInlineBestellungsposten(admin.TabularInline):
         return False if (obj and (obj.versendet or obj.bezahlt)) else True
 
     def get_readonly_fields(self, request, obj=None):
-        return ["zwischensumme","zwischensumme_mwst","produkt","produktpreis"]
+        return ["zwischensumme","mwstsatz","produkt","produktpreis"]
 
     def get_fieldsets(self, request, obj=None):
-        return [(None, {'fields': ['produkt','bemerkung','produktpreis','menge','zwischensumme','zwischensumme_mwst']})]
+        return [(None, {'fields': ['produkt','bemerkung','produktpreis','menge','mwstsatz','zwischensumme']})]
 
 class BestellungInlineBestellungspostenAdd(admin.TabularInline):
     model = Bestellung.produkte.through
@@ -61,7 +61,7 @@ class BestellungInlineBestellungspostenAdd(admin.TabularInline):
         return False
 
     def get_readonly_fields(self, request, obj=None):
-        return ["zwischensumme","zwischensumme_mwst","produktpreis"]
+        return ["zwischensumme","mwstsatz","produktpreis"]
 
     def get_fieldsets(self, request, obj=None):
         return [(None, {'fields': ['produkt','bemerkung','menge']})]
@@ -82,10 +82,10 @@ class BestellungInlineBestellungskosten(admin.TabularInline):
         return False if (obj and (obj.versendet or obj.bezahlt)) else True
 
     def get_readonly_fields(self, request, obj=None):
-        return ["zwischensumme","zwischensumme_mwst","kosten"]
+        return ["zwischensumme","versteuerbar","kosten"]
 
     def get_fieldsets(self, request, obj=None):
-        return [(None, {'fields': ['kosten','bemerkung','zwischensumme','zwischensumme_mwst']})]
+        return [(None, {'fields': ['kosten','bemerkung','versteuerbar','zwischensumme']})]
 
 class BestellungInlineBestellungskostenAdd(admin.TabularInline):
     model = Bestellung.kosten.through
@@ -106,7 +106,7 @@ class BestellungInlineBestellungskostenAdd(admin.TabularInline):
         return False
 
     def get_readonly_fields(self, request, obj=None):
-        return ["zwischensumme","zwischensumme_mwst"]
+        return ["zwischensumme"]
 
     def get_fieldsets(self, request, obj=None):
         return [(None, {'fields': ['kosten','bemerkung']})]
@@ -128,7 +128,7 @@ class BestellungsAdmin(admin.ModelAdmin):
                 ('Infos', {'fields': ['name','datum','status']}),
                 ('Lieferung', {'fields': ['versendet','trackingnummer']}),
                 ('Bezahlung', {'fields': ['bezahlt','zahlungsmethode','summe','summe_mwst']}),
-                ('Notizen', {'fields': ['kundennotiz','rechnungsnotiz','notiz'], 'classes': ["collapse"]}),
+                ('Notizen', {'fields': ['kundennotiz','notiz'], 'classes': ["collapse"]}),
                 ('Kunde', {'fields': ['kunde']}),
                 ('Rechnungsadresse', {'fields': ['rechnungsadresse_vorname','rechnungsadresse_nachname','rechnungsadresse_firma','rechnungsadresse_adresszeile1','rechnungsadresse_adresszeile2','rechnungsadresse_plz','rechnungsadresse_ort','rechnungsadresse_kanton','rechnungsadresse_land','rechnungsadresse_email','rechnungsadresse_telefon'], 'classes': ["collapse"]}),
                 ('Lieferadresse', {'fields': ['lieferadresse_vorname','lieferadresse_nachname','lieferadresse_firma','lieferadresse_adresszeile1','lieferadresse_adresszeile2','lieferadresse_plz','lieferadresse_ort','lieferadresse_kanton','lieferadresse_land'], 'classes': ["collapse"]})
@@ -324,7 +324,7 @@ class ProduktAdmin(admin.ModelAdmin):
         ('Lieferant', {'fields': ['lieferant','lieferant_preis','lieferant_artikelnummer']}),
         ('Aktion', {'fields': ['aktion_von','aktion_bis','aktion_preis'], 'classes': ["collapse"]}),
         ('Links', {'fields': ['datenblattlink','bildlink'], 'classes': ["collapse"]}),
-        ('Bemerkungen', {'fields': ['bemerkung','packlistenbemerkung'], 'classes': ["collapse"]})
+        ('Bemerkungen', {'fields': ['bemerkung'], 'classes': ["collapse"]}) #packlistenbemerkung
     ]
 
     ordering = ('artikelnummer','name')

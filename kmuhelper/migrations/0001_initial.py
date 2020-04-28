@@ -183,7 +183,7 @@ class Migration(migrations.Migration):
             name='Lieferung',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(default=kmuhelper.models.lieferungdefaultname, max_length=50, verbose_name='Name')),
+                ('name', models.CharField(default=kmuhelper.models.defaultlieferungsname, max_length=50, verbose_name='Name')),
                 ('datum', models.DateField(auto_now_add=True, verbose_name='Erfasst am')),
                 ('notiz', models.TextField(blank=True, default='', verbose_name='Notiz')),
                 ('eingelagert', models.BooleanField(default=False, verbose_name='Eingelagert')),

@@ -9,14 +9,14 @@ from datetime import datetime
 
 from pytz import utc
 
-from .utils import send_mail, runden, clean, pdf_rechnung, modulo10rekursiv
+from .utils import send_mail, runden, clean, formatprice, pdf_rechnung, modulo10rekursiv
 
 ###################
 
-def lieferungdefaultname():
+def defaultlieferungsname():
     return "Lieferung vom "+str(datetime.now().strftime("%d.%m.%Y"))
 
-def bestellungdefaultname():
+def defaultbestellungsname():
     return "Bestellung vom "+str(datetime.now().strftime("%d.%m.%Y"))
 
 def defaultzahlungsempfaenger():
@@ -96,9 +96,10 @@ class Bestellungskosten(models.Model):
         return runden(self.kosten.preis)
     zwischensumme.short_description = "Zwischensumme (exkl. MwSt) in CHF"
 
-    def zwischensumme_mwst(self):
-        return runden(self.zwischensumme() * 0.077) if self.kosten.versteuerbar else 0.0
-    zwischensumme_mwst.short_description = "Zwischensumme (nur MwSt) in CHF"
+    def versteuerbar(self):
+        return self.kosten.versteuerbar
+    versteuerbar.short_description = "Versteuerbar"
+    versteuerbar.boolean = True
 
     def __str__(self):
         return "1x "+str(self.kosten)
@@ -120,9 +121,9 @@ class Bestellungsposten(models.Model):
         return runden(self.produktpreis*self.menge)
     zwischensumme.short_description = "Zwischensumme (exkl. MwSt) in CHF"
 
-    def zwischensumme_mwst(self):
-        return runden(self.zwischensumme()*(self.produkt.mwstsatz/100))
-    zwischensumme_mwst.short_description = "Zwischensumme (nur MwSt) in CHF"
+    def mwstsatz(self):
+        return formatprice(self.produkt.mwstsatz)
+    mwstsatz.short_description = "MwSt-Satz"
 
     def __str__(self):
         return str(self.menge)+"x "+self.produkt.clean_name()
@@ -152,7 +153,7 @@ class Bestellung(models.Model):
     bezahlt = models.BooleanField("Bezahlt", default=False, help_text="Sobald eine Bestellung als bezahlt markiert wurde, kann sie nicht mehr bearbeitet werden! (Ausgenommen Status/Versendet/Trackingnummer)")
 
     kundennotiz = models.TextField("Kundennotiz", default="", blank=True, help_text="Vom Kunden erfasste Notiz.")
-    rechnungsnotiz = models.TextField("Rechnungsnotiz", default="", blank=True, help_text="Wird auf der Rechnung gedruckt.")
+    #rechnungsnotiz = models.TextField("Rechnungsnotiz", default="", blank=True, help_text="Wird auf der Rechnung gedruckt.")
     notiz = models.TextField("Notiz", default="", blank=True, help_text="Nur für eigene Zwecke.")
 
     order_key = models.CharField("Bestellungs-Schlüssel", max_length=50, default="", blank=True)
@@ -261,10 +262,9 @@ class Bestellung(models.Model):
 
     def summe_mwst(self):
         summe_mwst = 0
-        for i in self.produkte.through.objects.filter(bestellung=self):
-            summe_mwst += i.zwischensumme_mwst()
-        for i in self.kosten.through.objects.filter(bestellung=self):
-            summe_mwst += i.zwischensumme_mwst()
+        mwstdict = self.mwstdict()
+        for mwstsatz in mwstdict:
+            summe_mwst += float(mwstdict[mwstsatz]*(float(mwstsatz)/100))
         return runden(summe_mwst)
     summe_mwst.short_description = "Summe (nur MwSt) in CHF"
 
@@ -272,14 +272,13 @@ class Bestellung(models.Model):
         return runden(self.summe()+self.summe_mwst())
     summe_gesamt.short_description = "Summe in CHF"
 
+    def name(self):
+        return self.datum.strftime("%Y")+"-"+str(self.pk).zfill(6)+(" (WC#"+str(self.woocommerceid)+")" if self.woocommerceid else "")+" - "+(str(self.kunde) if self.kunde is not None else "Gast")
+    name.short_description = "Name"
 
     def __str__(self):
-        return self.datum.strftime("%Y")+"-"+str(self.pk).zfill(6)+(" (WC#"+str(self.woocommerceid)+")" if self.woocommerceid else "")+" "+(str(self.kunde) if self.kunde is not None else "Gast")
+        return self.name()
     __str__.short_description = "Bestellung"
-
-    def name(self):
-        return self.datum.strftime("%Y")+"-"+str(self.pk).zfill(6)+(" (WC#"+str(self.woocommerceid)+")" if self.woocommerceid else "")+" "+(str(self.kunde) if self.kunde is not None else "Gast")
-    name.short_description = "Name"
 
     def pdf_rechnung(self):
         return pdf_rechnung(self)
@@ -497,7 +496,7 @@ class Lieferungsposten(models.Model):
         verbose_name_plural = "Lieferungsposten"
 
 class Lieferung(models.Model):
-    name = models.CharField("Name", max_length=50, default=lieferungdefaultname)
+    name = models.CharField("Name", max_length=50, default=defaultlieferungsname)
     datum = models.DateField("Erfasst am", auto_now_add=True)
     notiz = models.TextField("Notiz", default="", blank=True)
 
@@ -559,8 +558,8 @@ class Produkt(models.Model):
     mwstsatz = models.FloatField('Mehrwertsteuersatz', choices= MWSTSÄTZE, default=7.7)
     lagerbestand = models.IntegerField("Lagerbestand", default=0)
 
-    bemerkung = models.TextField('Bemerkung', default="", blank=True)
-    packlistenbemerkung = models.TextField('Packlistenbemerkung', default="", blank=True)
+    bemerkung = models.TextField('Bemerkung', default="", blank=True, help_text="Wird nicht gedruckt oder angezeigt; nur für eigene Zwecke.")
+    #packlistenbemerkung = models.TextField('Packlistenbemerkung', default="", blank=True, help_text="Wird auf die Packliste gedruckt.")
 
     aktion_von = models.DateTimeField("In Aktion von", blank=True, null=True)
     aktion_bis = models.DateTimeField("In Aktion bis", blank=True, null=True)
@@ -614,7 +613,7 @@ class Produkt(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.clean_name()
+        return "("+self.artikelnummer+") - "+self.clean_name()
     __str__.short_description = "Produkt"
 
     class Meta:

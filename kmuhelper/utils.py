@@ -8,10 +8,128 @@ import os
 
 #################
 
+def translate(id, language="de"):
+    translations = {
+        "de": {
+            "rechnung_header_ansprechpartner":      "Ihr/e Ansprechpartner/in",
+            "rechnung_header_bestellungvom":        "Ihre Bestellung vom",
+            "rechnung_header_kundennummer":         "Ihre Kundennummer",
+            "rechnung_header_rechnung":             "RECHNUNG",
+
+            "rechnung_tabelle_artnr":               "Art-Nr.",
+            "rechnung_tabelle_bezeichnung":         "Bezeichnung",
+            "rechnung_tabelle_anzahl":              "Anzahl",
+            "rechnung_tabelle_einheit":             "Einheit",
+            "rechnung_tabelle_preis":               "Preis",
+            "rechnung_tabelle_total":               "Total",
+            "rechnung_tabelle_mwst":                "MwSt",
+
+            "rechnung_qr_zahlteil":                 "Zahlteil",
+            "rechnung_qr_kontozahlbaran":           "Konto / Zahlbar an",
+            "rechnung_qr_referenz":                 "Referenz",
+            "rechnung_qr_zusätzlicheinformationen": "Zusätzliche Informationen",
+            "rechnung_qr_weitereiinformationen":    "Weitere Informationen",
+            "rechnung_qr_währung":                  "Währung",
+            "rechnung_qr_betrag":                   "Betrag",
+            "rechnung_qr_empfangsschein":           "Empfangsschein",
+            "rechnung_qr_annahmestelle":            "Annahmestelle",
+            "rechnung_qr_abtrennen":                "Vor der Einzahlung abzutrennen",
+            "rechnung_qr_zahlbardurch":             "Zahlbar durch",
+            "rechnung_qr_zahlbardurchnameadresse":  "Zahlbar durch (Name/Adresse)",
+            "rechnung_qr_zugunsten":                "Zugunsten",
+        },
+        "fr": {
+            "rechnung_header_ansprechpartner":      "Votre interlocuteur",
+            "rechnung_header_bestellungvom":        "Votre commande du",
+            "rechnung_header_kundennummer":         "Ihre Kundennummer",
+            "rechnung_header_rechnung":             "FACTURE",
+
+            "rechnung_tabelle_artnr":               "Art-Nr.",
+            "rechnung_tabelle_bezeichnung":         "Appellation",
+            "rechnung_tabelle_anzahl":              "Quantité",
+            "rechnung_tabelle_einheit":             "Unité",
+            "rechnung_tabelle_preis":               "Prix",
+            "rechnung_tabelle_total":               "Total",
+            "rechnung_tabelle_mwst":                "TVA",
+
+            "rechnung_qr_zahlteil":                 "Section paiement",
+            "rechnung_qr_kontozahlbaran":           "Compte / Payable à",
+            "rechnung_qr_referenz":                 "Référence",
+            "rechnung_qr_zusätzlicheinformationen": "Informations additionnelles",
+            "rechnung_qr_weitereiinformationen":    "Informations supplémentaires",
+            "rechnung_qr_währung":                  "Monnaie",
+            "rechnung_qr_betrag":                   "Montant",
+            "rechnung_qr_empfangsschein":           "Récépissé",
+            "rechnung_qr_annahmestelle":            "Point de dépôt",
+            "rechnung_qr_abtrennen":                "A détacher avant le versement",
+            "rechnung_qr_zahlbardurch":             "Payable par",
+            "rechnung_qr_zahlbardurchnameadresse":  "Payable par (nom/adresse)",
+            "rechnung_qr_zugunsten":                "En faveur de",
+        },
+        "it": {
+            "rechnung_header_ansprechpartner":      "La Sua controparte",
+            "rechnung_header_bestellungvom":        "La Sua ordinazione del",
+            "rechnung_header_kundennummer":         "Il Suo codice cliente",
+            "rechnung_header_rechnung":             "FATTURA",
+
+            "rechnung_tabelle_artnr":               "Articolo n.",
+            "rechnung_tabelle_bezeichnung":         "Denominazione",
+            "rechnung_tabelle_anzahl":              "Quantità",
+            "rechnung_tabelle_einheit":             "Unità",
+            "rechnung_tabelle_preis":               "Prezzo",
+            "rechnung_tabelle_total":               "Totale",
+            "rechnung_tabelle_mwst":                "IVA",
+
+            "rechnung_qr_zahlteil":                 "Sezione pagamento",
+            "rechnung_qr_kontozahlbaran":           "Conto / Pagabile a",
+            "rechnung_qr_referenz":                 "Riferimento",
+            "rechnung_qr_zusätzlicheinformationen": "Informazioni aggiuntive",
+            "rechnung_qr_weitereiinformationen":    "Informazioni supplementari",
+            "rechnung_qr_währung":                  "Valuta",
+            "rechnung_qr_betrag":                   "Importo",
+            "rechnung_qr_empfangsschein":           "Ricevuta",
+            "rechnung_qr_annahmestelle":            "Punto di accettazione",
+            "rechnung_qr_abtrennen":                "Da staccare prima del versamento",
+            "rechnung_qr_zahlbardurch":             "Pagabile da",
+            "rechnung_qr_zahlbardurchnameadresse":  "Pagabile da (nome/indirizzo)",
+            "rechnung_qr_zugunsten":                "A favore di",
+        },
+        "en": {
+            "rechnung_header_ansprechpartner":      "Your contact",
+            "rechnung_header_bestellungvom":        "Date of your order",
+            "rechnung_header_kundennummer":         "Your customer number",
+            "rechnung_header_rechnung":             "INVOICE",
+
+            "rechnung_tabelle_artnr":               "Item No.",
+            "rechnung_tabelle_bezeichnung":         "Name",
+            "rechnung_tabelle_anzahl":              "Quantity",
+            "rechnung_tabelle_einheit":             "Unit",
+            "rechnung_tabelle_preis":               "Price",
+            "rechnung_tabelle_total":               "Total",
+            "rechnung_tabelle_mwst":                "VAT",
+
+            "rechnung_qr_zahlteil":                 "Payment part",
+            "rechnung_qr_kontozahlbaran":           "Account / Payable to",
+            "rechnung_qr_referenz":                 "Reference",
+            "rechnung_qr_zusätzlicheinformationen": "Additional information",
+            "rechnung_qr_weitereiinformationen":    "Further information",
+            "rechnung_qr_währung":                  "Currency",
+            "rechnung_qr_betrag":                   "Amount",
+            "rechnung_qr_empfangsschein":           "Receipt",
+            "rechnung_qr_annahmestelle":            "Acceptance point",
+            "rechnung_qr_abtrennen":                "Separate before paying in",
+            "rechnung_qr_zahlbardurch":             "Payable by",
+            "rechnung_qr_zahlbardurchnameadresse":  "Payable by (name/address)",
+            "rechnung_qr_zugunsten":                "In favour of",
+        },
+    }
+
+    return translations[language][id] if (language in translations and id in translations[language]) else (translations["de"][id] if id in translations["de"] else "")
+
 def runden(preis):
     return float("{:.2f}".format(float(round(round(preis / 0.05) * 0.05, 2))))
 
-def p(preis):
+def formatprice(preis):
     return "{:.2f}".format(float(preis))
 
 def clean(string, lang="de"):
@@ -69,27 +187,181 @@ from reportlab.graphics.barcode import qr
 from reportlab.graphics.shapes import Drawing
 from reportlab.lib.colors import pink, green, brown, white, black, gray
 from reportlab.lib.pagesizes import A4
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.units import mm, cm
 from reportlab.lib.utils import ImageReader
 from reportlab.pdfbase.pdfmetrics import registerFont
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
-from reportlab.platypus import Table, TableStyle, Paragraph, Spacer
+from reportlab.platypus import Table, TableStyle, Paragraph, Spacer, BaseDocTemplate, SimpleDocTemplate, Frame, PageTemplate
 
 #####
 
 
 def pdf_rechnung(bestellung):
-    buffer = BytesIO()
-    c = canvas.Canvas(buffer, pagesize=A4)
-    width, height = A4
-
     sprache = bestellung.kunde.sprache if bestellung.kunde and bestellung.kunde.sprache else "de"
     bestelldatum = str(bestellung.datum.strftime("%d.%m.%Y"))
     ze = bestellung.zahlungsempfaenger
 
-    def draw_qr_invoice(c):
+    def draw_header(c, doc=None):
+        c.saveState()
+
+        # Logo
+        c.drawImage(ImageReader(ze.logourl), 120*mm, 260*mm, height=27.5*mm, width=27.5*mm, mask="auto")
+
+        # Firmenname
+        c.setFont("Helvetica-Bold", 14)
+        c.drawString(12*mm, 284*mm, ze.firmenname)
+
+        # Firmenadresse
+        t = c.beginText(12*mm, 277*mm)
+        t.setFont("Helvetica", 10)
+        t.textLine(ze.adresszeile1)
+        t.textLine((ze.land+"-" if not ze.land == "CH" else "")+ze.adresszeile2)
+        c.drawText(t)
+
+        # Firmendaten: Texte
+        t = c.beginText(12*mm, 266*mm)
+        t.setFont("Helvetica", 8)
+        t.textLine("Tel.")
+        t.textLine("E-Mail")
+        t.textLine("Web")
+        t.textLine("MwSt")
+        c.drawText(t)
+
+        # Firmendaten: Inhalt
+        t = c.beginText(24*mm, 266*mm)
+        t.setFont("Helvetica", 8)
+        t.textLine(bestellung.ansprechpartner.telefon)
+        t.textLine(bestellung.ansprechpartner.email)
+        t.textLine(ze.webseite)
+        t.textLine(ze.firmenuid)
+        c.drawText(t)
+
+        # Rechnungsdaten: Texte
+        t = c.beginText(12*mm, 247*mm)
+        t.setFont("Helvetica", 12)
+        t.textLine(translate("rechnung_header_ansprechpartner", sprache))
+        t.textLine(translate("rechnung_header_bestellungvom", sprache))
+        t.textLine(translate("rechnung_header_kundennummer", sprache))
+        c.drawText(t)
+
+        # Rechnungsdaten: Inhalt
+        t = c.beginText(64*mm, 247*mm)
+        t.setFont("Helvetica", 12)
+        t.textLine(bestellung.ansprechpartner.name)
+        t.textLine(bestelldatum)
+        t.textLine(str(bestellung.kunde.pk).zfill(6) if bestellung.kunde else "n.a.")
+        c.drawText(t)
+
+        # Kundenadresse
+        t = c.beginText(120*mm, 247*mm)
+        t.setFont("Helvetica", 12)
+        if bestellung.rechnungsadresse_firma:
+            t.textLine(bestellung.rechnungsadresse_firma)
+        if bestellung.rechnungsadresse_vorname or bestellung.rechnungsadresse_nachname:
+            t.textLine(bestellung.rechnungsadresse_vorname+" "+bestellung.rechnungsadresse_nachname)
+        t.textLine(bestellung.rechnungsadresse_adresszeile1)
+        if bestellung.rechnungsadresse_adresszeile2:
+            t.textLine(bestellung.rechnungsadresse_adresszeile2)
+        t.textLine(bestellung.rechnungsadresse_plz+" "+bestellung.rechnungsadresse_ort)
+        c.drawText(t)
+
+        # Rechnung
+        c.setFont("Helvetica-Bold", 10)
+        c.drawString(12*mm, 220*mm, translate("rechnung_header_rechnung", sprache))
+        c.setFont("Helvetica", 10)
+        c.drawString(64*mm, 220*mm, (bestellung.datum.strftime("%Y")+"-"+str(bestellung.pk).zfill(6)+(" (Online Nr. "+str(bestellung.woocommerceid)+")" if bestellung.woocommerceid else "")))
+
+        c.restoreState()
+
+    def get_table():
+        data = [(translate("rechnung_tabelle_artnr", sprache),translate("rechnung_tabelle_bezeichnung", sprache),translate("rechnung_tabelle_anzahl", sprache),translate("rechnung_tabelle_einheit", sprache),translate("rechnung_tabelle_preis", sprache),translate("rechnung_tabelle_total", sprache))]
+
+        style_default = ParagraphStyle("Normal",fontname="Helvetica")
+        style_bold = ParagraphStyle("Bold",fontname="Helvetica-Bold")
+
+
+        for bp in bestellung.produkte.through.objects.filter(bestellung=bestellung):  # Produkte
+            data.append((
+                bp.produkt.artikelnummer,
+                Paragraph(clean(bp.produkt.name, sprache), style_default),
+                str(bp.menge),
+                clean(bp.produkt.mengenbezeichnung, sprache),
+                formatprice(bp.produktpreis),
+                formatprice(bp.zwischensumme())
+            ))
+            if bp.bemerkung:
+                data.append((
+                    "",
+                    Paragraph(bp.bemerkung, style_bold),
+                    "",
+                    "",
+                    "",
+                    ""
+                ))
+
+        k = 0
+
+        for bk in bestellung.kosten.through.objects.filter(bestellung=bestellung):  # Kosten
+            data.append((
+                "",
+                Paragraph(clean(bk.kosten.name, sprache), style_default),
+                "",
+                "",
+                "",
+                formatprice(bk.kosten.preis)
+            ))
+            k += 1
+            if bk.bemerkung:
+                data.append((
+                    "",
+                    Paragraph(bk.bemerkung, style_bold),
+                    "",
+                    "",
+                    "",
+                    ""
+                ))
+                k += 1
+
+        mwstdict = bestellung.mwstdict()
+        for mwstsatz in mwstdict:  # Mehrwertsteuer
+            data.append((
+                "",
+                translate("rechnung_tabelle_mwst", sprache),
+                mwstsatz,
+                "%",
+                formatprice(float(mwstdict[mwstsatz])),
+                formatprice(float(mwstdict[mwstsatz]*(float(mwstsatz)/100)))
+            ))
+            k += 1
+
+        data.append((  # Total
+            translate("rechnung_tabelle_total", sprache).upper(),
+            "",
+            "",
+            "CHF",
+            "",
+            formatprice(bestellung.summe_gesamt())
+        ))
+
+        style = [
+            ('LINEABOVE', (0,0), (-1,0), 1, black),
+            ('LINEBELOW', (0,0), (-1,0), 1, black),
+            ('LINEABOVE', (0,-1-k), (-1,-1-k), 0.5, black),
+            ('LINEABOVE', (0,-1), (-1,-1), 1, black),
+            ('LINEBELOW', (0,-1), (-1,-1), 1, black),
+            ('ALIGN', (-1, 0), (-1, -1), "RIGHT"),
+            ('ALIGN', (-2, 0), (-2, -1), "RIGHT"),
+            ('ALIGN', (1, -1), (1, -1), "CENTER"),
+            ('FONTNAME', (0, -1), (-1, -1), "Helvetica-Bold"),
+            ('VALIGN', (0, 0), (-1, -1), "TOP"),
+        ]
+
+
+        return Table(data, repeatRows=1, style=TableStyle(style), colWidths=[26*mm,80*mm,20*mm,20*mm,20*mm,20*mm])
+
+    def draw_qr_invoice(c, doc=None):
         def debug(c):
             c.setStrokeColor("green")
             c.rect(5*mm,5*mm,52*mm,95*mm) # Empfangsschein
@@ -192,17 +464,7 @@ def pdf_rechnung(bestellung):
 
             return "\n".join(qrpayload)
 
-        Rechnungstexte = {
-            "de": ("Zahlteil",          "Konto / Zahlbar an",   "Referenz",    "Zusätzliche Informationen",   "Weitere Informationen",        "Währung",  "Betrag",  "Empfangsschein", "Annahmestelle",         "Vor der Einzahlung abzutrennen",   "Zahlbar durch", "Zahlbar durch (Name/Adresse)", "Zugunsten"),
-            "fr": ("Section paiement",  "Compte / Payable à",   "Référence",   "Informations additionnelles", "Informations supplémentaires", "Monnaie",  "Montant", "Récépissé",      "Point de dépôt",        "A détacher avant le versement",    "Payable par",   "Payable par (nom/adresse)",    "En faveur de"),
-            "it": ("Sezione pagamento", "Conto / Pagabile a",   "Riferimento", "Informazioni aggiuntive",     "Informazioni supplementari",   "Valuta",   "Importo", "Ricevuta",       "Punto di accettazione", "Da staccare prima del versamento", "Pagabile da",   "Pagabile da (nome/indirizzo)", "A favore di"),
-            "en": ("Payment part",      "Account / Payable to", "Reference",   "Additional information",      "Further information",          "Currency", "Amount",  "Receipt",        "Acceptance point",      "Separate before paying in",        "Payable by",    "Payable by (name/address)",    "In favour of")
-        }
-
         c.saveState()
-
-        c.setFillColor("white")
-        c.rect(0*mm,0*mm,210*mm,108*mm,fill=1,stroke=0)
 
         # QR-Code
 
@@ -242,16 +504,16 @@ def pdf_rechnung(bestellung):
 
         # Empfangsschein Angaben
         t = c.beginText(5*mm,90*mm)
-        titel(t,Rechnungstexte[sprache][1],True)
+        titel(t,translate("rechnung_qr_kontozahlbaran", sprache),True)
         t.textLine(ze.qriban)
         t.textLine(ze.firmenname)
         t.textLine(ze.adresszeile1)
         t.textLine(ze.adresszeile2)
         t.moveCursor(0,9)
-        titel(t,Rechnungstexte[sprache][2],True)
+        titel(t,translate("rechnung_qr_referenz", sprache),True)
         t.textLine(bestellung.referenznummer())
         t.moveCursor(0,9)
-        titel(t,Rechnungstexte[sprache][10],True)
+        titel(t,translate("rechnung_qr_zahlbardurch", sprache),True)
         t.textLine((bestellung.rechnungsadresse_vorname+" "+bestellung.rechnungsadresse_nachname) if not bestellung.rechnungsadresse_firma else bestellung.rechnungsadresse_firma)
         t.textLine(bestellung.rechnungsadresse_adresszeile1)
         t.textLine(bestellung.rechnungsadresse_plz+" "+bestellung.rechnungsadresse_ort)
@@ -259,21 +521,21 @@ def pdf_rechnung(bestellung):
 
         # Zahlteil Angaben
         t = c.beginText(118*mm,97*mm)
-        titel(t,Rechnungstexte[sprache][1])
+        titel(t,translate("rechnung_qr_kontozahlbaran", sprache))
         t.textLine(ze.qriban)
         t.textLine(ze.firmenname)
         t.textLine(ze.adresszeile1)
         t.textLine(ze.adresszeile2)
         t.moveCursor(0,9)
-        titel(t,Rechnungstexte[sprache][2])
+        titel(t,translate("rechnung_qr_referenz", sprache))
         t.textLine(bestellung.referenznummer())
         t.moveCursor(0,9)
-        titel(t,Rechnungstexte[sprache][3])
+        titel(t,translate("rechnung_qr_zusätzlicheinformationen", sprache))
         t.textLine(bestelldatum)
         t.textLine(bestellung.rechnungsinformationen().split("/31/")[0]+"/31/")
         t.textLine(bestellung.rechnungsinformationen().split("/31/")[1])
         t.moveCursor(0,9)
-        titel(t,Rechnungstexte[sprache][10])
+        titel(t,translate("rechnung_qr_zahlbardurch", sprache))
         t.textLine((bestellung.rechnungsadresse_vorname+" "+bestellung.rechnungsadresse_nachname) if not bestellung.rechnungsadresse_firma else bestellung.rechnungsadresse_firma)
         t.textLine(bestellung.rechnungsadresse_adresszeile1)
         t.textLine(bestellung.rechnungsadresse_plz+" "+bestellung.rechnungsadresse_ort)
@@ -281,22 +543,22 @@ def pdf_rechnung(bestellung):
 
         # Texte
         c.setFont("Helvetica-Bold", 11)
-        c.drawString(5*mm, 97*mm, Rechnungstexte[sprache][7])
-        c.drawString(67*mm, 97*mm, Rechnungstexte[sprache][0])
+        c.drawString(5*mm, 97*mm, translate("rechnung_qr_empfangsschein", sprache))
+        c.drawString(67*mm, 97*mm, translate("rechnung_qr_zahlteil", sprache))
 
         c.setFont("Helvetica-Bold", 6)
-        c.drawString(5*mm, 33*mm, Rechnungstexte[sprache][5])
-        c.drawString(20*mm, 33*mm, Rechnungstexte[sprache][6])
-        c.drawString(38*mm, 20*mm, Rechnungstexte[sprache][8])
+        c.drawString(5*mm, 33*mm, translate("rechnung_qr_währung", sprache))
+        c.drawString(20*mm, 33*mm, translate("rechnung_qr_betrag", sprache))
+        c.drawString(38*mm, 20*mm, translate("rechnung_qr_annahmestelle", sprache))
 
         c.setFont("Helvetica", 8)
         c.drawString(5*mm, 30*mm, "CHF")
         c.drawString(20*mm, 30*mm, format(bestellung.summe_gesamt(),"08,.2f").replace(","," ").lstrip(" 0"))
 
         c.setFont("Helvetica-Bold", 8)
-        c.drawString(67*mm, 33*mm, Rechnungstexte[sprache][5])
-        c.drawString(87*mm, 33*mm, Rechnungstexte[sprache][6])
-        c.drawCentredString(105*mm, 107*mm, Rechnungstexte[sprache][9])
+        c.drawString(67*mm, 33*mm, translate("rechnung_qr_währung", sprache))
+        c.drawString(87*mm, 33*mm, translate("rechnung_qr_betrag", sprache))
+        c.drawCentredString(105*mm, 107*mm, translate("rechnung_qr_abtrennen", sprache))
 
         c.setFont("Helvetica", 10)
         c.drawString(67*mm, 29*mm, "CHF")
@@ -315,189 +577,33 @@ def pdf_rechnung(bestellung):
 
         c.restoreState()
 
-    def draw_header(c):
-        Headertexte = {
-            "de": ("Ihr/e Ansprechpartner/in", "Ihre Bestellung vom",    "Ihre Kundennummer",      "RECHNUNG"),
-            "fr": ("Votre interlocuteur",      "Votre commande du",      "Votre numéro de client", "FACTURE"),
-            "it": ("La Sua controparte",       "La Sua ordinazione del", "Il Suo codice cliente",  "FATTURA"),
-            "en": ("Your contact",             "Date of your order",     "Your customer number",   "INVOICE")
-        }
+    #####
 
-        c.saveState()
+    def get_v1_buffer():
+        buffer = BytesIO()
 
-        # Logo
-        c.drawImage(ImageReader(ze.logourl), 120*mm, 260*mm, height=27.5*mm, width=27.5*mm, mask="auto")
+        doc = SimpleDocTemplate(buffer, rightMargin=10*mm, leftMargin=10*mm, topMargin=10*mm, bottomMargin=10*mm)
+        elements = [Spacer(1,75*mm), get_table(), Spacer(210*mm,108*mm)]
+        doc.build(elements, onFirstPage=draw_header)
+        buffer.seek(0)
+        return buffer
 
-        # Firmenname
-        c.setFont("Helvetica-Bold", 14)
-        c.drawString(12*mm, 284*mm, ze.firmenname)
+    def get_v2_buffer():
+        def draw_header_and_invoice(c, doc=None):
+            draw_header(c,doc)
+            draw_qr_invoice(c,doc)
 
-        # Firmenadresse
-        t = c.beginText(12*mm, 277*mm)
-        t.setFont("Helvetica", 10)
-        t.textLine(ze.adresszeile1)
-        t.textLine((ze.land+"-" if not ze.land == "CH" else "")+ze.adresszeile2)
-        c.drawText(t)
+        buffer = BytesIO()
 
-        # Firmendaten: Texte
-        t = c.beginText(12*mm, 266*mm)
-        t.setFont("Helvetica", 8)
-        t.textLine("Tel.")
-        t.textLine("E-Mail")
-        t.textLine("Web")
-        t.textLine("MwSt")
-        c.drawText(t)
+        laterpages = PageTemplate(id="laterpages", pagesize=A4, frames=[Frame(10*mm, 10*mm, 190*mm, 277*mm)])
+        firstpage = PageTemplate(id="firstpage", pagesize=A4, frames=[Frame(10*mm, 110*mm, 190*mm, 105*mm)], onPage=draw_header_and_invoice, autoNextPageTemplate="laterpages")
 
-        # Firmendaten: Inhalt
-        t = c.beginText(24*mm, 266*mm)
-        t.setFont("Helvetica", 8)
-        t.textLine(bestellung.ansprechpartner.telefon)
-        t.textLine(bestellung.ansprechpartner.email)
-        t.textLine(ze.webseite)
-        t.textLine(ze.firmenuid)
-        c.drawText(t)
+        doc = BaseDocTemplate(buffer, pagesize=A4, pageTemplates=[firstpage,laterpages])
+        elements = [get_table()]
+        doc.build(elements)
+        buffer.seek(0)
+        return buffer
 
-        # Rechnungsdaten: Texte
-        t = c.beginText(12*mm, 247*mm)
-        t.setFont("Helvetica", 12)
-        t.textLine(Headertexte[sprache][0])
-        t.textLine(Headertexte[sprache][1])
-        t.textLine(Headertexte[sprache][2])
-        c.drawText(t)
+    #####
 
-        # Rechnungsdaten: Inhalt
-        t = c.beginText(64*mm, 247*mm)
-        t.setFont("Helvetica", 12)
-        t.textLine(bestellung.ansprechpartner.name)
-        t.textLine(bestelldatum)
-        t.textLine(str(bestellung.kunde.pk).zfill(6) if bestellung.kunde else "n.a.")
-        c.drawText(t)
-
-        # Kundenadresse
-        t = c.beginText(120*mm, 247*mm)
-        t.setFont("Helvetica", 12)
-        if bestellung.rechnungsadresse_firma:
-            t.textLine(bestellung.rechnungsadresse_firma)
-        if bestellung.rechnungsadresse_vorname or bestellung.rechnungsadresse_nachname:
-            t.textLine(bestellung.rechnungsadresse_vorname+" "+bestellung.rechnungsadresse_nachname)
-        t.textLine(bestellung.rechnungsadresse_adresszeile1)
-        if bestellung.rechnungsadresse_adresszeile2:
-            t.textLine(bestellung.rechnungsadresse_adresszeile2)
-        t.textLine(bestellung.rechnungsadresse_plz+" "+bestellung.rechnungsadresse_ort)
-        c.drawText(t)
-
-        # Rechnung
-        c.setFont("Helvetica-Bold", 10)
-        c.drawString(12*mm, 220*mm, Headertexte[sprache][3])
-        c.setFont("Helvetica", 10)
-        c.drawString(64*mm, 220*mm, (bestellung.datum.strftime("%Y")+"-"+str(bestellung.pk).zfill(6)+(" (Online Nr. "+str(bestellung.woocommerceid)+")" if bestellung.woocommerceid else "")))
-
-        c.restoreState()
-
-    def draw_table(c):
-        Tabellentexte = {
-            "de": (("Art-Nr.",     "Bezeichnung",   "Anzahl",   "Einheit", "Preis",  "Total"),  "TOTAL",  "MwSt"),
-            "fr": (("Art-Nr.",     "Appellation",   "Quantité", "Unité",   "Prix",   "Total"),  "TOTAL",  "TVA"),
-            "it": (("Articolo n.", "Denominazione", "Quantità", "Unità",   "Prezzo", "Totale"), "TOTALE", "IVA"),
-            "en": (("Item No.",    "Name",          "Quantity", "Unit",    "Price",  "Total"),  "TOTAL",  "VAT")
-        }
-
-        data = [Tabellentexte[sprache][0]]
-        style = ParagraphStyle("Helvetica",fontname="Helvetica-Bold")
-
-
-        for bp in bestellung.produkte.through.objects.filter(bestellung=bestellung):  # Produkte
-            data.append((
-                bp.produkt.artikelnummer,
-                Paragraph(clean(bp.produkt.name,sprache),style),
-                str(bp.menge),
-                clean(bp.produkt.mengenbezeichnung,sprache),
-                p(bp.produktpreis),
-                p(bp.zwischensumme())
-            ))
-            if bp.bemerkung:
-                data.append((
-                    "",
-                    bp.bemerkung,
-                    "",
-                    "",
-                    "",
-                    ""
-                ))
-
-        k = 0
-
-        for bk in bestellung.kosten.through.objects.filter(bestellung=bestellung):  # Kosten
-            data.append((
-                clean(bk.kosten.name, sprache),
-                "",
-                "",
-                "",
-                "",
-                p(bk.kosten.preis)
-            ))
-            k += 1
-            if bk.bemerkung:
-                data.append((
-                    bk.bemerkung,
-                    "",
-                    "",
-                    "",
-                    "",
-                    ""
-                ))
-                k += 1
-
-        mwstdict = bestellung.mwstdict()
-        for mwstsatz in mwstdict:  # Mehrwertsteuer
-            data.append((
-                Tabellentexte[sprache][2],
-                "",
-                mwstsatz,
-                "%",
-                p(float(mwstdict[mwstsatz])),
-                p(float(mwstdict[mwstsatz]*(float(mwstsatz)/100)))
-            ))
-            k += 1
-
-        data.append((  # Total
-            Tabellentexte[sprache][1],
-            "",
-            "",
-            "CHF",
-            "",
-            p(bestellung.summe_gesamt())
-        ))
-
-        style = TableStyle([
-            ('LINEABOVE', (0,0), (-1,0), 1, black),
-            ('LINEBELOW', (0,0), (-1,0), 1, black),
-            ('LINEABOVE', (0,-1-k), (-1,-1-k), 0.5, black),
-            ('LINEABOVE', (0,-1), (-1,-1), 1, black),
-            ('LINEBELOW', (0,-1), (-1,-1), 1, black),
-            ('ALIGN', (-1, 0), (-1, -1), "RIGHT"),
-            ('ALIGN', (-2, 0), (-2, -1), "RIGHT"),
-            ('ALIGN', (1, -1), (1, -1), "CENTER"),
-            ('FONTNAME', (0, -1), (-1, -1), "Helvetica-Bold"),
-            ('VALIGN', (0, 0), (-1, -1), "TOP"),
-        ])
-
-        table = Table(data, repeatRows=1, style=style, colWidths=[26*mm,80*mm,20*mm,20*mm,20*mm,20*mm])
-
-        w, h = table.wrapOn(c, 186*mm, 100*mm)
-        table.drawOn(c, 12*mm, 210*mm - h)
-
-    # Header
-    draw_header(c)
-    # Table
-    draw_table(c)
-    # Swiss QR-Code
-    draw_qr_invoice(c)
-
-
-    ###
-
-    c.showPage()
-    c.save()
-    buffer.seek(0)
-    return FileResponse(buffer, as_attachment=False, filename='Rechnung zu Bestellung '+str(bestellung)+'.pdf')
+    return FileResponse(get_v2_buffer(), as_attachment=True, filename='Rechnung zu Bestellung '+str(bestellung)+'.pdf')
