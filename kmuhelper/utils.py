@@ -23,6 +23,7 @@ def translate(id, language="de"):
             "rechnung_tabelle_preis":               "Preis",
             "rechnung_tabelle_total":               "Total",
             "rechnung_tabelle_mwst":                "MwSt",
+            "rechnung_tabelle_gesamttotal":         "RECHNUNGSBETRAG",
 
             "rechnung_qr_zahlteil":                 "Zahlteil",
             "rechnung_qr_kontozahlbaran":           "Konto / Zahlbar an",
@@ -51,6 +52,7 @@ def translate(id, language="de"):
             "rechnung_tabelle_preis":               "Prix",
             "rechnung_tabelle_total":               "Total",
             "rechnung_tabelle_mwst":                "TVA",
+            "rechnung_tabelle_gesamttotal":         "MONTANT DE LA FACTURE",
 
             "rechnung_qr_zahlteil":                 "Section paiement",
             "rechnung_qr_kontozahlbaran":           "Compte / Payable à",
@@ -79,6 +81,7 @@ def translate(id, language="de"):
             "rechnung_tabelle_preis":               "Prezzo",
             "rechnung_tabelle_total":               "Totale",
             "rechnung_tabelle_mwst":                "IVA",
+            "rechnung_tabelle_gesamttotal":         "IMPORTO DELLA FATTURA",
 
             "rechnung_qr_zahlteil":                 "Sezione pagamento",
             "rechnung_qr_kontozahlbaran":           "Conto / Pagabile a",
@@ -107,6 +110,7 @@ def translate(id, language="de"):
             "rechnung_tabelle_preis":               "Price",
             "rechnung_tabelle_total":               "Total",
             "rechnung_tabelle_mwst":                "VAT",
+            "rechnung_tabelle_gesamttotal":         "INVOICE AMOUNT",
 
             "rechnung_qr_zahlteil":                 "Payment part",
             "rechnung_qr_kontozahlbaran":           "Account / Payable to",
@@ -337,7 +341,7 @@ def pdf_rechnung(bestellung):
             k += 1
 
         data.append((  # Total
-            translate("rechnung_tabelle_total", sprache).upper(),
+            translate("rechnung_tabelle_gesamttotal", sprache),
             "",
             "",
             "CHF",
