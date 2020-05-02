@@ -1,12 +1,13 @@
-from io import BytesIO
 from django.http import HttpResponse, FileResponse
 from django.conf import settings
+from django.core import mail
 from django.template.loader import get_template
 
 from datetime import datetime
+from io import BytesIO
 import os
 
-#################
+################
 
 def translate(id, language="de"):
     translations = {
@@ -144,28 +145,40 @@ def clean(string, lang="de"):
     else:
         return string
 
-################
+###############
 
-def send_mail(subject:str, to:str, template_name:str, context:dict={}):
-    from_email = settings.DEFAULT_FROM_EMAIL
-    message = get_template("kmuhelper/emails/"+template_name+".txt").render(context)
-    html_message = get_template("kmuhelper/emails/"+template_name+".html").render(context)
-    auth_user = Einstellung.objects.get(id="email_user").inhalt if Einstellung.objects.get(id="email_user").inhalt else None
-    auth_user = Einstellung.objects.get(id="email_password").inhalt if Einstellung.objects.get(id="email_password").inhalt else None
+def send_mail(subject:str, to:str, template_name:str, context:dict={}, headers:dict={}, bcc:list=[]):
+    html_message = get_template("kmuhelper/emails/"+template_name).render(context)
 
-    return bool(mail.send_mail(
+    msg = mail.EmailMessage(
         subject=subject,
-        message=message,
-        from_email=from_email,
-        recipient_list=[to],
-        fail_silently=False,
-        auth_user=auth_user,
-        auth_password=auth_password,
-        html_message=html_message
-    ))
+        body=html_message,
+        to=[to],
+        headers=headers,
+        bcc=bcc
+    )
 
+    msg.content_subtype = "html"
 
-#####
+    return bool(msg.send())
+
+def send_pdf(subject:str, to:str, template_name:str, pdf:BytesIO, pdf_filename:str="file.pdf", context:dict={}, headers:dict={}, bcc:list=[]):
+    html_message = get_template("kmuhelper/emails/"+template_name).render(context)
+
+    msg = mail.EmailMessage(
+        subject=subject,
+        body=html_message,
+        to=[to],
+        headers=headers,
+        bcc=bcc
+    )
+
+    msg.content_subtype = "html"
+    msg.attach(filename=pdf_filename, content=pdf.read(), mimetype="application/pdf")
+
+    return bool(msg.send())
+
+###############
 
 def modulo10rekursiv(strNummer):
     intTabelle = [
@@ -186,6 +199,8 @@ def modulo10rekursiv(strNummer):
         uebertrag = intTabelle[uebertrag][int(num)]
     return [0,9,8,7,6,5,4,3,2,1][uebertrag]
 
+###############
+
 from reportlab.graphics import renderPDF
 from reportlab.graphics.barcode import qr
 from reportlab.graphics.shapes import Drawing
@@ -202,7 +217,7 @@ from reportlab.platypus import Table, TableStyle, Paragraph, Spacer, BaseDocTemp
 #####
 
 
-def pdf_rechnung(bestellung):
+def pdf_rechnung(bestellung, digital:bool=True, mahnung:bool=False):
     sprache = bestellung.kunde.sprache if bestellung.kunde and bestellung.kunde.sprache else "de"
     bestelldatum = str(bestellung.datum.strftime("%d.%m.%Y"))
     ze = bestellung.zahlungsempfaenger
@@ -407,10 +422,13 @@ def pdf_rechnung(bestellung):
         c.setFillColor("black")
         c.setStrokeColor("black")
 
-        # Begrenzungen Empfangsschein und Zahlteil
+        # Begrenzungen Empfangsschein und Zahlteil und Abzutrennen-Hinweis
 
-        c.line(0*mm,105*mm,210*mm,105*mm)
-        c.line(62*mm,0*mm,62*mm,105*mm)
+        if digital:
+            c.line(0*mm,105*mm,210*mm,105*mm)
+            c.line(62*mm,0*mm,62*mm,105*mm)
+            c.setFont("Helvetica-Bold", 8)
+            c.drawCentredString(105*mm, 107*mm, translate("rechnung_qr_abtrennen", sprache))
 
         # Titel
 
@@ -476,7 +494,6 @@ def pdf_rechnung(bestellung):
         c.setFont("Helvetica-Bold", 8)
         c.drawString(67*mm, 33*mm, translate("rechnung_qr_währung", sprache))
         c.drawString(87*mm, 33*mm, translate("rechnung_qr_betrag", sprache))
-        c.drawCentredString(105*mm, 107*mm, translate("rechnung_qr_abtrennen", sprache))
 
         c.setFont("Helvetica", 10)
         c.drawString(67*mm, 29*mm, "CHF")
@@ -500,90 +517,90 @@ def pdf_rechnung(bestellung):
         draw_qr_invoice(c,doc)
 
     def get_table():
-            data = [(translate("rechnung_tabelle_artnr", sprache),translate("rechnung_tabelle_bezeichnung", sprache),translate("rechnung_tabelle_anzahl", sprache),translate("rechnung_tabelle_einheit", sprache),translate("rechnung_tabelle_preis", sprache),translate("rechnung_tabelle_total", sprache))]
+        data = [(translate("rechnung_tabelle_artnr", sprache),translate("rechnung_tabelle_bezeichnung", sprache),translate("rechnung_tabelle_anzahl", sprache),translate("rechnung_tabelle_einheit", sprache),translate("rechnung_tabelle_preis", sprache),translate("rechnung_tabelle_total", sprache))]
 
-            style_default = ParagraphStyle("Normal",fontname="Helvetica")
-            style_bold = ParagraphStyle("Bold",fontname="Helvetica-Bold")
+        style_default = ParagraphStyle("Normal",fontname="Helvetica")
+        style_bold = ParagraphStyle("Bold",fontname="Helvetica-Bold")
 
 
-            for bp in bestellung.produkte.through.objects.filter(bestellung=bestellung):  # Produkte
-                data.append((
-                    bp.produkt.artikelnummer,
-                    Paragraph(clean(bp.produkt.name, sprache), style_default),
-                    str(bp.menge),
-                    clean(bp.produkt.mengenbezeichnung, sprache),
-                    formatprice(bp.produktpreis),
-                    formatprice(bp.zwischensumme())
-                ))
-                if bp.bemerkung:
-                    data.append((
-                        "",
-                        Paragraph(bp.bemerkung, style_bold),
-                        "",
-                        "",
-                        "",
-                        ""
-                    ))
-
-            k = 0
-
-            for bk in bestellung.kosten.through.objects.filter(bestellung=bestellung):  # Kosten
-                data.append((
-                    "",
-                    Paragraph(clean(bk.kosten.name, sprache), style_default),
-                    "",
-                    "",
-                    "",
-                    formatprice(bk.kosten.preis)
-                ))
-                k += 1
-                if bk.bemerkung:
-                    data.append((
-                        "",
-                        Paragraph(bk.bemerkung, style_bold),
-                        "",
-                        "",
-                        "",
-                        ""
-                    ))
-                    k += 1
-
-            mwstdict = bestellung.mwstdict()
-            for mwstsatz in mwstdict:  # Mehrwertsteuer
-                data.append((
-                    "",
-                    translate("rechnung_tabelle_mwst", sprache),
-                    mwstsatz,
-                    "%",
-                    formatprice(float(mwstdict[mwstsatz])),
-                    formatprice(float(mwstdict[mwstsatz]*(float(mwstsatz)/100)))
-                ))
-                k += 1
-
-            data.append((  # Total
-                translate("rechnung_tabelle_gesamttotal", sprache),
-                "",
-                "",
-                "CHF",
-                "",
-                formatprice(bestellung.summe_gesamt())
+        for bp in bestellung.produkte.through.objects.filter(bestellung=bestellung):  # Produkte
+            data.append((
+                bp.produkt.artikelnummer,
+                Paragraph(clean(bp.produkt.name, sprache), style_default),
+                str(bp.menge),
+                clean(bp.produkt.mengenbezeichnung, sprache),
+                formatprice(bp.produktpreis),
+                formatprice(bp.zwischensumme())
             ))
+            if bp.bemerkung:
+                data.append((
+                    "",
+                    Paragraph(bp.bemerkung, style_bold),
+                    "",
+                    "",
+                    "",
+                    ""
+                ))
 
-            style = [
-                ('LINEABOVE', (0,0), (-1,0), 1, black),
-                ('LINEBELOW', (0,0), (-1,0), 1, black),
-                ('LINEABOVE', (0,-1-k), (-1,-1-k), 0.5, black),
-                ('LINEABOVE', (0,-1), (-1,-1), 1, black),
-                ('LINEBELOW', (0,-1), (-1,-1), 1, black),
-                ('ALIGN', (-1, 0), (-1, -1), "RIGHT"),
-                ('ALIGN', (-2, 0), (-2, -1), "RIGHT"),
-                ('ALIGN', (1, -1), (1, -1), "CENTER"),
-                ('FONTNAME', (0, -1), (-1, -1), "Helvetica-Bold"),
-                ('VALIGN', (0, 0), (-1, -1), "TOP"),
-            ]
+        k = 0
+
+        for bk in bestellung.kosten.through.objects.filter(bestellung=bestellung):  # Kosten
+            data.append((
+                "",
+                Paragraph(clean(bk.kosten.name, sprache), style_default),
+                "",
+                "",
+                "",
+                formatprice(bk.kosten.preis)
+            ))
+            k += 1
+            if bk.bemerkung:
+                data.append((
+                    "",
+                    Paragraph(bk.bemerkung, style_bold),
+                    "",
+                    "",
+                    "",
+                    ""
+                ))
+                k += 1
+
+        mwstdict = bestellung.mwstdict()
+        for mwstsatz in mwstdict:  # Mehrwertsteuer
+            data.append((
+                "",
+                translate("rechnung_tabelle_mwst", sprache),
+                mwstsatz,
+                "%",
+                formatprice(float(mwstdict[mwstsatz])),
+                formatprice(float(mwstdict[mwstsatz]*(float(mwstsatz)/100)))
+            ))
+            k += 1
+
+        data.append((  # Total
+            translate("rechnung_tabelle_gesamttotal", sprache),
+            "",
+            "",
+            "CHF",
+            "",
+            formatprice(bestellung.summe_gesamt())
+        ))
+
+        style = [
+            ('LINEABOVE', (0,0), (-1,0), 1, black),
+            ('LINEBELOW', (0,0), (-1,0), 1, black),
+            ('LINEABOVE', (0,-1-k), (-1,-1-k), 0.5, black),
+            ('LINEABOVE', (0,-1), (-1,-1), 1, black),
+            ('LINEBELOW', (0,-1), (-1,-1), 1, black),
+            ('ALIGN', (-1, 0), (-1, -1), "RIGHT"),
+            ('ALIGN', (-2, 0), (-2, -1), "RIGHT"),
+            ('ALIGN', (1, -1), (1, -1), "CENTER"),
+            ('FONTNAME', (0, -1), (-1, -1), "Helvetica-Bold"),
+            ('VALIGN', (0, 0), (-1, -1), "TOP"),
+        ]
 
 
-            return Table(data, repeatRows=1, style=TableStyle(style), colWidths=[26*mm,80*mm,20*mm,20*mm,20*mm,20*mm])
+        return Table(data, repeatRows=1, style=TableStyle(style), colWidths=[26*mm,80*mm,20*mm,20*mm,20*mm,20*mm])
 
     #####
 
@@ -594,7 +611,48 @@ def pdf_rechnung(bestellung):
 
     #####
 
-    class Invoice(Flowable):
+    # def get_buffer_v1():
+    #     buffer = BytesIO()
+    #
+    #     doc = SimpleDocTemplate(buffer, rightMargin=10*mm, leftMargin=10*mm, topMargin=10*mm, bottomMargin=10*mm)
+    #     elements = [Spacer(1,75*mm), get_table(), Spacer(210*mm,108*mm)]
+    #     doc.build(elements, onFirstPage=draw_header)
+    #     buffer.seek(0)
+    #     return buffer
+    #
+    # def get_buffer_v2():
+    #     buffer = BytesIO()
+    #
+    #     doc = BaseDocTemplate(buffer, pagesize=A4, pageTemplates=[template_header_and_invoice,template_tableonly])
+    #     elements = [get_table()]
+    #     doc.build(elements)
+    #     buffer.seek(0)
+    #     return buffer
+    #
+    # def get_buffer_v3():
+    #     buffer = BytesIO()
+    #     table = get_table()
+    #     x, y = table.wrapOn(canvas.Canvas(BytesIO()), 190, 10000)
+    #
+    #     if y/mm <= 110:
+    #         doc = BaseDocTemplate(buffer, pagesize=A4, pageTemplates=[template_header_and_invoice])
+    #     elif y/mm <= 360:
+    #         doc = BaseDocTemplate(buffer, pagesize=A4, pageTemplates=[template_headeronly,template_invoiceonly])
+    #     else:
+    #         templates = [template_headeronly]
+    #         for i in range(int(((y/mm)-360)/277)+1):
+    #             templates.append(template_tableonly)
+    #         templates.append(template_invoiceonly)
+    #         doc = BaseDocTemplate(buffer, pagesize=A4, pageTemplates=templates)
+    #
+    #     elements = [table, Spacer(1,108*mm)]
+    #     doc.build(elements)
+    #     buffer.seek(0)
+    #     return buffer
+
+    #####
+
+    class QrInvoice(Flowable):
         def __init__(self):
             Flowable.__init__(self)
             self.width = 210
@@ -603,62 +661,21 @@ def pdf_rechnung(bestellung):
             self._fixedHeight = 110
 
         def __repr__(self):
-            return "invoice"
+            return "QR-Invoice"
 
         def draw(self):
             self.canv.translate(-12*mm,-12*mm)
             draw_qr_invoice(self.canv)
 
-
-
-    def get_v1_buffer():
-        buffer = BytesIO()
-
-        doc = SimpleDocTemplate(buffer, rightMargin=10*mm, leftMargin=10*mm, topMargin=10*mm, bottomMargin=10*mm)
-        elements = [Spacer(1,75*mm), get_table(), Spacer(210*mm,108*mm)]
-        doc.build(elements, onFirstPage=draw_header)
-        buffer.seek(0)
-        return buffer
-
-    def get_v2_buffer():
-        buffer = BytesIO()
-
-        doc = BaseDocTemplate(buffer, pagesize=A4, pageTemplates=[template_header_and_invoice,template_tableonly])
-        elements = [get_table()]
-        doc.build(elements)
-        buffer.seek(0)
-        return buffer
-
-    def get_v3_buffer():
-        buffer = BytesIO()
-        table = get_table()
-        x, y = table.wrapOn(canvas.Canvas(BytesIO()), 190, 10000)
-
-        if y/mm <= 110:
-            doc = BaseDocTemplate(buffer, pagesize=A4, pageTemplates=[template_header_and_invoice])
-        elif y/mm <= 360:
-            doc = BaseDocTemplate(buffer, pagesize=A4, pageTemplates=[template_headeronly,template_invoiceonly])
-        else:
-            templates = [template_headeronly]
-            for i in range(int(((y/mm)-360)/277)+1):
-                templates.append(template_tableonly)
-            templates.append(template_invoiceonly)
-            doc = BaseDocTemplate(buffer, pagesize=A4, pageTemplates=templates)
-
-        elements = [table, Spacer(1,108*mm)]
-        doc.build(elements)
-        buffer.seek(0)
-        return buffer
-
-    def get_v4_buffer():
+    def get_buffer():
         buffer = BytesIO()
 
         doc = BaseDocTemplate(buffer, pagesize=A4, pageTemplates=[template_headeronly, template_tableonly])
-        elements = [get_table(),Spacer(1,65*mm),TopPadder(Invoice())]
+        elements = [get_table(), Spacer(1,65*mm), TopPadder(QrInvoice())]
         doc.build(elements)
         buffer.seek(0)
         return buffer
 
     #####
 
-    return FileResponse(get_v4_buffer(), as_attachment=True, filename='Rechnung zu Bestellung '+str(bestellung)+'.pdf')
+    return get_buffer()

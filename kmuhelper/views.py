@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, redirect
+from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_exempt
 
 from urllib.parse import urlencode
@@ -138,6 +139,7 @@ def wc_webhooks(request):
             return HttpResponseBadRequest("Zugriff nicht gestattet!")
     return HttpResponse("Erfolgreich erhalten!")
 
+
 @login_required(login_url="/admin/login")
 def lieferung_einlagern(request, object_id):
     if Lieferung.objects.get(id=int(object_id)).einlagern():
@@ -155,4 +157,36 @@ def kunde_email_registriert(request, object_id):
 
 @login_required(login_url="/admin/login")
 def bestellung_rechnung_ansehen(request, object_id):
-    return Bestellung.objects.get(id=int(object_id)).pdf_rechnung()
+    obj = Bestellung.objects.get(id=int(object_id))
+    digital = not bool("perforiert" in dict(request.GET))
+    if obj:
+        return obj.get_pdf_rechnung(digital=digital)
+    else:
+        messages.error(request, "Bestellung wurde nicht gefunden!")
+        return redirect("/admin/kmuhelper/bestellung")
+
+@login_required(login_url="/admin/login")
+def bestellung_rechnung_an_kunden_senden(request, object_id):
+    obj = Bestellung.objects.get(id=int(object_id))
+    if obj:
+        if obj.send_pdf_rechnung_to_customer():
+            messages.success(request, "Rechnung an Kunden gesendet!")
+        else:
+            messages.error(request, "Rechnung konnte nicht an Kunden gesendet werden!")
+    return redirect("/admin/kmuhelper/bestellung/"+object_id)
+
+
+
+
+##### Kunden-Entpunkte
+
+def kunde_rechnung_ansehen(request, order_id, order_key):
+    obj = Bestellung.objects.get(id=int(order_id))
+    digital = not bool("perforiert" in dict(request.GET))
+    if obj:
+        if obj.order_key == order_key:
+            return obj.get_pdf_rechnung(digital=digital)
+        else:
+            return HttpResponse("Der Bestellungsschlüssel dieser Bestellung ist falsch!")
+    else:
+        return HttpResponse("Bestellung wurde nicht gefunden")

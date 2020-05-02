@@ -1,3 +1,0 @@
-Guten Tag Herr/Frau {{name}}!
-
-Sie wurden erfolgreich in unserer Datenbank registriert!

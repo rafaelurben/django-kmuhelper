@@ -2,14 +2,15 @@ from django.db import models
 from django.core import mail
 from django.conf import settings
 from django.core.validators import RegexValidator
+from django.http import FileResponse
 from django.template.loader import get_template
 from django.utils.html import mark_safe
 
 from datetime import datetime
-
+from random import randint
 from pytz import utc
 
-from .utils import send_mail, runden, clean, formatprice, pdf_rechnung, modulo10rekursiv
+from .utils import send_mail, runden, clean, formatprice, pdf_rechnung, modulo10rekursiv, send_pdf
 
 ###################
 
@@ -24,6 +25,9 @@ def defaultzahlungsempfaenger():
 
 def defaultansprechpartner():
     return Ansprechpartner.objects.first().pk
+
+def defaultorderkey():
+    return "kh-"+str(randint(10000000,99999999))
 
 ############ Create your models here.
 
@@ -47,7 +51,7 @@ MWSTSÄTZE = [
 ZAHLUNGSMETHODEN = [
     ("bacs","Überweisung"),
     ("cheque","Scheck"),
-    ("cod","Nachnahme/Rechnung"),
+    ("cod","Rechnung / Nachnahme"),
     ("paypal","PayPal")
 ]
 
@@ -145,7 +149,7 @@ class Bestellung(models.Model):
 
     status = models.CharField("Status", max_length=11, default="pending", choices=STATUS)
     versendet = models.BooleanField("Versendet", default=False, help_text="Sobald eine Bestellung als versendet markiert wurde, kann sie nicht mehr bearbeitet werden! (Ausgenommen Status/Bezahlt) Ausserdem werden die Produkte aus dem Lagerbestand entfernt.")
-    trackingnummer = models.CharField("Trackingnummer", default="", blank=True, max_length=25, validators=[RegexValidator(r'^99\.[0-9]{2}\.[0-9]{6}\.[0-9]{8}$', 'Bite benutze folgendes Format: 99.xx.xxxxxx.xxxxxxxx')], help_text="Bitte gib hier einen Trackinglink der Schweizer Post ein. (optional)")
+    trackingnummer = models.CharField("Trackingnummer", default="", blank=True, max_length=25, validators=[RegexValidator(r'^99\.[0-9]{2}\.[0-9]{6}\.[0-9]{8}$', 'Bite benutze folgendes Format: 99.xx.xxxxxx.xxxxxxxx')], help_text="Bitte gib hier eine Trackingnummer der Schweizer Post ein. (optional)")
 
     ausgelagert = models.BooleanField("Ausgelagert", default=False)
 
@@ -156,7 +160,7 @@ class Bestellung(models.Model):
     #rechnungsnotiz = models.TextField("Rechnungsnotiz", default="", blank=True, help_text="Wird auf der Rechnung gedruckt.")
     notiz = models.TextField("Notiz", default="", blank=True, help_text="Nur für eigene Zwecke.")
 
-    order_key = models.CharField("Bestellungs-Schlüssel", max_length=50, default="", blank=True)
+    order_key = models.CharField("Bestellungs-Schlüssel", max_length=50, default=defaultorderkey, blank=True)
 
     kunde = models.ForeignKey("Kunde", on_delete=models.SET_NULL, null=True)
     zahlungsempfaenger = models.ForeignKey("Zahlungsempfaenger", on_delete=models.PROTECT, verbose_name="Zahlungsempfänger", default=defaultzahlungsempfaenger)
@@ -187,6 +191,8 @@ class Bestellung(models.Model):
     produkte = models.ManyToManyField("Produkt", through="Bestellungsposten", through_fields=("bestellung","produkt"))
 
     kosten = models.ManyToManyField("Kosten", through="Bestellungskosten", through_fields=("bestellung","kosten"))
+
+    rechnung_gesendet = models.BooleanField("Rechnung gesendet", default=False)
 
     def save(self, *args, **kwargs):
         if self.pk is None and not self.woocommerceid:
@@ -220,7 +226,7 @@ class Bestellung(models.Model):
         return
 
     def trackinglink(self):
-        return "https://www.post.ch/swisspost-tracking?formattedParcelCodes="+self.trackingnummer
+        return "https://www.post.ch/swisspost-tracking?formattedParcelCodes="+self.trackingnummer if self.trackingnummer else None
     trackinglink.short_description = "Trackinglink"
 
     def referenznummer(self):
@@ -280,8 +286,30 @@ class Bestellung(models.Model):
         return self.name()
     __str__.short_description = "Bestellung"
 
-    def pdf_rechnung(self):
-        return pdf_rechnung(self)
+    def get_pdf_rechnung(self, digital:bool=True):
+        return FileResponse(pdf_rechnung(self, digital), as_attachment=True, filename='Rechnung zu Bestellung '+str(self)+'.pdf')
+
+    def send_pdf_rechnung_to_customer(self):
+        success = send_pdf(
+            subject="Ihre Rechnung Nr. "+str(self.id)+(" (Online #"+str(self.woocommerceid)+")" if self.woocommerceid else ""),
+            to=self.rechnungsadresse_email,
+            template_name="rechnung_an_kunden.html",
+            pdf_filename="Rechnung Nr. "+str(self.id)+(" (Online #"+str(self.woocommerceid)+")" if self.woocommerceid else "")+".pdf",
+            pdf=pdf_rechnung(self),
+            context={
+                "trackinglink": str(self.trackinglink()),
+                "trackingdata": bool(self.trackinglink() and self.versendet),
+                "id": str(self.id),
+                "woocommerceid": str(self.woocommerceid),
+                "woocommercedata": bool(self.woocommerceid)
+            },
+            headers={"Rechnungs-ID":str(self.id)},
+            #bcc=[self.zahlungsempfaenger.email]
+        )
+        if success:
+            self.rechnung_gesendet = True
+            self.save()
+        return success
 
 
     class Meta:
@@ -448,11 +476,15 @@ class Kunde(models.Model):
         super().save(*args, **kwargs)
 
     def send_register_mail(self):
-        send_mail("Registrierung erfolgreich!",self.email,"kunde_registriert",
-        {
-            "name":self.vorname+" "+self.nachname
-        })
-        self.registrierungsemail_gesendet = True
+        self.registrierungsemail_gesendet = send_mail(
+            subject="Registrierung erfolgreich!",
+            to=self.email,
+            template_name="kunde_registriert.html",
+            context={
+                "kunde": self
+            },
+            headers={"Kunden-ID": str(self.id)}
+        )
         self.save()
 
 
@@ -613,7 +645,7 @@ class Produkt(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return "("+self.artikelnummer+") - "+self.clean_name()
+        return self.artikelnummer+" - "+self.clean_name()
     __str__.short_description = "Produkt"
 
     class Meta:

@@ -5,6 +5,12 @@ from pytz import utc
 from .models import Ansprechpartner, Produkt, Kategorie, Lieferant, Lieferung, Kunde, Einstellung, Bestellung, Kosten, Zahlungsempfaenger
 from .apis import WooCommerce
 
+# Titel-Änderungen
+
+admin.site.site_header = "Administration"
+admin.site.site_title = "Admin"
+admin.site.index_title = "Haupt-Administration"
+
 # Register your models here.
 
 @admin.register(Ansprechpartner)
@@ -117,7 +123,7 @@ class BestellungsAdmin(admin.ModelAdmin):
     list_filter = ('status','bezahlt','versendet','zahlungsmethode')
     search_fields = ['name','beschrieb','notiz','kundennotiz']
 
-    ordering = ("versendet","bezahlt","datum")
+    ordering = ("versendet","bezahlt","-datum")
 
     inlines = [BestellungInlineBestellungsposten, BestellungInlineBestellungspostenAdd, BestellungInlineBestellungskosten, BestellungInlineBestellungskostenAdd]
 
@@ -127,7 +133,7 @@ class BestellungsAdmin(admin.ModelAdmin):
                 (None, {'fields': ['zahlungsempfaenger','ansprechpartner']}),
                 ('Infos', {'fields': ['name','datum','status']}),
                 ('Lieferung', {'fields': ['versendet','trackingnummer']}),
-                ('Bezahlung', {'fields': ['bezahlt','zahlungsmethode','summe','summe_mwst']}),
+                ('Bezahlung', {'fields': ['bezahlt','zahlungsmethode','summe','summe_mwst','summe_gesamt']}),
                 ('Notizen', {'fields': ['kundennotiz','notiz'], 'classes': ["collapse"]}),
                 ('Kunde', {'fields': ['kunde']}),
                 ('Rechnungsadresse', {'fields': ['rechnungsadresse_vorname','rechnungsadresse_nachname','rechnungsadresse_firma','rechnungsadresse_adresszeile1','rechnungsadresse_adresszeile2','rechnungsadresse_plz','rechnungsadresse_ort','rechnungsadresse_kanton','rechnungsadresse_land','rechnungsadresse_email','rechnungsadresse_telefon'], 'classes': ["collapse"]}),
@@ -145,20 +151,37 @@ class BestellungsAdmin(admin.ModelAdmin):
     def get_readonly_fields(self, request, obj=None):
         rechnungsadresse = ['rechnungsadresse_vorname','rechnungsadresse_nachname','rechnungsadresse_firma','rechnungsadresse_adresszeile1','rechnungsadresse_adresszeile2','rechnungsadresse_plz','rechnungsadresse_ort','rechnungsadresse_kanton','rechnungsadresse_land','rechnungsadresse_email','rechnungsadresse_telefon']
         lieferadresse = ['lieferadresse_vorname','lieferadresse_nachname','lieferadresse_firma','lieferadresse_adresszeile1','lieferadresse_adresszeile2','lieferadresse_plz','lieferadresse_ort','lieferadresse_kanton','lieferadresse_land']
-        fields = ['name','trackinglink','datum','summe','summe_mwst']
+        fields = ['name','trackinglink','datum','summe','summe_mwst','summe_gesamt']
         if obj:
             if obj.versendet:
                 fields += ['versendet','trackingnummer']+lieferadresse
             if obj.bezahlt:
                 fields += ['bezahlt','zahlungsmethode']+rechnungsadresse
             if obj.woocommerceid:
-                fields += ["kundennotiz","order_key"]
+                fields += ["kundennotiz"]
         else:
             fields += ["status"]
         return fields
 
     change_form_template = 'admin/kmuhelper/bestellung_change_form.html'
     change_list_template = 'admin/kmuhelper/bestellung_change_list.html'
+
+    def als_bezahlt_markieren(self, request, queryset):
+        successcount = 0
+        errorcount = 0
+        for bestellung in queryset.all():
+            if bestellung.bezahlt:
+                errorcount += 1
+            else:
+                bestellung.bezahlt = True
+                bestellung.save()
+                successcount += 1
+        messages.success(request, (('{} Bestellungen' if successcount != 1 else 'Eine Bestellung')+' als bezahlt markiert!').format(successcount))
+        if errorcount:
+            messages.error(request, ('Beim als bezahlt markieren von '+('{} Bestellungen' if errorcount != 1 else 'einer Bestellung')+' ist ein Fehler aufgetreten!').format(errorcount))
+    als_bezahlt_markieren.short_description = "Als bezahlt markieren"
+
+    actions = [als_bezahlt_markieren]
 
 
 
@@ -375,6 +398,7 @@ class ZahlungsempfaengerAdmin(admin.ModelAdmin):
     list_display = ('firmenname','firmenuid','qriban')
     list_filter = ('land',)
     search_fields = ['firmenname','adresszeile1','adresszeile2','qriban','firmenuid']
+
 
 
 ###################

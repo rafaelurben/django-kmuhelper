@@ -1,11 +1,14 @@
 {% extends 'admin/change_form.html' %}
 
 {% block object-tools-items %}
-    {% if object_id %}{% if original.woocommerceid %}
-        <li><a href="{% url 'kmuhelper:wc-update-order' object_id %}">Von WooCommerce importieren und ersetzen</a></li>
-    {% endif %}{% endif %}
     {% if object_id %}
-        <li><a href="{% url 'kmuhelper:bestellung-rechnung-ansehen' object_id %}">Rechnung</a></li>
+        {% if original.woocommerceid %}
+            <li><a href="{% url 'kmuhelper:wc-update-order' object_id %}">Von WooCommerce importieren und ersetzen</a></li>
+        {% endif %}
+        <li><a href="{% url 'kmuhelper:bestellung-rechnung-ansehen' object_id %}" target="_blank">Rechnung ansehen</a></li>
+        {% if original.versendet %}{% if not original.rechnung_gesendet %}
+            <li><a href="{% url 'kmuhelper:bestellung-rechnung-an-kunden-senden' object_id %}">Rechnung an Kunden senden</a></li>
+        {% endif %}{% endif %}
     {% endif %}
     {{ block.super }}
 {% endblock %}
