@@ -70,11 +70,11 @@ class Command(BaseCommand):
 
                 if not oldwithid and not oldwithemail:
                     self.stdout.write(self.style.SUCCESS("Kunden erstellen:"+
-                        "\n  ID:       "+ str(id)+
-                        "\n  E-Mail:   "+ email+
-                        "\n  Vorname:  "+ vorname+
-                        "\n  Nachname: "+ nachname+
-                        "\n  Firma:    "+ firma
+                        "\n  ID:         "+ str(id)+
+                        "\n  E-Mail:     "+ email+
+                        "\n  Vorname:    "+ vorname+
+                        "\n  Nachname:   "+ nachname+
+                        "\n  Firma:      "+ firma
                     ))
                     Kunde.objects.create(
                         id=id,
@@ -112,25 +112,25 @@ class Command(BaseCommand):
                     )
                 elif oldwithidandemail:
                     self.stdout.write(self.style.SUCCESS("Kunde existiert bereits!"+
-                        "\n  ID:       "+ str(id)+
-                        "\n  E-Mail:   "+ email+
-                        "\n  Vorname:  "+ vorname+
-                        "\n  Nachname: "+ nachname+
-                        "\n  Firma:    "+ firma
+                        "\n  ID:         "+ str(id)+
+                        "\n  E-Mail:     "+ email+
+                        "\n  Vorname:    "+ vorname+
+                        "\n  Nachname:   "+ nachname+
+                        "\n  Firma:      "+ firma
                     ))
                 elif oldwithemail and not oldwithid:
                     old = Kunde.objects.get(email=email)
                     self.stdout.write(self.style.SUCCESS("Kunde mit der E-Mail '"+email+"' existiert bereits, jedoch ist die ID unterschiedlich!"+
                         "\n  KMUHelper-Daten:"+
-                        "\n    ID:      "+ str(old.id)+
-                        "\n    Vorname: "+ old.vorname+
-                        "\n    Nachname:"+ old.nachname+
-                        "\n    Firma:   "+ old.rechnungsadresse_firma+
+                        "\n    ID:       "+ str(old.id)+
+                        "\n    Vorname:  "+ old.vorname+
+                        "\n    Nachname: "+ old.nachname+
+                        "\n    Firma:    "+ old.rechnungsadresse_firma+
                         "\n  CSV Daten:"+
-                        "\n    ID:      "+ str(id)+
-                        "\n    Vorname: "+ vorname+
-                        "\n    Nachname:"+ nachname+
-                        "\n    Firma:   "+ firma
+                        "\n    ID:       "+ str(id)+
+                        "\n    Vorname:  "+ vorname+
+                        "\n    Nachname: "+ nachname+
+                        "\n    Firma:    "+ firma
                     ))
                     if input("ID aus der CSV-Datei verwenden? [y/n] ").lower() in ["y","yes","j","ja","aktualisieren"]:
                         oldid = old.id
@@ -145,15 +145,15 @@ class Command(BaseCommand):
                     old = Kunde.objects.get(id=id)
                     self.stdout.write(self.style.SUCCESS("Kunde mit der ID '"+str(id)+"' existiert bereits, jedoch ist die E-Mail unterschiedlich!"+
                         "\n  KMUHelper-Daten:"+
-                        "\n    E-Mail:  "+ old.email+
-                        "\n    Vorname: "+ old.vorname+
-                        "\n    Nachname:"+ old.nachname+
-                        "\n    Firma:   "+ old.rechnungsadresse_firma+
+                        "\n    E-Mail:   "+ old.email+
+                        "\n    Vorname:  "+ old.vorname+
+                        "\n    Nachname: "+ old.nachname+
+                        "\n    Firma:    "+ old.rechnungsadresse_firma+
                         "\n  CSV Daten:"+
-                        "\n    E-Mail:  "+ email+
-                        "\n    Vorname: "+ vorname+
-                        "\n    Nachname:"+ nachname+
-                        "\n    Firma:   "+ firma
+                        "\n    E-Mail:   "+ email+
+                        "\n    Vorname:  "+ vorname+
+                        "\n    Nachname: "+ nachname+
+                        "\n    Firma:    "+ firma
                     ))
                     if input("E-Mail aus der CSV-Datei verwenden? [y/n] ").lower() in ["y","yes","j","ja","aktualisieren"]:
                         old.email = email
