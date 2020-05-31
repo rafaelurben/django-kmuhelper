@@ -9,6 +9,12 @@ import os
 
 ################
 
+def getfirstindex(data:list, search:list):
+    for s in search:
+        if s in data:
+            return data.index(s)
+    return None
+
 def translate(id, language="de"):
     translations = {
         "de": {

@@ -225,7 +225,8 @@ class KostenAdmin(admin.ModelAdmin):
         (None, {"fields": ("name", "preis", "versteuerbar")})
     ]
 
-    readonly_fields = ("preis","versteuerbar")
+    def get_readonly_fields(self, request, obj=None):
+        return ("preis","versteuerbar") if obj else []
 
 
 
@@ -233,20 +234,22 @@ class KostenAdmin(admin.ModelAdmin):
 class KundenAdmin(admin.ModelAdmin):
     def get_fieldsets(self, request, obj=None):
         return [
-            ('Infos', {'fields': ['vorname','nachname','email','benutzername','sprache']}),
-            ('Rechnungsadresse', {'fields': [('rechnungsadresse_vorname','rechnungsadresse_nachname'),'rechnungsadresse_firma',('rechnungsadresse_adresszeile1','rechnungsadresse_adresszeile2'),('rechnungsadresse_plz','rechnungsadresse_ort'),('rechnungsadresse_kanton','rechnungsadresse_land'),('rechnungsadresse_email','rechnungsadresse_telefon')]}),
-            ('Lieferadresse', {'fields': [('lieferadresse_vorname','lieferadresse_nachname'),'lieferadresse_firma',('lieferadresse_adresszeile1','lieferadresse_adresszeile2'),('lieferadresse_plz','lieferadresse_ort'),('lieferadresse_kanton','lieferadresse_land')], 'classes': ["collapse"]})
-        ] if not obj else [
-            ('Infos', {'fields': ['vorname','nachname','email','benutzername','sprache']}),
+            ('Infos', {'fields': ['vorname','nachname','firma','email','benutzername','sprache']}),
             ('Rechnungsadresse', {'fields': [('rechnungsadresse_vorname','rechnungsadresse_nachname'),'rechnungsadresse_firma',('rechnungsadresse_adresszeile1','rechnungsadresse_adresszeile2'),('rechnungsadresse_plz','rechnungsadresse_ort'),('rechnungsadresse_kanton','rechnungsadresse_land'),('rechnungsadresse_email','rechnungsadresse_telefon')]}),
             ('Lieferadresse', {'fields': [('lieferadresse_vorname','lieferadresse_nachname'),'lieferadresse_firma',('lieferadresse_adresszeile1','lieferadresse_adresszeile2'),('lieferadresse_plz','lieferadresse_ort'),('lieferadresse_kanton','lieferadresse_land')], 'classes': ["collapse"]}),
-            ('Erweitert', {'fields': [('zusammenfuegen')], 'classes': ["collapse"]})
+            ('Diverses', {'fields': ['webseite','notiz']})
+        ] if not obj else [
+            ('Infos', {'fields': ['vorname','nachname','firma','email','benutzername','sprache']}),
+            ('Rechnungsadresse', {'fields': [('rechnungsadresse_vorname','rechnungsadresse_nachname'),'rechnungsadresse_firma',('rechnungsadresse_adresszeile1','rechnungsadresse_adresszeile2'),('rechnungsadresse_plz','rechnungsadresse_ort'),('rechnungsadresse_kanton','rechnungsadresse_land'),('rechnungsadresse_email','rechnungsadresse_telefon')]}),
+            ('Lieferadresse', {'fields': [('lieferadresse_vorname','lieferadresse_nachname'),'lieferadresse_firma',('lieferadresse_adresszeile1','lieferadresse_adresszeile2'),('lieferadresse_plz','lieferadresse_ort'),('lieferadresse_kanton','lieferadresse_land')], 'classes': ["collapse"]}),
+            ('Diverses', {'fields': ['webseite','notiz']}),
+            ('Erweitert', {'fields': ['zusammenfuegen'], 'classes': ["collapse"]})
         ]
 
-    ordering = ('nachname','vorname')
+    ordering = ('nachname','vorname','firma')
 
-    list_display = ('id','nachname','vorname','email','avatar')
-    search_fields = ['nachname','vorname','email','benutzername','rechnungsadresse_vorname','rechnungsadresse_nachname','rechnungsadresse_firma','rechnungsadresse_adresszeile1','rechnungsadresse_adresszeile2','rechnungsadresse_ort','rechnungsadresse_kanton','rechnungsadresse_plz','rechnungsadresse_land','rechnungsadresse_email','rechnungsadresse_telefon','lieferadresse_vorname','lieferadresse_nachname','lieferadresse_firma','lieferadresse_adresszeile1','lieferadresse_adresszeile2','lieferadresse_ort','lieferadresse_kanton','lieferadresse_kanton','lieferadresse_plz','lieferadresse_land']
+    list_display = ('id','nachname','vorname','firma','email','avatar')
+    search_fields = ['nachname','vorname','firma','email','benutzername','rechnungsadresse_vorname','rechnungsadresse_nachname','rechnungsadresse_firma','rechnungsadresse_adresszeile1','rechnungsadresse_adresszeile2','rechnungsadresse_ort','rechnungsadresse_kanton','rechnungsadresse_plz','rechnungsadresse_land','rechnungsadresse_email','rechnungsadresse_telefon','lieferadresse_vorname','lieferadresse_nachname','lieferadresse_firma','lieferadresse_adresszeile1','lieferadresse_adresszeile2','lieferadresse_ort','lieferadresse_kanton','lieferadresse_kanton','lieferadresse_plz','lieferadresse_land','webseite','notiz']
 
     actions = ["wc_update"]
 

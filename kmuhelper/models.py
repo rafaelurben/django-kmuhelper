@@ -392,6 +392,7 @@ class Kunde(models.Model):
     email = models.EmailField("E-Mail Adresse", blank=True)
     vorname = models.CharField("Vorname", max_length=50, default="", blank=True)
     nachname = models.CharField("Nachname", max_length=50, default="", blank=True)
+    firma = models.CharField("Firma", max_length=50, default="", blank=True)
     benutzername = models.CharField("Benutzername", max_length=50, default="", blank=True)
     avatar_url = models.URLField("Avatar URL", blank=True, editable=False)
     sprache = models.CharField("Sprache", default="de",choices=SPRACHEN, max_length=2)
@@ -419,17 +420,19 @@ class Kunde(models.Model):
     lieferadresse_land = models.CharField("Land", max_length=2, default="CH", choices=LÄNDER)
 
     zusammenfuegen = models.ForeignKey("self", on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Zusammenfügen mit", help_text="Dies kann nicht widerrufen werden! Werte im aktuellen Kunden werden bevorzugt.")
+    webseite = models.URLField("Webseite", blank=True, default="")
+    notiz = models.TextField("Notiz", default="", blank=True)
 
     registrierungsemail_gesendet = models.BooleanField("Registrierungsemail gesendet?", default=False)
 
     def avatar(self):
         if self.avatar_url:
-            return mark_safe('<img src="'+self.avatar_url+'" width="100px">')
+            return mark_safe('<img src="'+self.avatar_url+'" width="50px">')
         return ""
     avatar.short_description = "Avatar"
 
     def __str__(self):
-        return self.vorname + " " + self.nachname + " (" + self.email + ")"
+        return (self.vorname + " ") if self.vorname else "" + (self.nachname + " ") if self.nachname else "" + (self.firma + " ") if self.firma else "" + ("(" + self.email + ")") if self.email else ""
     __str__.short_description = "Kunde"
 
     class Meta:
@@ -443,6 +446,7 @@ class Kunde(models.Model):
             self.email = self.email if self.email else self.zusammenfuegen.email
             self.vorname = self.vorname if self.vorname else self.zusammenfuegen.vorname
             self.nachname = self.nachname if self.nachname else self.zusammenfuegen.nachname
+            self.firma = self.firma if self.firma else self.zusammenfuegen.firma
             self.benutzername = self.benutzername if self.benutzername else self.zusammenfuegen.benutzername
             self.avatar_url = self.avatar_url if self.avatar_url else self.zusammenfuegen.avatar_url
             self.sprache = self.sprache if self.sprache != "de" else self.zusammenfuegen.sprache
@@ -468,6 +472,10 @@ class Kunde(models.Model):
             self.lieferadresse_kanton = self.lieferadresse_kanton if self.lieferadresse_kanton else self.zusammenfuegen.lieferadresse_kanton
             self.lieferadresse_plz = self.lieferadresse_plz if self.lieferadresse_plz else self.zusammenfuegen.lieferadresse_plz
             self.lieferadresse_land = self.lieferadresse_land if self.lieferadresse_land else self.zusammenfuegen.lieferadresse_land
+
+            self.webseite = self.webseite if self.webseite else self.zusammenfuegen.webseite
+            self.notiz = self.notiz+" "+self.zusammenfuegen.notiz
+
             for bestellung in self.zusammenfuegen.bestellung_set.all():
                 bestellung.kunde = self
                 bestellung.save()
