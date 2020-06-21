@@ -5,12 +5,6 @@ from pytz import utc
 from .models import Ansprechpartner, Produkt, Kategorie, Lieferant, Lieferung, Kunde, Einstellung, Bestellung, Kosten, Zahlungsempfaenger
 from .apis import WooCommerce
 
-# Titel-Änderungen
-
-admin.site.site_header = "Administration"
-admin.site.site_title = "Admin"
-admin.site.index_title = "Haupt-Administration"
-
 # Register your models here.
 
 @admin.register(Ansprechpartner)
@@ -163,9 +157,6 @@ class BestellungsAdmin(admin.ModelAdmin):
             fields += ["status"]
         return fields
 
-    change_form_template = 'admin/kmuhelper/bestellung_change_form.html'
-    change_list_template = 'admin/kmuhelper/bestellung_change_list.html'
-
     def als_bezahlt_markieren(self, request, queryset):
         successcount = 0
         errorcount = 0
@@ -214,9 +205,6 @@ class KategorienAdmin(admin.ModelAdmin):
             messages.error(request, ('Beim Import von '+('{} Kategorien' if result[1] != 1 else 'einer Kategorie')+' von WooCommerce ist ein Fehler aufgetreten!').format(result[1]))
     wc_update.short_description = "Kategorien von WooCommerce aktualisieren"
 
-    change_form_template = 'admin/kmuhelper/kategorie_change_form.html'
-    change_list_template = 'admin/kmuhelper/kategorie_change_list.html'
-
 
 
 @admin.register(Kosten)
@@ -260,9 +248,6 @@ class KundenAdmin(admin.ModelAdmin):
         if result[1]:
             messages.error(request, ('Beim Import von '+('{} Kunden' if result[1] != 1 else 'einem Kunden')+' von WooCommerce ist ein Fehler aufgetreten!').format(result[1]))
     wc_update.short_description = "Kunden von WooCommerce aktualisieren"
-
-    change_form_template = 'admin/kmuhelper/kunde_change_form.html'
-    change_list_template = 'admin/kmuhelper/kunde_change_list.html'
 
 
 
@@ -333,8 +318,6 @@ class LieferungenAdmin(admin.ModelAdmin):
             messages.error(request, ('Beim Einlagern von '+('{} Lieferungen' if errorcount != 1 else 'einer Lieferung')+' ist ein Fehler aufgetreten!').format(errorcount))
     einlagern.short_description = "Lieferungen einlagern"
 
-    change_form_template = 'admin/kmuhelper/lieferung_change_form.html'
-
 
 
 class ProduktInlineProduktkategorien(admin.TabularInline):
@@ -385,10 +368,6 @@ class ProduktAdmin(admin.ModelAdmin):
     aktion_beenden.short_description = "Aktion beenden"
 
 
-    change_form_template = 'admin/kmuhelper/produkt_change_form.html'
-    change_list_template = 'admin/kmuhelper/produkt_change_list.html'
-
-
 
 @admin.register(Zahlungsempfaenger)
 class ZahlungsempfaengerAdmin(admin.ModelAdmin):
@@ -414,17 +393,28 @@ class EinstellungenAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
-    list_display = ('name','inhalt')
+    list_display = ('name','get_inhalt')
     ordering = ('name',)
-
-    fieldsets = [
-        ('Name', {'fields': ['name']}),
-        ('Inhalt', {'fields': ['inhalt']}),
-    ]
 
     def get_readonly_fields(self, request, obj=None):
         return ["id","name"]
 
-    change_list_template = 'admin/kmuhelper/einstellung_change_list.html'
+    def get_fieldsets(self, request, obj=None):
+        fieldsets = [
+            ('Name', {'fields': ['name']}),
+            ('Inhalt', {'fields': ['char']}),
+        ]
+        if obj.typ == "char":
+            fieldsets[1][1]["fields"][0] = "char"
+        elif obj.typ == "text":
+            fieldsets[1][1]["fields"][0] = "text"
+        elif obj.typ == "int":
+            fieldsets[1][1]["fields"][0] = "inte"
+        elif obj.typ == "floa":
+            fieldsets[1][1]["fields"][0] = "floa"
+        elif obj.typ == "url":
+            fieldsets[1][1]["fields"][0] = "url"
+
+        return fieldsets
 
 ################

@@ -1,0 +1,119 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-06-08 08:39+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: .\utils.py:255
+msgid "Tel."
+msgstr "Tel."
+
+#: .\utils.py:256
+msgid "E-Mail"
+msgstr "E-Mail"
+
+#: .\utils.py:257
+msgid "Web"
+msgstr "Web"
+
+#: .\utils.py:258 .\utils.py:582
+msgid "MwSt"
+msgstr "TVA"
+
+#: .\utils.py:273
+msgid "Ihr/e Ansprechpartner/in"
+msgstr "Votre interlocuteur"
+
+#: .\utils.py:274
+msgid "Ihre Bestellung vom"
+msgstr "Votre commande du"
+
+#: .\utils.py:275
+msgid "Ihre Kundennummer"
+msgstr "Ihre Kundennummer"
+
+#: .\utils.py:301
+msgid "RECHNUNG"
+msgstr "FACTURE"
+
+#: .\utils.py:441
+msgid "Vor der Einzahlung abzutrennen"
+msgstr "A détacher avant le versement"
+
+#: .\utils.py:453 .\utils.py:470
+msgid "Konto / Zahlbar an"
+msgstr "Compte / Payable à"
+
+#: .\utils.py:459 .\utils.py:476
+msgid "Referenz"
+msgstr "Référence"
+
+#: .\utils.py:462 .\utils.py:484
+msgid "Zahlbar durch"
+msgstr "Payable par"
+
+#: .\utils.py:479
+msgid "Zusätzliche Informationen"
+msgstr ""
+
+#: .\utils.py:492
+msgid "Empfangsschein"
+msgstr ""
+
+#: .\utils.py:493
+msgid "Zahlteil"
+msgstr ""
+
+#: .\utils.py:496 .\utils.py:505
+msgid "Währung"
+msgstr ""
+
+#: .\utils.py:497 .\utils.py:506
+msgid "Betrag"
+msgstr ""
+
+#: .\utils.py:498
+msgid "Annahmestelle"
+msgstr ""
+
+#: .\utils.py:530
+msgid "Art-Nr."
+msgstr ""
+
+#: .\utils.py:530
+msgid "Bezeichnung"
+msgstr ""
+
+#: .\utils.py:530
+msgid "Anzahl"
+msgstr ""
+
+#: .\utils.py:530
+msgid "Einheit"
+msgstr ""
+
+#: .\utils.py:530
+msgid "Preis"
+msgstr ""
+
+#: .\utils.py:530
+msgid "Total"
+msgstr ""
+
+#: .\utils.py:591
+msgid "RECHNUNGSBETRAG"
+msgstr ""

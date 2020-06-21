@@ -2,6 +2,7 @@ from django.http import HttpResponse, FileResponse
 from django.conf import settings
 from django.core import mail
 from django.template.loader import get_template
+from django.utils import translation
 
 from datetime import datetime
 from io import BytesIO
@@ -14,128 +15,6 @@ def getfirstindex(data:list, search:list):
         if s in data:
             return data.index(s)
     return None
-
-def translate(id, language="de"):
-    translations = {
-        "de": {
-            "rechnung_header_ansprechpartner":      "Ihr/e Ansprechpartner/in",
-            "rechnung_header_bestellungvom":        "Ihre Bestellung vom",
-            "rechnung_header_kundennummer":         "Ihre Kundennummer",
-            "rechnung_header_rechnung":             "RECHNUNG",
-
-            "rechnung_tabelle_artnr":               "Art-Nr.",
-            "rechnung_tabelle_bezeichnung":         "Bezeichnung",
-            "rechnung_tabelle_anzahl":              "Anzahl",
-            "rechnung_tabelle_einheit":             "Einheit",
-            "rechnung_tabelle_preis":               "Preis",
-            "rechnung_tabelle_total":               "Total",
-            "rechnung_tabelle_mwst":                "MwSt",
-            "rechnung_tabelle_gesamttotal":         "RECHNUNGSBETRAG",
-
-            "rechnung_qr_zahlteil":                 "Zahlteil",
-            "rechnung_qr_kontozahlbaran":           "Konto / Zahlbar an",
-            "rechnung_qr_referenz":                 "Referenz",
-            "rechnung_qr_zusätzlicheinformationen": "Zusätzliche Informationen",
-            "rechnung_qr_weitereiinformationen":    "Weitere Informationen",
-            "rechnung_qr_währung":                  "Währung",
-            "rechnung_qr_betrag":                   "Betrag",
-            "rechnung_qr_empfangsschein":           "Empfangsschein",
-            "rechnung_qr_annahmestelle":            "Annahmestelle",
-            "rechnung_qr_abtrennen":                "Vor der Einzahlung abzutrennen",
-            "rechnung_qr_zahlbardurch":             "Zahlbar durch",
-            "rechnung_qr_zahlbardurchnameadresse":  "Zahlbar durch (Name/Adresse)",
-            "rechnung_qr_zugunsten":                "Zugunsten",
-        },
-        "fr": {
-            "rechnung_header_ansprechpartner":      "Votre interlocuteur",
-            "rechnung_header_bestellungvom":        "Votre commande du",
-            "rechnung_header_kundennummer":         "Ihre Kundennummer",
-            "rechnung_header_rechnung":             "FACTURE",
-
-            "rechnung_tabelle_artnr":               "Art-Nr.",
-            "rechnung_tabelle_bezeichnung":         "Appellation",
-            "rechnung_tabelle_anzahl":              "Quantité",
-            "rechnung_tabelle_einheit":             "Unité",
-            "rechnung_tabelle_preis":               "Prix",
-            "rechnung_tabelle_total":               "Total",
-            "rechnung_tabelle_mwst":                "TVA",
-            "rechnung_tabelle_gesamttotal":         "MONTANT DE LA FACTURE",
-
-            "rechnung_qr_zahlteil":                 "Section paiement",
-            "rechnung_qr_kontozahlbaran":           "Compte / Payable à",
-            "rechnung_qr_referenz":                 "Référence",
-            "rechnung_qr_zusätzlicheinformationen": "Informations additionnelles",
-            "rechnung_qr_weitereiinformationen":    "Informations supplémentaires",
-            "rechnung_qr_währung":                  "Monnaie",
-            "rechnung_qr_betrag":                   "Montant",
-            "rechnung_qr_empfangsschein":           "Récépissé",
-            "rechnung_qr_annahmestelle":            "Point de dépôt",
-            "rechnung_qr_abtrennen":                "A détacher avant le versement",
-            "rechnung_qr_zahlbardurch":             "Payable par",
-            "rechnung_qr_zahlbardurchnameadresse":  "Payable par (nom/adresse)",
-            "rechnung_qr_zugunsten":                "En faveur de",
-        },
-        "it": {
-            "rechnung_header_ansprechpartner":      "La Sua controparte",
-            "rechnung_header_bestellungvom":        "La Sua ordinazione del",
-            "rechnung_header_kundennummer":         "Il Suo codice cliente",
-            "rechnung_header_rechnung":             "FATTURA",
-
-            "rechnung_tabelle_artnr":               "Articolo n.",
-            "rechnung_tabelle_bezeichnung":         "Denominazione",
-            "rechnung_tabelle_anzahl":              "Quantità",
-            "rechnung_tabelle_einheit":             "Unità",
-            "rechnung_tabelle_preis":               "Prezzo",
-            "rechnung_tabelle_total":               "Totale",
-            "rechnung_tabelle_mwst":                "IVA",
-            "rechnung_tabelle_gesamttotal":         "IMPORTO DELLA FATTURA",
-
-            "rechnung_qr_zahlteil":                 "Sezione pagamento",
-            "rechnung_qr_kontozahlbaran":           "Conto / Pagabile a",
-            "rechnung_qr_referenz":                 "Riferimento",
-            "rechnung_qr_zusätzlicheinformationen": "Informazioni aggiuntive",
-            "rechnung_qr_weitereiinformationen":    "Informazioni supplementari",
-            "rechnung_qr_währung":                  "Valuta",
-            "rechnung_qr_betrag":                   "Importo",
-            "rechnung_qr_empfangsschein":           "Ricevuta",
-            "rechnung_qr_annahmestelle":            "Punto di accettazione",
-            "rechnung_qr_abtrennen":                "Da staccare prima del versamento",
-            "rechnung_qr_zahlbardurch":             "Pagabile da",
-            "rechnung_qr_zahlbardurchnameadresse":  "Pagabile da (nome/indirizzo)",
-            "rechnung_qr_zugunsten":                "A favore di",
-        },
-        "en": {
-            "rechnung_header_ansprechpartner":      "Your contact",
-            "rechnung_header_bestellungvom":        "Date of your order",
-            "rechnung_header_kundennummer":         "Your customer number",
-            "rechnung_header_rechnung":             "INVOICE",
-
-            "rechnung_tabelle_artnr":               "Item No.",
-            "rechnung_tabelle_bezeichnung":         "Name",
-            "rechnung_tabelle_anzahl":              "Quantity",
-            "rechnung_tabelle_einheit":             "Unit",
-            "rechnung_tabelle_preis":               "Price",
-            "rechnung_tabelle_total":               "Total",
-            "rechnung_tabelle_mwst":                "VAT",
-            "rechnung_tabelle_gesamttotal":         "INVOICE AMOUNT",
-
-            "rechnung_qr_zahlteil":                 "Payment part",
-            "rechnung_qr_kontozahlbaran":           "Account / Payable to",
-            "rechnung_qr_referenz":                 "Reference",
-            "rechnung_qr_zusätzlicheinformationen": "Additional information",
-            "rechnung_qr_weitereiinformationen":    "Further information",
-            "rechnung_qr_währung":                  "Currency",
-            "rechnung_qr_betrag":                   "Amount",
-            "rechnung_qr_empfangsschein":           "Receipt",
-            "rechnung_qr_annahmestelle":            "Acceptance point",
-            "rechnung_qr_abtrennen":                "Separate before paying in",
-            "rechnung_qr_zahlbardurch":             "Payable by",
-            "rechnung_qr_zahlbardurchnameadresse":  "Payable by (name/address)",
-            "rechnung_qr_zugunsten":                "In favour of",
-        },
-    }
-
-    return translations[language][id] if (language in translations and id in translations[language]) else (translations["de"][id] if id in translations["de"] else "")
 
 def runden(preis):
     return float("{:.2f}".format(float(round(round(preis / 0.05) * 0.05, 2))))
@@ -223,12 +102,19 @@ from reportlab.platypus import Table, TableStyle, Paragraph, Spacer, BaseDocTemp
 #####
 
 
-def pdf_rechnung(bestellung, digital:bool=True, mahnung:bool=False):
+def pdf_rechnung(bestellung, digital:bool=True):
     sprache = bestellung.kunde.sprache if bestellung.kunde and bestellung.kunde.sprache else "de"
+
+    cur_language = translation.get_language()
+    translation.activate(sprache)
+
+    _ = translation.gettext
+
     bestelldatum = str(bestellung.datum.strftime("%d.%m.%Y"))
     ze = bestellung.zahlungsempfaenger
 
     def draw_header(c, doc=None):
+        print(translation.get_language())
         c.saveState()
 
         # Logo
@@ -248,10 +134,10 @@ def pdf_rechnung(bestellung, digital:bool=True, mahnung:bool=False):
         # Firmendaten: Texte
         t = c.beginText(12*mm, 266*mm)
         t.setFont("Helvetica", 8)
-        t.textLine("Tel.")
-        t.textLine("E-Mail")
-        t.textLine("Web")
-        t.textLine("MwSt")
+        t.textLine(_("Tel."))
+        t.textLine(_("E-Mail"))
+        t.textLine(_("Web"))
+        t.textLine(_("MwSt"))
         c.drawText(t)
 
         # Firmendaten: Inhalt
@@ -266,9 +152,9 @@ def pdf_rechnung(bestellung, digital:bool=True, mahnung:bool=False):
         # Rechnungsdaten: Texte
         t = c.beginText(12*mm, 247*mm)
         t.setFont("Helvetica", 12)
-        t.textLine(translate("rechnung_header_ansprechpartner", sprache))
-        t.textLine(translate("rechnung_header_bestellungvom", sprache))
-        t.textLine(translate("rechnung_header_kundennummer", sprache))
+        t.textLine(_("Ihr/e Ansprechpartner/in"))
+        t.textLine(_("Ihre Bestellung vom"))
+        t.textLine(_("Ihre Kundennummer"))
         c.drawText(t)
 
         # Rechnungsdaten: Inhalt
@@ -294,7 +180,7 @@ def pdf_rechnung(bestellung, digital:bool=True, mahnung:bool=False):
 
         # Rechnung
         c.setFont("Helvetica-Bold", 10)
-        c.drawString(12*mm, 220*mm, translate("rechnung_header_rechnung", sprache))
+        c.drawString(12*mm, 220*mm, _("RECHNUNG"))
         c.setFont("Helvetica", 10)
         c.drawString(64*mm, 220*mm, (bestellung.datum.strftime("%Y")+"-"+str(bestellung.pk).zfill(6)+(" (Online Nr. "+str(bestellung.woocommerceid)+")" if bestellung.woocommerceid else "")))
 
@@ -434,7 +320,7 @@ def pdf_rechnung(bestellung, digital:bool=True, mahnung:bool=False):
             c.line(0*mm,105*mm,210*mm,105*mm)
             c.line(62*mm,0*mm,62*mm,105*mm)
             c.setFont("Helvetica-Bold", 8)
-            c.drawCentredString(105*mm, 107*mm, translate("rechnung_qr_abtrennen", sprache))
+            c.drawCentredString(105*mm, 107*mm, _("Vor der Einzahlung abzutrennen"))
 
         # Titel
 
@@ -446,16 +332,16 @@ def pdf_rechnung(bestellung, digital:bool=True, mahnung:bool=False):
 
         # Empfangsschein Angaben
         t = c.beginText(5*mm,90*mm)
-        titel(t,translate("rechnung_qr_kontozahlbaran", sprache),True)
+        titel(t,_("Konto / Zahlbar an"),True)
         t.textLine(ze.qriban)
         t.textLine(ze.firmenname)
         t.textLine(ze.adresszeile1)
         t.textLine(ze.adresszeile2)
         t.moveCursor(0,9)
-        titel(t,translate("rechnung_qr_referenz", sprache),True)
+        titel(t,_("Referenz"),True)
         t.textLine(bestellung.referenznummer())
         t.moveCursor(0,9)
-        titel(t,translate("rechnung_qr_zahlbardurch", sprache),True)
+        titel(t,_("Zahlbar durch"),True)
         t.textLine((bestellung.rechnungsadresse_vorname+" "+bestellung.rechnungsadresse_nachname) if not bestellung.rechnungsadresse_firma else bestellung.rechnungsadresse_firma)
         t.textLine(bestellung.rechnungsadresse_adresszeile1)
         t.textLine(bestellung.rechnungsadresse_plz+" "+bestellung.rechnungsadresse_ort)
@@ -463,21 +349,21 @@ def pdf_rechnung(bestellung, digital:bool=True, mahnung:bool=False):
 
         # Zahlteil Angaben
         t = c.beginText(118*mm,97*mm)
-        titel(t,translate("rechnung_qr_kontozahlbaran", sprache))
+        titel(t,_("Konto / Zahlbar an"))
         t.textLine(ze.qriban)
         t.textLine(ze.firmenname)
         t.textLine(ze.adresszeile1)
         t.textLine(ze.adresszeile2)
         t.moveCursor(0,9)
-        titel(t,translate("rechnung_qr_referenz", sprache))
+        titel(t,_("Referenz"))
         t.textLine(bestellung.referenznummer())
         t.moveCursor(0,9)
-        titel(t,translate("rechnung_qr_zusätzlicheinformationen", sprache))
+        titel(t,_("Zusätzliche Informationen"))
         t.textLine(bestelldatum)
         t.textLine(bestellung.rechnungsinformationen().split("/31/")[0]+"/31/")
         t.textLine(bestellung.rechnungsinformationen().split("/31/")[1])
         t.moveCursor(0,9)
-        titel(t,translate("rechnung_qr_zahlbardurch", sprache))
+        titel(t,_("Zahlbar durch"))
         t.textLine((bestellung.rechnungsadresse_vorname+" "+bestellung.rechnungsadresse_nachname) if not bestellung.rechnungsadresse_firma else bestellung.rechnungsadresse_firma)
         t.textLine(bestellung.rechnungsadresse_adresszeile1)
         t.textLine(bestellung.rechnungsadresse_plz+" "+bestellung.rechnungsadresse_ort)
@@ -485,21 +371,21 @@ def pdf_rechnung(bestellung, digital:bool=True, mahnung:bool=False):
 
         # Texte
         c.setFont("Helvetica-Bold", 11)
-        c.drawString(5*mm, 97*mm, translate("rechnung_qr_empfangsschein", sprache))
-        c.drawString(67*mm, 97*mm, translate("rechnung_qr_zahlteil", sprache))
+        c.drawString(5*mm, 97*mm, _("Empfangsschein"))
+        c.drawString(67*mm, 97*mm, _("Zahlteil"))
 
         c.setFont("Helvetica-Bold", 6)
-        c.drawString(5*mm, 33*mm, translate("rechnung_qr_währung", sprache))
-        c.drawString(20*mm, 33*mm, translate("rechnung_qr_betrag", sprache))
-        c.drawString(38*mm, 20*mm, translate("rechnung_qr_annahmestelle", sprache))
+        c.drawString(5*mm, 33*mm, _("Währung"))
+        c.drawString(20*mm, 33*mm, _("Betrag"))
+        c.drawString(38*mm, 20*mm, _("Annahmestelle"))
 
         c.setFont("Helvetica", 8)
         c.drawString(5*mm, 30*mm, "CHF")
         c.drawString(20*mm, 30*mm, format(bestellung.summe_gesamt(),"08,.2f").replace(","," ").lstrip(" 0"))
 
         c.setFont("Helvetica-Bold", 8)
-        c.drawString(67*mm, 33*mm, translate("rechnung_qr_währung", sprache))
-        c.drawString(87*mm, 33*mm, translate("rechnung_qr_betrag", sprache))
+        c.drawString(67*mm, 33*mm, _("Währung"))
+        c.drawString(87*mm, 33*mm, _("Betrag"))
 
         c.setFont("Helvetica", 10)
         c.drawString(67*mm, 29*mm, "CHF")
@@ -523,7 +409,7 @@ def pdf_rechnung(bestellung, digital:bool=True, mahnung:bool=False):
         draw_qr_invoice(c,doc)
 
     def get_table():
-        data = [(translate("rechnung_tabelle_artnr", sprache),translate("rechnung_tabelle_bezeichnung", sprache),translate("rechnung_tabelle_anzahl", sprache),translate("rechnung_tabelle_einheit", sprache),translate("rechnung_tabelle_preis", sprache),translate("rechnung_tabelle_total", sprache))]
+        data = [(_("Art-Nr."),_("Bezeichnung"),_("Anzahl"),_("Einheit"),_("Preis"),_("Total"))]
 
         style_default = ParagraphStyle("Normal",fontname="Helvetica")
         style_bold = ParagraphStyle("Bold",fontname="Helvetica-Bold")
@@ -575,7 +461,7 @@ def pdf_rechnung(bestellung, digital:bool=True, mahnung:bool=False):
         for mwstsatz in mwstdict:  # Mehrwertsteuer
             data.append((
                 "",
-                translate("rechnung_tabelle_mwst", sprache),
+                _("MwSt"),
                 mwstsatz,
                 "%",
                 formatprice(float(mwstdict[mwstsatz])),
@@ -584,7 +470,7 @@ def pdf_rechnung(bestellung, digital:bool=True, mahnung:bool=False):
             k += 1
 
         data.append((  # Total
-            translate("rechnung_tabelle_gesamttotal", sprache),
+            _("RECHNUNGSBETRAG"),
             "",
             "",
             "CHF",
@@ -669,6 +555,9 @@ def pdf_rechnung(bestellung, digital:bool=True, mahnung:bool=False):
         def __repr__(self):
             return "QR-Invoice"
 
+        def __str__(self):
+            return "QR-Invoice"
+
         def draw(self):
             self.canv.translate(-12*mm,-12*mm)
             draw_qr_invoice(self.canv)
@@ -684,4 +573,8 @@ def pdf_rechnung(bestellung, digital:bool=True, mahnung:bool=False):
 
     #####
 
-    return get_buffer()
+    buffer = get_buffer()
+
+    translation.activate(cur_language)
+
+    return buffer

@@ -1,0 +1,10 @@
+{% extends "admin/change_list.html" %}
+{% load static %}
+
+{% block title %}{{ title }} | KMUHelper{% endblock %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}">KMUHelper Admin</a></h1>
+{% endblock %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/kmuhelper/style.css" %}">{% endblock %}

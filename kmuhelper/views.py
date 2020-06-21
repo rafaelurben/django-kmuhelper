@@ -18,18 +18,21 @@ from .apis import WooCommerce
 @csrf_exempt
 def wc_auth_key(request):
     JSON = loadjson(request.body)
-    key = Geheime_Einstellung.objects.get(id="wc-consumer_key")
-    key.inhalt = JSON["consumer_key"]
-    key.save()
-    secret = Geheime_Einstellung.objects.get(id="wc-consumer_secret")
-    secret.inhalt = JSON["consumer_secret"]
-    secret.save()
+    storeurl = request.headers.get("user-agent").split(";")[1].lstrip()
+
     url = Geheime_Einstellung.objects.get(id="wc-url")
-    url.inhalt = request.headers.get("user-agent").split(";")[1].lstrip()
-    url.save()
-    oldurl = Einstellung.objects.get(id="wc-url")
-    oldurl.inhalt = "Bestätigt: "+url.inhalt+" (Änderungen an diesem Eintrag werden nur nach erneutem Verbinden angewendet!)"
-    oldurl.save()
+    if url.inhalt.lstrip("https://").lstrip("http://").split("/")[0] == storeurl.lstrip("https://").lstrip("http://").split("/")[0]:
+        key = Geheime_Einstellung.objects.get(id="wc-consumer_key")
+        key.inhalt = JSON["consumer_key"]
+        key.save()
+
+        secret = Geheime_Einstellung.objects.get(id="wc-consumer_secret")
+        secret.inhalt = JSON["consumer_secret"]
+        secret.save()
+
+        url = Einstellung.objects.get(id="wc-url")
+        url.inhalt = "Bestätigt: "+storeurl+" (Änderungen an diesem Eintrag werden nur nach erneutem Verbinden angewendet!)"
+        url.save()
     return HttpResponse("success")
 
 

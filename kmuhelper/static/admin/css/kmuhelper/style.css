@@ -1,0 +1,32 @@
+#branding h1,
+#branding h1 a:link,
+#branding h1 a:visited {
+    /* color: #f5dd5d; */
+    color: #f5dd5d;
+}
+
+#header {
+    /* color: #ffc; */
+    color: #ffc;
+
+    /* background-color: #417690; */
+    background-color: #417690;
+}
+
+div.breadcrumbs,
+.module h2,
+.module caption,
+.inline-group h2 {
+    /* background-color: #79aec8; */
+    background-color: #79aec8;
+}
+
+a:link, a:visited {
+    /* color: #447e9b; */
+    color: #447e9b;
+}
+
+a:focus, a:hover {
+    /* color: #036; */
+    color: #036;
+}

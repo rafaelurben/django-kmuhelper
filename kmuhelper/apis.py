@@ -1,5 +1,6 @@
 from woocommerce import API as WCAPI
 from .models import Einstellung, Geheime_Einstellung, Produkt, Kunde, Kategorie, Bestellung, Bestellungsposten, Kosten
+from .utils import runden
 from django.utils.html import strip_tags
 import pytz
 
@@ -17,9 +18,9 @@ class WooCommerce():
     @classmethod
     def get_api(self):
         return WCAPI(
-            url=Einstellung.objects.get(id="wc-url").inhalt,
-            consumer_key=Geheime_Einstellung.objects.get(id="wc-consumer_key").inhalt,
-            consumer_secret=Geheime_Einstellung.objects.get(id="wc-consumer_secret").inhalt
+            url=Einstellung.objects.get(id="wc-url").get_inhalt(),
+            consumer_key=Geheime_Einstellung.objects.get(id="wc-consumer_key").get_inhalt(),
+            consumer_secret=Geheime_Einstellung.objects.get(id="wc-consumer_secret").get_inhalt()
         )
 
 
@@ -119,6 +120,7 @@ class WooCommerce():
             email = customer["email"],
             vorname = customer["first_name"],
             nachname = customer["last_name"],
+            firma = customer["billing"]["company"],
             benutzername = customer["username"],
             avatar_url = customer["avatar_url"],
 
@@ -156,6 +158,7 @@ class WooCommerce():
         customer.email = newcustomer["email"]
         customer.vorname = newcustomer["first_name"]
         customer.nachname = newcustomer["last_name"]
+        customer.firma = newcustomer["billing"]["company"] if newcustomer["billing"]["company"] else customer.firma
         customer.benutzername = newcustomer["username"]
         customer.avatar_url = newcustomer["avatar_url"]
 

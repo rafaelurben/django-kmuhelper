@@ -293,7 +293,7 @@ class Bestellung(models.Model):
         success = send_pdf(
             subject="Ihre Rechnung Nr. "+str(self.id)+(" (Online #"+str(self.woocommerceid)+")" if self.woocommerceid else ""),
             to=self.rechnungsadresse_email,
-            template_name="rechnung_an_kunden.html",
+            template_name="kunde_rechnung.html",
             pdf_filename="Rechnung Nr. "+str(self.id)+(" (Online #"+str(self.woocommerceid)+")" if self.woocommerceid else "")+".pdf",
             pdf=pdf_rechnung(self),
             context={
@@ -688,16 +688,58 @@ class Zahlungsempfaenger(models.Model):
 
 ######################
 
-
+EINSTELLUNGSTYPEN = [
+    ("char", "Text"),
+    ("text", "Mehrzeiliger Text"),
+    ("int",  "Zahl"),
+    ("floa", "Fliesskommazahl"),
+    ("url",  "Url")
+]
 
 class Einstellung(models.Model):
-    id = models.CharField("ID", max_length=20, primary_key=True)
-    name = models.CharField("Name", max_length=20)
-    inhalt = models.CharField("Inhalt", max_length=250, default="", blank=True)
+    id   = models.CharField("ID", max_length=20, primary_key=True)
+    name = models.CharField("Name", max_length=100)
+    typ  = models.CharField("Typ", max_length=4, default="char", choices=EINSTELLUNGSTYPEN)
+
+    char = models.CharField(    "Inhalt (Text)              ", max_length=250, default="",  blank=True)
+    text = models.TextField(    "Inhalt (Mehrzeiliger Text) ", default="",                  blank=True)
+    inte = models.IntegerField( "Inhalt (Zahl)              ", default=0,                   blank=True)
+    floa = models.FloatField(   "Inhalt (Fliesskommazahl)   ", default=0.0,                 blank=True)
+    url  = models.URLField(     "Inhalt (Url)               ", default="",                  blank=True)
 
     def __str__(self):
         return self.name
     __str__.short_description = "Einstellung"
+
+    @property
+    def inhalt(self):
+        if self.typ == "char":
+            return self.char
+        elif self.typ == "text":
+            return self.text
+        elif self.typ == "int":
+            return self.inte
+        elif self.typ == "floa":
+            return self.floa
+        elif self.typ == "url":
+            return self.url
+
+    @inhalt.setter
+    def inhalt(self, var):
+        if self.typ == "char":
+            self.char = var
+        elif self.typ == "text":
+            self.text = var
+        elif self.typ == "int":
+            self.inte = var
+        elif self.typ == "floa":
+            self.floa = var
+        elif self.typ == "url":
+            self.url = var
+
+    def get_inhalt(self):
+        return self.inhalt
+    get_inhalt.short_description = "Inhalt"
 
     class Meta:
         verbose_name = "Einstellung"
@@ -707,7 +749,47 @@ class Einstellung(models.Model):
 
 class Geheime_Einstellung(models.Model):
     id = models.CharField("ID", max_length=20, primary_key=True)
-    inhalt = models.CharField("Inhalt", max_length=250, default="", blank=True)
+    typ  = models.CharField("Typ", max_length=4, default="char", choices=EINSTELLUNGSTYPEN)
+
+    char = models.CharField(    "Inhalt (Text)              ", max_length=250, default="",  blank=True)
+    text = models.TextField(    "Inhalt (Mehrzeiliger Text) ", default="",                  blank=True)
+    inte = models.IntegerField( "Inhalt (Zahl)              ", default=0,                   blank=True)
+    floa = models.FloatField(   "Inhalt (Fliesskommazahl)   ", default=0.0,                 blank=True)
+    url  = models.URLField(     "Inhalt (Url)               ", default="",                  blank=True)
+
+    def __str__(self):
+        return self.id+" "+str(self.inhalt)
+    __str__.short_description = "Geheime Einstellung"
+
+    @property
+    def inhalt(self):
+        if self.typ == "char":
+            return self.char
+        elif self.typ == "text":
+            return self.text
+        elif self.typ == "int":
+            return self.inte
+        elif self.typ == "floa":
+            return self.floa
+        elif self.typ == "url":
+            return self.url
+
+    @inhalt.setter
+    def inhalt(self, var):
+        if self.typ == "char":
+            self.char = var
+        elif self.typ == "text":
+            self.text = var
+        elif self.typ == "int":
+            self.inte = var
+        elif self.typ == "floa":
+            self.floa = var
+        elif self.typ == "url":
+            self.url = var
+
+    def get_inhalt(self):
+        return self.inhalt
+    get_inhalt.short_description = "Inhalt"
 
     class Meta:
         verbose_name = "Geheime Einstellung"
