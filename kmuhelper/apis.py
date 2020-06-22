@@ -18,7 +18,7 @@ class WooCommerce():
     @classmethod
     def get_api(self):
         return WCAPI(
-            url=Einstellung.objects.get(id="wc-url").get_inhalt(),
+            url=Geheime_Einstellung.objects.get(id="wc-url").get_inhalt(),
             consumer_key=Geheime_Einstellung.objects.get(id="wc-consumer_key").get_inhalt(),
             consumer_secret=Geheime_Einstellung.objects.get(id="wc-consumer_secret").get_inhalt()
         )

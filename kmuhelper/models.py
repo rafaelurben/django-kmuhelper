@@ -432,7 +432,14 @@ class Kunde(models.Model):
     avatar.short_description = "Avatar"
 
     def __str__(self):
-        return ((self.vorname + " ") if self.vorname else "") + ((self.nachname + " ") if self.nachname else "") + ((self.firma + " ") if self.firma else "") + (("(" + self.email + ")") if self.email else "")
+        return (
+            str(self.pk)+" - " +
+            (("(WC#"+str(self.woocommerceid)+") ") if self.woocommerceid else "") +
+            ((self.vorname + " ") if self.vorname else "") +
+            ((self.nachname + " ") if self.nachname else "") +
+            ((self.firma + " ") if self.firma else "") +
+            (("(" + self.email + ")") if self.email else "")
+        )
     __str__.short_description = "Kunde"
 
     class Meta:
