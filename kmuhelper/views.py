@@ -161,7 +161,7 @@ def kunde_email_registriert(request, object_id):
 @login_required(login_url="/admin/login")
 def bestellung_rechnung_ansehen(request, object_id):
     obj = Bestellung.objects.get(id=int(object_id))
-    digital = not bool("perforiert" in dict(request.GET))
+    digital = not bool("druck" in dict(request.GET))
     if obj:
         return obj.get_pdf_rechnung(digital=digital)
     else:
@@ -185,7 +185,7 @@ def bestellung_rechnung_an_kunden_senden(request, object_id):
 
 def kunde_rechnung_ansehen(request, order_id, order_key):
     obj = Bestellung.objects.get(id=int(order_id))
-    digital = not bool("perforiert" in dict(request.GET))
+    digital = not bool("druck" in dict(request.GET))
     if obj:
         if obj.order_key == order_key:
             return obj.get_pdf_rechnung(digital=digital)

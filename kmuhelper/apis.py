@@ -355,6 +355,7 @@ class WooCommerce():
             order.bezahlt = True
         order.status = neworder["status"]
         order.kundennotiz = neworder["customer_note"]
+        
         order.rechnungsadresse_vorname = neworder["billing"]["first_name"]
         order.rechnungsadresse_nachname = neworder["billing"]["last_name"]
         order.rechnungsadresse_firma = neworder["billing"]["company"]

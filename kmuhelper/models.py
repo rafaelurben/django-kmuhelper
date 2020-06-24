@@ -194,7 +194,11 @@ class Bestellung(models.Model):
 
     rechnung_gesendet = models.BooleanField("Rechnung gesendet", default=False)
 
+    fix_summe = models.FloatField("Summe in CHF", default=0.0)
+
     def save(self, *args, **kwargs):
+        self.fix_summe = self.summe_gesamt()
+        
         if self.pk is None and not self.woocommerceid:
             self.rechnungsadresse_vorname = self.kunde.rechnungsadresse_vorname
             self.rechnungsadresse_nachname = self.kunde.rechnungsadresse_nachname
@@ -304,7 +308,7 @@ class Bestellung(models.Model):
                 "woocommercedata": bool(self.woocommerceid)
             },
             headers={"Rechnungs-ID":str(self.id)},
-            #bcc=[self.zahlungsempfaenger.email]
+            bcc=[self.zahlungsempfaenger.email]
         )
         if success:
             self.rechnung_gesendet = True

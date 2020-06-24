@@ -114,7 +114,6 @@ def pdf_rechnung(bestellung, digital:bool=True):
     ze = bestellung.zahlungsempfaenger
 
     def draw_header(c, doc=None):
-        print(translation.get_language())
         c.saveState()
 
         # Logo
@@ -399,8 +398,8 @@ def pdf_rechnung(bestellung, digital:bool=True):
         # c.drawString(82*mm, 11*mm, "Linie 1")
         # c.drawString(82*mm, 8*mm, "Linie 2")
 
-        #if settings.DEBUG:
-            #debug(c)
+        # if settings.DEBUG:
+            # debug(c)
 
         c.restoreState()
 

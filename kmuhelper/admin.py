@@ -113,13 +113,17 @@ class BestellungInlineBestellungskostenAdd(admin.TabularInline):
 
 @admin.register(Bestellung)
 class BestellungsAdmin(admin.ModelAdmin):
-    list_display = ('id','datum','kunde','status','zahlungsmethode','bezahlt','versendet','summe_gesamt')
+    list_display = ('id','datum','kunde','status','zahlungsmethode','bezahlt','versendet','fix_summe')
     list_filter = ('status','bezahlt','versendet','zahlungsmethode')
     search_fields = ['id','name','beschrieb','notiz','kundennotiz']
 
     ordering = ("versendet","bezahlt","-datum")
 
     inlines = [BestellungInlineBestellungsposten, BestellungInlineBestellungspostenAdd, BestellungInlineBestellungskosten, BestellungInlineBestellungskostenAdd]
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.select_related('kunde')
 
     def get_fieldsets(self, request, obj=None):
         if obj:
@@ -172,7 +176,15 @@ class BestellungsAdmin(admin.ModelAdmin):
             messages.error(request, ('Beim als bezahlt markieren von '+('{} Bestellungen' if errorcount != 1 else 'einer Bestellung')+' ist ein Fehler aufgetreten!').format(errorcount))
     als_bezahlt_markieren.short_description = "Als bezahlt markieren"
 
-    actions = [als_bezahlt_markieren]
+    def wc_update(self, request, queryset):
+        result = WooCommerce.order_bulk_update(queryset.all())
+        messages.success(request, (('{} Bestellungen' if result[0] != 1 else 'Eine Bestellung')+' von WooCommerce aktualisiert!').format(result[0]))
+        if result[1]:
+            messages.error(request, ('Beim Import von '+('{} Bestellungen' if result[1] != 1 else 'einer Bestellung')+' von WooCommerce ist ein Fehler aufgetreten!').format(result[1]))
+    wc_update.short_description = "Bestellungen von WooCommerce aktualisieren"
+
+
+    actions = [als_bezahlt_markieren, wc_update]
 
 
 
@@ -196,7 +208,9 @@ class KategorienAdmin(admin.ModelAdmin):
 
     inlines = [KategorienInlineUntergeordneteKategorien]
 
-    actions = ["wc_update"]
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.select_related('uebergeordnete_kategorie')
 
     def wc_update(self, request, queryset):
         result = WooCommerce.category_bulk_update(queryset.all())
@@ -204,6 +218,8 @@ class KategorienAdmin(admin.ModelAdmin):
         if result[1]:
             messages.error(request, ('Beim Import von '+('{} Kategorien' if result[1] != 1 else 'einer Kategorie')+' von WooCommerce ist ein Fehler aufgetreten!').format(result[1]))
     wc_update.short_description = "Kategorien von WooCommerce aktualisieren"
+
+    actions = ["wc_update"]
 
 
 
