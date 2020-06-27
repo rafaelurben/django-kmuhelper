@@ -148,7 +148,7 @@ def lieferung_einlagern(request, object_id):
     if Lieferung.objects.get(id=int(object_id)).einlagern():
         messages.success(request, "Lieferung eingelagert!")
     else:
-        messages.errer(request, "Lieferung konnte nicht eingelagert werden!")
+        messages.error(request, "Lieferung konnte nicht eingelagert werden!")
     return redirect("/admin/kmuhelper/lieferung/"+object_id)
 
 @login_required(login_url="/admin/login")

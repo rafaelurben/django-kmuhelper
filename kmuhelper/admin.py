@@ -5,6 +5,10 @@ from pytz import utc
 from .models import Ansprechpartner, Produkt, Kategorie, Lieferant, Lieferung, Kunde, Einstellung, Bestellung, Kosten, Zahlungsempfaenger
 from .apis import WooCommerce
 
+# Disable "view on site" globally
+
+admin.site.site_url = None
+
 # Register your models here.
 
 @admin.register(Ansprechpartner)

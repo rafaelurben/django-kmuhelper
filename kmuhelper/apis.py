@@ -9,9 +9,6 @@ import pytz
 def preparestring(string):
     return strip_tags(string.replace("</p>"," ").replace("</strong>"," ")).replace("&#8211;","-").replace("&#8211;"," ").replace("&#215;","x").replace("&#8220;",'"').replace("&#8221;",'"').replace("&nbsp;"," ").replace("&lt;","<").replace("&gt;",">").replace("&amp;","&").replace("&quot;",'"').replace("&#8222;",'"').replace("  "," ")
 
-def clean(string):
-    return string.split("[:de]")[1].split("[:")[0] if ("[:de]" in string) else string
-
 ###############
 
 class WooCommerce():
@@ -49,7 +46,7 @@ class WooCommerce():
                 self.category_update(tup[0])
             newproduct.kategorien.add(tup[0])
         newproduct.save()
-        print("[KMUHelper] - Produkt erstellt: "+clean(product["name"]))
+        print("[KMUHelper] - Produkt erstellt: "+str(newproduct))
         return newproduct
 
     @classmethod
@@ -74,7 +71,7 @@ class WooCommerce():
                 self.category_update(tup[0])
             product.kategorien.add(tup[0])
         product.save()
-        print("[KMUHelper] - Produkt aktualisiert: "+clean(newproduct["name"]))
+        print("[KMUHelper] - Produkt aktualisiert: "+str(product))
         return product
 
     @classmethod
@@ -355,7 +352,7 @@ class WooCommerce():
             order.bezahlt = True
         order.status = neworder["status"]
         order.kundennotiz = neworder["customer_note"]
-        
+
         order.rechnungsadresse_vorname = neworder["billing"]["first_name"]
         order.rechnungsadresse_nachname = neworder["billing"]["last_name"]
         order.rechnungsadresse_firma = neworder["billing"]["company"]

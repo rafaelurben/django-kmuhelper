@@ -8,10 +8,7 @@ from . import views
 # Standardwerte laden
 try:
     from .models import Einstellung, Geheime_Einstellung
-    wc_url = Einstellung.objects.get_or_create(id="wc-url",name="WooCommerce Shop-Url")[0]
-    if wc_url.typ != "url":
-        wc_url.typ = "url"
-        wc_url.save()
+    Einstellung.objects.get_or_create(id="wc-url", typ="url", name="WooCommerce Shop-Url")[0]
 
     Geheime_Einstellung.objects.get_or_create(id="wc-consumer_key")
     Geheime_Einstellung.objects.get_or_create(id="wc-consumer_secret")

@@ -1,32 +1,41 @@
+:root {
+  --darkest: #880044;
+  --dark: #AA1155;
+  --default: #DD1155;
+  --light: #F6C400;
+  --lightest: #FFEE88;
+
+  /* Default:
+  --darkest: #036;
+  --dark: #417690;
+  --default: #79aec8;
+  --light: #ffc;
+  --lightest: #f5dd5d; */
+}
+
 #branding h1,
 #branding h1 a:link,
 #branding h1 a:visited {
-    /* color: #f5dd5d; */
-    color: #f5dd5d;
+    color: var(--lightest);
 }
 
 #header {
-    /* color: #ffc; */
-    color: #ffc;
+    color: var(--light);
 
-    /* background-color: #417690; */
-    background-color: #417690;
+    background-color: var(--dark);
 }
 
 div.breadcrumbs,
 .module h2,
 .module caption,
 .inline-group h2 {
-    /* background-color: #79aec8; */
-    background-color: #79aec8;
+    background-color: var(--default);
 }
 
 a:link, a:visited {
-    /* color: #447e9b; */
-    color: #447e9b;
+    color: var(--dark);
 }
 
 a:focus, a:hover {
-    /* color: #036; */
-    color: #036;
+    color: var(--darkest);
 }
