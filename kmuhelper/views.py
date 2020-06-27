@@ -159,17 +159,19 @@ def kunde_email_registriert(request, object_id):
 
 
 @login_required(login_url="/admin/login")
-def bestellung_rechnung_ansehen(request, object_id):
+def bestellung_pdf_ansehen(request, object_id):
     obj = Bestellung.objects.get(id=int(object_id))
+    lieferschein = bool("lieferschein" in dict(request.GET))
     digital = not bool("druck" in dict(request.GET))
     if obj:
-        return obj.get_pdf_rechnung(digital=digital)
+        pdf = obj.get_pdf(lieferschein=lieferschein, digital=digital)
+        return pdf
     else:
         messages.error(request, "Bestellung wurde nicht gefunden!")
         return redirect("/admin/kmuhelper/bestellung")
 
 @login_required(login_url="/admin/login")
-def bestellung_rechnung_an_kunden_senden(request, object_id):
+def bestellung_pdf_an_kunden_senden(request, object_id):
     obj = Bestellung.objects.get(id=int(object_id))
     if obj:
         if obj.send_pdf_rechnung_to_customer():

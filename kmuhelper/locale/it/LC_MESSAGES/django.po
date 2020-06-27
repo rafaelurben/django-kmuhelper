@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-08 09:05+0200\n"
+"POT-Creation-Date: 2020-06-27 16:11+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,102 +18,110 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: .\utils.py:137
-msgid "Tel."
-msgstr "Tel."
-
-#: .\utils.py:138
-msgid "E-Mail"
-msgstr "E-Mail"
-
-#: .\utils.py:139
-msgid "Web"
-msgstr "Web"
-
-#: .\utils.py:140 .\utils.py:464
-msgid "MwSt"
-msgstr "IVA"
-
-#: .\utils.py:155
-msgid "Ihr/e Ansprechpartner/in"
-msgstr "La Sua controparte"
-
-#: .\utils.py:156
-msgid "Ihre Bestellung vom"
-msgstr "La Sua ordinazione del"
-
-#: .\utils.py:157
-msgid "Ihre Kundennummer"
-msgstr "Il Suo codice cliente"
-
-#: .\utils.py:183
-msgid "RECHNUNG"
-msgstr "FATTURA"
-
-#: .\utils.py:323
-msgid "Vor der Einzahlung abzutrennen"
-msgstr "Da staccare prima del versamento"
-
-#: .\utils.py:335 .\utils.py:352
-msgid "Konto / Zahlbar an"
-msgstr "Conto / Pagabile a"
-
-#: .\utils.py:341 .\utils.py:358
-msgid "Referenz"
-msgstr "Riferimento"
-
-#: .\utils.py:344 .\utils.py:366
-msgid "Zahlbar durch"
-msgstr "Pagabile da"
-
-#: .\utils.py:361
-msgid "Zusätzliche Informationen"
-msgstr "Informazioni aggiuntive"
-
-#: .\utils.py:374
-msgid "Empfangsschein"
-msgstr "Ricevuta"
-
-#: .\utils.py:375
-msgid "Zahlteil"
-msgstr "Sezione pagamento"
-
-#: .\utils.py:378 .\utils.py:387
-msgid "Währung"
-msgstr "Valuta"
-
-#: .\utils.py:379 .\utils.py:388
-msgid "Betrag"
-msgstr "Importo"
-
-#: .\utils.py:380
-msgid "Annahmestelle"
-msgstr "Punto di accettazione"
-
-#: .\utils.py:412
+#: .\pdf_generators\bestellung.py:27 .\pdf_generators\bestellung.py:115
 msgid "Art-Nr."
 msgstr "Articolo n."
 
-#: .\utils.py:412
+#: .\pdf_generators\bestellung.py:27 .\pdf_generators\bestellung.py:115
 msgid "Bezeichnung"
 msgstr "Denominazione"
 
-#: .\utils.py:412
+#: .\pdf_generators\bestellung.py:27 .\pdf_generators\bestellung.py:115
 msgid "Anzahl"
 msgstr "Quantità"
 
-#: .\utils.py:412
+#: .\pdf_generators\bestellung.py:27 .\pdf_generators\bestellung.py:115
 msgid "Einheit"
 msgstr "Unità"
 
-#: .\utils.py:412
+#: .\pdf_generators\bestellung.py:27
 msgid "Preis"
 msgstr "Prezzo"
 
-#: .\utils.py:412
+#: .\pdf_generators\bestellung.py:27
 msgid "Total"
 msgstr "Totale"
 
-#: .\utils.py:473
+#: .\pdf_generators\bestellung.py:79 .\pdf_generators\bestellung.py:451
+msgid "MwSt"
+msgstr "IVA"
+
+#: .\pdf_generators\bestellung.py:88
 msgid "RECHNUNGSBETRAG"
 msgstr "IMPORTO DELLA FATTURA"
+
+#: .\pdf_generators\bestellung.py:140
+msgid "ANZAHL PRODUKTE"
+msgstr "NUMERO DI PRODOTTI"
+
+#: .\pdf_generators\bestellung.py:318
+msgid "Vor der Einzahlung abzutrennen"
+msgstr "Da staccare prima del versamento"
+
+#: .\pdf_generators\bestellung.py:330 .\pdf_generators\bestellung.py:347
+msgid "Konto / Zahlbar an"
+msgstr "Conto / Pagabile a"
+
+#: .\pdf_generators\bestellung.py:336 .\pdf_generators\bestellung.py:353
+msgid "Referenz"
+msgstr "Riferimento"
+
+#: .\pdf_generators\bestellung.py:339 .\pdf_generators\bestellung.py:361
+msgid "Zahlbar durch"
+msgstr "Pagabile da"
+
+#: .\pdf_generators\bestellung.py:356
+msgid "Zusätzliche Informationen"
+msgstr "Informazioni aggiuntive"
+
+#: .\pdf_generators\bestellung.py:369
+msgid "Empfangsschein"
+msgstr "Ricevuta"
+
+#: .\pdf_generators\bestellung.py:370
+msgid "Zahlteil"
+msgstr "Sezione pagamento"
+
+#: .\pdf_generators\bestellung.py:373 .\pdf_generators\bestellung.py:382
+msgid "Währung"
+msgstr "Valuta"
+
+#: .\pdf_generators\bestellung.py:374 .\pdf_generators\bestellung.py:383
+msgid "Betrag"
+msgstr "Importo"
+
+#: .\pdf_generators\bestellung.py:375
+msgid "Annahmestelle"
+msgstr "Punto di accettazione"
+
+#: .\pdf_generators\bestellung.py:448
+msgid "Tel."
+msgstr "Tel."
+
+#: .\pdf_generators\bestellung.py:449
+msgid "E-Mail"
+msgstr "E-Mail"
+
+#: .\pdf_generators\bestellung.py:450
+msgid "Web"
+msgstr "Web"
+
+#: .\pdf_generators\bestellung.py:466
+msgid "Ihr/e Ansprechpartner/in"
+msgstr "La Sua controparte"
+
+#: .\pdf_generators\bestellung.py:467
+msgid "Ihre Bestellung vom"
+msgstr "La Sua ordinazione del"
+
+#: .\pdf_generators\bestellung.py:468
+msgid "Ihre Kundennummer"
+msgstr "Il Suo codice cliente"
+
+#: .\pdf_generators\bestellung.py:506
+msgid "LIEFERSCHEIN"
+msgstr "NOTA DI CONSEGNA"
+
+#: .\pdf_generators\bestellung.py:508
+msgid "RECHNUNG"
+msgstr "FATTURA"

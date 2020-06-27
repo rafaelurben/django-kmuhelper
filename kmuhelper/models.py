@@ -10,7 +10,8 @@ from datetime import datetime
 from random import randint
 from pytz import utc
 
-from .utils import send_mail, runden, clean, formatprice, pdf_rechnung, modulo10rekursiv, send_pdf
+from .utils import send_mail, runden, clean, formatprice, modulo10rekursiv, send_pdf
+from .pdf_generators.bestellung import pdf_bestellung
 
 ###################
 
@@ -29,7 +30,6 @@ def defaultansprechpartner():
 def defaultorderkey():
     return "kh-"+str(randint(10000000,99999999))
 
-############ Create your models here.
 
 STATUS = [
     ("pending","Zahlung ausstehend"),
@@ -49,10 +49,10 @@ MWSTSÄTZE = [
 ]
 
 ZAHLUNGSMETHODEN = [
-    ("bacs","Überweisung"),
-    ("cheque","Scheck"),
-    ("cod","Rechnung / Nachnahme"),
-    ("paypal","PayPal")
+    ("bacs",    "Überweisung"),
+    ("cheque",  "Scheck"),
+    ("cod",     "Rechnung / Nachnahme"),
+    ("paypal",  "PayPal")
 ]
 
 LÄNDER = [
@@ -68,9 +68,9 @@ SPRACHEN = [
 ]
 
 GUTSCHEINTYPEN = [
-    ("percent", "Prozent"),
-    ("fixed_cart", "Fixer Betrag auf den Warenkorb"),
-    ("fixed_product", "Fixer Betrag auf ein Produkt")
+    ("percent",         "Prozent"),
+    ("fixed_cart",      "Fixer Betrag auf den Warenkorb"),
+    ("fixed_product",   "Fixer Betrag auf ein Produkt")
 ]
 
 #############
@@ -197,8 +197,8 @@ class Bestellung(models.Model):
     fix_summe = models.FloatField("Summe in CHF", default=0.0)
 
     def save(self, *args, **kwargs):
-        self.fix_summe = self.summe_gesamt()
-        
+        if self.pk:
+            self.fix_summe = self.summe_gesamt()
         if self.pk is None and not self.woocommerceid:
             self.rechnungsadresse_vorname = self.kunde.rechnungsadresse_vorname
             self.rechnungsadresse_nachname = self.kunde.rechnungsadresse_nachname
@@ -227,7 +227,6 @@ class Bestellung(models.Model):
                 i.produkt.save()
             self.ausgelagert = True
         super().save(*args, **kwargs)
-        return
 
     def trackinglink(self):
         return "https://www.post.ch/swisspost-tracking?formattedParcelCodes="+self.trackingnummer if self.trackingnummer else None
@@ -283,15 +282,15 @@ class Bestellung(models.Model):
     summe_gesamt.short_description = "Summe in CHF"
 
     def name(self):
-        return self.datum.strftime("%Y")+"-"+str(self.pk).zfill(6)+(" (WC#"+str(self.woocommerceid)+")" if self.woocommerceid else "")+" - "+(str(self.kunde) if self.kunde is not None else "Gast")
+        return (self.datum if self.datum else datetime.today()).strftime("%Y")+"-"+str(self.pk).zfill(6)+(" (WC#"+str(self.woocommerceid)+")" if self.woocommerceid else "")+" - "+(str(self.kunde) if self.kunde is not None else "Gast")
     name.short_description = "Name"
 
     def __str__(self):
         return self.name()
     __str__.short_description = "Bestellung"
 
-    def get_pdf_rechnung(self, digital:bool=True):
-        return FileResponse(pdf_rechnung(self, digital), as_attachment=True, filename='Rechnung zu Bestellung '+str(self)+'.pdf')
+    def get_pdf(self, lieferschein:bool=False, digital:bool=True):
+        return FileResponse(pdf_bestellung(self, lieferschein=lieferschein, digital=digital), as_attachment=False, filename='Rechnung zu Bestellung '+str(self)+'.pdf')
 
     def send_pdf_rechnung_to_customer(self):
         success = send_pdf(
@@ -299,7 +298,7 @@ class Bestellung(models.Model):
             to=self.rechnungsadresse_email,
             template_name="kunde_rechnung.html",
             pdf_filename="Rechnung Nr. "+str(self.id)+(" (Online #"+str(self.woocommerceid)+")" if self.woocommerceid else "")+".pdf",
-            pdf=pdf_rechnung(self),
+            pdf=pdf_bestellung(self, lieferschein=False, digital=True),
             context={
                 "trackinglink": str(self.trackinglink()),
                 "trackingdata": bool(self.trackinglink() and self.versendet),
@@ -437,7 +436,7 @@ class Kunde(models.Model):
 
     def __str__(self):
         return (
-            str(self.pk)+" - " +
+            str(self.pk)+" " +
             (("(WC#"+str(self.woocommerceid)+") ") if self.woocommerceid else "") +
             ((self.vorname + " ") if self.vorname else "") +
             ((self.nachname + " ") if self.nachname else "") +
