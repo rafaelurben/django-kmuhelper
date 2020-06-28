@@ -4,7 +4,7 @@
 {% block title %}{{ title }} | KMUHelper{% endblock %}
 
 {% block branding %}
-<h1 id="site-name"><a href="{% url 'admin:index' %}">KMUHelper Admin</a></h1>
+<h1 id="site-name"><a href="{% url 'admin:index' %}kmuhelper">KMUHelper Admin</a></h1>
 {% endblock %}
 
-{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/kmuhelper/style.css" %}">{% endblock %}
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/kmuhelper/css/style.css" %}">{% endblock %}
