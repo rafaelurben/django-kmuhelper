@@ -1,41 +1,28 @@
-:root {
-  --darkest: #880044;
-  --dark: #AA1155;
-  --default: #DD1155;
-  --light: #F6C400;
-  --lightest: #FFEE88;
-
-  /* Default:
-  --darkest: #036;
-  --dark: #417690;
-  --default: #79aec8;
-  --light: #ffc;
-  --lightest: #f5dd5d; */
-}
+@import "colors-kmuhelper.css";
 
 #branding h1,
 #branding h1 a:link,
 #branding h1 a:visited {
-    color: var(--lightest);
+    color: var(--kmuhelper-lightest);
 }
 
 #header {
-    color: var(--light);
+    color: var(--kmuhelper-light);
 
-    background-color: var(--dark);
+    background-color: var(--kmuhelper-dark);
 }
 
 div.breadcrumbs,
 .module h2,
 .module caption,
 .inline-group h2 {
-    background-color: var(--default);
+    background-color: var(--kmuhelper-default);
 }
 
 a:link, a:visited {
-    color: var(--dark);
+    color: var(--kmuhelper-dark);
 }
 
 a:focus, a:hover {
-    color: var(--darkest);
+    color: var(--kmuhelper-darkest);
 }
