@@ -197,8 +197,10 @@ class Bestellung(models.Model):
     fix_summe = models.FloatField("Summe in CHF", default=0.0)
 
     def save(self, *args, **kwargs):
+        double_save = True
         if self.pk:
             self.fix_summe = self.summe_gesamt()
+            double_save = False
         if self.pk is None and not self.woocommerceid:
             self.rechnungsadresse_vorname = self.kunde.rechnungsadresse_vorname
             self.rechnungsadresse_nachname = self.kunde.rechnungsadresse_nachname
@@ -227,6 +229,8 @@ class Bestellung(models.Model):
                 i.produkt.save()
             self.ausgelagert = True
         super().save(*args, **kwargs)
+        if double_save:
+            self.save()
 
     def trackinglink(self):
         return "https://www.post.ch/swisspost-tracking?formattedParcelCodes="+self.trackingnummer if self.trackingnummer else None
