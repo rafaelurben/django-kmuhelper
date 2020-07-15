@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_exempt
 
@@ -38,79 +39,85 @@ def wc_auth_key(request):
 
 @login_required(login_url="/admin/login")
 def wc_auth_end(request):
-    if request.GET["success"] == "1":
+    if request.GET.get("success") == "1":
         messages.success(request,"WooCommerce erfolgreich verbunden!")
     else:
         messages.error(request,"WooCommerce konnte nicht verbunden werden!")
-    return redirect("/admin/kmuhelper/")
+    return redirect(reverse('admin:kmuhelper_einstellung_changelist'))
 
 
 @login_required(login_url="/admin/login")
 def wc_auth_start(request):
     shopurl = Einstellung.objects.get(id="wc-url").inhalt
-    kmuhelperurl = request.get_host()
-    params = {
-        "app_name": "KMUHelper",
-        "scope": "read",
-        "user_id": randint(100000,999999),
-        "return_url": kmuhelperurl+"/kmuhelper/wc/auth/end",
-        "callback_url": kmuhelperurl+"/kmuhelper/wc/auth/key"
-    }
-    query_string = urlencode(params)
-    if not "https://" in shopurl and not "http://" in shopurl:
-        shopurl = "https://"+shopurl
+    if "Bestätigt" in shopurl:
+        messages.error(request, "Bitte gib zuerst eine gültige Url ein, bevor du WooCommerce neu verbinden kannst!")
+        return redirect(reverse('admin:kmuhelper_einstellung_changelist'))
+    else:
+        kmuhelperurl = request.get_host()
+        params = {
+            "app_name": "KMUHelper",
+            "scope": "read",
+            "user_id": randint(100000,999999),
+            "return_url": kmuhelperurl+"/kmuhelper/wc/auth/end",
+            "callback_url": kmuhelperurl+"/kmuhelper/wc/auth/key"
+        }
+        query_string = urlencode(params)
+        if not "https://" in shopurl and not "http://" in shopurl:
+            shopurl = "https://"+shopurl
 
-    return redirect("%s%s?%s" % (shopurl, '/wc-auth/v1/authorize', query_string))
+        url = "%s%s?%s" % (shopurl, '/wc-auth/v1/authorize', query_string)
+        print(url)
+        return redirect(url)
 
 
 @login_required(login_url="/admin/login")
 def wc_import_products(request):
     count = WooCommerce.product_import()
     messages.success(request, (('{} neue Produkte' if count != 1 else 'Ein neues Produkt')+' von WooCommerce importiert!').format(count))
-    return redirect("/admin/kmuhelper/produkt/")
+    return redirect(reverse("admin:kmuhelper_produkt_changelist"))
 
 @login_required(login_url="/admin/login")
 def wc_import_customers(request):
     count = WooCommerce.customer_import()
     messages.success(request, (('{} neue Kunden' if count != 1 else 'Ein neuer Kunde')+' von WooCommerce importiert!').format(count))
-    return redirect("/admin/kmuhelper/kunde/")
+    return redirect(reverse("admin:kmuhelper_kunde_changelist"))
 
 @login_required(login_url="/admin/login")
 def wc_import_categories(request):
     count = WooCommerce.category_import()
     messages.success(request, (('{} neue Kategorien' if count != 1 else 'Eine neue Kategorie')+' von WooCommerce importiert!').format(count))
-    return redirect("/admin/kmuhelper/kategorie/")
+    return redirect(reverse("admin:kmuhelper_kategorie_changelist"))
 
 @login_required(login_url="/admin/login")
 def wc_import_orders(request):
     count = WooCommerce.order_import()
     messages.success(request, (('{} neue Bestellungen' if count != 1 else 'Eine neue Bestellung')+' von WooCommerce importiert!').format(count))
-    return redirect("/admin/kmuhelper/bestellung/")
+    return redirect(reverse("admin:kmuhelper_bestellung_changelist"))
 
 
 @login_required(login_url="/admin/login")
 def wc_update_product(request, object_id):
     product = WooCommerce.product_update(Produkt.objects.get(id=int(object_id)))
     messages.success(request, "Produkt aktualisiert: "+str(product))
-    return redirect("/admin/kmuhelper/produkt/"+object_id)
+    return redirect(reverse("admin:kmuhelper_produkt_change",args=[object_id]))
 
 @login_required(login_url="/admin/login")
 def wc_update_customer(request, object_id):
     customer = WooCommerce.customer_update(Kunde.objects.get(id=int(object_id)))
     messages.success(request, "Kunde aktualisiert: "+str(customer))
-    return redirect("/admin/kmuhelper/kunde/"+object_id)
+    return redirect(reverse("admin:kmuhelper_kunde_change",args=[object_id]))
 
 @login_required(login_url="/admin/login")
 def wc_update_category(request, object_id):
     category = WooCommerce.category_update(Kategorie.objects.get(id=int(object_id)))
     messages.success(request, "Kategorie aktualisiert: "+str(category))
-    return redirect("/admin/kmuhelper/kategorie/"+object_id)
+    return redirect(reverse("admin:kmuhelper_kategorie_change",args=[object_id]))
 
 @login_required(login_url="/admin/login")
 def wc_update_order(request, object_id):
     order = WooCommerce.order_update(Bestellung.objects.get(id=int(object_id)))
     messages.success(request, "Bestellung aktualisiert: "+str(order))
-    return redirect("/admin/kmuhelper/bestellung/"+object_id)
+    return redirect(reverse("admin:kmuhelper_bestellung_change",args=[object_id]))
 
 
 @csrf_exempt
@@ -149,13 +156,13 @@ def lieferung_einlagern(request, object_id):
         messages.success(request, "Lieferung eingelagert!")
     else:
         messages.error(request, "Lieferung konnte nicht eingelagert werden!")
-    return redirect("/admin/kmuhelper/lieferung/"+object_id)
+    return redirect(reverse("admin:kmuhelper_lieferung_change",args=[object_id]))
 
 @login_required(login_url="/admin/login")
 def kunde_email_registriert(request, object_id):
     Kunde.objects.get(id=int(object_id)).send_register_mail()
     messages.success(request, "Registrierungsmail gesendet!")
-    return redirect("/admin/kmuhelper/kunde/"+object_id)
+    return redirect(reverse("admin:kmuhelper_kunde_change",args=[object_id]))
 
 
 @login_required(login_url="/admin/login")
@@ -168,7 +175,7 @@ def bestellung_pdf_ansehen(request, object_id):
         return pdf
     else:
         messages.error(request, "Bestellung wurde nicht gefunden!")
-        return redirect("/admin/kmuhelper/bestellung")
+        return redirect(reverse("admin:kmuhelper_bestellung_changelist"))
 
 @login_required(login_url="/admin/login")
 def bestellung_pdf_an_kunden_senden(request, object_id):
@@ -178,7 +185,7 @@ def bestellung_pdf_an_kunden_senden(request, object_id):
             messages.success(request, "Rechnung an Kunden gesendet!")
         else:
             messages.error(request, "Rechnung konnte nicht an Kunden gesendet werden!")
-    return redirect("/admin/kmuhelper/bestellung/"+object_id)
+    return redirect(reverse("admin:kmuhelper_bestellung_change",args=[object_id]))
 
 
 

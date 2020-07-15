@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="de">
+
+    <head>
+        <title>
+            {% block title %}{% endblock %}
+            | KMUHelper App
+        </title>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width,initial-scale=1.0">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+
+        {% load static %}
+        <link rel="stylesheet" type="text/css" href="{% static "kmuhelper/app/css/main.css" %}">
+
+        {% block extrahead %}{% endblock %}
+    </head>
+
+    <body>
+
+        <div id="body">
+            {% block body %}{% endblock %}
+        </div>
+
+        <div class="appbar">
+            <a href="#" class="item active">
+                <i class="fas fa-clipboard-list"></i>
+                <span>Home</span>
+            </a>
+            <a href="#" class="item">
+                <i class="fas fa-clipboard-list"></i>
+                <span>To-Do</span>
+            </a>
+            <a href="#" class="item">
+                <i class="fas fa-clipboard-list"></i>
+                <span>Bestellungen</span>
+            </a>
+            <!-- <a href="#" class="item">
+                <i class="fas fa-clipboard-list"></i>
+                <span></span>
+            </a>
+            <a href="#" class="item">
+                <i class="fas fa-clipboard-list"></i>
+                <span></span>
+            </a> -->
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+        <script src="https://kit.fontawesome.com/67ab7aa4a7.js" crossorigin="anonymous"></script>
+        <script src="{% static 'kmuhelper/app/js/main.js' %}"></script>
+
+        {% if alert %}
+            <script>
+                window.addEventListener("load", () => {
+                    toast({{% for k, v in alert.items %}
+                            {{ k }}: "{{ v }}",
+                        {% endfor %}});
+                })
+            </script>
+        {% endif %}
+
+    </body>
+
+</html>

@@ -7,6 +7,11 @@ die Entwicklung dieser Djangoapp die neue schweizer QR-Rechnung ist.
 
 Bei Fragen oder Probleme bitte unbedingt bei [mir](mailto:rafaelurben@gmail.com) melden!
 
+Requirements
+------------
+
+Django Admin is installed and activated.
+
 Quick start
 -----------
 
@@ -23,4 +28,4 @@ Quick start
 
 3. Run `python manage.py migrate` to create the models.
 
-4. Visit http://127.0.0.1:8000/kmuhelper/
+4. Visit http://127.0.0.1:8000/admin/kmuhelper

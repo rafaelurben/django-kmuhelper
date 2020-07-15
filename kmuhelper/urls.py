@@ -3,7 +3,7 @@ from django.contrib.auth import views as auth_views
 from django.conf import settings
 
 from . import views
-
+from .app_views import urlpatterns as app_urlpatterns
 
 # Standardwerte laden
 try:
@@ -39,4 +39,4 @@ urlpatterns = [
     path('bestellung/<object_id>/pdf/ankundensenden', views.bestellung_pdf_an_kunden_senden, name='bestellung-pdf-an-kunden-senden'),
 
     path('kunde/bestellung/<order_id>/<order_key>/', views.kunde_rechnung_ansehen, name='kunde-rechnung-ansehen'),
-]
+] + app_urlpatterns

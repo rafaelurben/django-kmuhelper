@@ -162,7 +162,7 @@ class Bestellung(models.Model):
 
     order_key = models.CharField("Bestellungs-Schlüssel", max_length=50, default=defaultorderkey, blank=True)
 
-    kunde = models.ForeignKey("Kunde", on_delete=models.SET_NULL, null=True)
+    kunde = models.ForeignKey("Kunde", on_delete=models.SET_NULL, null=True, blank=True)
     zahlungsempfaenger = models.ForeignKey("Zahlungsempfaenger", on_delete=models.PROTECT, verbose_name="Zahlungsempfänger", default=defaultzahlungsempfaenger)
     ansprechpartner = models.ForeignKey("Ansprechpartner", on_delete=models.PROTECT, verbose_name="Ansprechpartner", default=defaultansprechpartner)
 
@@ -440,7 +440,7 @@ class Kunde(models.Model):
 
     def __str__(self):
         return (
-            str(self.pk)+" " +
+            str(self.pk).zfill(8)+" " +
             (("(WC#"+str(self.woocommerceid)+") ") if self.woocommerceid else "") +
             ((self.vorname + " ") if self.vorname else "") +
             ((self.nachname + " ") if self.nachname else "") +
@@ -808,3 +808,25 @@ class Geheime_Einstellung(models.Model):
     class Meta:
         verbose_name = "Geheime Einstellung"
         verbose_name_plural = "Geheime Einstellungen"
+
+
+######################
+
+######################
+
+class ToDoEntry(models.Model):
+    name = models.CharField("Name", max_length=50)
+    beschrieb = models.TextField("Beschrieb", default="", blank=True)
+
+    erledigt = models.BooleanField("Erledigt", default=False)
+
+    priority = models.IntegerField("Priorität", default=0, blank=True)
+    erstellt_am = models.DateTimeField("Erstellt am", auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+    __str__.short_description = "ToDo-Eintrag"
+
+    class Meta:
+        verbose_name = "ToDo-Eintrag"
+        verbose_name_plural = "ToDo-Einträge"

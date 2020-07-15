@@ -2,7 +2,7 @@ from django.contrib import admin, messages
 from datetime import datetime
 from pytz import utc
 
-from .models import Ansprechpartner, Produkt, Kategorie, Lieferant, Lieferung, Kunde, Einstellung, Bestellung, Kosten, Zahlungsempfaenger
+from .models import Ansprechpartner, Produkt, Kategorie, Lieferant, Lieferung, Kunde, Einstellung, Bestellung, Kosten, Zahlungsempfaenger, ToDoEntry
 from .apis import WooCommerce
 
 # Disable "view on site" globally
@@ -51,6 +51,8 @@ class BestellungInlineBestellungspostenAdd(admin.TabularInline):
     verbose_name = "Bestellungsposten"
     verbose_name_plural = "Bestellungsposten hinzufügen"
     extra = 0
+
+    raw_id_fields = ("produkt",)
 
     def has_change_permission(self, request, obj=None):
         return False
@@ -124,6 +126,8 @@ class BestellungsAdmin(admin.ModelAdmin):
     ordering = ("versendet","bezahlt","-datum")
 
     inlines = [BestellungInlineBestellungsposten, BestellungInlineBestellungspostenAdd, BestellungInlineBestellungskosten, BestellungInlineBestellungskostenAdd]
+
+    raw_id_fields = ("kunde",)
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -293,6 +297,8 @@ class LieferungInlineProdukte(admin.TabularInline):
     verbose_name_plural = "Produkte"
     extra = 0
 
+    raw_id_fields = ("produkt",)
+
     def has_change_permission(self, request, obj=None):
         if obj and obj.eingelagert:
             return False
@@ -438,3 +444,14 @@ class EinstellungenAdmin(admin.ModelAdmin):
         return fieldsets
 
 ################
+
+@admin.register(ToDoEntry)
+class ToDoEntryAdmin(admin.ModelAdmin):
+    list_display = ["name","beschrieb","priority","erledigt","erstellt_am"]
+    list_filter = ["erledigt", "priority"]
+    ordering = ["erledigt", "-priority","erstellt_am"]
+
+    fieldsets = [
+        ("Infos", {"fields": ["name","beschrieb"]}),
+        ("Daten", {"fields": ["erledigt", "priority"]})
+    ]
