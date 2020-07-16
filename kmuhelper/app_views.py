@@ -6,7 +6,7 @@ from django.urls import reverse, path
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import ToDoEntry
+from .models import ToDoEntry, Bestellung, Lieferung
 
 #####
 

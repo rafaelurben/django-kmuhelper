@@ -13,7 +13,7 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 from reportlab.platypus import Table, TableStyle, Paragraph, Spacer, BaseDocTemplate, SimpleDocTemplate, Frame, PageTemplate, TopPadder, Flowable
 
-from ..utils import clean, formatprice
+from ..utils import clean, formatprice, runden
 
 from django.utils import translation
 _ = translation.gettext
@@ -80,7 +80,7 @@ class PriceTable(Table):
                 mwstsatz,
                 "%",
                 formatprice(float(mwstdict[mwstsatz])),
-                formatprice(float(mwstdict[mwstsatz]*(float(mwstsatz)/100)))
+                formatprice(runden(float(mwstdict[mwstsatz]*(float(mwstsatz)/100))))
             ))
             kostenzeilen += 1
 

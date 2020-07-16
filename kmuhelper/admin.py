@@ -129,9 +129,7 @@ class BestellungsAdmin(admin.ModelAdmin):
 
     raw_id_fields = ("kunde",)
 
-    def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        return qs.select_related('kunde')
+    list_select_related = ["kunde"]
 
     def get_fieldsets(self, request, obj=None):
         if obj:

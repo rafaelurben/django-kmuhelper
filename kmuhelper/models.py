@@ -277,7 +277,7 @@ class Bestellung(models.Model):
         summe_mwst = 0
         mwstdict = self.mwstdict()
         for mwstsatz in mwstdict:
-            summe_mwst += float(mwstdict[mwstsatz]*(float(mwstsatz)/100))
+            summe_mwst += runden(float(mwstdict[mwstsatz]*(float(mwstsatz)/100)))
         return runden(summe_mwst)
     summe_mwst.short_description = "Summe (nur MwSt) in CHF"
 
@@ -600,9 +600,10 @@ class Produktkategorie(models.Model):
         verbose_name_plural = "Produktkategorien"
 
 class Produkt(models.Model):
-    woocommerceid = models.IntegerField('WooCommerce ID', default=0)
-
     artikelnummer = models.CharField("Artikelnummer", max_length=25)
+
+    woocommerceid = models.IntegerField('WooCommerce ID', default=0)
+    
     name = models.CharField('Name', max_length=500)
     kurzbeschrieb = models.TextField('Kurzbeschrieb', default="", blank=True)
     beschrieb = models.TextField('Beschrieb', default="", blank=True)
