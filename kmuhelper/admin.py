@@ -2,7 +2,7 @@ from django.contrib import admin, messages
 from datetime import datetime
 from pytz import utc
 
-from .models import Ansprechpartner, Produkt, Kategorie, Lieferant, Lieferung, Kunde, Einstellung, Bestellung, Kosten, Zahlungsempfaenger, ToDoEntry
+from .models import Ansprechpartner, Produkt, Kategorie, Lieferant, Lieferung, Kunde, Einstellung, Bestellung, Kosten, Zahlungsempfaenger
 from .apis import WooCommerce
 
 # Disable "view on site" globally
@@ -31,6 +31,9 @@ class BestellungInlineBestellungsposten(admin.TabularInline):
     verbose_name_plural = "Bestellungsposten"
     extra = 0
 
+    readonly_fields = ["zwischensumme","mwstsatz","produkt","produktpreis"]
+    fieldsets = [(None, {'fields': ['produkt','bemerkung','produktpreis','menge','mwstsatz','zwischensumme']})]
+
     def has_change_permission(self, request, obj=None):
         return False if (obj and (obj.versendet or obj.bezahlt)) else True
 
@@ -39,12 +42,6 @@ class BestellungInlineBestellungsposten(admin.TabularInline):
 
     def has_delete_permission(self, request, obj=None):
         return False if (obj and (obj.versendet or obj.bezahlt)) else True
-
-    def get_readonly_fields(self, request, obj=None):
-        return ["zwischensumme","mwstsatz","produkt","produktpreis"]
-
-    def get_fieldsets(self, request, obj=None):
-        return [(None, {'fields': ['produkt','bemerkung','produktpreis','menge','mwstsatz','zwischensumme']})]
 
 class BestellungInlineBestellungspostenAdd(admin.TabularInline):
     model = Bestellung.produkte.through
@@ -54,6 +51,8 @@ class BestellungInlineBestellungspostenAdd(admin.TabularInline):
 
     raw_id_fields = ("produkt",)
 
+    fieldsets = [(None, {'fields': ['produkt','bemerkung','menge']})]
+
     def has_change_permission(self, request, obj=None):
         return False
 
@@ -65,12 +64,6 @@ class BestellungInlineBestellungspostenAdd(admin.TabularInline):
 
     def has_view_permission(self, request, obj=None):
         return False
-
-    def get_readonly_fields(self, request, obj=None):
-        return ["zwischensumme","mwstsatz","produktpreis"]
-
-    def get_fieldsets(self, request, obj=None):
-        return [(None, {'fields': ['produkt','bemerkung','menge']})]
 
 class BestellungInlineBestellungskosten(admin.TabularInline):
     model = Bestellung.kosten.through
@@ -78,6 +71,9 @@ class BestellungInlineBestellungskosten(admin.TabularInline):
     verbose_name_plural = "Bestellungskosten"
     extra = 0
 
+    readonly_fields = ["zwischensumme","mwstsatz","kosten"]
+    fieldsets = [(None, {'fields': ['kosten','bemerkung','mwstsatz','zwischensumme']})]
+
     def has_change_permission(self, request, obj=None):
         return False if (obj and (obj.versendet or obj.bezahlt)) else True
 
@@ -87,17 +83,13 @@ class BestellungInlineBestellungskosten(admin.TabularInline):
     def has_delete_permission(self, request, obj=None):
         return False if (obj and (obj.versendet or obj.bezahlt)) else True
 
-    def get_readonly_fields(self, request, obj=None):
-        return ["zwischensumme","versteuerbar","kosten"]
-
-    def get_fieldsets(self, request, obj=None):
-        return [(None, {'fields': ['kosten','bemerkung','versteuerbar','zwischensumme']})]
-
 class BestellungInlineBestellungskostenAdd(admin.TabularInline):
     model = Bestellung.kosten.through
     verbose_name = "Bestellungskosten"
     verbose_name_plural = "Bestellungskosten hinzufügen"
     extra = 0
+
+    fieldsets = [(None, {'fields': ['kosten','bemerkung']})]
 
     def has_change_permission(self, request, obj=None):
         return False
@@ -111,17 +103,11 @@ class BestellungInlineBestellungskostenAdd(admin.TabularInline):
     def has_view_permission(self, request, obj=None):
         return False
 
-    def get_readonly_fields(self, request, obj=None):
-        return ["zwischensumme"]
-
-    def get_fieldsets(self, request, obj=None):
-        return [(None, {'fields': ['kosten','bemerkung']})]
-
 @admin.register(Bestellung)
 class BestellungsAdmin(admin.ModelAdmin):
     list_display = ('id','datum','kunde','status','zahlungsmethode','bezahlt','versendet','fix_summe')
     list_filter = ('status','bezahlt','versendet','zahlungsmethode')
-    search_fields = ['id','name','beschrieb','notiz','kundennotiz']
+    search_fields = ['id','datum','notiz','kundennotiz','trackingnummer','kunde']
 
     ordering = ("versendet","bezahlt","-datum")
 
@@ -129,12 +115,14 @@ class BestellungsAdmin(admin.ModelAdmin):
 
     raw_id_fields = ("kunde",)
 
+    save_on_top = True
+
     list_select_related = ["kunde"]
 
     def get_fieldsets(self, request, obj=None):
         if obj:
             return [
-                (None, {'fields': ['zahlungsempfaenger','ansprechpartner']}),
+                ('Einstellungen', {'fields': ['zahlungsempfaenger','ansprechpartner']}),
                 ('Infos', {'fields': ['name','datum','status']}),
                 ('Lieferung', {'fields': ['versendet','trackingnummer']}),
                 ('Bezahlung', {'fields': ['bezahlt','zahlungsmethode','summe','summe_mwst','summe_gesamt']}),
@@ -145,7 +133,7 @@ class BestellungsAdmin(admin.ModelAdmin):
             ]
         else:
             return [
-                (None, {'fields': ['zahlungsempfaenger','ansprechpartner']}),
+                ('Einstellungen', {'fields': ['zahlungsempfaenger','ansprechpartner']}),
                 ('Lieferung', {'fields': ['trackingnummer']}),
                 ('Bezahlung', {'fields': ['bezahlt','zahlungsmethode']}),
                 ('Notizen', {'fields': ['kundennotiz','notiz'], 'classes': ["collapse"]}),
@@ -192,8 +180,6 @@ class BestellungsAdmin(admin.ModelAdmin):
 
     actions = [als_bezahlt_markieren, wc_update]
 
-
-
 class KategorienInlineUntergeordneteKategorien(admin.TabularInline):
     model = Produkt.kategorien.through
     verbose_name = "Produkt in dieser Kategorie"
@@ -214,9 +200,7 @@ class KategorienAdmin(admin.ModelAdmin):
 
     inlines = [KategorienInlineUntergeordneteKategorien]
 
-    def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        return qs.select_related('uebergeordnete_kategorie')
+    list_select_related = ("uebergeordnete_kategorie",)
 
     def wc_update(self, request, queryset):
         result = WooCommerce.category_bulk_update(queryset.all())
@@ -263,6 +247,7 @@ class KundenAdmin(admin.ModelAdmin):
 
     actions = ["wc_update"]
 
+    save_on_top = True
 
     def wc_update(self, request, queryset):
         result = WooCommerce.customer_bulk_update(queryset.all())
@@ -327,6 +312,8 @@ class LieferungenAdmin(admin.ModelAdmin):
 
     inlines = [LieferungInlineProdukte]
 
+    save_on_top = True
+
     actions = ["einlagern"]
 
     def einlagern(self, request, queryset):
@@ -368,6 +355,8 @@ class ProduktAdmin(admin.ModelAdmin):
 
     inlines = (ProduktInlineProduktkategorien,)
 
+    save_on_top = True
+
     actions = ["wc_update","lagerbestand_zuruecksetzen","aktion_beenden"]
 
     def wc_update(self, request, queryset):
@@ -405,6 +394,7 @@ class ZahlungsempfaengerAdmin(admin.ModelAdmin):
     list_filter = ('land',)
     search_fields = ['firmenname','adresszeile1','adresszeile2','qriban','firmenuid']
 
+    save_on_top = True
 
 
 ###################
@@ -441,10 +431,12 @@ class EinstellungenAdmin(admin.ModelAdmin):
 
         return fieldsets
 
-################
+################ TO DO
 
-@admin.register(ToDoEntry)
-class ToDoEntryAdmin(admin.ModelAdmin):
+from .models import ToDoNotiz, ToDoVersand, ToDoZahlungseingang
+
+@admin.register(ToDoNotiz)
+class ToDoNotizenAdmin(admin.ModelAdmin):
     list_display = ["name","beschrieb","priority","erledigt","erstellt_am"]
     list_filter = ["erledigt", "priority"]
     ordering = ["erledigt", "-priority","erstellt_am"]
@@ -453,3 +445,48 @@ class ToDoEntryAdmin(admin.ModelAdmin):
         ("Infos", {"fields": ["name","beschrieb"]}),
         ("Daten", {"fields": ["erledigt", "priority"]})
     ]
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if obj is None:
+            if "from_bestellung" in request.GET:
+                form.base_fields['name'].initial = 'Bestellung #'+request.GET.get("from_bestellung")
+                form.base_fields['beschrieb'].initial = '\n\nDies Notiz gehört zu Bestellung #'+request.GET.get("from_bestellung")
+
+                if request.GET.get("from_step") == "versand":
+                    form.base_fields['name'].initial = 'Versand ' + form.base_fields['name'].initial
+                    form.base_fields['beschrieb'].initial += "\nBetreff: Versand"
+                elif request.GET.get("from_step") == "zahlungseingang":
+                    form.base_fields['name'].initial = 'Bezahlung ' + form.base_fields['name'].initial
+                    form.base_fields['beschrieb'].initial += "\nBetreff: Bezahlung"
+        return form
+
+@admin.register(ToDoVersand)
+class ToDoVersandAdmin(BestellungsAdmin):
+    list_display = ('id','info','trackingnummer','versendet','status','notiz','html_todo_notiz_erstellen')
+    list_editable = ("trackingnummer", "versendet", "status")
+
+    ordering = ("bezahlt","-datum")
+
+    save_on_top = True
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def has_add_permission(self, request):
+        return False
+
+@admin.register(ToDoZahlungseingang)
+class ToDoZahlungseingangAdmin(BestellungsAdmin):
+    list_display = ('id','info','bezahlt','status','notiz','html_todo_notiz_erstellen')
+    list_editable = ("bezahlt", "status")
+
+    ordering = ("versendet","-datum")
+
+    save_on_top = True
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def has_add_permission(self, request):
+        return False

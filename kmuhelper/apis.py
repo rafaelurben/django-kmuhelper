@@ -339,7 +339,7 @@ class WooCommerce():
                 product = product[0]
             neworder.produkte.add(product,through_defaults={"menge":int(item["quantity"]),"produktpreis":runden(float(item["price"]))})
         for item in order["shipping_lines"]:
-            neworder.kosten.add(Kosten.objects.get_or_create(name=item["method_title"], preis=float(item["total"]), versteuerbar=(float(item["total_tax"]) > 0))[0])
+            neworder.kosten.add(Kosten.objects.get_or_create(name=item["method_title"], preis=float(item["total"]), mwstsatz=(7.7 if float(item["total_tax"]) > 0 else 0))[0])
         neworder.save()
         print("[KMUHelper] - Bestellung erstellt: "+str(neworder.pk))
         return neworder

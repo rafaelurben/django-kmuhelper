@@ -5,6 +5,7 @@ from django.core.validators import RegexValidator
 from django.http import FileResponse
 from django.template.loader import get_template
 from django.utils.html import mark_safe
+from django.urls import reverse
 
 from datetime import datetime
 from random import randint
@@ -43,6 +44,7 @@ STATUS = [
 ]
 
 MWSTSÄTZE = [
+(0.0, "0.0% (Mehrwertsteuerfrei)"),
 (7.7, "7.7% (Normalsatz)"),
 (3.7, "3.7% (Sondersatz für Beherbergungsdienstleistungen)"),
 (2.5, "2.5% (Reduzierter Satz)")
@@ -100,10 +102,9 @@ class Bestellungskosten(models.Model):
         return runden(self.kosten.preis)
     zwischensumme.short_description = "Zwischensumme (exkl. MwSt) in CHF"
 
-    def versteuerbar(self):
-        return self.kosten.versteuerbar
-    versteuerbar.short_description = "Versteuerbar"
-    versteuerbar.boolean = True
+    def mwstsatz(self):
+        return formatprice(self.kosten.mwstsatz)
+    mwstsatz.short_description = "MwSt-Satz"
 
     def __str__(self):
         return "1x "+str(self.kosten)
@@ -169,7 +170,7 @@ class Bestellung(models.Model):
     rechnungsadresse_vorname = models.CharField("Vorname", max_length=50, default="", blank=True)
     rechnungsadresse_nachname = models.CharField("Nachname", max_length=50, default="", blank=True)
     rechnungsadresse_firma = models.CharField("Firma", max_length=50, default="", blank=True)
-    rechnungsadresse_adresszeile1 = models.CharField("Adresszeile 1", max_length=50, default="", blank=True, help_text='Strasse und Hausnummer oder "Postfach"')
+    rechnungsadresse_adresszeile1 = models.CharField("Adresszeile 1", max_length=50, default="", blank=True, help_text='Strasse und Hausnummer oder "Postfach" ohne Nummer - Wird bei QR-Rechnung als Strasse und Hausnummer bzw. Postfach verwendet!')
     rechnungsadresse_adresszeile2 = models.CharField("Adresszeile 2", max_length=50, default="", blank=True, help_text="Wird in QR-Rechnung NICHT verwendet!")
     rechnungsadresse_ort = models.CharField("Ort", max_length=50, default="", blank=True)
     rechnungsadresse_kanton = models.CharField("Kanton", max_length=50, default="", blank=True)
@@ -257,11 +258,10 @@ class Bestellung(models.Model):
             else:
                 mwst[str(p.produkt.mwstsatz)] = p.zwischensumme()
         for k in self.kosten.through.objects.filter(bestellung=self):
-            mwstsatz = "7.7" if k.kosten.versteuerbar else "0"
-            if mwstsatz in mwst:
-                mwst[mwstsatz] += k.zwischensumme()
+            if str(k.kosten.mwstsatz) in mwst:
+                mwst[str(k.kosten.mwstsatz)] += k.zwischensumme()
             else:
-                mwst[mwstsatz] = k.zwischensumme()
+                mwst[str(k.kosten.mwstsatz)] = k.zwischensumme()
         return mwst
 
     def summe(self):
@@ -288,6 +288,10 @@ class Bestellung(models.Model):
     def name(self):
         return (self.datum if self.datum else datetime.today()).strftime("%Y")+"-"+str(self.pk).zfill(6)+(" (WC#"+str(self.woocommerceid)+")" if self.woocommerceid else "")+" - "+(str(self.kunde) if self.kunde is not None else "Gast")
     name.short_description = "Name"
+
+    def info(self):
+        return self.datum.strftime("%d.%m.%Y")+" - "+((self.kunde.firma if self.kunde.firma else (self.kunde.vorname+" "+self.kunde.nachname)) if self.kunde else "Gast")
+    info.short_description = "Info"
 
     def __str__(self):
         return self.name()
@@ -318,6 +322,9 @@ class Bestellung(models.Model):
             self.save()
         return success
 
+    def get_todo_notiz_link(self):
+        return reverse("admin:kmuhelper_todonotiz_add")+'?from_bestellung='+str(self.pk)
+    get_todo_notiz_link.short_description = "ToDo Notiz"
 
     class Meta:
         verbose_name = "Bestellung"
@@ -381,10 +388,10 @@ class Kategorie(models.Model):
 class Kosten(models.Model):
     name = models.CharField("Name", max_length=500, default="Zusätzliche Kosten")
     preis = models.FloatField("Preis", default=0.0)
-    versteuerbar = models.BooleanField("Versteuerbar", default=True)
+    mwstsatz = models.FloatField('Mehrwertsteuersatz', choices= MWSTSÄTZE, default=7.7)
 
     def __str__(self):
-        return clean(str(self.name))+" ("+str(self.preis)+" CHF"+(" + MwSt" if self.versteuerbar else "")+")"
+        return clean(str(self.name))+(" ("+str(self.preis)+" CHF"+(" + "+str(self.mwstsatz)+"% MwSt" if self.mwstsatz else "")+")")
     __str__.short_description = "Kosten"
 
     class Meta:
@@ -603,7 +610,7 @@ class Produkt(models.Model):
     artikelnummer = models.CharField("Artikelnummer", max_length=25)
 
     woocommerceid = models.IntegerField('WooCommerce ID', default=0)
-    
+
     name = models.CharField('Name', max_length=500)
     kurzbeschrieb = models.TextField('Kurzbeschrieb', default="", blank=True)
     beschrieb = models.TextField('Beschrieb', default="", blank=True)
@@ -815,7 +822,7 @@ class Geheime_Einstellung(models.Model):
 
 ######################
 
-class ToDoEntry(models.Model):
+class ToDoNotiz(models.Model):
     name = models.CharField("Name", max_length=50)
     beschrieb = models.TextField("Beschrieb", default="", blank=True)
 
@@ -826,8 +833,42 @@ class ToDoEntry(models.Model):
 
     def __str__(self):
         return self.name
-    __str__.short_description = "ToDo-Eintrag"
+    __str__.short_description = "ToDo Notiz"
 
     class Meta:
-        verbose_name = "ToDo-Eintrag"
-        verbose_name_plural = "ToDo-Einträge"
+        verbose_name = "ToDo Notiz"
+        verbose_name_plural = "ToDo Notiz"
+
+class ToDoVersandManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(versendet=False)
+
+class ToDoVersand(Bestellung):
+    def html_todo_notiz_erstellen(self):
+        link = self.get_todo_notiz_link()+"&from_step=versand"
+        return mark_safe('<a target="_blank" href="'+link+'">ToDo Notiz</a>')
+    html_todo_notiz_erstellen.short_description = "ToDo Notiz Erstellen"
+
+    objects = ToDoVersandManager()
+
+    class Meta:
+        proxy = True
+        verbose_name = "ToDo Versand"
+        verbose_name_plural = "ToDo Versand"
+
+class ToDoZahlungseingangManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(bezahlt=False)
+
+class ToDoZahlungseingang(Bestellung):
+    def html_todo_notiz_erstellen(self):
+        link = self.get_todo_notiz_link()+"&from_step=zahlungseingang"
+        return mark_safe('<a target="_blank" href="'+link+'">ToDo Notiz</a>')
+    html_todo_notiz_erstellen.short_description = "ToDo Notiz Erstellen"
+
+    objects = ToDoZahlungseingangManager()
+
+    class Meta:
+        proxy = True
+        verbose_name = "ToDo Zahlungseingang"
+        verbose_name_plural = "ToDo Zahlungseingang"
