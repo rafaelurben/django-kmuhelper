@@ -1,15 +1,16 @@
-const Toast = Swal.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true,
-    onOpen: (toast) => {
-        toast.addEventListener('mouseenter', Swal.stopTimer)
-        toast.addEventListener('mouseleave', Swal.resumeTimer)
+function loadPage() {
+    const frame = document.getElementById("frame");
+    const page = window.location.hash.substr(1);
+    const pageIDs = ["home","notiz","versand","zahlung"];
+    if (pageIDs.includes(page)) {
+        frame.src = "";
+        setTimeout(function () {
+            frame.src = document.getElementById(page).getAttribute("url");
+        }, 10);
+    } else {
+        window.location.hash = "home";
     }
-})
-
-function toast(options) {
-    Toast.fire(options);
 }
+
+window.onhashchange = loadPage;
+window.onload = loadPage;

@@ -2,7 +2,7 @@ from django.contrib import admin, messages
 from datetime import datetime
 from pytz import utc
 
-from .models import Ansprechpartner, Produkt, Kategorie, Lieferant, Lieferung, Kunde, Einstellung, Bestellung, Kosten, Zahlungsempfaenger
+from .models import Ansprechpartner, Bestellung, Kategorie, Kosten, Kunde, Lieferant, Lieferung, Notiz, Produkt, Zahlungsempfaenger, Einstellung
 from .apis import WooCommerce
 
 # Disable "view on site" globally
@@ -216,7 +216,7 @@ class KategorienAdmin(admin.ModelAdmin):
 @admin.register(Kosten)
 class KostenAdmin(admin.ModelAdmin):
     fieldsets = [
-        (None, {"fields": ("name", "preis", "versteuerbar")})
+        (None, {"fields": ("name", "preis", "mwstsatz")})
     ]
 
     def get_readonly_fields(self, request, obj=None):
@@ -331,6 +331,19 @@ class LieferungenAdmin(admin.ModelAdmin):
 
 
 
+@admin.register(Notiz)
+class NotizenAdmin(admin.ModelAdmin):
+    list_display = ["name","beschrieb","priority","erledigt","erstellt_am"]
+    list_filter = ["erledigt", "priority"]
+    ordering = ["erledigt", "-priority","erstellt_am"]
+
+    fieldsets = [
+        ("Infos", {"fields": ["name","beschrieb"]}),
+        ("Daten", {"fields": ["erledigt", "priority"]})
+    ]
+
+
+
 class ProduktInlineProduktkategorien(admin.TabularInline):
     model = Produkt.kategorien.through
     extra = 0
@@ -438,20 +451,26 @@ from .models import ToDoNotiz, ToDoVersand, ToDoZahlungseingang
 @admin.register(ToDoNotiz)
 class ToDoNotizenAdmin(admin.ModelAdmin):
     list_display = ["name","beschrieb","priority","erledigt","erstellt_am"]
-    list_filter = ["erledigt", "priority"]
-    ordering = ["erledigt", "-priority","erstellt_am"]
+    list_filter = ["priority"]
+    ordering = ["-priority","erstellt_am"]
 
     fieldsets = [
         ("Infos", {"fields": ["name","beschrieb"]}),
         ("Daten", {"fields": ["erledigt", "priority"]})
     ]
 
+    def has_module_permission(self, request):
+        return {}
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         if obj is None:
             if "from_bestellung" in request.GET:
                 form.base_fields['name'].initial = 'Bestellung #'+request.GET.get("from_bestellung")
-                form.base_fields['beschrieb'].initial = '\n\nDies Notiz gehört zu Bestellung #'+request.GET.get("from_bestellung")
+                form.base_fields['beschrieb'].initial = '\n\nDiese Notiz gehört zu Bestellung #'+request.GET.get("from_bestellung")
 
                 if request.GET.get("from_step") == "versand":
                     form.base_fields['name'].initial = 'Versand ' + form.base_fields['name'].initial
@@ -461,32 +480,101 @@ class ToDoNotizenAdmin(admin.ModelAdmin):
                     form.base_fields['beschrieb'].initial += "\nBetreff: Bezahlung"
         return form
 
+    def get_urls(self):
+        from django.urls import path
+        from django.views.decorators.clickjacking import xframe_options_sameorigin as allow_iframe
+        from functools import update_wrapper
+
+        def wrap(view):
+            def wrapper(*args, **kwargs):
+                return self.admin_site.admin_view(allow_iframe(view))(*args, **kwargs)
+            wrapper.model_admin = self
+            return update_wrapper(wrapper, view)
+
+        info = self.model._meta.app_label, self.model._meta.model_name
+
+        return [
+            path('', wrap(self.changelist_view), name='%s_%s_changelist' % info),
+            path('add/', wrap(self.add_view), name='%s_%s_add' % info),
+            path('autocomplete/', wrap(self.autocomplete_view), name='%s_%s_autocomplete' % info),
+            path('<path:object_id>/history/', wrap(self.history_view), name='%s_%s_history' % info),
+            path('<path:object_id>/delete/', wrap(self.delete_view), name='%s_%s_delete' % info),
+            path('<path:object_id>/change/', wrap(self.change_view), name='%s_%s_change' % info),
+        ]
+
+
 @admin.register(ToDoVersand)
 class ToDoVersandAdmin(BestellungsAdmin):
     list_display = ('id','info','trackingnummer','versendet','status','notiz','html_todo_notiz_erstellen')
     list_editable = ("trackingnummer", "versendet", "status")
+    list_filter = ('status','bezahlt')
 
-    ordering = ("bezahlt","-datum")
+    ordering = ("bezahlt", "-datum")
 
     save_on_top = True
+
+    def has_module_permission(self, request):
+        return {}
 
     def has_delete_permission(self, request, obj=None):
         return False
 
-    def has_add_permission(self, request):
-        return False
+    def get_urls(self):
+        from django.urls import path
+        from django.views.decorators.clickjacking import xframe_options_sameorigin as allow_iframe
+        from functools import update_wrapper
+
+        def wrap(view):
+            def wrapper(*args, **kwargs):
+                return self.admin_site.admin_view(allow_iframe(view))(*args, **kwargs)
+            wrapper.model_admin = self
+            return update_wrapper(wrapper, view)
+
+        info = self.model._meta.app_label, self.model._meta.model_name
+
+        return [
+            path('', wrap(self.changelist_view), name='%s_%s_changelist' % info),
+            path('add/', wrap(self.add_view), name='%s_%s_add' % info),
+            path('autocomplete/', wrap(self.autocomplete_view), name='%s_%s_autocomplete' % info),
+            path('<path:object_id>/history/', wrap(self.history_view), name='%s_%s_history' % info),
+            path('<path:object_id>/delete/', wrap(self.delete_view), name='%s_%s_delete' % info),
+            path('<path:object_id>/change/', wrap(self.change_view), name='%s_%s_change' % info),
+        ]
 
 @admin.register(ToDoZahlungseingang)
 class ToDoZahlungseingangAdmin(BestellungsAdmin):
     list_display = ('id','info','bezahlt','status','notiz','html_todo_notiz_erstellen')
     list_editable = ("bezahlt", "status")
+    list_filter = ('status','versendet','zahlungsmethode')
 
     ordering = ("versendet","-datum")
 
     save_on_top = True
 
+    def has_module_permission(self, request):
+        return {}
+
     def has_delete_permission(self, request, obj=None):
         return False
 
-    def has_add_permission(self, request):
-        return False
+    def get_urls(self):
+        from django.urls import path
+        from django.views.decorators.clickjacking import xframe_options_sameorigin as allow_iframe
+        from functools import update_wrapper
+
+        def wrap(view):
+            def wrapper(*args, **kwargs):
+                return self.admin_site.admin_view(allow_iframe(view))(*args, **kwargs)
+            wrapper.model_admin = self
+            return update_wrapper(wrapper, view)
+
+        info = self.model._meta.app_label, self.model._meta.model_name
+
+        return [
+            path('', wrap(self.changelist_view), name='%s_%s_changelist' % info),
+            path('add/', wrap(self.add_view), name='%s_%s_add' % info),
+            path('autocomplete/', wrap(self.autocomplete_view), name='%s_%s_autocomplete' % info),
+            path('<path:object_id>/history/', wrap(self.history_view), name='%s_%s_history' % info),
+            path('<path:object_id>/delete/', wrap(self.delete_view), name='%s_%s_delete' % info),
+            path('<path:object_id>/change/', wrap(self.change_view), name='%s_%s_change' % info),
+        ]

@@ -1,21 +1,41 @@
-* {
+body {
+    height: 100vh;
+    width: 100vw;
     margin: 0;
     padding: 0;
 }
 
-body {
-    height: 100vh;
-    width: 100vw;
+#body {
+    height: 90%;
+    width: 100%;
+    background: url("https://static.wixstatic.com/media/144ac5_61c47d61a23f4663859b306a656e99e5~mv2.gif") center center no-repeat !important;
 }
 
-#body {
+iframe {
     height: 100%;
     width: 100%;
 }
 
 .appbar {
     width: 100%;
+    height: 10%;
     display: flex;
     justify-content: space-evenly;
     align-items: center;
+    overflow: hidden;
+    position: static;
+}
+
+.appbar .item {
+    text-decoration: none;
+    color: #000000;
+    font-size: 150%;
+}
+
+.appbar .item:target {
+    color: #7c7c7c;
+}
+
+.appbar .item:hover {
+    color: #aa1155;
 }

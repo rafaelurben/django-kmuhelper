@@ -1,0 +1,19 @@
+{% extends 'admin/kmuhelper/change_list.html' %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <script>
+        // Add Buttonrow to top too
+        'use strict'
+        var $ = django.jQuery
+
+        $(document).ready(function () {
+            var saveButtonRow = $('.paginator')[0]
+            var resultsDiv = $('#changelist-form > div.results')[0]
+
+            if (saveButtonRow && resultsDiv) {
+                $(saveButtonRow).clone().insertBefore(resultsDiv);
+            }
+        })
+    </script>
+{% endblock %}

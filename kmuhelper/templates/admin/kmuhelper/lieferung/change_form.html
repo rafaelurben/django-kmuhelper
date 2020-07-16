@@ -1,8 +1,10 @@
 {% extends 'admin/kmuhelper/change_form.html' %}
 
 {% block object-tools-items %}
-    {% if object_id %}{% if not original.eingelagert %}
-        <li><a href="{% url 'kmuhelper:lieferung-einlagern' object_id %}">Einlagern</a></li>
-    {% endif %}{% endif %}
+    {% if change %}
+        {% if not original.eingelagert %}
+            <li><a href="{% url 'kmuhelper:lieferung-einlagern' object_id %}">Einlagern</a></li>
+        {% endif %}
+    {% endif %}
     {{ block.super }}
 {% endblock %}

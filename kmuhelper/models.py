@@ -593,6 +593,23 @@ class Lieferung(models.Model):
         verbose_name_plural = "Lieferungen"
 
 
+class Notiz(models.Model):
+    name = models.CharField("Name", max_length=50)
+    beschrieb = models.TextField("Beschrieb", default="", blank=True)
+
+    erledigt = models.BooleanField("Erledigt", default=False)
+
+    priority = models.IntegerField("Priorität", default=0, blank=True)
+    erstellt_am = models.DateTimeField("Erstellt am", auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+    __str__.short_description = "Notiz"
+
+    class Meta:
+        verbose_name = "Notiz"
+        verbose_name_plural = "Notizen"
+
 
 class Produktkategorie(models.Model):
     produkt = models.ForeignKey("Produkt", on_delete=models.CASCADE)
@@ -822,22 +839,17 @@ class Geheime_Einstellung(models.Model):
 
 ######################
 
-class ToDoNotiz(models.Model):
-    name = models.CharField("Name", max_length=50)
-    beschrieb = models.TextField("Beschrieb", default="", blank=True)
+class ToDoNotizManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(erledigt=False)
 
-    erledigt = models.BooleanField("Erledigt", default=False)
-
-    priority = models.IntegerField("Priorität", default=0, blank=True)
-    erstellt_am = models.DateTimeField("Erstellt am", auto_now_add=True)
-
-    def __str__(self):
-        return self.name
-    __str__.short_description = "ToDo Notiz"
+class ToDoNotiz(Notiz):
+    objects = ToDoNotizManager()
 
     class Meta:
-        verbose_name = "ToDo Notiz"
-        verbose_name_plural = "ToDo Notiz"
+        proxy = True
+        verbose_name = "Notiz"
+        verbose_name_plural = "Notizen"
 
 class ToDoVersandManager(models.Manager):
     def get_queryset(self):
@@ -846,15 +858,15 @@ class ToDoVersandManager(models.Manager):
 class ToDoVersand(Bestellung):
     def html_todo_notiz_erstellen(self):
         link = self.get_todo_notiz_link()+"&from_step=versand"
-        return mark_safe('<a target="_blank" href="'+link+'">ToDo Notiz</a>')
+        return mark_safe('<a target="_blank" href="'+link+'">+ ToDo Notiz</a>')
     html_todo_notiz_erstellen.short_description = "ToDo Notiz Erstellen"
 
     objects = ToDoVersandManager()
 
     class Meta:
         proxy = True
-        verbose_name = "ToDo Versand"
-        verbose_name_plural = "ToDo Versand"
+        verbose_name = "Bestellung"
+        verbose_name_plural = "Bestellungen"
 
 class ToDoZahlungseingangManager(models.Manager):
     def get_queryset(self):
@@ -863,12 +875,12 @@ class ToDoZahlungseingangManager(models.Manager):
 class ToDoZahlungseingang(Bestellung):
     def html_todo_notiz_erstellen(self):
         link = self.get_todo_notiz_link()+"&from_step=zahlungseingang"
-        return mark_safe('<a target="_blank" href="'+link+'">ToDo Notiz</a>')
+        return mark_safe('<a target="_blank" href="'+link+'">+ ToDo Notiz</a>')
     html_todo_notiz_erstellen.short_description = "ToDo Notiz Erstellen"
 
     objects = ToDoZahlungseingangManager()
 
     class Meta:
         proxy = True
-        verbose_name = "ToDo Zahlungseingang"
-        verbose_name_plural = "ToDo Zahlungseingang"
+        verbose_name = "Bestellung"
+        verbose_name_plural = "Bestellung"

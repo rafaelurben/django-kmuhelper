@@ -4,14 +4,12 @@
   <ul class="object-tools">
       {% if change %}{% if not is_popup %}
           {% block object-tools-items %}
-              {% if object_id %}
-                  {% if original.woocommerceid %}
-                  <li><a href="{% url 'kmuhelper:wc-update-customer' object_id %}">Von WooCommerce importieren und ersetzen</a></li>
-                  {% endif %}
-                  {% if original.email %}{% if not original.registrierungsemail_gesendet %}
-                  <li><a href="{% url 'kmuhelper:email-kunde-registriert' object_id %}">Registrierungsemail senden</a></li>
-                  {% endif %}{% endif %}
+              {% if original.woocommerceid %}
+              <li><a href="{% url 'kmuhelper:wc-update-customer' object_id %}">Von WooCommerce importieren und ersetzen</a></li>
               {% endif %}
+              {% if original.email %}{% if not original.registrierungsemail_gesendet %}
+              <li><a href="{% url 'kmuhelper:email-kunde-registriert' object_id %}">Registrierungsemail senden</a></li>
+              {% endif %}{% endif %}
               {{ block.super }}
           {% endblock %}
       {% endif %}{% endif %}

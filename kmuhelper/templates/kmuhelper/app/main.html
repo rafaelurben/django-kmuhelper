@@ -3,8 +3,7 @@
 
     <head>
         <title>
-            {% block title %}{% endblock %}
-            | KMUHelper App
+            App | KMUHelper
         </title>
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -13,14 +12,27 @@
 
         {% load static %}
         <link rel="stylesheet" type="text/css" href="{% static "kmuhelper/app/css/base.css" %}">
-
-        {% block extrahead %}{% endblock %}
+        <link rel="stylesheet" type="text/css" href="{% static "kmuhelper/app/css/main.css" %}">
     </head>
 
     <body>
-
         <div id="body">
-            {% block body %}{% endblock %}
+            <iframe id="frame" name="frame" src="" seamless="seamless" width="100%" height="100%" style="border: none;">Hi</iframe>
+        </div>
+
+        <div class="appbar">
+            <a href="#home" id="home" url="{% url 'kmuhelper:app-home' %}" class="item">
+                <i class="fas fa-home"></i>
+            </a>
+            <a href="#notiz" id="notiz" url="{% url 'admin:kmuhelper_todonotiz_changelist' %}" class="item">
+                <i class="fas fa-sticky-note"></i>
+            </a>
+            <a href="#versand" id="versand" url="{% url 'admin:kmuhelper_todoversand_changelist' %}" class="item">
+                <i class="fas fa-box-open"></i>
+            </a>
+            <a href="#zahlung" id="zahlung" url="{% url 'admin:kmuhelper_todozahlungseingang_changelist' %}" class="item">
+                <i class="fas fa-hand-holding-usd"></i>
+            </a>
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
@@ -36,8 +48,6 @@
                 })
             </script>
         {% endif %}
-
-        {% block extrascript %}{% endblock %}
 
     </body>
 
