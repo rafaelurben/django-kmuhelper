@@ -1,0 +1,27 @@
+{% extends 'kmuhelper/app/base.html' %}
+
+{% load static %}
+
+{% block title %}Error{% endblock %}
+
+{% block extrahead %}
+    {% if user.is_anonymous %}
+    <script>
+        window.top.location.reload();
+    </script>
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+    <center>
+        <h1>Error</h1>
+        <p>Wie es scheint, konnte die angeforderte Seite nicht geladen werden!</p>
+        <h3>Mögliche Ursachen</h3>
+        <ul>
+            <li>Du hast keinen Zugriff auf diese Seite.</li>
+            <li>Diese Seite existiert nicht</li>
+            <li>Du bist nicht mehr eingeloggt - <a target="_top" href="{% url 'kmuhelper:app-main' %}">Neu laden</a></li>
+        </ul>
+    </center>
+
+{% endblock %}

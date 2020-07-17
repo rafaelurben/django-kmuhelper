@@ -4,7 +4,7 @@
 {% block title %}{{ title }} | KMUHelper{% endblock %}
 
 {% block branding %}
-<h1 id="site-name"><a href="{% url 'admin:app_list' app_label='kmuhelper' %}">KMUHelper Admin</a> / <a target="_top" href="{% url 'kmuhelper:app-main' %}">App</a></h1>
+<h1 id="site-name"><a id="kmuhelper_admin" href="{% url 'admin:app_list' app_label='kmuhelper' %}">KMUHelper Admin</a> / <a id="kmuhelper_app" target="_top" href="{% url 'kmuhelper:app-main' %}">App</a></h1>
 {% endblock %}
 
 {% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/kmuhelper/css/style.css" %}">{% endblock %}

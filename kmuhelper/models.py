@@ -330,14 +330,17 @@ class Bestellung(models.Model):
         verbose_name = "Bestellung"
         verbose_name_plural = "Bestellungen"
 
-
+# Reference, TODO delete
+# ("percent",         "Prozent"),
+# ("fixed_cart",      "Fixer Betrag auf den Warenkorb"),
+# ("fixed_product",   "Fixer Betrag auf ein Produkt")
 
 # class Gutschein(models.Model):
 #     code = models.CharField("Gutscheincode", max_length=25)
 #     menge = models.FloatField("Menge (Preis oder Anzahl Prozent)")
 #     typ = models.CharField("Gutscheintyp", max_length=14, choices=GUTSCHEINTYPEN)
 #     beschrieb = models.TextField("Beschrieb",default="",blank=True)
-#     datum_bis = models.DateField("Gültig bis")
+#     datum_bis = models.DateField("Gültig bis", blank=True, null=True)
 #     nicht_kumulierbar = models.BooleanField("Nicht kumulierbar", default=True, help_text="Aktivieren, damit der Gutschein nicht kumuliert werden kann.")
 #     produkte = models.ManyToManyField("Produkt", verbose_name="Produkt", verbose_name="Produkte",help_text="Produkte, auf welche der Gutschein angewendet werden kann.")
 #     ausgeschlossene_produkte = models.ManyToManyField("Produkt", verbose_name="Ausgeschlossenes Produkt", verbose_name_plural="Ausgeschlossene Produkte",help_text="Produkte, auf welche der Gutschein nicht angewendet werden kann.")
@@ -584,6 +587,10 @@ class Lieferung(models.Model):
         else:
             return False
 
+    def get_todo_notiz_link(self):
+        return reverse("admin:kmuhelper_todonotiz_add")+'?from_lieferung='+str(self.id)
+    get_todo_notiz_link.short_description = "ToDo Notiz"
+
     def __str__(self):
         return self.name
     __str__.short_description = "Lieferung"
@@ -690,6 +697,10 @@ class Produkt(models.Model):
         elif self.mengenbezeichnung == "Tube":
             self.mengenbezeichnung = "[:de]Tube[:fr]Tube[:it]Tubetto[:en]Tube[:]"
         super().save(*args, **kwargs)
+
+    def get_todo_notiz_link(self):
+        return reverse("admin:kmuhelper_todonotiz_add")+'?from_produkt='+str(self.artikelnummer)
+    get_todo_notiz_link.short_description = "ToDo Notiz"
 
     def __str__(self):
         return self.artikelnummer+" - "+self.clean_name()
@@ -850,6 +861,7 @@ class ToDoNotiz(Notiz):
         proxy = True
         verbose_name = "Notiz"
         verbose_name_plural = "Notizen"
+        default_permissions = ('add', 'change', 'view')
 
 class ToDoVersandManager(models.Manager):
     def get_queryset(self):
@@ -867,6 +879,7 @@ class ToDoVersand(Bestellung):
         proxy = True
         verbose_name = "Bestellung"
         verbose_name_plural = "Bestellungen"
+        default_permissions = ('add', 'change', 'view')
 
 class ToDoZahlungseingangManager(models.Manager):
     def get_queryset(self):
@@ -884,3 +897,42 @@ class ToDoZahlungseingang(Bestellung):
         proxy = True
         verbose_name = "Bestellung"
         verbose_name_plural = "Bestellung"
+        default_permissions = ('add', 'change', 'view')
+
+class ToDoLagerbestand(Produkt):
+    def html_todo_notiz_erstellen(self):
+        link = self.get_todo_notiz_link()
+        return mark_safe('<a target="_blank" href="'+link+'">+ ToDo Notiz</a>')
+    html_todo_notiz_erstellen.short_description = "ToDo Notiz Erstellen"
+
+    def preis(self, *args, **kwargs):
+        return super().preis(*args,**kwargs)
+    preis.short_description = "Preis"
+
+    def nr(self):
+        return self.artikelnummer
+    nr.short_description = "Nr."
+
+    class Meta:
+        proxy = True
+        verbose_name = "Produkt"
+        verbose_name_plural = "Produkte"
+        default_permissions = ('add', 'change', 'view')
+
+class ToDoLieferungsManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(eingelagert=False)
+
+class ToDoLieferung(Lieferung):
+    def html_todo_notiz_erstellen(self):
+        link = self.get_todo_notiz_link()
+        return mark_safe('<a target="_blank" href="'+link+'">+ ToDo Notiz</a>')
+    html_todo_notiz_erstellen.short_description = "ToDo Notiz Erstellen"
+
+    objects = ToDoLieferungsManager()
+
+    class Meta:
+        proxy = True
+        verbose_name = "Lieferung"
+        verbose_name_plural = "Lieferungen"
+        default_permissions = ('add', 'change', 'view')

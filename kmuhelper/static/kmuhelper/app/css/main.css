@@ -14,6 +14,7 @@ body {
 iframe {
     height: 100%;
     width: 100%;
+    border: none;
 }
 
 .appbar {
@@ -24,6 +25,7 @@ iframe {
     align-items: center;
     overflow: hidden;
     position: static;
+    background-color: #ffffff;
 }
 
 .appbar .item {
@@ -38,4 +40,8 @@ iframe {
 
 .appbar .item:hover {
     color: #aa1155;
+}
+
+.appbar .item.hidden {
+    display: none;
 }

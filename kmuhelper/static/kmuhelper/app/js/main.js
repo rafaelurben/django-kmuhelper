@@ -1,14 +1,24 @@
 function loadPage() {
     const frame = document.getElementById("frame");
-    const page = window.location.hash.substr(1);
-    const pageIDs = ["home","notiz","versand","zahlung"];
-    if (pageIDs.includes(page)) {
-        frame.src = "";
-        setTimeout(function () {
-            frame.src = document.getElementById(page).getAttribute("url");
-        }, 10);
+    const hash = window.location.hash.substr(1);
+    if (hash) {
+        const page =  document.getElementById(hash);
+        if (page) {
+            frame.src = "about:blank";
+            setTimeout(function () {
+                frame.src = page.getAttribute("url");
+            }, 10);
+        } else {
+            window.location.hash = "error";
+        }
     } else {
         window.location.hash = "home";
+    }
+}
+
+function checkFrame(frame) {
+    if (!frame.contentDocument || !frame.contentDocument.location) {
+        window.location.hash = "error";
     }
 }
 

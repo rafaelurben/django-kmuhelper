@@ -7,7 +7,7 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.clickjacking import xframe_options_sameorigin as allow_iframe
 
-from .models import ToDoNotiz, ToDoVersand, ToDoZahlungseingang, Lieferung
+from .models import ToDoNotiz, ToDoVersand, ToDoZahlungseingang, ToDoLagerbestand, Lieferung
 
 #####
 
@@ -20,9 +20,14 @@ def app_main(request):
 def app_home(request):
     return render(request, "kmuhelper/app/home.html", {})
 
+@allow_iframe
+def app_error(request):
+    return render(request, "kmuhelper/app/error.html", {})
+
 #####
 
 urlpatterns = [
     path('app/', app_main, name="app-main"),
     path('app/home', app_home, name="app-home"),
+    path('app/error', app_error, name="app-error"),
 ]

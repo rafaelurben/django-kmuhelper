@@ -303,6 +303,8 @@ class LieferungInlineProdukte(admin.TabularInline):
 @admin.register(Lieferung)
 class LieferungenAdmin(admin.ModelAdmin):
     list_display = ('name','datum','notiz','anzahlprodukte','eingelagert')
+    list_filter = ("eingelagert",)
+
     ordering = ('name',)
 
     fieldsets = [
@@ -335,7 +337,10 @@ class LieferungenAdmin(admin.ModelAdmin):
 class NotizenAdmin(admin.ModelAdmin):
     list_display = ["name","beschrieb","priority","erledigt","erstellt_am"]
     list_filter = ["erledigt", "priority"]
+
     ordering = ["erledigt", "-priority","erstellt_am"]
+
+    search_fields = ("name","beschrieb")
 
     fieldsets = [
         ("Infos", {"fields": ["name","beschrieb"]}),
@@ -364,7 +369,7 @@ class ProduktAdmin(admin.ModelAdmin):
 
     list_display = ('artikelnummer','clean_name','clean_kurzbeschrieb','clean_beschrieb','preis','in_aktion','lagerbestand','bild')
     list_filter = ('lieferant','kategorien','lagerbestand')
-    search_fields = ['artikelnummer','name','kurzbeschrieb','beschrieb']
+    search_fields = ['artikelnummer','name','kurzbeschrieb','beschrieb','bemerkung']
 
     inlines = (ProduktInlineProduktkategorien,)
 
@@ -446,18 +451,14 @@ class EinstellungenAdmin(admin.ModelAdmin):
 
 ################ TO DO
 
-from .models import ToDoNotiz, ToDoVersand, ToDoZahlungseingang
+from .models import ToDoNotiz, ToDoVersand, ToDoZahlungseingang, ToDoLagerbestand, ToDoLieferung
 
 @admin.register(ToDoNotiz)
-class ToDoNotizenAdmin(admin.ModelAdmin):
-    list_display = ["name","beschrieb","priority","erledigt","erstellt_am"]
+class ToDoNotizenAdmin(NotizenAdmin):
+    list_editable = ["priority","erledigt"]
     list_filter = ["priority"]
-    ordering = ["-priority","erstellt_am"]
 
-    fieldsets = [
-        ("Infos", {"fields": ["name","beschrieb"]}),
-        ("Daten", {"fields": ["erledigt", "priority"]})
-    ]
+    ordering = ["-priority","erstellt_am"]
 
     def has_module_permission(self, request):
         return {}
@@ -478,6 +479,9 @@ class ToDoNotizenAdmin(admin.ModelAdmin):
                 elif request.GET.get("from_step") == "zahlungseingang":
                     form.base_fields['name'].initial = 'Bezahlung ' + form.base_fields['name'].initial
                     form.base_fields['beschrieb'].initial += "\nBetreff: Bezahlung"
+            if "from_produkt" in request.GET:
+                form.base_fields['name'].initial = 'Produkt '+request.GET.get("from_produkt")
+                form.base_fields['beschrieb'].initial = '\n\nDiese Notiz gehört zu Produkt '+request.GET.get("from_produkt")
         return form
 
     def get_urls(self):
@@ -498,7 +502,7 @@ class ToDoNotizenAdmin(admin.ModelAdmin):
             path('add/', wrap(self.add_view), name='%s_%s_add' % info),
             path('autocomplete/', wrap(self.autocomplete_view), name='%s_%s_autocomplete' % info),
             path('<path:object_id>/history/', wrap(self.history_view), name='%s_%s_history' % info),
-            path('<path:object_id>/delete/', wrap(self.delete_view), name='%s_%s_delete' % info),
+            # path('<path:object_id>/delete/', wrap(self.delete_view), name='%s_%s_delete' % info),
             path('<path:object_id>/change/', wrap(self.change_view), name='%s_%s_change' % info),
         ]
 
@@ -511,7 +515,7 @@ class ToDoVersandAdmin(BestellungsAdmin):
 
     ordering = ("bezahlt", "-datum")
 
-    save_on_top = True
+    actions = ()
 
     def has_module_permission(self, request):
         return {}
@@ -537,7 +541,7 @@ class ToDoVersandAdmin(BestellungsAdmin):
             path('add/', wrap(self.add_view), name='%s_%s_add' % info),
             path('autocomplete/', wrap(self.autocomplete_view), name='%s_%s_autocomplete' % info),
             path('<path:object_id>/history/', wrap(self.history_view), name='%s_%s_history' % info),
-            path('<path:object_id>/delete/', wrap(self.delete_view), name='%s_%s_delete' % info),
+            # path('<path:object_id>/delete/', wrap(self.delete_view), name='%s_%s_delete' % info),
             path('<path:object_id>/change/', wrap(self.change_view), name='%s_%s_change' % info),
         ]
 
@@ -549,7 +553,7 @@ class ToDoZahlungseingangAdmin(BestellungsAdmin):
 
     ordering = ("versendet","-datum")
 
-    save_on_top = True
+    actions = ()
 
     def has_module_permission(self, request):
         return {}
@@ -575,6 +579,76 @@ class ToDoZahlungseingangAdmin(BestellungsAdmin):
             path('add/', wrap(self.add_view), name='%s_%s_add' % info),
             path('autocomplete/', wrap(self.autocomplete_view), name='%s_%s_autocomplete' % info),
             path('<path:object_id>/history/', wrap(self.history_view), name='%s_%s_history' % info),
-            path('<path:object_id>/delete/', wrap(self.delete_view), name='%s_%s_delete' % info),
+            # path('<path:object_id>/delete/', wrap(self.delete_view), name='%s_%s_delete' % info),
+            path('<path:object_id>/change/', wrap(self.change_view), name='%s_%s_change' % info),
+        ]
+
+
+@admin.register(ToDoLagerbestand)
+class ToDoLagerbestandAdmin(ProduktAdmin):
+    list_display = ('nr','clean_name','lagerbestand','clean_kurzbeschrieb','preis','bemerkung','html_todo_notiz_erstellen')
+    list_editable = ["lagerbestand"]
+
+    actions = ["lagerbestand_zuruecksetzen"]
+
+    def has_module_permission(self, request):
+        return {}
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def get_urls(self):
+        from django.urls import path
+        from django.views.decorators.clickjacking import xframe_options_sameorigin as allow_iframe
+        from functools import update_wrapper
+
+        def wrap(view):
+            def wrapper(*args, **kwargs):
+                return self.admin_site.admin_view(allow_iframe(view))(*args, **kwargs)
+            wrapper.model_admin = self
+            return update_wrapper(wrapper, view)
+
+        info = self.model._meta.app_label, self.model._meta.model_name
+
+        return [
+            path('', wrap(self.changelist_view), name='%s_%s_changelist' % info),
+            path('add/', wrap(self.add_view), name='%s_%s_add' % info),
+            path('autocomplete/', wrap(self.autocomplete_view), name='%s_%s_autocomplete' % info),
+            path('<path:object_id>/history/', wrap(self.history_view), name='%s_%s_history' % info),
+            # path('<path:object_id>/delete/', wrap(self.delete_view), name='%s_%s_delete' % info),
+            path('<path:object_id>/change/', wrap(self.change_view), name='%s_%s_change' % info),
+        ]
+
+@admin.register(ToDoLieferung)
+class ToDoLieferungenAdmin(LieferungenAdmin):
+    list_display = ('name','anzahlprodukte','eingelagert','notiz','html_todo_notiz_erstellen')
+    list_editable = ("eingelagert",)
+    list_filter = ()
+
+    def has_module_permission(self, request):
+        return {}
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def get_urls(self):
+        from django.urls import path
+        from django.views.decorators.clickjacking import xframe_options_sameorigin as allow_iframe
+        from functools import update_wrapper
+
+        def wrap(view):
+            def wrapper(*args, **kwargs):
+                return self.admin_site.admin_view(allow_iframe(view))(*args, **kwargs)
+            wrapper.model_admin = self
+            return update_wrapper(wrapper, view)
+
+        info = self.model._meta.app_label, self.model._meta.model_name
+
+        return [
+            path('', wrap(self.changelist_view), name='%s_%s_changelist' % info),
+            path('add/', wrap(self.add_view), name='%s_%s_add' % info),
+            path('autocomplete/', wrap(self.autocomplete_view), name='%s_%s_autocomplete' % info),
+            path('<path:object_id>/history/', wrap(self.history_view), name='%s_%s_history' % info),
+            # path('<path:object_id>/delete/', wrap(self.delete_view), name='%s_%s_delete' % info),
             path('<path:object_id>/change/', wrap(self.change_view), name='%s_%s_change' % info),
         ]
