@@ -7,8 +7,12 @@
         <meta name="viewport" content="width=device-width,initial-scale=1.0">
         <meta name="apple-mobile-web-app-status-bar-style" content="black">
         <meta name="apple-mobile-web-app-capable" content="yes">
-
+        
         {% load static %}
+        <link rel="manifest" href="{% url 'kmuhelper:app-manifest' %}">
+        <link rel="shortcut icon" type="image/x-icon" href="{% static 'kmuhelper/app/favicon.ico' %}">
+        <link rel="apple-touch-icon" href="{% static 'kmuhelper/app/favicon.ico' %}">
+
         <link rel="stylesheet" type="text/css" href="{% static "kmuhelper/app/css/main.css" %}">
 
         <script src="https://kit.fontawesome.com/67ab7aa4a7.js" crossorigin="anonymous"></script>
@@ -17,7 +21,7 @@
 
     <body>
         <div id="body">
-            <iframe id="frame" name="frame" src="about:blank" seamless="seamless" onerror="window.location.hash='error';" onload="checkFrame(this);">Hi</iframe>
+            <iframe id="frame" name="frame" src="{% url 'kmuhelper:app-home' %}" seamless="seamless" onerror="window.location.hash='error';" onload="checkFrame(this);">Hi</iframe>
         </div>
 
         <div class="appbar">

@@ -10,9 +10,7 @@
 
 {% block breadcrumbs %}{% endblock %}
 
-{% if not show_userlinks %}
-    {% block userlinks %}{% endblock %}
-{% endif %}
+{% block userlinks %}{% endblock %}
 
 {% block extrastyle %}
     {{ block.super }}

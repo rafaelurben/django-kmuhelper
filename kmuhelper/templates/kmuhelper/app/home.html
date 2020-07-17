@@ -2,7 +2,45 @@
 
 {% block subtitle %}Home{% endblock %}
 
+{% block extrahead %}
+    {{ block.super }}
+    <script src="https://kit.fontawesome.com/67ab7aa4a7.js" crossorigin="anonymous"></script>
+    <style>
+        #pages {
+            padding-left: 16px;
+        }
+
+        #pages li i {
+            width: 25px;
+            text-align: center;
+        }
+    </style>
+{% endblock %}
+
 {% block content %}
     <h1>Willkommen in der KMUHelper-App!</h1>
     <p>In dieser App hast du Zugriff auf bestimmte Seiten des Adminbereichs, welche normalerweise versteckt sind.</p>
+    <h3>Seiten</h3>
+    <ul style="padding-left: 16px;" id="pages">
+        <li>
+            <i class="fas fa-clipboard-list"></i><span>Notizen</span>
+            <p>Erstelle dir eine To-Do Liste (Erledigte Einträge sind weiterhin im Adminbereich unter "Notizen" ersichtlich.)</p>
+        </li>
+        <li>
+            <i class="fas fa-shipping-fast"></i><span>Versandmenu</span>
+            <p>Füge Trackingnummern zu Bestellungen hinzu und markiere sie als versendet.</p>
+        </li>
+        <li>
+            <i class="fas fa-hand-holding-usd"></i><span>Zahlungseingang</span>
+            <p>Vergleiche deinen Kontoauszug mit den offenen Bestellungen und markiere bezahlte Bestellungen als bezahlt.</p>
+        </li>
+        <li>
+            <i class="fas fa-warehouse"></i><span>Lagerbestand</span>
+            <p>Sieh dir den Lagerbestand an und nimm manuelle Änderungen daran vor.</p>
+        </li>
+        <li>
+            <i class="fas fa-truck-loading"></i><span>Lieferungen</span>
+            <p>Erfasse Lieferungen und lagere sie ein. (Eingelagerte Lieferungen sind weiterhin im Adminbereich unter "Lieferungen" ersichtlich.)</p>
+        </li>
+    </ul>
 {% endblock %}

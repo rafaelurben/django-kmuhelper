@@ -20,7 +20,6 @@ def app_main(request):
 def app_home(request):
     return render(request, "kmuhelper/app/home.html", {
         "has_permission": True,
-        "show_userlinks": True,
     })
 
 @allow_iframe
@@ -29,10 +28,17 @@ def app_error(request):
         "has_permission": True,
     })
 
+def app_manifest(request):
+    response = render(request, "kmuhelper/app/manifest.webmanifest", {})
+    response['Content-Type'] = 'text/json'
+    response["Service-Worker-Allowed"] = "/"
+    return response
+
 #####
 
 urlpatterns = [
     path('app/', app_main, name="app-main"),
     path('app/home', app_home, name="app-home"),
     path('app/error', app_error, name="app-error"),
+    path('app/manifest.webmanifest', app_manifest, name="app-manifest"),
 ]

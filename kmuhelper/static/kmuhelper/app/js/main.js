@@ -24,7 +24,7 @@ function checkFrame(frame) {
 
 window.onhashchange = loadPage;
 window.onload = function () {
-    if (window.location.hash.substr(1) !== "home") {
+    if (!(window.location.hash.substr(1) === "home")) {
         loadPage();
     }
 };

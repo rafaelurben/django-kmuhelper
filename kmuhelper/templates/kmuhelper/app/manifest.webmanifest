@@ -1,0 +1,16 @@
+{
+    "{% load static %}name": "KMUHelper App",
+    "short_name": "KMUHelper",
+    "start_url": "{% url 'tvk:app-main' %}#home",
+    "scope": "{% url 'tvk:app-main' %}",
+    "display": "standalone",
+    "background_color": "#000",
+    "theme_color": "#000",
+    "description": "Eine App zum KMUHelper",
+    "dir": "ltr",
+    "lang": "de",
+    "icons": [{
+        "src": "{% static 'kmuhelper/app/favicon.ico' %}",
+        "sizes": "16x16 32x32 64x64 128x128 256x256"
+    }]
+}
