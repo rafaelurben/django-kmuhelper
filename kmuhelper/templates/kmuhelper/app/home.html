@@ -1,17 +1,8 @@
 {% extends 'kmuhelper/app/base.html' %}
 
-{% load static %}
+{% block subtitle %}Home{% endblock %}
 
-{% block title %}Home{% endblock %}
-
-{% block extrahead %}
-{% endblock %}
-
-{% block body %}
-    <center>
-        <h1>KMUHelper App</h1>
-        <p>Willkommen in der KMUHelper-App!</p>
-        <p>In dieser App hast du Zugriff auf bestimmte Seiten des Adminbereichs, welche normalerweise versteckt sind.</p>
-    </center>
-
+{% block content %}
+    <h1>Willkommen in der KMUHelper-App!</h1>
+    <p>In dieser App hast du Zugriff auf bestimmte Seiten des Adminbereichs, welche normalerweise versteckt sind.</p>
 {% endblock %}

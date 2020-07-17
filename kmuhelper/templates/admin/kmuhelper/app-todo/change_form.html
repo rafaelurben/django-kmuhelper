@@ -4,21 +4,8 @@
 <h1 id="site-name"><a target="_top" href="{% url 'kmuhelper:app-main' %}">KMUHelper App</a></h1>
 {% endblock %}
 
+{% block userlinks %}{% endblock %}
+
 {% block breadcrumbs %}{% endblock %}
 
 {% block object-tools %}{% endblock %}
-
-{% block extrahead %}
-    {{ block.super }}
-    <script>
-        'use strict'
-        var $ = django.jQuery
-
-        $(document).ready(function () {
-            // Remove unused UI elements
-            $("#user-tools a").remove();
-            const el = $("#user-tools")[0];
-            el.innerHTML = el.innerHTML.replace("/\n","")
-        })
-    </script>
-{% endblock %}

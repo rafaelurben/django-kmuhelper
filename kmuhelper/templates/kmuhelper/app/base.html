@@ -1,44 +1,22 @@
-<!DOCTYPE html>
-<html lang="de">
+{% extends "admin/base.html" %}
 
-    <head>
-        <title>
-            {% block title %}{% endblock %}
-            | KMUHelper App
-        </title>
-        <meta charset="utf-8"/>
-        <meta name="viewport" content="width=device-width,initial-scale=1.0">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black">
-        <meta name="apple-mobile-web-app-capable" content="yes">
+{% load static %}
 
-        {% load static %}
-        <link rel="stylesheet" type="text/css" href="{% static "kmuhelper/app/css/base.css" %}">
+{% block title %}{% block subtitle %}{% endblock %} | KMUHelper App{% endblock %}
 
-        {% block extrahead %}{% endblock %}
-    </head>
+{% block branding %}
+    <h1 id="site-name"><a target="_top" href="{% url 'kmuhelper:app-main' %}">KMUHelper App</a></h1>
+{% endblock %}
 
-    <body>
+{% block breadcrumbs %}{% endblock %}
 
-        <div id="body">
-            {% block body %}{% endblock %}
-        </div>
+{% if not show_userlinks %}
+    {% block userlinks %}{% endblock %}
+{% endif %}
 
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
-        <script src="https://kit.fontawesome.com/67ab7aa4a7.js" crossorigin="anonymous"></script>
-        <script src="{% static 'kmuhelper/app/js/main.js' %}"></script>
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static "admin/kmuhelper/css/style.css" %}">
+{% endblock %}
 
-        {% if alert %}
-            <script>
-                window.addEventListener("load", () => {
-                    toast({{% for k, v in alert.items %}
-                            {{ k }}: "{{ v }}",
-                        {% endfor %}});
-                })
-            </script>
-        {% endif %}
-
-        {% block extrascript %}{% endblock %}
-
-    </body>
-
-</html>
+{% block content %}{% endblock %}

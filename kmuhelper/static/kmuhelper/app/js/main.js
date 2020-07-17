@@ -9,7 +9,7 @@ function loadPage() {
                 frame.src = page.getAttribute("url");
             }, 10);
         } else {
-            window.location.hash = "error";
+            frame.src = "error";
         }
     } else {
         window.location.hash = "home";
@@ -23,4 +23,8 @@ function checkFrame(frame) {
 }
 
 window.onhashchange = loadPage;
-window.onload = loadPage;
+window.onload = function () {
+    if (window.location.hash.substr(1) !== "home") {
+        loadPage();
+    }
+};

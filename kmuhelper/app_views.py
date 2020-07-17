@@ -18,11 +18,16 @@ def app_main(request):
 @allow_iframe
 @login_required(login_url=reverse_lazy("admin:login"))
 def app_home(request):
-    return render(request, "kmuhelper/app/home.html", {})
+    return render(request, "kmuhelper/app/home.html", {
+        "has_permission": True,
+        "show_userlinks": True,
+    })
 
 @allow_iframe
 def app_error(request):
-    return render(request, "kmuhelper/app/error.html", {})
+    return render(request, "kmuhelper/app/error.html", {
+        "has_permission": True,
+    })
 
 #####
 

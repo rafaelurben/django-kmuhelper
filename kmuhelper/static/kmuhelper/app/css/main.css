@@ -8,7 +8,8 @@ body {
 #body {
     height: 90%;
     width: 100%;
-    background: url("https://static.wixstatic.com/media/144ac5_61c47d61a23f4663859b306a656e99e5~mv2.gif") center center no-repeat !important;
+    background: url("https://static.wixstatic.com/media/144ac5_61c47d61a23f4663859b306a656e99e5~mv2.gif") center center no-repeat;
+    background-size: contain;
 }
 
 iframe {

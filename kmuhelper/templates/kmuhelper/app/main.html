@@ -2,19 +2,15 @@
 <html lang="de">
 
     <head>
-        <title>
-            App | KMUHelper
-        </title>
+        <title>KMUHelper App</title>
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width,initial-scale=1.0">
         <meta name="apple-mobile-web-app-status-bar-style" content="black">
         <meta name="apple-mobile-web-app-capable" content="yes">
 
         {% load static %}
-        <link rel="stylesheet" type="text/css" href="{% static "kmuhelper/app/css/base.css" %}">
         <link rel="stylesheet" type="text/css" href="{% static "kmuhelper/app/css/main.css" %}">
 
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
         <script src="https://kit.fontawesome.com/67ab7aa4a7.js" crossorigin="anonymous"></script>
         <script src="{% static 'kmuhelper/app/js/main.js' %}"></script>
     </head>
@@ -59,16 +55,6 @@
             </a>
             {% endif %}
         </div>
-
-        {% if alert %}
-            <script>
-                window.addEventListener("load", () => {
-                    toast({{% for k, v in alert.items %}
-                            {{ k }}: "{{ v }}",
-                        {% endfor %}});
-                })
-            </script>
-        {% endif %}
 
     </body>
 
