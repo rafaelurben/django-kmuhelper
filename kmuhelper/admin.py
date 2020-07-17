@@ -586,7 +586,7 @@ class ToDoZahlungseingangAdmin(BestellungsAdmin):
 
 @admin.register(ToDoLagerbestand)
 class ToDoLagerbestandAdmin(ProduktAdmin):
-    list_display = ('nr','clean_name','lagerbestand','clean_kurzbeschrieb','preis','bemerkung','html_todo_notiz_erstellen')
+    list_display = ('nr','clean_name','lagerbestand','preis','bemerkung','html_todo_notiz_erstellen')
     list_editable = ["lagerbestand"]
 
     actions = ["lagerbestand_zuruecksetzen"]

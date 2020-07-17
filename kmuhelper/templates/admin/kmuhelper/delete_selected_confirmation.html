@@ -8,3 +8,8 @@
 {% endblock %}
 
 {% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/kmuhelper/css/style.css" %}">{% endblock %}
+
+{% block extrahead %}
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'kmuhelper/app/favicon.ico' %}">
+    <link rel="apple-touch-icon" href="{% static 'kmuhelper/app/favicon.ico' %}">
+{% endblock %}

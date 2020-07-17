@@ -340,16 +340,16 @@ class Bestellung(models.Model):
 #     menge = models.FloatField("Menge (Preis oder Anzahl Prozent)")
 #     typ = models.CharField("Gutscheintyp", max_length=14, choices=GUTSCHEINTYPEN)
 #     beschrieb = models.TextField("Beschrieb",default="",blank=True)
-#     datum_bis = models.DateField("Gültig bis", blank=True, null=True)
-#     nicht_kumulierbar = models.BooleanField("Nicht kumulierbar", default=True, help_text="Aktivieren, damit der Gutschein nicht kumuliert werden kann.")
+#     #datum_bis = models.DateField("Gültig bis", blank=True, null=True)
+#     #nicht_kumulierbar = models.BooleanField("Nicht kumulierbar", default=True, help_text="Aktivieren, damit der Gutschein nicht kumuliert werden kann.")
 #     produkte = models.ManyToManyField("Produkt", verbose_name="Produkt", verbose_name="Produkte",help_text="Produkte, auf welche der Gutschein angewendet werden kann.")
 #     ausgeschlossene_produkte = models.ManyToManyField("Produkt", verbose_name="Ausgeschlossenes Produkt", verbose_name_plural="Ausgeschlossene Produkte",help_text="Produkte, auf welche der Gutschein nicht angewendet werden kann.")
 #     #limit_gesamt = models.IntegerField("Gesamtlimit", default=0, help_text="Anzahl Benutzungen")
 #     #limit_pro_kunde = models.IntegerField("Limit pro Kunde", default=0, help_text="Anzahl Benutzungen pro Kunde")
 #     limit_produkte = models.IntegerField("Limit an Produkten", default=0, help_text="Anzahl Produkt, auf welche der Gutschein maximal angewendet werden kann.")
 #     #kostenlose_lieferung = models.BooleanField("Kostenlose Lieferung", default=False, help_text="Wenn aktiviert, erlaube kostenlose Lieferung")
-#     kategorien = models.ManyToManyField("Kategorie", verbose_name="Kategorie", verbose_name="Kategorien",help_text="Kategorien, auf welche der Gutschein angewendet werden kann.")
-#     ausgeschlossene_kategorien = models.ManyToManyField("Kategorie", verbose_name="Ausgeschlossene Kategorie", verbose_name_plural="Ausgeschlossene Kategorie",help_text="Kategorien, auf welche der Gutschein nicht angewendet werden kann.")
+#     produktkategorien = models.ManyToManyField("Kategorie", verbose_name="Kategorie", verbose_name="Kategorien",help_text="Kategorien, auf welche der Gutschein angewendet werden kann.")
+#     ausgeschlossene_produktkategorien = models.ManyToManyField("Kategorie", verbose_name="Ausgeschlossene Kategorie", verbose_name_plural="Ausgeschlossene Kategorie",help_text="Kategorien, auf welche der Gutschein nicht angewendet werden kann.")
 #     nicht_kumulierbar_mit_aktion = models.BooleanField("Nicht kumulierbar mit Aktion", default=True, help_text="Aktivieren, damit der Gutschein nicht auf Produkt angewendet werden kann, welche in Aktion sind.")
 #     mindestbetrag = models.FloatField("Mindestbetrag", default=0.0)
 #     maximalbetrag = models.FloatField("Maximalbetrag", default=0.0)
@@ -357,8 +357,13 @@ class Bestellung(models.Model):
 #     #benutzt_von = models.ManyToManyField("Kunde")
 #
 #     def gueltig_fuer_bestellung(self, bestellung):
-#         if (self.mindestbetrag == 0.0 or (self.mindestbetrag >= bestellung.summe_gesamt())) and (self.maximalbetrag == 0.0 or (self.maximalbetrag >= bestellung.summe_gesamt())) and (datetime.date() < self.datum_bis):
-#             return True
+#         if ((self.mindestbetrag <= bestellung.summe_gesamt()) and (self.maximalbetrag == 0.0 or (self.maximalbetrag >= bestellung.summe_gesamt()))):
+#             if self.typ == "fixed_cart":
+#                 pass
+#             elif self.typ == "fixed_product":
+#                 pass
+#             elif self.typ == "percent":
+#                 pass
 #         return False
 
 
