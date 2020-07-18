@@ -298,7 +298,7 @@ class Bestellung(models.Model):
     __str__.short_description = "Bestellung"
 
     def get_pdf(self, lieferschein:bool=False, digital:bool=True):
-        return FileResponse(pdf_bestellung(self, lieferschein=lieferschein, digital=digital), as_attachment=False, filename='Rechnung zu Bestellung '+str(self)+'.pdf')
+        return FileResponse(pdf_bestellung(self, lieferschein=lieferschein, digital=digital), as_attachment=False, filename=('Lieferschein' if lieferschein else 'Rechnung')+' zu Bestellung '+str(self)+'.pdf')
 
     def send_pdf_rechnung_to_customer(self):
         success = send_pdf(
@@ -359,7 +359,7 @@ class Bestellung(models.Model):
 #     def gueltig_fuer_bestellung(self, bestellung):
 #         if ((self.mindestbetrag <= bestellung.summe_gesamt()) and (self.maximalbetrag == 0.0 or (self.maximalbetrag >= bestellung.summe_gesamt()))):
 #             if self.typ == "fixed_cart":
-#                 pass
+#                 return True
 #             elif self.typ == "fixed_product":
 #                 pass
 #             elif self.typ == "percent":

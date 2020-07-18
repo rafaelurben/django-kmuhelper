@@ -126,18 +126,18 @@ class BestellungsAdmin(admin.ModelAdmin):
                 ('Infos', {'fields': ['name','datum','status']}),
                 ('Lieferung', {'fields': ['versendet','trackingnummer']}),
                 ('Bezahlung', {'fields': ['bezahlt','zahlungsmethode','summe','summe_mwst','summe_gesamt']}),
-                ('Notizen', {'fields': ['kundennotiz','notiz'], 'classes': ["collapse"]}),
                 ('Kunde', {'fields': ['kunde']}),
-                ('Rechnungsadresse', {'fields': ['rechnungsadresse_vorname','rechnungsadresse_nachname','rechnungsadresse_firma','rechnungsadresse_adresszeile1','rechnungsadresse_adresszeile2','rechnungsadresse_plz','rechnungsadresse_ort','rechnungsadresse_kanton','rechnungsadresse_land','rechnungsadresse_email','rechnungsadresse_telefon'], 'classes': ["collapse"]}),
-                ('Lieferadresse', {'fields': ['lieferadresse_vorname','lieferadresse_nachname','lieferadresse_firma','lieferadresse_adresszeile1','lieferadresse_adresszeile2','lieferadresse_plz','lieferadresse_ort','lieferadresse_kanton','lieferadresse_land'], 'classes': ["collapse"]})
+                ('Notizen', {'fields': ['kundennotiz','notiz'], 'classes': ["collapse start-open"]}),
+                ('Rechnungsadresse', {'fields': ['rechnungsadresse_vorname','rechnungsadresse_nachname','rechnungsadresse_firma','rechnungsadresse_adresszeile1','rechnungsadresse_adresszeile2','rechnungsadresse_plz','rechnungsadresse_ort','rechnungsadresse_kanton','rechnungsadresse_land','rechnungsadresse_email','rechnungsadresse_telefon'], 'classes': ["collapse default-open"]}),
+                ('Lieferadresse', {'fields': ['lieferadresse_vorname','lieferadresse_nachname','lieferadresse_firma','lieferadresse_adresszeile1','lieferadresse_adresszeile2','lieferadresse_plz','lieferadresse_ort','lieferadresse_kanton','lieferadresse_land'], 'classes': ["collapse start-open"]})
             ]
         else:
             return [
                 ('Einstellungen', {'fields': ['zahlungsempfaenger','ansprechpartner']}),
                 ('Lieferung', {'fields': ['trackingnummer']}),
                 ('Bezahlung', {'fields': ['bezahlt','zahlungsmethode']}),
-                ('Notizen', {'fields': ['kundennotiz','notiz'], 'classes': ["collapse"]}),
                 ('Kunde', {'fields': ['kunde']})
+                ('Notizen', {'fields': ['kundennotiz','notiz'], 'classes': ["collapse start-open"]}),
             ]
 
     def get_readonly_fields(self, request, obj=None):

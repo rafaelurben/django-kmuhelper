@@ -1,5 +1,5 @@
 {
-    "{% load static %}name": "KMUHelper App",
+    "{% load static %}name": "KMUHelper",
     "short_name": "KMUHelper",
     "start_url": "{% url 'kmuhelper:app-main' %}#home",
     "scope": "{% url 'kmuhelper:app-main' %}",
