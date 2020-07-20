@@ -136,7 +136,7 @@ class BestellungsAdmin(admin.ModelAdmin):
                 ('Einstellungen', {'fields': ['zahlungsempfaenger','ansprechpartner']}),
                 ('Lieferung', {'fields': ['trackingnummer']}),
                 ('Bezahlung', {'fields': ['bezahlt','zahlungsmethode']}),
-                ('Kunde', {'fields': ['kunde']})
+                ('Kunde', {'fields': ['kunde']}),
                 ('Notizen', {'fields': ['kundennotiz','notiz'], 'classes': ["collapse start-open"]}),
             ]
 
