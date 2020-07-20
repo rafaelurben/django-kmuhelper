@@ -105,9 +105,9 @@ class BestellungInlineBestellungskostenAdd(admin.TabularInline):
 
 @admin.register(Bestellung)
 class BestellungsAdmin(admin.ModelAdmin):
-    list_display = ('id','datum','kunde','status','zahlungsmethode','bezahlt','versendet','fix_summe')
+    list_display = ('id','datum','kunde','status','zahlungsmethode','bezahlt','versendet','fix_summe','html_notiz')
     list_filter = ('status','bezahlt','versendet','zahlungsmethode')
-    search_fields = ['id','datum','notiz','kundennotiz','trackingnummer','kunde']
+    search_fields = ['id','datum','notiz__name','notiz__beschrieb','kundennotiz','trackingnummer','kunde']
 
     ordering = ("versendet","bezahlt","-datum")
 
@@ -127,7 +127,7 @@ class BestellungsAdmin(admin.ModelAdmin):
                 ('Lieferung', {'fields': ['versendet','trackingnummer']}),
                 ('Bezahlung', {'fields': ['bezahlt','zahlungsmethode','summe','summe_mwst','summe_gesamt']}),
                 ('Kunde', {'fields': ['kunde']}),
-                ('Notizen', {'fields': ['kundennotiz','notiz'], 'classes': ["collapse start-open"]}),
+                ('Notizen', {'fields': ['kundennotiz','html_notiz'], 'classes': ["collapse start-open"]}),
                 ('Rechnungsadresse', {'fields': ['rechnungsadresse_vorname','rechnungsadresse_nachname','rechnungsadresse_firma','rechnungsadresse_adresszeile1','rechnungsadresse_adresszeile2','rechnungsadresse_plz','rechnungsadresse_ort','rechnungsadresse_kanton','rechnungsadresse_land','rechnungsadresse_email','rechnungsadresse_telefon'], 'classes': ["collapse default-open"]}),
                 ('Lieferadresse', {'fields': ['lieferadresse_vorname','lieferadresse_nachname','lieferadresse_firma','lieferadresse_adresszeile1','lieferadresse_adresszeile2','lieferadresse_plz','lieferadresse_ort','lieferadresse_kanton','lieferadresse_land'], 'classes': ["collapse start-open"]})
             ]
@@ -137,13 +137,13 @@ class BestellungsAdmin(admin.ModelAdmin):
                 ('Lieferung', {'fields': ['trackingnummer']}),
                 ('Bezahlung', {'fields': ['bezahlt','zahlungsmethode']}),
                 ('Kunde', {'fields': ['kunde']}),
-                ('Notizen', {'fields': ['kundennotiz','notiz'], 'classes': ["collapse start-open"]}),
+                ('Notizen', {'fields': ['kundennotiz'], 'classes': ["collapse start-open"]}),
             ]
 
     def get_readonly_fields(self, request, obj=None):
         rechnungsadresse = ['rechnungsadresse_vorname','rechnungsadresse_nachname','rechnungsadresse_firma','rechnungsadresse_adresszeile1','rechnungsadresse_adresszeile2','rechnungsadresse_plz','rechnungsadresse_ort','rechnungsadresse_kanton','rechnungsadresse_land','rechnungsadresse_email','rechnungsadresse_telefon']
         lieferadresse = ['lieferadresse_vorname','lieferadresse_nachname','lieferadresse_firma','lieferadresse_adresszeile1','lieferadresse_adresszeile2','lieferadresse_plz','lieferadresse_ort','lieferadresse_kanton','lieferadresse_land']
-        fields = ['name','trackinglink','datum','summe','summe_mwst','summe_gesamt']
+        fields = ['html_notiz','name','trackinglink','datum','summe','summe_mwst','summe_gesamt']
         if obj:
             if obj.versendet:
                 fields += ['versendet','trackingnummer']+lieferadresse
@@ -227,23 +227,28 @@ class KostenAdmin(admin.ModelAdmin):
 @admin.register(Kunde)
 class KundenAdmin(admin.ModelAdmin):
     def get_fieldsets(self, request, obj=None):
-        return [
-            ('Infos', {'fields': ['vorname','nachname','firma','email','benutzername','sprache']}),
-            ('Rechnungsadresse', {'fields': [('rechnungsadresse_vorname','rechnungsadresse_nachname'),'rechnungsadresse_firma',('rechnungsadresse_adresszeile1','rechnungsadresse_adresszeile2'),('rechnungsadresse_plz','rechnungsadresse_ort'),('rechnungsadresse_kanton','rechnungsadresse_land'),('rechnungsadresse_email','rechnungsadresse_telefon')]}),
-            ('Lieferadresse', {'fields': [('lieferadresse_vorname','lieferadresse_nachname'),'lieferadresse_firma',('lieferadresse_adresszeile1','lieferadresse_adresszeile2'),('lieferadresse_plz','lieferadresse_ort'),('lieferadresse_kanton','lieferadresse_land')], 'classes': ["collapse"]}),
-            ('Diverses', {'fields': ['webseite','notiz']})
-        ] if not obj else [
-            ('Infos', {'fields': ['vorname','nachname','firma','email','benutzername','sprache']}),
-            ('Rechnungsadresse', {'fields': [('rechnungsadresse_vorname','rechnungsadresse_nachname'),'rechnungsadresse_firma',('rechnungsadresse_adresszeile1','rechnungsadresse_adresszeile2'),('rechnungsadresse_plz','rechnungsadresse_ort'),('rechnungsadresse_kanton','rechnungsadresse_land'),('rechnungsadresse_email','rechnungsadresse_telefon')]}),
-            ('Lieferadresse', {'fields': [('lieferadresse_vorname','lieferadresse_nachname'),'lieferadresse_firma',('lieferadresse_adresszeile1','lieferadresse_adresszeile2'),('lieferadresse_plz','lieferadresse_ort'),('lieferadresse_kanton','lieferadresse_land')], 'classes': ["collapse"]}),
-            ('Diverses', {'fields': ['webseite','notiz']}),
-            ('Erweitert', {'fields': ['zusammenfuegen'], 'classes': ["collapse"]})
-        ]
+        if obj:
+            return [
+                ('Infos', {'fields': ['vorname','nachname','firma','email','benutzername','sprache']}),
+                ('Rechnungsadresse', {'fields': [('rechnungsadresse_vorname','rechnungsadresse_nachname'),'rechnungsadresse_firma',('rechnungsadresse_adresszeile1','rechnungsadresse_adresszeile2'),('rechnungsadresse_plz','rechnungsadresse_ort'),('rechnungsadresse_kanton','rechnungsadresse_land'),('rechnungsadresse_email','rechnungsadresse_telefon')]}),
+                ('Lieferadresse', {'fields': [('lieferadresse_vorname','lieferadresse_nachname'),'lieferadresse_firma',('lieferadresse_adresszeile1','lieferadresse_adresszeile2'),('lieferadresse_plz','lieferadresse_ort'),('lieferadresse_kanton','lieferadresse_land')], 'classes': ["collapse start-open"]}),
+                ('Diverses', {'fields': ['webseite','bemerkung','html_notiz']}),
+                ('Erweitert', {'fields': ['zusammenfuegen'], 'classes': ["collapse"]})
+            ]
+        else:
+            return [
+                ('Infos', {'fields': ['vorname','nachname','firma','email','benutzername','sprache']}),
+                ('Rechnungsadresse', {'fields': [('rechnungsadresse_vorname','rechnungsadresse_nachname'),'rechnungsadresse_firma',('rechnungsadresse_adresszeile1','rechnungsadresse_adresszeile2'),('rechnungsadresse_plz','rechnungsadresse_ort'),('rechnungsadresse_kanton','rechnungsadresse_land'),('rechnungsadresse_email','rechnungsadresse_telefon')]}),
+                ('Lieferadresse', {'fields': [('lieferadresse_vorname','lieferadresse_nachname'),'lieferadresse_firma',('lieferadresse_adresszeile1','lieferadresse_adresszeile2'),('lieferadresse_plz','lieferadresse_ort'),('lieferadresse_kanton','lieferadresse_land')], 'classes': ["collapse start-open"]}),
+                ('Diverses', {'fields': ['webseite','bemerkung']})
+            ]
 
     ordering = ('rechnungsadresse_plz','firma','nachname','vorname')
 
-    list_display = ('id','firma','nachname','vorname','rechnungsadresse_plz','rechnungsadresse_ort','email','avatar')
+    list_display = ('id','firma','nachname','vorname','rechnungsadresse_plz','rechnungsadresse_ort','email','avatar','html_notiz')
     search_fields = ['id','nachname','vorname','firma','email','benutzername','rechnungsadresse_vorname','rechnungsadresse_nachname','rechnungsadresse_firma','rechnungsadresse_adresszeile1','rechnungsadresse_adresszeile2','rechnungsadresse_ort','rechnungsadresse_kanton','rechnungsadresse_plz','rechnungsadresse_land','rechnungsadresse_email','rechnungsadresse_telefon','lieferadresse_vorname','lieferadresse_nachname','lieferadresse_firma','lieferadresse_adresszeile1','lieferadresse_adresszeile2','lieferadresse_ort','lieferadresse_kanton','lieferadresse_kanton','lieferadresse_plz','lieferadresse_land','webseite','notiz']
+
+    readonly_fields = ["html_notiz"]
 
     actions = ["wc_update"]
 
@@ -338,38 +343,101 @@ class NotizenAdmin(admin.ModelAdmin):
     list_display = ["name","beschrieb","priority","erledigt","erstellt_am"]
     list_filter = ["erledigt", "priority"]
 
+    readonly_fields = ["links"]
+
     ordering = ["erledigt", "-priority","erstellt_am"]
 
     search_fields = ("name","beschrieb")
 
-    fieldsets = [
-        ("Infos", {"fields": ["name","beschrieb"]}),
-        ("Daten", {"fields": ["erledigt", "priority"]})
-    ]
+    def get_fieldsets(self, request, obj=None):
+        if obj:
+            return [
+                ("Infos", {"fields": ["name","beschrieb"]}),
+                ("Daten", {"fields": ["erledigt", "priority"]}),
+                ("Verknüpfungen", {"fields": ["links"]}),
+            ]
+        else:
+            return [
+                ("Infos", {"fields": ["name","beschrieb"]}),
+                ("Daten", {"fields": ["erledigt", "priority"]}),
+            ]
 
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if obj is None:
+            if "from_bestellung" in request.GET:
+                form.base_fields['name'].initial = 'Bestellung #'+request.GET.get("from_bestellung")
+                form.base_fields['beschrieb'].initial = '\n\nDiese Notiz gehört zu Bestellung #'+request.GET.get("from_bestellung")
+            if "from_produkt" in request.GET:
+                form.base_fields['name'].initial = 'Produkt #'+request.GET.get("from_produkt")
+                form.base_fields['beschrieb'].initial = '\n\nDiese Notiz gehört zu Produkt '+request.GET.get("from_produkt")
+            if "from_kunde" in request.GET:
+                form.base_fields['name'].initial = 'Kunde #'+request.GET.get("from_kunde")
+                form.base_fields['beschrieb'].initial = '\n\nDiese Notiz gehört zu Kunde '+request.GET.get("from_kunde")
+        return form
 
-
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        if not change:
+            if "from_bestellung" in request.GET:
+                if Bestellung.objects.filter(pk=request.GET["from_bestellung"]).exists():
+                    bestellung = Bestellung.objects.get(pk=request.GET["from_bestellung"])
+                    obj.bestellung = bestellung
+                    obj.save()
+                    messages.info(request, "Bestellung #"+str(bestellung.pk)+" wurde mit dieser Notiz verknüpft.")
+                else:
+                    messages.warning(request, "Bestellung #"+request.GET["from_bestellung"]+" konnte nicht gefunden werden. Die Notiz wurde trotzdem erstellt.")
+            if "from_produkt" in request.GET:
+                if Produkt.objects.filter(pk=request.GET["from_produkt"]).exists():
+                    produkt = Produkt.objects.get(pk=request.GET["from_produkt"])
+                    obj.produkt = produkt
+                    obj.save()
+                    messages.info(request, "Produkt #"+str(produkt.pk)+" wurde mit dieser Notiz verknüpft.")
+                else:
+                    messages.warning(request, "Produkt #"+request.GET["from_produkt"]+" konnte nicht gefunden werden. Die Notiz wurde trotzdem erstellt.")
+            if "from_kunde" in request.GET:
+                if Kunde.objects.filter(pk=request.GET["from_kunde"]).exists():
+                    kunde = Kunde.objects.get(pk=request.GET["from_kunde"])
+                    obj.kunde = kunde
+                    obj.save()
+                    messages.info(request, "Kunde #"+str(kunde.pk)+" wurde mit dieser Notiz verknüpft.")
+                else:
+                    messages.warning(request, "Kunde #"+request.GET["from_kunde"]+" konnte nicht gefunden werden. Die Notiz wurde trotzdem erstellt.")
 class ProduktInlineProduktkategorien(admin.TabularInline):
     model = Produkt.kategorien.through
     extra = 0
 
 @admin.register(Produkt)
 class ProduktAdmin(admin.ModelAdmin):
-    fieldsets = [
-        ('Infos', {'fields': ['artikelnummer','name']}),
-        ('Beschrieb', {'fields': ['kurzbeschrieb','beschrieb'], 'classes': ["collapse"]}),
-        ('Daten', {'fields': ['mengenbezeichnung','verkaufspreis','mwstsatz','lagerbestand']}),
-        ('Lieferant', {'fields': ['lieferant','lieferant_preis','lieferant_artikelnummer']}),
-        ('Aktion', {'fields': ['aktion_von','aktion_bis','aktion_preis'], 'classes': ["collapse"]}),
-        ('Links', {'fields': ['datenblattlink','bildlink'], 'classes': ["collapse"]}),
-        ('Bemerkungen', {'fields': ['bemerkung'], 'classes': ["collapse"]}) #packlistenbemerkung
-    ]
+    def get_fieldsets(self, request, obj=None):
+        if obj:
+            return [
+                ('Infos', {'fields': ['artikelnummer','name']}),
+                ('Beschrieb', {'fields': ['kurzbeschrieb','beschrieb'], 'classes': ["collapse start-open"]}),
+                ('Daten', {'fields': ['mengenbezeichnung','verkaufspreis','mwstsatz','lagerbestand']}),
+                ('Lieferant', {'fields': ['lieferant','lieferant_preis','lieferant_artikelnummer']}),
+                ('Aktion', {'fields': ['aktion_von','aktion_bis','aktion_preis'], 'classes': ["collapse start-open"]}),
+                ('Links', {'fields': ['datenblattlink','bildlink'], 'classes': ["collapse start-open"]}),
+                ('Bemerkung / Notiz', {'fields': ['bemerkung','html_notiz'], 'classes': ["collapse start-open"]}) #packlistenbemerkung
+            ]
+        else:
+            return [
+                ('Infos', {'fields': ['artikelnummer','name']}),
+                ('Beschrieb', {'fields': ['kurzbeschrieb','beschrieb'], 'classes': ["collapse start-open"]}),
+                ('Daten', {'fields': ['mengenbezeichnung','verkaufspreis','mwstsatz','lagerbestand']}),
+                ('Lieferant', {'fields': ['lieferant','lieferant_preis','lieferant_artikelnummer']}),
+                ('Aktion', {'fields': ['aktion_von','aktion_bis','aktion_preis'], 'classes': ["collapse start-open"]}),
+                ('Links', {'fields': ['datenblattlink','bildlink'], 'classes': ["collapse start-open"]}),
+                ('Bemerkung', {'fields': ['bemerkung'], 'classes': ["collapse start-open"]}) #packlistenbemerkung
+            ]
 
     ordering = ('artikelnummer','name')
 
-    list_display = ('artikelnummer','clean_name','clean_kurzbeschrieb','clean_beschrieb','preis','in_aktion','lagerbestand','bild')
+    list_display = ('artikelnummer','clean_name','clean_kurzbeschrieb','clean_beschrieb','preis','in_aktion','lagerbestand','bild','html_notiz')
     list_filter = ('lieferant','kategorien','lagerbestand')
     search_fields = ['artikelnummer','name','kurzbeschrieb','beschrieb','bemerkung']
+
+    readonly_fields = ["html_notiz"]
 
     inlines = (ProduktInlineProduktkategorien,)
 
@@ -428,8 +496,7 @@ class EinstellungenAdmin(admin.ModelAdmin):
     list_display = ('name','get_inhalt')
     ordering = ('name',)
 
-    def get_readonly_fields(self, request, obj=None):
-        return ["id","name"]
+    readonly_fields = ["id","name"]
 
     def get_fieldsets(self, request, obj=None):
         fieldsets = [
@@ -466,24 +533,6 @@ class ToDoNotizenAdmin(NotizenAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
-    def get_form(self, request, obj=None, **kwargs):
-        form = super().get_form(request, obj, **kwargs)
-        if obj is None:
-            if "from_bestellung" in request.GET:
-                form.base_fields['name'].initial = 'Bestellung #'+request.GET.get("from_bestellung")
-                form.base_fields['beschrieb'].initial = '\n\nDiese Notiz gehört zu Bestellung #'+request.GET.get("from_bestellung")
-
-                if request.GET.get("from_step") == "versand":
-                    form.base_fields['name'].initial = 'Versand ' + form.base_fields['name'].initial
-                    form.base_fields['beschrieb'].initial += "\nBetreff: Versand"
-                elif request.GET.get("from_step") == "zahlungseingang":
-                    form.base_fields['name'].initial = 'Bezahlung ' + form.base_fields['name'].initial
-                    form.base_fields['beschrieb'].initial += "\nBetreff: Bezahlung"
-            if "from_produkt" in request.GET:
-                form.base_fields['name'].initial = 'Produkt '+request.GET.get("from_produkt")
-                form.base_fields['beschrieb'].initial = '\n\nDiese Notiz gehört zu Produkt '+request.GET.get("from_produkt")
-        return form
-
     def get_urls(self):
         from django.urls import path
         from django.views.decorators.clickjacking import xframe_options_sameorigin as allow_iframe
@@ -509,7 +558,7 @@ class ToDoNotizenAdmin(NotizenAdmin):
 
 @admin.register(ToDoVersand)
 class ToDoVersandAdmin(BestellungsAdmin):
-    list_display = ('id','info','trackingnummer','versendet','status','notiz','html_todo_notiz_erstellen')
+    list_display = ('id','info','trackingnummer','versendet','status','html_todo_notiz')
     list_editable = ("trackingnummer", "versendet", "status")
     list_filter = ('status','bezahlt')
 
@@ -547,7 +596,7 @@ class ToDoVersandAdmin(BestellungsAdmin):
 
 @admin.register(ToDoZahlungseingang)
 class ToDoZahlungseingangAdmin(BestellungsAdmin):
-    list_display = ('id','info','bezahlt','status','notiz','html_todo_notiz_erstellen')
+    list_display = ('id','info','bezahlt','status','html_todo_notiz')
     list_editable = ("bezahlt", "status")
     list_filter = ('status','versendet','zahlungsmethode')
 
@@ -586,7 +635,7 @@ class ToDoZahlungseingangAdmin(BestellungsAdmin):
 
 @admin.register(ToDoLagerbestand)
 class ToDoLagerbestandAdmin(ProduktAdmin):
-    list_display = ('nr','clean_name','lagerbestand','preis','bemerkung','html_todo_notiz_erstellen')
+    list_display = ('nr','clean_name','lagerbestand','preis','bemerkung','html_todo_notiz')
     list_editable = ["lagerbestand"]
 
     actions = ["lagerbestand_zuruecksetzen"]

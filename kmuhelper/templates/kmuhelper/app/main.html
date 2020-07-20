@@ -7,7 +7,7 @@
         <meta name="viewport" content="width=device-width,initial-scale=1.0">
         <meta name="apple-mobile-web-app-status-bar-style" content="black">
         <meta name="apple-mobile-web-app-capable" content="yes">
-        
+
         {% load static %}
         <link rel="manifest" href="{% url 'kmuhelper:app-manifest' %}">
         <link rel="shortcut icon" type="image/x-icon" href="{% static 'kmuhelper/app/favicon.ico' %}">
@@ -58,6 +58,9 @@
                 <i class="fas fa-truck-loading"></i>
             </a>
             {% endif %}
+            <a href="{% url 'admin:app_list' app_label='kmuhelper' %}" target="_blank" id="admin" class="item">
+                <i class="fas fa-key"></i>
+            </a>
         </div>
 
     </body>

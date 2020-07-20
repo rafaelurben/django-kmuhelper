@@ -159,7 +159,6 @@ class Bestellung(models.Model):
 
     kundennotiz = models.TextField("Kundennotiz", default="", blank=True, help_text="Vom Kunden erfasste Notiz.")
     #rechnungsnotiz = models.TextField("Rechnungsnotiz", default="", blank=True, help_text="Wird auf der Rechnung gedruckt.")
-    notiz = models.TextField("Notiz", default="", blank=True, help_text="Nur für eigene Zwecke.")
 
     order_key = models.CharField("Bestellungs-Schlüssel", max_length=50, default=defaultorderkey, blank=True)
 
@@ -322,9 +321,23 @@ class Bestellung(models.Model):
             self.save()
         return success
 
-    def get_todo_notiz_link(self):
-        return reverse("admin:kmuhelper_todonotiz_add")+'?from_bestellung='+str(self.pk)
-    get_todo_notiz_link.short_description = "ToDo Notiz"
+    def html_todo_notiz(self):
+        if hasattr(self, "notiz"):
+            link = reverse("admin:kmuhelper_todonotiz_change", kwargs={"object_id": self.notiz.pk})
+            return mark_safe('<a target="_blank" href="'+link+'">Notiz ansehen</a>')
+        else:
+            link = reverse("admin:kmuhelper_todonotiz_add")+'?from_bestellung='+str(self.pk)
+            return mark_safe('<a target="_blank" href="'+link+'">Notiz hinzufügen</a>')
+    html_todo_notiz.short_description = "ToDo Notiz"
+
+    def html_notiz(self):
+        if hasattr(self, "notiz"):
+            link = reverse("admin:kmuhelper_notiz_change", kwargs={"object_id": self.notiz.pk})
+            return mark_safe('<a target="_blank" href="'+link+'">Notiz ansehen</a>')
+        else:
+            link = reverse("admin:kmuhelper_notiz_add")+'?from_bestellung='+str(self.pk)
+            return mark_safe('<a target="_blank" href="'+link+'">Notiz hinzufügen</a>')
+    html_notiz.short_description = "Notiz"
 
     class Meta:
         verbose_name = "Bestellung"
@@ -443,7 +456,7 @@ class Kunde(models.Model):
 
     zusammenfuegen = models.ForeignKey("self", on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Zusammenfügen mit", help_text="Dies kann nicht widerrufen werden! Werte im aktuellen Kunden werden bevorzugt.")
     webseite = models.URLField("Webseite", blank=True, default="")
-    notiz = models.TextField("Notiz", default="", blank=True)
+    bemerkung = models.TextField("Bemerkung", default="", blank=True)
 
     registrierungsemail_gesendet = models.BooleanField("Registrierungsemail gesendet?", default=False)
 
@@ -523,6 +536,24 @@ class Kunde(models.Model):
             headers={"Kunden-ID": str(self.id)}
         )
         self.save()
+
+    def html_todo_notiz(self):
+        if hasattr(self, "notiz"):
+            link = reverse("admin:kmuhelper_todonotiz_change", kwargs={"object_id": self.notiz.pk})
+            return mark_safe('<a target="_blank" href="'+link+'">Notiz ansehen</a>')
+        else:
+            link = reverse("admin:kmuhelper_todonotiz_add")+'?from_kunde='+str(self.pk)
+            return mark_safe('<a target="_blank" href="'+link+'">Notiz hinzufügen</a>')
+    html_todo_notiz.short_description = "ToDo Notiz"
+
+    def html_notiz(self):
+        if hasattr(self, "notiz"):
+            link = reverse("admin:kmuhelper_notiz_change", kwargs={"object_id": self.notiz.pk})
+            return mark_safe('<a target="_blank" href="'+link+'">Notiz ansehen</a>')
+        else:
+            link = reverse("admin:kmuhelper_notiz_add")+'?from_kunde='+str(self.pk)
+            return mark_safe('<a target="_blank" href="'+link+'">Notiz hinzufügen</a>')
+    html_notiz.short_description = "Notiz"
 
 
 
@@ -614,9 +645,23 @@ class Notiz(models.Model):
     priority = models.IntegerField("Priorität", default=0, blank=True)
     erstellt_am = models.DateTimeField("Erstellt am", auto_now_add=True)
 
+    bestellung = models.OneToOneField("Bestellung", blank=True, null=True, on_delete=models.CASCADE, related_name="notiz")
+    produkt = models.OneToOneField("Produkt", blank=True, null=True, on_delete=models.CASCADE, related_name="notiz")
+    kunde = models.OneToOneField("Kunde", blank=True, null=True, on_delete=models.CASCADE, related_name="notiz")
+
     def __str__(self):
         return self.name
     __str__.short_description = "Notiz"
+
+    def links(self):
+        text = ""
+        if self.bestellung:
+            text += "Bestellung <a href='"+reverse("admin:kmuhelper_bestellung_change", kwargs={"object_id":self.bestellung.pk})+"'>#"+str(self.bestellung.pk)+"</a><br>"
+        if self.produkt:
+            text += "Produkt <a href='"+reverse("admin:kmuhelper_produkt_change", kwargs={"object_id":self.produkt.pk})+"'>#"+str(self.produkt.pk)+"</a><br>"
+        if self.kunde:
+            text += "Kunde <a href='"+reverse("admin:kmuhelper_kunde_change", kwargs={"object_id":self.kunde.pk})+"'>#"+str(self.kunde.pk)+"</a><br>"
+        return mark_safe(text or "Diese Notiz hat keine Verknüpfungen.")
 
     class Meta:
         verbose_name = "Notiz"
@@ -644,7 +689,7 @@ class Produkt(models.Model):
     kurzbeschrieb = models.TextField('Kurzbeschrieb', default="", blank=True)
     beschrieb = models.TextField('Beschrieb', default="", blank=True)
 
-    mengenbezeichnung = models.CharField('Mengenbezeichnung', max_length=100, default="Stück", blank=True)
+    mengenbezeichnung = models.CharField('Mengenbezeichnung', max_length=100, default="[:de]Stück[:fr]Pièce[:it]Pezzo[:en]Piece[:]", blank=True)
     verkaufspreis = models.FloatField('Normalpreis in CHF (exkl. MwSt)', default=0)
     mwstsatz = models.FloatField('Mehrwertsteuersatz', choices= MWSTSÄTZE, default=7.7)
     lagerbestand = models.IntegerField("Lagerbestand", default=0)
@@ -703,9 +748,23 @@ class Produkt(models.Model):
             self.mengenbezeichnung = "[:de]Tube[:fr]Tube[:it]Tubetto[:en]Tube[:]"
         super().save(*args, **kwargs)
 
-    def get_todo_notiz_link(self):
-        return reverse("admin:kmuhelper_todonotiz_add")+'?from_produkt='+str(self.artikelnummer)
-    get_todo_notiz_link.short_description = "ToDo Notiz"
+    def html_todo_notiz(self):
+        if hasattr(self, "notiz"):
+            link = reverse("admin:kmuhelper_todonotiz_change", kwargs={"object_id": self.notiz.pk})
+            return mark_safe('<a target="_blank" href="'+link+'">Notiz ansehen</a>')
+        else:
+            link = reverse("admin:kmuhelper_todonotiz_add")+'?from_produkt='+str(self.pk)
+            return mark_safe('<a target="_blank" href="'+link+'">Notiz hinzufügen</a>')
+    html_todo_notiz.short_description = "ToDo Notiz"
+
+    def html_notiz(self):
+        if hasattr(self, "notiz"):
+            link = reverse("admin:kmuhelper_notiz_change", kwargs={"object_id": self.notiz.pk})
+            return mark_safe('<a target="_blank" href="'+link+'">Notiz ansehen</a>')
+        else:
+            link = reverse("admin:kmuhelper_notiz_add")+'?from_produkt='+str(self.pk)
+            return mark_safe('<a target="_blank" href="'+link+'">Notiz hinzufügen</a>')
+    html_notiz.short_description = "Notiz"
 
     def __str__(self):
         return self.artikelnummer+" - "+self.clean_name()
@@ -873,11 +932,6 @@ class ToDoVersandManager(models.Manager):
         return super().get_queryset().filter(versendet=False)
 
 class ToDoVersand(Bestellung):
-    def html_todo_notiz_erstellen(self):
-        link = self.get_todo_notiz_link()+"&from_step=versand"
-        return mark_safe('<a target="_blank" href="'+link+'">+ ToDo Notiz</a>')
-    html_todo_notiz_erstellen.short_description = "ToDo Notiz Erstellen"
-
     objects = ToDoVersandManager()
 
     class Meta:
@@ -891,11 +945,6 @@ class ToDoZahlungseingangManager(models.Manager):
         return super().get_queryset().filter(bezahlt=False)
 
 class ToDoZahlungseingang(Bestellung):
-    def html_todo_notiz_erstellen(self):
-        link = self.get_todo_notiz_link()+"&from_step=zahlungseingang"
-        return mark_safe('<a target="_blank" href="'+link+'">+ ToDo Notiz</a>')
-    html_todo_notiz_erstellen.short_description = "ToDo Notiz Erstellen"
-
     objects = ToDoZahlungseingangManager()
 
     class Meta:

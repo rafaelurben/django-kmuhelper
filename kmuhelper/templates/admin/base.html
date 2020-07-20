@@ -11,15 +11,16 @@
                     $('form').submit(function (event) {
                         if (!(event.target.id === "changelist-search")) {
                             isSubmitting = true;
+                            console.log("Form submitted...");
                         } else {
                             console.log("Search submitted...");
                         }
                     })
 
-                    $('form').data('initial-state', $('form').serialize());
+                    $('form').not("#changelist-search").data('initial-state', $('form').not("#changelist-search").serialize());
 
                     $(window).on('beforeunload', function () {
-                        if (!isSubmitting && $('form').serialize() != $('form').data('initial-state')) {
+                        if (!isSubmitting && $('form').not("#changelist-search").serialize() != $('form').not("#changelist-search").data('initial-state')) {
                             return 'Du hast ungesicherte Änderungen vorgenommen. Wenn du die Seite verlässt, werden diese gelöscht.'
                         }
                     });
