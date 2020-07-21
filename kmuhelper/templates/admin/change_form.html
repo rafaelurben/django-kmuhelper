@@ -1,0 +1,31 @@
+{% extends "admin/change_form.html" %}
+
+{% block extrahead %}
+    <script>
+        window.addEventListener("load", function () {
+            var $ = django.jQuery;
+
+            var initialData = "";
+            var isSubmitting = false;
+
+            $('form').submit(function (event) {
+                isSubmitting = true;
+                console.log("Form submitted...");
+            })
+
+            initialData = $('form').serialize();
+
+            $(window).on('beforeunload', function () {
+                console.log("[Beforeunload] - Event triggered!");
+                var formChanged = $('form').serialize() != initialData;
+                console.log("[Beforeunload] - Form changed:", formChanged);
+                if (!isSubmitting && formChanged) {
+                    console.log("[Beforeunload] - Unload prevented!");
+                    return 'Du hast ungesicherte Änderungen vorgenommen. Wenn du die Seite verlässt, werden diese gelöscht.'
+                }
+            });
+        })
+
+    </script>
+    {{ block.super }}
+{% endblock %}

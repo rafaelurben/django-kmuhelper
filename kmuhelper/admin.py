@@ -447,6 +447,8 @@ class ProduktAdmin(admin.ModelAdmin):
 
     actions = ["wc_update","lagerbestand_zuruecksetzen","aktion_beenden"]
 
+    list_select_related = ["notiz"]
+
     def wc_update(self, request, queryset):
         result = WooCommerce.product_bulk_update(queryset.all())
         messages.success(request, (('{} Produkte' if result[0] != 1 else 'Ein Produkt')+' von WooCommerce aktualisiert!').format(result[0]))

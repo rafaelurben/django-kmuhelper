@@ -9,16 +9,16 @@ from django.views.decorators.csrf import csrf_exempt
 from urllib.parse import urlencode
 
 from random import randint
-from json import loads as loadjson
+import json
 
-from .models import Einstellung, Geheime_Einstellung, Produkt, Kunde, Kategorie, Lieferung, Bestellung
+from .models import Einstellung, Geheime_Einstellung, Produkt, Kunde, Kategorie, Lieferant, Lieferung, Bestellung
 from .apis import WooCommerce
 
 # Create your views here.
 
 @csrf_exempt
 def wc_auth_key(request):
-    JSON = loadjson(request.body)
+    JSON = json.loads(request.body)
     storeurl = request.headers.get("user-agent").split(";")[1].lstrip()
 
     url = Geheime_Einstellung.objects.get(id="wc-url")
@@ -128,7 +128,7 @@ def wc_webhooks(request):
         if erhaltene_url == erwartete_url:
             print("[KMUHelper] - WooCommerce Webhook erhalten...")
             topic = request.headers["x-wc-webhook-topic"]
-            obj = loadjson(request.body)
+            obj = json.loads(request.body)
             if topic == "product.updated" or topic == "product.created":
                 if Produkt.objects.filter(woocommerceid=obj["id"]).exists():
                     WooCommerce.product_update(Produkt.objects.get(woocommerceid=obj["id"]), obj)
@@ -149,28 +149,44 @@ def wc_webhooks(request):
             return HttpResponseBadRequest("Zugriff nicht gestattet!")
     return HttpResponse("Erfolgreich erhalten!")
 
+@login_required(login_url="/admin/login")
+def lieferant_zuordnen(request, object_id):
+    if Lieferant.objects.filter(id=int(object_id)).exists():
+        count = Lieferant.objects.get(id=int(object_id)).zuordnen()
+        messages.success(request, ('Lieferant wurde '+(('{} neuen Produkten' if count > 1 else 'einem neuen Produkt') if count != 0 else "keinem neuen Produkt" )+' zugeordnet!').format(count))
+    else:
+        messages.error(request, "Lieferant konnte nicht gefunden werden!")
+    return redirect(reverse("admin:kmuhelper_lieferant_change",args=[object_id]))
 
 @login_required(login_url="/admin/login")
 def lieferung_einlagern(request, object_id):
-    if Lieferung.objects.get(id=int(object_id)).einlagern():
-        messages.success(request, "Lieferung eingelagert!")
+    if Lieferung.objects.filter(id=int(object_id)).exists():
+        if Lieferung.objects.get(id=int(object_id)).einlagern():
+            messages.success(request, "Lieferung eingelagert!")
+        else:
+            messages.error(request, "Lieferung konnte nicht eingelagert werden!")
     else:
-        messages.error(request, "Lieferung konnte nicht eingelagert werden!")
+        messages.error(request, "Lieferung konnte nicht gefunden werden!")
     return redirect(reverse("admin:kmuhelper_lieferung_change",args=[object_id]))
 
 @login_required(login_url="/admin/login")
 def kunde_email_registriert(request, object_id):
-    Kunde.objects.get(id=int(object_id)).send_register_mail()
-    messages.success(request, "Registrierungsmail gesendet!")
+    if Kunde.objects.filter(id=int(object_id)).exists():
+        if Kunde.objects.get(id=int(object_id)).send_register_mail():
+            messages.success(request, "Registrierungsmail gesendet!")
+        else:
+            messages.error(request, "Registrierungsmail konnte nicht gesendet werden!")
+    else:
+        messages.error(request, "Kunde konnte nicht gefunden werden!")
     return redirect(reverse("admin:kmuhelper_kunde_change",args=[object_id]))
 
 
 @login_required(login_url="/admin/login")
 def bestellung_pdf_ansehen(request, object_id):
-    obj = Bestellung.objects.get(id=int(object_id))
-    lieferschein = bool("lieferschein" in dict(request.GET))
-    digital = not bool("druck" in dict(request.GET))
-    if obj:
+    if Bestellung.objects.filter(id=int(object_id)).exists():
+        obj = Bestellung.objects.get(id=int(object_id))
+        lieferschein = bool("lieferschein" in dict(request.GET))
+        digital = not bool("druck" in dict(request.GET))
         pdf = obj.get_pdf(lieferschein=lieferschein, digital=digital)
         return pdf
     else:
@@ -179,12 +195,13 @@ def bestellung_pdf_ansehen(request, object_id):
 
 @login_required(login_url="/admin/login")
 def bestellung_pdf_an_kunden_senden(request, object_id):
-    obj = Bestellung.objects.get(id=int(object_id))
-    if obj:
-        if obj.send_pdf_rechnung_to_customer():
+    if Bestellung.objects.filter(id=int(object_id)).exists():
+        if Bestellung.objects.get(id=int(object_id)).send_pdf_rechnung_to_customer():
             messages.success(request, "Rechnung an Kunden gesendet!")
         else:
             messages.error(request, "Rechnung konnte nicht an Kunden gesendet werden!")
+    else:
+        messages.error(request, "Bestellung konnte nicht gefunden werden!")
     return redirect(reverse("admin:kmuhelper_bestellung_change",args=[object_id]))
 
 
@@ -193,11 +210,12 @@ def bestellung_pdf_an_kunden_senden(request, object_id):
 ##### Kunden-Entpunkte
 
 def kunde_rechnung_ansehen(request, order_id, order_key):
-    obj = Bestellung.objects.get(id=int(order_id))
-    digital = not bool("druck" in dict(request.GET))
-    if obj:
+    if Bestellung.objects.filter(id=int(order_id)).exists():
+        obj = Bestellung.objects.get(id=int(order_id))
+        lieferschein = bool("lieferschein" in dict(request.GET))
+        digital = not bool("druck" in dict(request.GET))
         if obj.order_key == order_key:
-            return obj.get_pdf_rechnung(digital=digital)
+            return obj.get_pdf_rechnung(lieferschein=lieferschein, digital=digital)
         else:
             return HttpResponse("Der Bestellungsschlüssel dieser Bestellung ist falsch!")
     else:

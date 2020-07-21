@@ -34,6 +34,7 @@ urlpatterns = [
     path('wc/update/order/<object_id>', views.wc_update_order, name="wc-update-order"),
     path('wc/webhooks', views.wc_webhooks, name="wc-webhooks"),
     path('kunde/<object_id>/email-registriert', views.kunde_email_registriert, name='kunde-email-registriert'),
+    path('lieferant/<object_id>/zuordnen', views.lieferant_zuordnen, name='lieferant-zuordnen'),
     path('lieferung/<object_id>/einlagern', views.lieferung_einlagern, name='lieferung-einlagern'),
     path('bestellung/<object_id>/pdf', views.bestellung_pdf_ansehen, name='bestellung-pdf-ansehen'),
     path('bestellung/<object_id>/pdf/ankundensenden', views.bestellung_pdf_an_kunden_senden, name='bestellung-pdf-an-kunden-senden'),

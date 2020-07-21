@@ -576,6 +576,13 @@ class Lieferant(models.Model):
         return self.name
     __str__.short_description = "Lieferant"
 
+    def zuordnen(self):
+        produkte = Produkt.objects.filter(lieferant=None)
+        for produkt in produkte:
+            produkt.lieferant = self
+            produkt.save()
+        return produkte.count()
+
     class Meta:
         verbose_name = "Lieferant"
         verbose_name_plural = "Lieferanten"
