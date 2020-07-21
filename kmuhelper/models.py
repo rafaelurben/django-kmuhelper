@@ -473,7 +473,7 @@ class Kunde(models.Model):
             ((self.vorname + " ") if self.vorname else "") +
             ((self.nachname + " ") if self.nachname else "") +
             ((self.firma + " ") if self.firma else "") +
-            (("(" + self.email + ")") if self.email else "")
+            (("(" + str(self.rechnungsadresse_plz) + " " + self.rechnungsadresse_ort + ")"))
         )
     __str__.short_description = "Kunde"
 

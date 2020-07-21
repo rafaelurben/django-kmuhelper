@@ -107,7 +107,7 @@ class BestellungInlineBestellungskostenAdd(admin.TabularInline):
 class BestellungsAdmin(admin.ModelAdmin):
     list_display = ('id','datum','kunde','status','zahlungsmethode','bezahlt','versendet','fix_summe','html_notiz')
     list_filter = ('status','bezahlt','versendet','zahlungsmethode')
-    search_fields = ['id','datum','notiz__name','notiz__beschrieb','kundennotiz','trackingnummer','kunde']
+    search_fields = ['id','datum','notiz__name','notiz__beschrieb','kundennotiz','trackingnummer','rechnungsadresse_vorname','rechnungsadresse_nachname','rechnungsadresse_firma','rechnungsadresse_plz','rechnungsadresse_ort']
 
     ordering = ("versendet","bezahlt","-datum")
 
@@ -246,7 +246,7 @@ class KundenAdmin(admin.ModelAdmin):
     ordering = ('rechnungsadresse_plz','firma','nachname','vorname')
 
     list_display = ('id','firma','nachname','vorname','rechnungsadresse_plz','rechnungsadresse_ort','email','avatar','html_notiz')
-    search_fields = ['id','nachname','vorname','firma','email','benutzername','rechnungsadresse_vorname','rechnungsadresse_nachname','rechnungsadresse_firma','rechnungsadresse_adresszeile1','rechnungsadresse_adresszeile2','rechnungsadresse_ort','rechnungsadresse_kanton','rechnungsadresse_plz','rechnungsadresse_land','rechnungsadresse_email','rechnungsadresse_telefon','lieferadresse_vorname','lieferadresse_nachname','lieferadresse_firma','lieferadresse_adresszeile1','lieferadresse_adresszeile2','lieferadresse_ort','lieferadresse_kanton','lieferadresse_kanton','lieferadresse_plz','lieferadresse_land','webseite','notiz']
+    search_fields = ['id','nachname','vorname','firma','email','benutzername','rechnungsadresse_vorname','rechnungsadresse_nachname','rechnungsadresse_firma','rechnungsadresse_adresszeile1','rechnungsadresse_adresszeile2','rechnungsadresse_ort','rechnungsadresse_kanton','rechnungsadresse_plz','rechnungsadresse_land','rechnungsadresse_email','rechnungsadresse_telefon','lieferadresse_vorname','lieferadresse_nachname','lieferadresse_firma','lieferadresse_adresszeile1','lieferadresse_adresszeile2','lieferadresse_ort','lieferadresse_kanton','lieferadresse_kanton','lieferadresse_plz','lieferadresse_land','webseite','notiz__name','notiz__beschrieb']
 
     readonly_fields = ["html_notiz"]
 
@@ -309,6 +309,8 @@ class LieferungInlineProdukte(admin.TabularInline):
 class LieferungenAdmin(admin.ModelAdmin):
     list_display = ('name','datum','notiz','anzahlprodukte','eingelagert')
     list_filter = ("eingelagert",)
+
+    search_fields = ["name","datum","notiz"]
 
     ordering = ('name',)
 
@@ -435,7 +437,7 @@ class ProduktAdmin(admin.ModelAdmin):
 
     list_display = ('artikelnummer','clean_name','clean_kurzbeschrieb','clean_beschrieb','preis','in_aktion','lagerbestand','bild','html_notiz')
     list_filter = ('lieferant','kategorien','lagerbestand')
-    search_fields = ['artikelnummer','name','kurzbeschrieb','beschrieb','bemerkung']
+    search_fields = ['artikelnummer','name','kurzbeschrieb','beschrieb','bemerkung','notiz__name','notiz__beschrieb']
 
     readonly_fields = ["html_notiz"]
 
@@ -495,6 +497,8 @@ class EinstellungenAdmin(admin.ModelAdmin):
 
     list_display = ('name','get_inhalt')
     ordering = ('name',)
+
+    search_fields = ["name"]
 
     readonly_fields = ["id","name"]
 
