@@ -26,13 +26,18 @@ class WooCommerce():
 
     @classmethod
     def product_create(self, product):
+        try:
+            verkaufspreis = float(product["price"])
+        except ValueError:
+            verkaufspreis = 0.0
+
         newproduct = Produkt.objects.create(
             woocommerceid=product["id"],
             artikelnummer = product["sku"],
             name = preparestring(product["name"]),
             kurzbeschrieb = preparestring(product["short_description"]),
             beschrieb = preparestring(product["description"]),
-            verkaufspreis = float(product["price"]),
+            verkaufspreis = verkaufspreis,
             bildlink = (product["images"][0]["src"]) if len(product["images"]) > 0 else "",
             aktion_von = (product["date_on_sale_from_gmt"]+"+00:00" if product["date_on_sale_from"] else None),
             aktion_bis = (product["date_on_sale_to_gmt"]+"+00:00" if product["date_on_sale_to"] else None),
@@ -53,6 +58,7 @@ class WooCommerce():
     def product_update(self, product, newproduct=None):
         if not newproduct:
             newproduct = self.get_api().get("products/"+str(product.woocommerceid)).json()
+
         product.artikelnummer = newproduct["sku"]
         product.name = preparestring(newproduct["name"])
         product.kurzbeschrieb = preparestring(newproduct["short_description"])
@@ -65,11 +71,16 @@ class WooCommerce():
             product.aktion_bis = newproduct["date_on_sale_to_gmt"]+"+00:00"
         if newproduct["sale_price"]:
             product.aktion_preis = newproduct["sale_price"]
+
+        product.kategorien.clear()
+        newcategories = []
         for category in newproduct["categories"]:
             tup = Kategorie.objects.get_or_create(woocommerceid=category["id"])
             if tup[1]:
                 self.category_update(tup[0])
-            product.kategorien.add(tup[0])
+            newcategories.append(tup[0])
+        product.kategorien.add(*newcategories)
+
         product.save()
         print("[KMUHelper] - Produkt aktualisiert: "+str(product))
         return product

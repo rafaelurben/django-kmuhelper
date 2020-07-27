@@ -343,41 +343,56 @@ class Bestellung(models.Model):
         verbose_name = "Bestellung"
         verbose_name_plural = "Bestellungen"
 
-# Reference, TODO delete
-# ("percent",         "Prozent"),
-# ("fixed_cart",      "Fixer Betrag auf den Warenkorb"),
-# ("fixed_product",   "Fixer Betrag auf ein Produkt")
 
 # class Gutschein(models.Model):
+#     woocommerceid = models.IntegerField('WooCommerce ID', default=0)
+#
 #     code = models.CharField("Gutscheincode", max_length=25)
 #     menge = models.FloatField("Menge (Preis oder Anzahl Prozent)")
 #     typ = models.CharField("Gutscheintyp", max_length=14, choices=GUTSCHEINTYPEN)
 #     beschrieb = models.TextField("Beschrieb",default="",blank=True)
 #     #datum_bis = models.DateField("Gültig bis", blank=True, null=True)
 #     #nicht_kumulierbar = models.BooleanField("Nicht kumulierbar", default=True, help_text="Aktivieren, damit der Gutschein nicht kumuliert werden kann.")
-#     produkte = models.ManyToManyField("Produkt", verbose_name="Produkt", verbose_name="Produkte",help_text="Produkte, auf welche der Gutschein angewendet werden kann.")
+#
+#     produkte = models.ManyToManyField("Produkt", verbose_name="Produkte", help_text="Produkte, auf welche der Gutschein angewendet werden kann.")
 #     ausgeschlossene_produkte = models.ManyToManyField("Produkt", verbose_name="Ausgeschlossenes Produkt", verbose_name_plural="Ausgeschlossene Produkte",help_text="Produkte, auf welche der Gutschein nicht angewendet werden kann.")
+#
 #     #limit_gesamt = models.IntegerField("Gesamtlimit", default=0, help_text="Anzahl Benutzungen")
 #     #limit_pro_kunde = models.IntegerField("Limit pro Kunde", default=0, help_text="Anzahl Benutzungen pro Kunde")
-#     limit_produkte = models.IntegerField("Limit an Produkten", default=0, help_text="Anzahl Produkt, auf welche der Gutschein maximal angewendet werden kann.")
+#     limit_artikel = models.IntegerField("Limit an Artikeln", default=0, help_text="Anzahl Artikel, auf welche der Gutschein maximal angewendet werden kann.")
+#
 #     #kostenlose_lieferung = models.BooleanField("Kostenlose Lieferung", default=False, help_text="Wenn aktiviert, erlaube kostenlose Lieferung")
+#
 #     produktkategorien = models.ManyToManyField("Kategorie", verbose_name="Kategorie", verbose_name="Kategorien",help_text="Kategorien, auf welche der Gutschein angewendet werden kann.")
 #     ausgeschlossene_produktkategorien = models.ManyToManyField("Kategorie", verbose_name="Ausgeschlossene Kategorie", verbose_name_plural="Ausgeschlossene Kategorie",help_text="Kategorien, auf welche der Gutschein nicht angewendet werden kann.")
-#     nicht_kumulierbar_mit_aktion = models.BooleanField("Nicht kumulierbar mit Aktion", default=True, help_text="Aktivieren, damit der Gutschein nicht auf Produkt angewendet werden kann, welche in Aktion sind.")
+#
+#     nicht_kumulierbar_mit_aktion = models.BooleanField("Nicht kumulierbar mit Aktion", default=True, help_text="Aktivieren, damit der Gutschein nicht auf Produkte angewendet werden kann, welche in Aktion sind.")
 #     mindestbetrag = models.FloatField("Mindestbetrag", default=0.0)
 #     maximalbetrag = models.FloatField("Maximalbetrag", default=0.0)
+#
 #     #erlaubte_emails
 #     #benutzt_von = models.ManyToManyField("Kunde")
 #
 #     def gueltig_fuer_bestellung(self, bestellung):
 #         if ((self.mindestbetrag <= bestellung.summe_gesamt()) and (self.maximalbetrag == 0.0 or (self.maximalbetrag >= bestellung.summe_gesamt()))):
+#             return True
+#         else:
+#             return False
+#
+#     def wert_fuer_bestellung(self, bestellung):
+#         if self.gueltig_fuer_bestellung(bestellung):
 #             if self.typ == "fixed_cart":
-#                 return True
+#                 return self.menge
 #             elif self.typ == "fixed_product":
 #                 pass
 #             elif self.typ == "percent":
 #                 pass
-#         return False
+#         else:
+#             return 0.0
+#
+#     class Meta:
+#         verbose_name = "Gutschein"
+#         verbose_name_plural = "Gutscheine"
 
 
 
@@ -395,6 +410,10 @@ class Kategorie(models.Model):
             return mark_safe('<img src="'+self.bildlink+'" width="100px">')
         return ""
     bild.short_description = "Bild"
+
+    def anzahl_produkte(self):
+        return self.produkte.count()
+    anzahl_produkte.short_description = "Anzahl Produkte"
 
     def __str__(self):
         return self.name
@@ -536,6 +555,7 @@ class Kunde(models.Model):
             headers={"Kunden-ID": str(self.id)}
         )
         self.save()
+        return self.registrierungsemail_gesendet
 
     def html_todo_notiz(self):
         if hasattr(self, "notiz"):
@@ -715,7 +735,7 @@ class Produkt(models.Model):
     lieferant_preis = models.CharField("Lieferantenpreis", default="", blank=True, max_length=20)
     lieferant_artikelnummer = models.CharField("Lieferantenartikelnummer", default="", blank=True, max_length=25)
 
-    kategorien = models.ManyToManyField("Kategorie", through="Produktkategorie", through_fields=("produkt","kategorie"), verbose_name="Kategorie")
+    kategorien = models.ManyToManyField("Kategorie", through="Produktkategorie", through_fields=("produkt","kategorie"), verbose_name="Kategorie", related_name="produkte")
 
     def clean_name(self, lang="de"):
         return clean(self.name,lang)
