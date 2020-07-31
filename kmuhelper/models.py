@@ -201,7 +201,7 @@ class Bestellung(models.Model):
         if self.pk:
             self.fix_summe = self.summe_gesamt()
             double_save = False
-        if self.pk is None and not self.woocommerceid:
+        if self.pk is None and not self.woocommerceid and self.kunde:
             self.rechnungsadresse_vorname = self.kunde.rechnungsadresse_vorname
             self.rechnungsadresse_nachname = self.kunde.rechnungsadresse_nachname
             self.rechnungsadresse_firma = self.kunde.rechnungsadresse_firma
