@@ -163,7 +163,6 @@ class BestellungsAdmin(admin.ModelAdmin):
         lieferadresse = ['lieferadresse_vorname', 'lieferadresse_nachname', 'lieferadresse_firma', 'lieferadresse_adresszeile1',
                          'lieferadresse_adresszeile2', 'lieferadresse_plz', 'lieferadresse_ort', 'lieferadresse_kanton', 'lieferadresse_land']
         fields = ['html_notiz', 'name', 'trackinglink',
-                  # 'datum',
                   'summe', 'summe_mwst', 'summe_gesamt']
         if obj:
             if obj.versendet:

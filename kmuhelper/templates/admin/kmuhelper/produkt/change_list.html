@@ -6,15 +6,21 @@
     <script>
         function laden() {
             swal({
-                title:"Bitte warten...",
-                text:"Dieser Prozess kann unter Umständen etwas dauern.\n\nBitte versuche nicht, diesen Prozess abzubrechen!\n\nFalls du eine Fehlermeldung erhältst, lade bitte die Seite neu!\n\n(Dies könnte je nach Menge auch mehrmals der Fall sein.)",
-                icon:"info",
-                buttons:false,
-                closeOnClickOutside:false,
+                title: "Bitte warten...",
+                text: "Dieser Prozess kann unter Umständen etwas dauern.\n\nBitte versuche nicht, diesen Prozess abzubrechen!\n\nFalls du eine Fehlermeldung erhältst, lade bitte die Seite neu!\n\n(Dies könnte je nach Menge auch mehrmals der Fall sein.)",
+                icon: "info",
+                buttons: false,
+                closeOnClickOutside: false,
                 closeOnEsc: false
             });
         };
+
+        window.addEventListener("beforeunload", function (e) {
+            swal.close();
+        });
     </script>
-    <li><a onclick="laden();" href="{% url 'kmuhelper:wc-import-products' %}" class="addlink">Produkte von WooCommerce importieren</a></li>
+    <li>
+        <a onclick="laden();" href="{% url 'kmuhelper:wc-import-products' %}" class="addlink">Produkte von WooCommerce importieren</a>
+    </li>
     {{ block.super }}
 {% endblock %}

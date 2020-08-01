@@ -10,44 +10,50 @@ from django.urls import reverse
 from datetime import datetime
 from random import randint
 from pytz import utc
+from django.utils import timezone
 
 from .utils import send_mail, runden, clean, formatprice, modulo10rekursiv, send_pdf
 from .pdf_generators.bestellung import pdf_bestellung
 
 ###################
 
+
 def defaultlieferungsname():
-    return "Lieferung vom "+str(datetime.now().strftime("%d.%m.%Y"))
+    return "Lieferung vom " + str(datetime.now().strftime("%d.%m.%Y"))
+
 
 def defaultbestellungsname():
-    return "Bestellung vom "+str(datetime.now().strftime("%d.%m.%Y"))
+    return "Bestellung vom " + str(datetime.now().strftime("%d.%m.%Y"))
+
 
 def defaultzahlungsempfaenger():
     return Zahlungsempfaenger.objects.first().pk
 
+
 def defaultansprechpartner():
     return Ansprechpartner.objects.first().pk
 
+
 def defaultorderkey():
-    return "kh-"+str(randint(10000000,99999999))
+    return "kh-" + str(randint(10000000, 99999999))
 
 
 STATUS = [
-    ("pending","Zahlung ausstehend"),
-    ("processing","In Bearbeitung"),
-    ("on-hold","In Wartestellung"),
-    ("completed","Abgeschlossen"),
-    ("cancelled","Storniert/Abgebrochen"),
-    ("refunded","Rückerstattet"),
-    ("failed","Fehlgeschlagen"),
-    ("trash","Gelöscht")
+    ("pending", "Zahlung ausstehend"),
+    ("processing", "In Bearbeitung"),
+    ("on-hold", "In Wartestellung"),
+    ("completed", "Abgeschlossen"),
+    ("cancelled", "Storniert/Abgebrochen"),
+    ("refunded", "Rückerstattet"),
+    ("failed", "Fehlgeschlagen"),
+    ("trash", "Gelöscht")
 ]
 
 MWSTSÄTZE = [
-(0.0, "0.0% (Mehrwertsteuerfrei)"),
-(7.7, "7.7% (Normalsatz)"),
-(3.7, "3.7% (Sondersatz für Beherbergungsdienstleistungen)"),
-(2.5, "2.5% (Reduzierter Satz)")
+    (0.0, "0.0% (Mehrwertsteuerfrei)"),
+    (7.7, "7.7% (Normalsatz)"),
+    (3.7, "3.7% (Sondersatz für Beherbergungsdienstleistungen)"),
+    (2.5, "2.5% (Reduzierter Satz)")
 ]
 
 ZAHLUNGSMETHODEN = [
@@ -58,15 +64,15 @@ ZAHLUNGSMETHODEN = [
 ]
 
 LÄNDER = [
-    ("CH","Schweiz"),
-    ("LI","Liechtenstein")
+    ("CH", "Schweiz"),
+    ("LI", "Liechtenstein")
 ]
 
 SPRACHEN = [
-    ("de","Deutsch [DE]"),
-    ("fr","Französisch [FR]"),
-    ("it","Italienisch [IT]"),
-    ("en","Englisch [EN]")
+    ("de", "Deutsch [DE]"),
+    ("fr", "Französisch [FR]"),
+    ("it", "Italienisch [IT]"),
+    ("en", "Englisch [EN]")
 ]
 
 GUTSCHEINTYPEN = [
@@ -76,6 +82,7 @@ GUTSCHEINTYPEN = [
 ]
 
 #############
+
 
 class Ansprechpartner(models.Model):
     name = models.CharField('Name', max_length=50)
@@ -92,11 +99,11 @@ class Ansprechpartner(models.Model):
         verbose_name_plural = "Ansprechpartner"
 
 
-
 class Bestellungskosten(models.Model):
     bestellung = models.ForeignKey("Bestellung", on_delete=models.CASCADE)
     kosten = models.ForeignKey("Kosten", on_delete=models.PROTECT)
-    bemerkung = models.CharField("Bemerkung", default="", max_length=250, blank=True, help_text="Wird auf die Rechnung gedruckt.")
+    bemerkung = models.CharField("Bemerkung", default="", max_length=250,
+                                 blank=True, help_text="Wird auf die Rechnung gedruckt.")
 
     def zwischensumme(self):
         return runden(self.kosten.preis)
@@ -107,23 +114,26 @@ class Bestellungskosten(models.Model):
     mwstsatz.short_description = "MwSt-Satz"
 
     def __str__(self):
-        return "1x "+str(self.kosten)
+        return "1x " + str(self.kosten)
     __str__.short_description = "Bestellungskosten"
 
     class Meta:
         verbose_name = "Bestellungskosten"
         verbose_name_plural = "Bestellungskosten"
 
+
 class Bestellungsposten(models.Model):
     bestellung = models.ForeignKey("Bestellung", on_delete=models.CASCADE)
     produkt = models.ForeignKey("Produkt", on_delete=models.PROTECT)
-    bemerkung = models.CharField("Bemerkung", default="", max_length=250, blank=True, help_text="Wird auf die Rechnung gedruckt.")
+    bemerkung = models.CharField("Bemerkung", default="", max_length=250,
+                                 blank=True, help_text="Wird auf die Rechnung gedruckt.")
     menge = models.IntegerField("Menge", default=1)
 
-    produktpreis = models.FloatField("Produktpreis in CHF (exkl. MwSt)", default=0.0)
+    produktpreis = models.FloatField(
+        "Produktpreis in CHF (exkl. MwSt)", default=0.0)
 
     def zwischensumme(self):
-        return runden(self.produktpreis*self.menge)
+        return runden(self.produktpreis * self.menge)
     zwischensumme.short_description = "Zwischensumme (exkl. MwSt) in CHF"
 
     def mwstsatz(self):
@@ -131,7 +141,7 @@ class Bestellungsposten(models.Model):
     mwstsatz.short_description = "MwSt-Satz"
 
     def __str__(self):
-        return str(self.menge)+"x "+self.produkt.clean_name()
+        return str(self.menge) + "x " + self.produkt.clean_name()
     __str__.short_description = "Bestellungsposten"
 
     def save(self, *args, **kwargs):
@@ -143,54 +153,86 @@ class Bestellungsposten(models.Model):
         verbose_name = "Bestellungsposten"
         verbose_name_plural = "Bestellungsposten"
 
+
 class Bestellung(models.Model):
     woocommerceid = models.IntegerField('WooCommerce ID', default=0)
 
-    datum = models.DateTimeField("Erfasst am", auto_now_add=True)
+    datum = models.DateTimeField("Datum", default=timezone.now)
 
-    status = models.CharField("Status", max_length=11, default="pending", choices=STATUS)
-    versendet = models.BooleanField("Versendet", default=False, help_text="Sobald eine Bestellung als versendet markiert wurde, kann sie nicht mehr bearbeitet werden! (Ausgenommen Status/Bezahlt) Ausserdem werden die Produkte aus dem Lagerbestand entfernt.")
-    trackingnummer = models.CharField("Trackingnummer", default="", blank=True, max_length=25, validators=[RegexValidator(r'^99\.[0-9]{2}\.[0-9]{6}\.[0-9]{8}$', 'Bite benutze folgendes Format: 99.xx.xxxxxx.xxxxxxxx')], help_text="Bitte gib hier eine Trackingnummer der Schweizer Post ein. (optional)")
+    status = models.CharField("Status", max_length=11,
+                              default="pending", choices=STATUS)
+    versendet = models.BooleanField(
+        "Versendet", default=False, help_text="Sobald eine Bestellung als versendet markiert wurde, kann sie nicht mehr bearbeitet werden! (Ausgenommen Status/Bezahlt) Ausserdem werden die Produkte aus dem Lagerbestand entfernt.")
+    trackingnummer = models.CharField("Trackingnummer", default="", blank=True, max_length=25, validators=[RegexValidator(
+        r'^99\.[0-9]{2}\.[0-9]{6}\.[0-9]{8}$', 'Bite benutze folgendes Format: 99.xx.xxxxxx.xxxxxxxx')], help_text="Bitte gib hier eine Trackingnummer der Schweizer Post ein. (optional)")
 
     ausgelagert = models.BooleanField("Ausgelagert", default=False)
 
-    zahlungsmethode = models.CharField("Zahlungsmethode", max_length=7, default="cod", choices=ZAHLUNGSMETHODEN)
-    bezahlt = models.BooleanField("Bezahlt", default=False, help_text="Sobald eine Bestellung als bezahlt markiert wurde, kann sie nicht mehr bearbeitet werden! (Ausgenommen Status/Versendet/Trackingnummer)")
+    zahlungsmethode = models.CharField(
+        "Zahlungsmethode", max_length=7, default="cod", choices=ZAHLUNGSMETHODEN)
+    bezahlt = models.BooleanField(
+        "Bezahlt", default=False, help_text="Sobald eine Bestellung als bezahlt markiert wurde, kann sie nicht mehr bearbeitet werden! (Ausgenommen Status/Versendet/Trackingnummer)")
 
-    kundennotiz = models.TextField("Kundennotiz", default="", blank=True, help_text="Vom Kunden erfasste Notiz.")
+    kundennotiz = models.TextField(
+        "Kundennotiz", default="", blank=True, help_text="Vom Kunden erfasste Notiz.")
     #rechnungsnotiz = models.TextField("Rechnungsnotiz", default="", blank=True, help_text="Wird auf der Rechnung gedruckt.")
 
-    order_key = models.CharField("Bestellungs-Schlüssel", max_length=50, default=defaultorderkey, blank=True)
+    order_key = models.CharField(
+        "Bestellungs-Schlüssel", max_length=50, default=defaultorderkey, blank=True)
 
-    kunde = models.ForeignKey("Kunde", on_delete=models.SET_NULL, null=True, blank=True)
-    zahlungsempfaenger = models.ForeignKey("Zahlungsempfaenger", on_delete=models.PROTECT, verbose_name="Zahlungsempfänger", default=defaultzahlungsempfaenger)
-    ansprechpartner = models.ForeignKey("Ansprechpartner", on_delete=models.PROTECT, verbose_name="Ansprechpartner", default=defaultansprechpartner)
+    kunde = models.ForeignKey(
+        "Kunde", on_delete=models.SET_NULL, null=True, blank=True)
+    zahlungsempfaenger = models.ForeignKey(
+        "Zahlungsempfaenger", on_delete=models.PROTECT, verbose_name="Zahlungsempfänger", default=defaultzahlungsempfaenger)
+    ansprechpartner = models.ForeignKey(
+        "Ansprechpartner", on_delete=models.PROTECT, verbose_name="Ansprechpartner", default=defaultansprechpartner)
 
-    rechnungsadresse_vorname = models.CharField("Vorname", max_length=50, default="", blank=True)
-    rechnungsadresse_nachname = models.CharField("Nachname", max_length=50, default="", blank=True)
-    rechnungsadresse_firma = models.CharField("Firma", max_length=50, default="", blank=True)
-    rechnungsadresse_adresszeile1 = models.CharField("Adresszeile 1", max_length=50, default="", blank=True, help_text='Strasse und Hausnummer oder "Postfach" ohne Nummer - Wird bei QR-Rechnung als Strasse und Hausnummer bzw. Postfach verwendet!')
-    rechnungsadresse_adresszeile2 = models.CharField("Adresszeile 2", max_length=50, default="", blank=True, help_text="Wird in QR-Rechnung NICHT verwendet!")
-    rechnungsadresse_ort = models.CharField("Ort", max_length=50, default="", blank=True)
-    rechnungsadresse_kanton = models.CharField("Kanton", max_length=50, default="", blank=True)
-    rechnungsadresse_plz = models.CharField("Postleitzahl", max_length=50, default="", blank=True)
-    rechnungsadresse_land = models.CharField("Land", max_length=2, default="CH", choices=LÄNDER)
+    rechnungsadresse_vorname = models.CharField(
+        "Vorname", max_length=50, default="", blank=True)
+    rechnungsadresse_nachname = models.CharField(
+        "Nachname", max_length=50, default="", blank=True)
+    rechnungsadresse_firma = models.CharField(
+        "Firma", max_length=50, default="", blank=True)
+    rechnungsadresse_adresszeile1 = models.CharField("Adresszeile 1", max_length=50, default="", blank=True,
+                                                     help_text='Strasse und Hausnummer oder "Postfach" ohne Nummer - Wird bei QR-Rechnung als Strasse und Hausnummer bzw. Postfach verwendet!')
+    rechnungsadresse_adresszeile2 = models.CharField(
+        "Adresszeile 2", max_length=50, default="", blank=True, help_text="Wird in QR-Rechnung NICHT verwendet!")
+    rechnungsadresse_ort = models.CharField(
+        "Ort", max_length=50, default="", blank=True)
+    rechnungsadresse_kanton = models.CharField(
+        "Kanton", max_length=50, default="", blank=True)
+    rechnungsadresse_plz = models.CharField(
+        "Postleitzahl", max_length=50, default="", blank=True)
+    rechnungsadresse_land = models.CharField(
+        "Land", max_length=2, default="CH", choices=LÄNDER)
     rechnungsadresse_email = models.EmailField("E-Mail Adresse", blank=True)
-    rechnungsadresse_telefon = models.CharField("Telefon", max_length=50, default="", blank=True)
+    rechnungsadresse_telefon = models.CharField(
+        "Telefon", max_length=50, default="", blank=True)
 
-    lieferadresse_vorname = models.CharField("Vorname", max_length=50, default="", blank=True)
-    lieferadresse_nachname = models.CharField("Nachname", max_length=50, default="", blank=True)
-    lieferadresse_firma = models.CharField("Firma", max_length=50, default="", blank=True)
-    lieferadresse_adresszeile1 = models.CharField("Adresszeile 1", max_length=50, default="", blank=True)
-    lieferadresse_adresszeile2 = models.CharField("Adresszeile 2", max_length=50, default="", blank=True)
-    lieferadresse_ort = models.CharField("Ort", max_length=50, default="", blank=True)
-    lieferadresse_kanton = models.CharField("Kanton", max_length=50, default="", blank=True)
-    lieferadresse_plz = models.CharField("Postleitzahl", max_length=50, default="", blank=True)
-    lieferadresse_land = models.CharField("Land", max_length=2, default="CH", choices=LÄNDER)
+    lieferadresse_vorname = models.CharField(
+        "Vorname", max_length=50, default="", blank=True)
+    lieferadresse_nachname = models.CharField(
+        "Nachname", max_length=50, default="", blank=True)
+    lieferadresse_firma = models.CharField(
+        "Firma", max_length=50, default="", blank=True)
+    lieferadresse_adresszeile1 = models.CharField(
+        "Adresszeile 1", max_length=50, default="", blank=True)
+    lieferadresse_adresszeile2 = models.CharField(
+        "Adresszeile 2", max_length=50, default="", blank=True)
+    lieferadresse_ort = models.CharField(
+        "Ort", max_length=50, default="", blank=True)
+    lieferadresse_kanton = models.CharField(
+        "Kanton", max_length=50, default="", blank=True)
+    lieferadresse_plz = models.CharField(
+        "Postleitzahl", max_length=50, default="", blank=True)
+    lieferadresse_land = models.CharField(
+        "Land", max_length=2, default="CH", choices=LÄNDER)
 
-    produkte = models.ManyToManyField("Produkt", through="Bestellungsposten", through_fields=("bestellung","produkt"))
+    produkte = models.ManyToManyField(
+        "Produkt", through="Bestellungsposten", through_fields=("bestellung", "produkt"))
 
-    kosten = models.ManyToManyField("Kosten", through="Bestellungskosten", through_fields=("bestellung","kosten"))
+    kosten = models.ManyToManyField(
+        "Kosten", through="Bestellungskosten", through_fields=("bestellung", "kosten"))
 
     rechnung_gesendet = models.BooleanField("Rechnung gesendet", default=False)
 
@@ -233,21 +275,23 @@ class Bestellung(models.Model):
             self.save()
 
     def trackinglink(self):
-        return "https://www.post.ch/swisspost-tracking?formattedParcelCodes="+self.trackingnummer if self.trackingnummer else None
+        return "https://www.post.ch/swisspost-tracking?formattedParcelCodes=" + self.trackingnummer if self.trackingnummer else None
     trackinglink.short_description = "Trackinglink"
 
     def referenznummer(self):
-        a = str(self.pk).zfill(22)+"0000"
-        b = a+str(modulo10rekursiv(a))
-        c = b[0:2]+" "+b[2:7]+" "+b[7:12]+" "+b[12:17]+" "+b[17:22]+" "+b[22:27]
+        a = str(self.pk).zfill(22) + "0000"
+        b = a + str(modulo10rekursiv(a))
+        c = b[0:2] + " " + b[2:7] + " " + b[7:12] + " " + \
+            b[12:17] + " " + b[17:22] + " " + b[22:27]
         return c
 
     def rechnungsinformationen(self):
         date = self.datum.strftime("%y%m%d")
-        uid = self.zahlungsempfaenger.firmenuid.split("-")[1].replace(".","")
+        uid = self.zahlungsempfaenger.firmenuid.split("-")[1].replace(".", "")
         mwstdict = self.mwstdict()
-        mwststring = ";".join(satz+":"+str(mwstdict[satz]) for satz in mwstdict)
-        return "//S1/10/"+str(self.pk)+"/11/"+date+"/30/"+uid+"/31/"+date+"/32/"+mwststring+"/40/"+"0:30"
+        mwststring = ";".join(
+            satz + ":" + str(mwstdict[satz]) for satz in mwstdict)
+        return "//S1/10/" + str(self.pk) + "/11/" + date + "/30/" + uid + "/31/" + date + "/32/" + mwststring + "/40/" + "0:30"
 
     def mwstdict(self):
         mwst = {}
@@ -276,35 +320,39 @@ class Bestellung(models.Model):
         summe_mwst = 0
         mwstdict = self.mwstdict()
         for mwstsatz in mwstdict:
-            summe_mwst += runden(float(mwstdict[mwstsatz]*(float(mwstsatz)/100)))
+            summe_mwst += runden(float(mwstdict[mwstsatz]
+                                       * (float(mwstsatz) / 100)))
         return runden(summe_mwst)
     summe_mwst.short_description = "Summe (nur MwSt) in CHF"
 
     def summe_gesamt(self):
-        return runden(self.summe()+self.summe_mwst())
+        return runden(self.summe() + self.summe_mwst())
     summe_gesamt.short_description = "Summe in CHF"
 
     def name(self):
-        return (self.datum if self.datum else datetime.today()).strftime("%Y")+"-"+str(self.pk).zfill(6)+(" (WC#"+str(self.woocommerceid)+")" if self.woocommerceid else "")+" - "+(str(self.kunde) if self.kunde is not None else "Gast")
+        return (self.datum if self.datum else datetime.today()).strftime("%Y") + "-" + str(self.pk).zfill(6) + (" (WC#" + str(self.woocommerceid) + ")" if self.woocommerceid else "") + " - " + (str(self.kunde) if self.kunde is not None else "Gast")
     name.short_description = "Name"
 
     def info(self):
-        return self.datum.strftime("%d.%m.%Y")+" - "+((self.kunde.firma if self.kunde.firma else (self.kunde.vorname+" "+self.kunde.nachname)) if self.kunde else "Gast")
+        return self.datum.strftime("%d.%m.%Y") + " - " + ((self.kunde.firma if self.kunde.firma else (self.kunde.vorname + " " + self.kunde.nachname)) if self.kunde else "Gast")
     info.short_description = "Info"
 
     def __str__(self):
         return self.name()
     __str__.short_description = "Bestellung"
 
-    def get_pdf(self, lieferschein:bool=False, digital:bool=True):
-        return FileResponse(pdf_bestellung(self, lieferschein=lieferschein, digital=digital), as_attachment=False, filename=('Lieferschein' if lieferschein else 'Rechnung')+' zu Bestellung '+str(self)+'.pdf')
+    def get_pdf(self, lieferschein: bool = False, digital: bool = True):
+        return FileResponse(pdf_bestellung(self, lieferschein=lieferschein, digital=digital), as_attachment=False, filename=('Lieferschein' if lieferschein else 'Rechnung') + ' zu Bestellung ' + str(self) + '.pdf')
 
     def send_pdf_rechnung_to_customer(self):
         success = send_pdf(
-            subject="Ihre Rechnung Nr. "+str(self.id)+(" (Online #"+str(self.woocommerceid)+")" if self.woocommerceid else ""),
+            subject="Ihre Rechnung Nr. " +
+            str(self.id) + (" (Online #" + str(self.woocommerceid) +
+                            ")" if self.woocommerceid else ""),
             to=self.rechnungsadresse_email,
             template_name="kunde_rechnung.html",
-            pdf_filename="Rechnung Nr. "+str(self.id)+(" (Online #"+str(self.woocommerceid)+")" if self.woocommerceid else "")+".pdf",
+            pdf_filename="Rechnung Nr. " + str(self.id) + (" (Online #" + str(
+                self.woocommerceid) + ")" if self.woocommerceid else "") + ".pdf",
             pdf=pdf_bestellung(self, lieferschein=False, digital=True),
             context={
                 "trackinglink": str(self.trackinglink()),
@@ -313,7 +361,7 @@ class Bestellung(models.Model):
                 "woocommerceid": str(self.woocommerceid),
                 "woocommercedata": bool(self.woocommerceid)
             },
-            headers={"Rechnungs-ID":str(self.id)},
+            headers={"Rechnungs-ID": str(self.id)},
             bcc=[self.zahlungsempfaenger.email]
         )
         if success:
@@ -323,20 +371,24 @@ class Bestellung(models.Model):
 
     def html_todo_notiz(self):
         if hasattr(self, "notiz"):
-            link = reverse("admin:kmuhelper_todonotiz_change", kwargs={"object_id": self.notiz.pk})
-            return mark_safe('<a target="_blank" href="'+link+'">Notiz ansehen</a>')
+            link = reverse("admin:kmuhelper_todonotiz_change",
+                           kwargs={"object_id": self.notiz.pk})
+            return mark_safe('<a target="_blank" href="' + link + '">Notiz ansehen</a>')
         else:
-            link = reverse("admin:kmuhelper_todonotiz_add")+'?from_bestellung='+str(self.pk)
-            return mark_safe('<a target="_blank" href="'+link+'">Notiz hinzufügen</a>')
+            link = reverse("admin:kmuhelper_todonotiz_add") + \
+                '?from_bestellung=' + str(self.pk)
+            return mark_safe('<a target="_blank" href="' + link + '">Notiz hinzufügen</a>')
     html_todo_notiz.short_description = "ToDo Notiz"
 
     def html_notiz(self):
         if hasattr(self, "notiz"):
-            link = reverse("admin:kmuhelper_notiz_change", kwargs={"object_id": self.notiz.pk})
-            return mark_safe('<a target="_blank" href="'+link+'">Notiz ansehen</a>')
+            link = reverse("admin:kmuhelper_notiz_change",
+                           kwargs={"object_id": self.notiz.pk})
+            return mark_safe('<a target="_blank" href="' + link + '">Notiz ansehen</a>')
         else:
-            link = reverse("admin:kmuhelper_notiz_add")+'?from_bestellung='+str(self.pk)
-            return mark_safe('<a target="_blank" href="'+link+'">Notiz hinzufügen</a>')
+            link = reverse("admin:kmuhelper_notiz_add") + \
+                '?from_bestellung=' + str(self.pk)
+            return mark_safe('<a target="_blank" href="' + link + '">Notiz hinzufügen</a>')
     html_notiz.short_description = "Notiz"
 
     class Meta:
@@ -395,7 +447,6 @@ class Bestellung(models.Model):
 #         verbose_name_plural = "Gutscheine"
 
 
-
 class Kategorie(models.Model):
     woocommerceid = models.IntegerField('WooCommerce ID', default=0)
 
@@ -403,11 +454,12 @@ class Kategorie(models.Model):
     beschrieb = models.TextField('Beschrieb', default="", blank=True)
     bildlink = models.URLField('Bildlink', blank=True)
 
-    uebergeordnete_kategorie = models.ForeignKey("self", on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Übergeordnete Kategorie")
+    uebergeordnete_kategorie = models.ForeignKey(
+        "self", on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Übergeordnete Kategorie")
 
     def bild(self):
         if self.bildlink:
-            return mark_safe('<img src="'+self.bildlink+'" width="100px">')
+            return mark_safe('<img src="' + self.bildlink + '" width="100px">')
         return ""
     bild.short_description = "Bild"
 
@@ -424,14 +476,15 @@ class Kategorie(models.Model):
         verbose_name_plural = "Kategorien"
 
 
-
 class Kosten(models.Model):
-    name = models.CharField("Name", max_length=500, default="Zusätzliche Kosten")
+    name = models.CharField("Name", max_length=500,
+                            default="Zusätzliche Kosten")
     preis = models.FloatField("Preis", default=0.0)
-    mwstsatz = models.FloatField('Mehrwertsteuersatz', choices= MWSTSÄTZE, default=7.7)
+    mwstsatz = models.FloatField(
+        'Mehrwertsteuersatz', choices=MWSTSÄTZE, default=7.7)
 
     def __str__(self):
-        return clean(str(self.name))+(" ("+str(self.preis)+" CHF"+(" + "+str(self.mwstsatz)+"% MwSt" if self.mwstsatz else "")+")")
+        return clean(str(self.name)) + (" (" + str(self.preis) + " CHF" + (" + " + str(self.mwstsatz) + "% MwSt" if self.mwstsatz else "") + ")")
     __str__.short_description = "Kosten"
 
     class Meta:
@@ -439,56 +492,80 @@ class Kosten(models.Model):
         verbose_name_plural = "Kosten"
 
 
-
 class Kunde(models.Model):
     woocommerceid = models.IntegerField('WooCommerce ID', default=0)
 
     email = models.EmailField("E-Mail Adresse", blank=True)
-    vorname = models.CharField("Vorname", max_length=50, default="", blank=True)
-    nachname = models.CharField("Nachname", max_length=50, default="", blank=True)
+    vorname = models.CharField(
+        "Vorname", max_length=50, default="", blank=True)
+    nachname = models.CharField(
+        "Nachname", max_length=50, default="", blank=True)
     firma = models.CharField("Firma", max_length=50, default="", blank=True)
-    benutzername = models.CharField("Benutzername", max_length=50, default="", blank=True)
+    benutzername = models.CharField(
+        "Benutzername", max_length=50, default="", blank=True)
     avatar_url = models.URLField("Avatar URL", blank=True, editable=False)
-    sprache = models.CharField("Sprache", default="de",choices=SPRACHEN, max_length=2)
+    sprache = models.CharField(
+        "Sprache", default="de", choices=SPRACHEN, max_length=2)
 
-    rechnungsadresse_vorname = models.CharField("Vorname", max_length=50, default="", blank=True)
-    rechnungsadresse_nachname = models.CharField("Nachname", max_length=50, default="", blank=True)
-    rechnungsadresse_firma = models.CharField("Firma", max_length=50, default="", blank=True)
-    rechnungsadresse_adresszeile1 = models.CharField("Adresszeile 1", max_length=50, default="", blank=True, help_text='Strasse und Hausnummer oder "Postfach"')
-    rechnungsadresse_adresszeile2 = models.CharField("Adresszeile 2", max_length=50, default="", blank=True, help_text="Wird in QR-Rechnung NICHT verwendet!")
-    rechnungsadresse_ort = models.CharField("Ort", max_length=50, default="", blank=True)
-    rechnungsadresse_kanton = models.CharField("Kanton", max_length=50, default="", blank=True)
-    rechnungsadresse_plz = models.CharField("Postleitzahl", max_length=50, default="", blank=True)
-    rechnungsadresse_land = models.CharField("Land", max_length=2, default="CH", choices=LÄNDER)
+    rechnungsadresse_vorname = models.CharField(
+        "Vorname", max_length=50, default="", blank=True)
+    rechnungsadresse_nachname = models.CharField(
+        "Nachname", max_length=50, default="", blank=True)
+    rechnungsadresse_firma = models.CharField(
+        "Firma", max_length=50, default="", blank=True)
+    rechnungsadresse_adresszeile1 = models.CharField(
+        "Adresszeile 1", max_length=50, default="", blank=True, help_text='Strasse und Hausnummer oder "Postfach"')
+    rechnungsadresse_adresszeile2 = models.CharField(
+        "Adresszeile 2", max_length=50, default="", blank=True, help_text="Wird in QR-Rechnung NICHT verwendet!")
+    rechnungsadresse_ort = models.CharField(
+        "Ort", max_length=50, default="", blank=True)
+    rechnungsadresse_kanton = models.CharField(
+        "Kanton", max_length=50, default="", blank=True)
+    rechnungsadresse_plz = models.CharField(
+        "Postleitzahl", max_length=50, default="", blank=True)
+    rechnungsadresse_land = models.CharField(
+        "Land", max_length=2, default="CH", choices=LÄNDER)
     rechnungsadresse_email = models.EmailField("E-Mail Adresse", blank=True)
-    rechnungsadresse_telefon = models.CharField("Telefon", max_length=50, default="", blank=True)
+    rechnungsadresse_telefon = models.CharField(
+        "Telefon", max_length=50, default="", blank=True)
 
-    lieferadresse_vorname = models.CharField("Vorname", max_length=50, default="", blank=True)
-    lieferadresse_nachname = models.CharField("Nachname", max_length=50, default="", blank=True)
-    lieferadresse_firma = models.CharField("Firma", max_length=50, default="", blank=True)
-    lieferadresse_adresszeile1 = models.CharField("Adresszeile 1", max_length=50, default="", blank=True)
-    lieferadresse_adresszeile2 = models.CharField("Adresszeile 2", max_length=50, default="", blank=True)
-    lieferadresse_ort = models.CharField("Ort", max_length=50, default="", blank=True)
-    lieferadresse_kanton = models.CharField("Kanton", max_length=50, default="", blank=True)
-    lieferadresse_plz = models.CharField("Postleitzahl", max_length=50, default="", blank=True)
-    lieferadresse_land = models.CharField("Land", max_length=2, default="CH", choices=LÄNDER)
+    lieferadresse_vorname = models.CharField(
+        "Vorname", max_length=50, default="", blank=True)
+    lieferadresse_nachname = models.CharField(
+        "Nachname", max_length=50, default="", blank=True)
+    lieferadresse_firma = models.CharField(
+        "Firma", max_length=50, default="", blank=True)
+    lieferadresse_adresszeile1 = models.CharField(
+        "Adresszeile 1", max_length=50, default="", blank=True)
+    lieferadresse_adresszeile2 = models.CharField(
+        "Adresszeile 2", max_length=50, default="", blank=True)
+    lieferadresse_ort = models.CharField(
+        "Ort", max_length=50, default="", blank=True)
+    lieferadresse_kanton = models.CharField(
+        "Kanton", max_length=50, default="", blank=True)
+    lieferadresse_plz = models.CharField(
+        "Postleitzahl", max_length=50, default="", blank=True)
+    lieferadresse_land = models.CharField(
+        "Land", max_length=2, default="CH", choices=LÄNDER)
 
-    zusammenfuegen = models.ForeignKey("self", on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Zusammenfügen mit", help_text="Dies kann nicht widerrufen werden! Werte im aktuellen Kunden werden bevorzugt.")
+    zusammenfuegen = models.ForeignKey("self", on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Zusammenfügen mit",
+                                       help_text="Dies kann nicht widerrufen werden! Werte im aktuellen Kunden werden bevorzugt.")
     webseite = models.URLField("Webseite", blank=True, default="")
     bemerkung = models.TextField("Bemerkung", default="", blank=True)
 
-    registrierungsemail_gesendet = models.BooleanField("Registrierungsemail gesendet?", default=False)
+    registrierungsemail_gesendet = models.BooleanField(
+        "Registrierungsemail gesendet?", default=False)
 
     def avatar(self):
         if self.avatar_url:
-            return mark_safe('<img src="'+self.avatar_url+'" width="50px">')
+            return mark_safe('<img src="' + self.avatar_url + '" width="50px">')
         return ""
     avatar.short_description = "Avatar"
 
     def __str__(self):
         return (
-            str(self.pk).zfill(8)+" " +
-            (("(WC#"+str(self.woocommerceid)+") ") if self.woocommerceid else "") +
+            str(self.pk).zfill(8) + " " +
+            (("(WC#" + str(self.woocommerceid) + ") ") if self.woocommerceid else "") +
             ((self.vorname + " ") if self.vorname else "") +
             ((self.nachname + " ") if self.nachname else "") +
             ((self.firma + " ") if self.firma else "") +
@@ -535,7 +612,7 @@ class Kunde(models.Model):
             self.lieferadresse_land = self.lieferadresse_land if self.lieferadresse_land else self.zusammenfuegen.lieferadresse_land
 
             self.webseite = self.webseite if self.webseite else self.zusammenfuegen.webseite
-            self.notiz = self.notiz+" "+self.zusammenfuegen.notiz
+            self.notiz = self.notiz + " " + self.zusammenfuegen.notiz
 
             for bestellung in self.zusammenfuegen.bestellung_set.all():
                 bestellung.kunde = self
@@ -559,22 +636,25 @@ class Kunde(models.Model):
 
     def html_todo_notiz(self):
         if hasattr(self, "notiz"):
-            link = reverse("admin:kmuhelper_todonotiz_change", kwargs={"object_id": self.notiz.pk})
-            return mark_safe('<a target="_blank" href="'+link+'">Notiz ansehen</a>')
+            link = reverse("admin:kmuhelper_todonotiz_change",
+                           kwargs={"object_id": self.notiz.pk})
+            return mark_safe('<a target="_blank" href="' + link + '">Notiz ansehen</a>')
         else:
-            link = reverse("admin:kmuhelper_todonotiz_add")+'?from_kunde='+str(self.pk)
-            return mark_safe('<a target="_blank" href="'+link+'">Notiz hinzufügen</a>')
+            link = reverse("admin:kmuhelper_todonotiz_add") + \
+                '?from_kunde=' + str(self.pk)
+            return mark_safe('<a target="_blank" href="' + link + '">Notiz hinzufügen</a>')
     html_todo_notiz.short_description = "ToDo Notiz"
 
     def html_notiz(self):
         if hasattr(self, "notiz"):
-            link = reverse("admin:kmuhelper_notiz_change", kwargs={"object_id": self.notiz.pk})
-            return mark_safe('<a target="_blank" href="'+link+'">Notiz ansehen</a>')
+            link = reverse("admin:kmuhelper_notiz_change",
+                           kwargs={"object_id": self.notiz.pk})
+            return mark_safe('<a target="_blank" href="' + link + '">Notiz ansehen</a>')
         else:
-            link = reverse("admin:kmuhelper_notiz_add")+'?from_kunde='+str(self.pk)
-            return mark_safe('<a target="_blank" href="'+link+'">Notiz hinzufügen</a>')
+            link = reverse("admin:kmuhelper_notiz_add") + \
+                '?from_kunde=' + str(self.pk)
+            return mark_safe('<a target="_blank" href="' + link + '">Notiz hinzufügen</a>')
     html_notiz.short_description = "Notiz"
-
 
 
 class Lieferant(models.Model):
@@ -582,15 +662,19 @@ class Lieferant(models.Model):
     name = models.CharField('Name', max_length=50)
 
     webseite = models.URLField("Webseite", blank=True)
-    telefon = models.CharField('Telefon', max_length=50, default="", blank=True)
+    telefon = models.CharField(
+        'Telefon', max_length=50, default="", blank=True)
     email = models.EmailField('E-Mail', null=True, blank=True)
 
     adresse = models.TextField('Adresse', default="", blank=True)
     notiz = models.TextField('Notiz', default="", blank=True)
 
-    ansprechpartner = models.CharField('Ansprechpartner', max_length=250, default="", blank=True)
-    ansprechpartnertel = models.CharField('Ansprechpartner Telefon', max_length=50, default="", blank=True)
-    ansprechpartnermail = models.EmailField('Ansprechpartner E-Mail', null=True, default="", blank=True)
+    ansprechpartner = models.CharField(
+        'Ansprechpartner', max_length=250, default="", blank=True)
+    ansprechpartnertel = models.CharField(
+        'Ansprechpartner Telefon', max_length=50, default="", blank=True)
+    ansprechpartnermail = models.EmailField(
+        'Ansprechpartner E-Mail', null=True, default="", blank=True)
 
     def __str__(self):
         return self.name
@@ -608,27 +692,30 @@ class Lieferant(models.Model):
         verbose_name_plural = "Lieferanten"
 
 
-
 class Lieferungsposten(models.Model):
     lieferung = models.ForeignKey("Lieferung", on_delete=models.CASCADE)
     produkt = models.ForeignKey("Produkt", on_delete=models.PROTECT)
     menge = models.IntegerField("Menge", default=1)
 
     def __str__(self):
-        return str(self.menge)+"x "+self.produkt.clean_name()
+        return str(self.menge) + "x " + self.produkt.clean_name()
     __str__.short_description = "Lieferungsposten"
 
     class Meta:
         verbose_name = "Lieferungsposten"
         verbose_name_plural = "Lieferungsposten"
 
+
 class Lieferung(models.Model):
-    name = models.CharField("Name", max_length=50, default=defaultlieferungsname)
+    name = models.CharField("Name", max_length=50,
+                            default=defaultlieferungsname)
     datum = models.DateField("Erfasst am", auto_now_add=True)
     notiz = models.TextField("Notiz", default="", blank=True)
 
-    lieferant = models.ForeignKey("Lieferant", on_delete=models.SET_NULL, null=True, blank=True)
-    produkte = models.ManyToManyField("Produkt", through="Lieferungsposten", through_fields=("lieferung","produkt"))
+    lieferant = models.ForeignKey(
+        "Lieferant", on_delete=models.SET_NULL, null=True, blank=True)
+    produkte = models.ManyToManyField(
+        "Produkt", through="Lieferungsposten", through_fields=("lieferung", "produkt"))
 
     eingelagert = models.BooleanField("Eingelagert", default=False)
 
@@ -651,7 +738,7 @@ class Lieferung(models.Model):
             return False
 
     def get_todo_notiz_link(self):
-        return reverse("admin:kmuhelper_todonotiz_add")+'?from_lieferung='+str(self.id)
+        return reverse("admin:kmuhelper_todonotiz_add") + '?from_lieferung=' + str(self.id)
     get_todo_notiz_link.short_description = "ToDo Notiz"
 
     def __str__(self):
@@ -672,9 +759,12 @@ class Notiz(models.Model):
     priority = models.IntegerField("Priorität", default=0, blank=True)
     erstellt_am = models.DateTimeField("Erstellt am", auto_now_add=True)
 
-    bestellung = models.OneToOneField("Bestellung", blank=True, null=True, on_delete=models.CASCADE, related_name="notiz")
-    produkt = models.OneToOneField("Produkt", blank=True, null=True, on_delete=models.CASCADE, related_name="notiz")
-    kunde = models.OneToOneField("Kunde", blank=True, null=True, on_delete=models.CASCADE, related_name="notiz")
+    bestellung = models.OneToOneField(
+        "Bestellung", blank=True, null=True, on_delete=models.CASCADE, related_name="notiz")
+    produkt = models.OneToOneField(
+        "Produkt", blank=True, null=True, on_delete=models.CASCADE, related_name="notiz")
+    kunde = models.OneToOneField(
+        "Kunde", blank=True, null=True, on_delete=models.CASCADE, related_name="notiz")
 
     def __str__(self):
         return self.name
@@ -683,11 +773,14 @@ class Notiz(models.Model):
     def links(self):
         text = ""
         if self.bestellung:
-            text += "Bestellung <a href='"+reverse("admin:kmuhelper_bestellung_change", kwargs={"object_id":self.bestellung.pk})+"'>#"+str(self.bestellung.pk)+"</a><br>"
+            text += "Bestellung <a href='" + reverse("admin:kmuhelper_bestellung_change", kwargs={
+                                                     "object_id": self.bestellung.pk}) + "'>#" + str(self.bestellung.pk) + "</a><br>"
         if self.produkt:
-            text += "Produkt <a href='"+reverse("admin:kmuhelper_produkt_change", kwargs={"object_id":self.produkt.pk})+"'>#"+str(self.produkt.pk)+"</a><br>"
+            text += "Produkt <a href='" + reverse("admin:kmuhelper_produkt_change", kwargs={
+                                                  "object_id": self.produkt.pk}) + "'>#" + str(self.produkt.pk) + "</a><br>"
         if self.kunde:
-            text += "Kunde <a href='"+reverse("admin:kmuhelper_kunde_change", kwargs={"object_id":self.kunde.pk})+"'>#"+str(self.kunde.pk)+"</a><br>"
+            text += "Kunde <a href='" + reverse("admin:kmuhelper_kunde_change", kwargs={
+                                                "object_id": self.kunde.pk}) + "'>#" + str(self.kunde.pk) + "</a><br>"
         return mark_safe(text or "Diese Notiz hat keine Verknüpfungen.")
 
     class Meta:
@@ -707,6 +800,7 @@ class Produktkategorie(models.Model):
         verbose_name = "Produktkategorie"
         verbose_name_plural = "Produktkategorien"
 
+
 class Produkt(models.Model):
     artikelnummer = models.CharField("Artikelnummer", max_length=25)
 
@@ -716,53 +810,63 @@ class Produkt(models.Model):
     kurzbeschrieb = models.TextField('Kurzbeschrieb', default="", blank=True)
     beschrieb = models.TextField('Beschrieb', default="", blank=True)
 
-    mengenbezeichnung = models.CharField('Mengenbezeichnung', max_length=100, default="[:de]Stück[:fr]Pièce[:it]Pezzo[:en]Piece[:]", blank=True)
-    verkaufspreis = models.FloatField('Normalpreis in CHF (exkl. MwSt)', default=0)
-    mwstsatz = models.FloatField('Mehrwertsteuersatz', choices= MWSTSÄTZE, default=7.7)
+    mengenbezeichnung = models.CharField(
+        'Mengenbezeichnung', max_length=100, default="[:de]Stück[:fr]Pièce[:it]Pezzo[:en]Piece[:]", blank=True)
+    verkaufspreis = models.FloatField(
+        'Normalpreis in CHF (exkl. MwSt)', default=0)
+    mwstsatz = models.FloatField(
+        'Mehrwertsteuersatz', choices=MWSTSÄTZE, default=7.7)
     lagerbestand = models.IntegerField("Lagerbestand", default=0)
 
-    bemerkung = models.TextField('Bemerkung', default="", blank=True, help_text="Wird nicht gedruckt oder angezeigt; nur für eigene Zwecke.")
+    bemerkung = models.TextField('Bemerkung', default="", blank=True,
+                                 help_text="Wird nicht gedruckt oder angezeigt; nur für eigene Zwecke.")
     #packlistenbemerkung = models.TextField('Packlistenbemerkung', default="", blank=True, help_text="Wird auf die Packliste gedruckt.")
 
     aktion_von = models.DateTimeField("In Aktion von", blank=True, null=True)
     aktion_bis = models.DateTimeField("In Aktion bis", blank=True, null=True)
-    aktion_preis = models.FloatField("Aktionspreis in CHF (exkl. MwSt)", blank=True, null=True)
+    aktion_preis = models.FloatField(
+        "Aktionspreis in CHF (exkl. MwSt)", blank=True, null=True)
 
-    datenblattlink = models.CharField('Datenblattlink', max_length=500, default="", blank=True)
+    datenblattlink = models.CharField(
+        'Datenblattlink', max_length=500, default="", blank=True)
     bildlink = models.URLField('Bildlink', default="", blank=True)
 
-    lieferant = models.ForeignKey("Lieferant", on_delete=models.SET_NULL, blank=True, null=True, verbose_name="Lieferant")
-    lieferant_preis = models.CharField("Lieferantenpreis", default="", blank=True, max_length=20)
-    lieferant_artikelnummer = models.CharField("Lieferantenartikelnummer", default="", blank=True, max_length=25)
+    lieferant = models.ForeignKey(
+        "Lieferant", on_delete=models.SET_NULL, blank=True, null=True, verbose_name="Lieferant")
+    lieferant_preis = models.CharField(
+        "Lieferantenpreis", default="", blank=True, max_length=20)
+    lieferant_artikelnummer = models.CharField(
+        "Lieferantenartikelnummer", default="", blank=True, max_length=25)
 
-    kategorien = models.ManyToManyField("Kategorie", through="Produktkategorie", through_fields=("produkt","kategorie"), verbose_name="Kategorie", related_name="produkte")
+    kategorien = models.ManyToManyField("Kategorie", through="Produktkategorie", through_fields=(
+        "produkt", "kategorie"), verbose_name="Kategorie", related_name="produkte")
 
     def clean_name(self, lang="de"):
-        return clean(self.name,lang)
+        return clean(self.name, lang)
     clean_name.short_description = "Name"
 
     def clean_kurzbeschrieb(self, lang="de"):
-        return clean(self.kurzbeschrieb,lang)
+        return clean(self.kurzbeschrieb, lang)
     clean_kurzbeschrieb.short_description = "Kurzbeschrieb"
 
     def clean_beschrieb(self, lang="de"):
-        return clean(self.beschrieb,lang)
+        return clean(self.beschrieb, lang)
     clean_beschrieb.short_description = "Beschrieb"
 
-    def in_aktion(self, zeitpunkt:datetime=datetime.now(utc)):
+    def in_aktion(self, zeitpunkt: datetime = datetime.now(utc)):
         if self.aktion_von and self.aktion_bis and self.aktion_preis:
             return bool((self.aktion_von < zeitpunkt) and (zeitpunkt < self.aktion_bis))
         return False
     in_aktion.short_description = "In Aktion"
     in_aktion.boolean = True
 
-    def preis(self, zeitpunkt:datetime=datetime.now(utc)):
+    def preis(self, zeitpunkt: datetime = datetime.now(utc)):
         return self.aktion_preis if self.in_aktion(zeitpunkt) else self.verkaufspreis
     preis.short_description = "Aktueller Preis in CHF (exkl. MwSt)"
 
     def bild(self):
         if self.bildlink:
-            return mark_safe('<img src="'+self.bildlink+'" width="100px">')
+            return mark_safe('<img src="' + self.bildlink + '" width="100px">')
         return ""
     bild.short_description = "Bild"
 
@@ -777,24 +881,28 @@ class Produkt(models.Model):
 
     def html_todo_notiz(self):
         if hasattr(self, "notiz"):
-            link = reverse("admin:kmuhelper_todonotiz_change", kwargs={"object_id": self.notiz.pk})
-            return mark_safe('<a target="_blank" href="'+link+'">Notiz ansehen</a>')
+            link = reverse("admin:kmuhelper_todonotiz_change",
+                           kwargs={"object_id": self.notiz.pk})
+            return mark_safe('<a target="_blank" href="' + link + '">Notiz ansehen</a>')
         else:
-            link = reverse("admin:kmuhelper_todonotiz_add")+'?from_produkt='+str(self.pk)
-            return mark_safe('<a target="_blank" href="'+link+'">Notiz hinzufügen</a>')
+            link = reverse("admin:kmuhelper_todonotiz_add") + \
+                '?from_produkt=' + str(self.pk)
+            return mark_safe('<a target="_blank" href="' + link + '">Notiz hinzufügen</a>')
     html_todo_notiz.short_description = "ToDo Notiz"
 
     def html_notiz(self):
         if hasattr(self, "notiz"):
-            link = reverse("admin:kmuhelper_notiz_change", kwargs={"object_id": self.notiz.pk})
-            return mark_safe('<a target="_blank" href="'+link+'">Notiz ansehen</a>')
+            link = reverse("admin:kmuhelper_notiz_change",
+                           kwargs={"object_id": self.notiz.pk})
+            return mark_safe('<a target="_blank" href="' + link + '">Notiz ansehen</a>')
         else:
-            link = reverse("admin:kmuhelper_notiz_add")+'?from_produkt='+str(self.pk)
-            return mark_safe('<a target="_blank" href="'+link+'">Notiz hinzufügen</a>')
+            link = reverse("admin:kmuhelper_notiz_add") + \
+                '?from_produkt=' + str(self.pk)
+            return mark_safe('<a target="_blank" href="' + link + '">Notiz hinzufügen</a>')
     html_notiz.short_description = "Notiz"
 
     def __str__(self):
-        return self.artikelnummer+" - "+self.clean_name()
+        return self.artikelnummer + " - " + self.clean_name()
     __str__.short_description = "Produkt"
 
     class Meta:
@@ -802,17 +910,22 @@ class Produkt(models.Model):
         verbose_name_plural = "Produkte"
 
 
-
 class Zahlungsempfaenger(models.Model):
-    qriban = models.CharField("QR-IBAN", max_length=21+5 , validators=[RegexValidator(r'^CH[0-9]{2}\s3[0-9]{3}\s[0-9]{4}\s[0-9]{4}\s[0-9]{4}\s[0-9]{1}$', 'Bite benutze folgendes Format: CHxx 3xxx xxxx xxxx xxxx x')])
-    logourl = models.URLField("Logo (URL)", validators=[RegexValidator(r'''^[0-9a-zA-Z\-\.\|\?\(\)\*\+&"'_:;/]+\.(png|jpg)$''', '''Nur folgende Zeichen gestattet: 0-9a-zA-Z-_.:;/|?&()"'*+ - Muss auf .jpg/.png enden.''')])
+    qriban = models.CharField("QR-IBAN", max_length=21 + 5, validators=[RegexValidator(
+        r'^CH[0-9]{2}\s3[0-9]{3}\s[0-9]{4}\s[0-9]{4}\s[0-9]{4}\s[0-9]{1}$', 'Bite benutze folgendes Format: CHxx 3xxx xxxx xxxx xxxx x')])
+    logourl = models.URLField("Logo (URL)", validators=[RegexValidator(
+        r'''^[0-9a-zA-Z\-\.\|\?\(\)\*\+&"'_:;/]+\.(png|jpg)$''', '''Nur folgende Zeichen gestattet: 0-9a-zA-Z-_.:;/|?&()"'*+ - Muss auf .jpg/.png enden.''')])
     firmenname = models.CharField("Firmennname", max_length=70)
-    firmenuid = models.CharField("Firmen-UID", max_length=15 , validators=[RegexValidator(r'^CHE-[0-9]{3}\.[0-9]{3}\.[0-9]{3}$', 'Bite benutze folgendes Format: CHE-123.456.789')])
-    adresszeile1 = models.CharField("Strasse und Hausnummer oder Postfach", max_length=70)
+    firmenuid = models.CharField("Firmen-UID", max_length=15, validators=[RegexValidator(
+        r'^CHE-[0-9]{3}\.[0-9]{3}\.[0-9]{3}$', 'Bite benutze folgendes Format: CHE-123.456.789')])
+    adresszeile1 = models.CharField(
+        "Strasse und Hausnummer oder Postfach", max_length=70)
     adresszeile2 = models.CharField("PLZ und Ort", max_length=70)
     land = models.CharField("Land", max_length=2, choices=LÄNDER, default="CH")
-    email = models.EmailField("E-Mail", default="", blank=True, help_text="Nicht auf der Rechnung ersichtlich")
-    telefon = models.CharField("Telefon", max_length=70, default="", blank=True, help_text="Nicht auf der Rechnung ersichtlich")
+    email = models.EmailField(
+        "E-Mail", default="", blank=True, help_text="Nicht auf der Rechnung ersichtlich")
+    telefon = models.CharField("Telefon", max_length=70, default="",
+                               blank=True, help_text="Nicht auf der Rechnung ersichtlich")
     webseite = models.URLField("Webseite")
 
     def __str__(self):
@@ -824,11 +937,9 @@ class Zahlungsempfaenger(models.Model):
         verbose_name_plural = "Zahlungsempfänger"
 
 
-
 ######################
 
 ######################
-
 EINSTELLUNGSTYPEN = [
     ("char", "Text"),
     ("text", "Mehrzeiliger Text"),
@@ -837,16 +948,23 @@ EINSTELLUNGSTYPEN = [
     ("url",  "Url")
 ]
 
-class Einstellung(models.Model):
-    id   = models.CharField("ID", max_length=20, primary_key=True)
-    name = models.CharField("Name", max_length=100)
-    typ  = models.CharField("Typ", max_length=4, default="char", choices=EINSTELLUNGSTYPEN)
 
-    char = models.CharField(    "Inhalt (Text)              ", max_length=250, default="",  blank=True)
-    text = models.TextField(    "Inhalt (Mehrzeiliger Text) ", default="",                  blank=True)
-    inte = models.IntegerField( "Inhalt (Zahl)              ", default=0,                   blank=True)
-    floa = models.FloatField(   "Inhalt (Fliesskommazahl)   ", default=0.0,                 blank=True)
-    url  = models.URLField(     "Inhalt (Url)               ", default="",                  blank=True)
+class Einstellung(models.Model):
+    id = models.CharField("ID", max_length=20, primary_key=True)
+    name = models.CharField("Name", max_length=100)
+    typ = models.CharField("Typ", max_length=4,
+                           default="char", choices=EINSTELLUNGSTYPEN)
+
+    char = models.CharField("Inhalt (Text)              ",
+                            max_length=250, default="",  blank=True)
+    text = models.TextField("Inhalt (Mehrzeiliger Text) ",
+                            default="",                  blank=True)
+    inte = models.IntegerField(
+        "Inhalt (Zahl)              ", default=0,                   blank=True)
+    floa = models.FloatField(
+        "Inhalt (Fliesskommazahl)   ", default=0.0,                 blank=True)
+    url = models.URLField("Inhalt (Url)               ",
+                          default="",                  blank=True)
 
     def __str__(self):
         return self.name
@@ -887,19 +1005,24 @@ class Einstellung(models.Model):
         verbose_name_plural = "Einstellungen"
 
 
-
 class Geheime_Einstellung(models.Model):
     id = models.CharField("ID", max_length=20, primary_key=True)
-    typ  = models.CharField("Typ", max_length=4, default="char", choices=EINSTELLUNGSTYPEN)
+    typ = models.CharField("Typ", max_length=4,
+                           default="char", choices=EINSTELLUNGSTYPEN)
 
-    char = models.CharField(    "Inhalt (Text)              ", max_length=250, default="",  blank=True)
-    text = models.TextField(    "Inhalt (Mehrzeiliger Text) ", default="",                  blank=True)
-    inte = models.IntegerField( "Inhalt (Zahl)              ", default=0,                   blank=True)
-    floa = models.FloatField(   "Inhalt (Fliesskommazahl)   ", default=0.0,                 blank=True)
-    url  = models.URLField(     "Inhalt (Url)               ", default="",                  blank=True)
+    char = models.CharField("Inhalt (Text)              ",
+                            max_length=250, default="",  blank=True)
+    text = models.TextField("Inhalt (Mehrzeiliger Text) ",
+                            default="",                  blank=True)
+    inte = models.IntegerField(
+        "Inhalt (Zahl)              ", default=0,                   blank=True)
+    floa = models.FloatField(
+        "Inhalt (Fliesskommazahl)   ", default=0.0,                 blank=True)
+    url = models.URLField("Inhalt (Url)               ",
+                          default="",                  blank=True)
 
     def __str__(self):
-        return self.id+" "+str(self.inhalt)
+        return self.id + " " + str(self.inhalt)
     __str__.short_description = "Geheime Einstellung"
 
     @property
@@ -945,6 +1068,7 @@ class ToDoNotizManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(erledigt=False)
 
+
 class ToDoNotiz(Notiz):
     objects = ToDoNotizManager()
 
@@ -954,9 +1078,11 @@ class ToDoNotiz(Notiz):
         verbose_name_plural = "Notizen"
         default_permissions = ('add', 'change', 'view')
 
+
 class ToDoVersandManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(versendet=False)
+
 
 class ToDoVersand(Bestellung):
     objects = ToDoVersandManager()
@@ -967,9 +1093,11 @@ class ToDoVersand(Bestellung):
         verbose_name_plural = "Bestellungen"
         default_permissions = ('add', 'change', 'view')
 
+
 class ToDoZahlungseingangManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(bezahlt=False)
+
 
 class ToDoZahlungseingang(Bestellung):
     objects = ToDoZahlungseingangManager()
@@ -980,14 +1108,15 @@ class ToDoZahlungseingang(Bestellung):
         verbose_name_plural = "Bestellung"
         default_permissions = ('add', 'change', 'view')
 
+
 class ToDoLagerbestand(Produkt):
     def html_todo_notiz_erstellen(self):
         link = self.get_todo_notiz_link()
-        return mark_safe('<a target="_blank" href="'+link+'">+ ToDo Notiz</a>')
+        return mark_safe('<a target="_blank" href="' + link + '">+ ToDo Notiz</a>')
     html_todo_notiz_erstellen.short_description = "ToDo Notiz Erstellen"
 
     def preis(self, *args, **kwargs):
-        return super().preis(*args,**kwargs)
+        return super().preis(*args, **kwargs)
     preis.short_description = "Preis"
 
     def nr(self):
@@ -1000,14 +1129,16 @@ class ToDoLagerbestand(Produkt):
         verbose_name_plural = "Produkte"
         default_permissions = ('add', 'change', 'view')
 
+
 class ToDoLieferungsManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(eingelagert=False)
 
+
 class ToDoLieferung(Lieferung):
     def html_todo_notiz_erstellen(self):
         link = self.get_todo_notiz_link()
-        return mark_safe('<a target="_blank" href="'+link+'">+ ToDo Notiz</a>')
+        return mark_safe('<a target="_blank" href="' + link + '">+ ToDo Notiz</a>')
     html_todo_notiz_erstellen.short_description = "ToDo Notiz Erstellen"
 
     objects = ToDoLieferungsManager()
