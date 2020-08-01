@@ -1,1 +1,1 @@
-# KMUHelper Benutzerhandbuch
+# Benutzerhandbuch

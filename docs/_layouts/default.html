@@ -25,8 +25,8 @@
         <a style="display: none;" id="skip-to-content" href="#content">Zum Inhalt springen.</a>
 
         <header class="page-header" role="banner">
-            <h1 class="project-name">{{ page.title | default: site.title | default: site.github.repository_name }}</h1>
-            <h2 class="project-tagline">{{ page.description | default: site.description | default: site.github.project_tagline }}</h2>
+            <h1 class="project-name">KMUHelper</h1>
+            <h2 class="project-tagline">{{ site.description | default: site.github.project_tagline }}</h2>
             <a href="{{ '/' | relative_url }}" class="btn">Home</a>
             <a href="{{ '/manual/' | relative_url }}" class="btn">Handbuch</a>
             {% if site.github.is_project_page %}
