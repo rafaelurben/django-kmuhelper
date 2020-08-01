@@ -14,10 +14,6 @@
                 closeOnEsc: false
             });
         };
-
-        window.addEventListener("beforeunload", function (e) {
-            swal.close();
-        });
     </script>
     <li>
         <a onclick="laden();" href="{% url 'kmuhelper:wc-import-categories' %}" class="addlink">Kategorien von WooCommerce importieren</a>

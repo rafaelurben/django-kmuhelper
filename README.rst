@@ -5,7 +5,7 @@ KMUHelper
 Der KMUHelper ist, wie der Name schon sagt, ein Helfer für KMU, hauptsächlich für Schweizer, da der Hauptgrund für
 die Entwicklung dieser Djangoapp die neue schweizer QR-Rechnung ist.
 
-Bei Fragen oder Probleme bitte unbedingt bei [mir](mailto:rafaelurben@gmail.com) melden!
+Bei Fragen oder Probleme bitte unbedingt bei [mir](https://t.me/rafaelurben) melden!
 
 Requirements
 ------------

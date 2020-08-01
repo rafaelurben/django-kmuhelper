@@ -21,6 +21,7 @@
                 console.log("[Beforeunload] - Form changed:", formChanged);
                 if (!isSubmitting && formChanged) {
                     console.log("[Beforeunload] - Unload prevented!");
+                    swal.close();
                     return 'Du hast ungesicherte Änderungen vorgenommen. Wenn du die Seite verlässt, werden diese gelöscht.'
                 }
             });

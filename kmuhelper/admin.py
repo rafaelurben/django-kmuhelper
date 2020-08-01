@@ -687,7 +687,8 @@ class ToDoVersandAdmin(BestellungsAdmin):
 
 @admin.register(ToDoZahlungseingang)
 class ToDoZahlungseingangAdmin(BestellungsAdmin):
-    list_display = ('id', 'info', 'bezahlt', 'status', 'html_todo_notiz')
+    list_display = ('id', 'info', 'bezahlt', 'status',
+                    'fix_summe', 'html_todo_notiz')
     list_editable = ("bezahlt", "status")
     list_filter = ('status', 'versendet', 'zahlungsmethode')
 
