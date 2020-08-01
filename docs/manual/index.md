@@ -1,3 +1,3 @@
-# KMUHelper Benutzerhandbuch
+[Zur Hauptseite](../index.md)
 
-[&lt;- Zurück](./index.md)
+# KMUHelper Benutzerhandbuch
