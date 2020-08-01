@@ -1,5 +1,3 @@
-[&lt;- Zurück](index.md)
-
 # Installation
 
 ## Anforderungen
