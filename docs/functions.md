@@ -1,8 +1,8 @@
-# Infos
+# Funktionen
 
 Der KMUHelper ist ein Tool für Schweizer KMU, mit welchem die Buchhaltung erledigt werden kann.
 
-Ein paar Funktionen:
+Hier eine kleine Liste mit den wichtigsten Funktionen:
 
 -   Lagerverwaltung
 -   Erfassen von Bestellungen
