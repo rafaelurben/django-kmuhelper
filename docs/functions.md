@@ -1,3 +1,7 @@
+---
+permalink: /functions
+---
+
 # Funktionen
 
 Der KMUHelper ist ein Tool für Schweizer KMU, mit welchem die Buchhaltung erledigt werden kann.

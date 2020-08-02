@@ -1,3 +1,7 @@
+---
+permalink: /history
+---
+
 # Geschichte
 
 Die Entstehung des KMUHelpers ist eigentlich eine ziemlich lange Geschichte.
@@ -30,7 +34,7 @@ Mittlerweile ist der KMUHelper eine brauchbare, auf django-admin basierende Web-
 
 Mit Django wurde der KMUHelper für mich ein Projekt, in welchem ich Potential sah, da Buchhaltungssoftware für viele KMU viel zu teuer ist, und dies eine meiner Meinung nach gute Alternative zu konstenpflichtiger Buchhaltungssoftware ist.
 
-Die [Funktionen](functions) des KMUHelpers werden stetig ergänzt und verbessert.
+Die [Funktionen](functions.md) des KMUHelpers werden stetig ergänzt und verbessert.
 
 Bei Fragen könnem Sie mich gerne [kontaktieren](https://rafaelurben.github.io/diverses/rafaelurben/#kontakt).
 

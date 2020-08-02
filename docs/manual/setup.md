@@ -1,3 +1,7 @@
+---
+permalink: /manual/setup
+---
+
 # Einrichtung
 
 Rufen Sie als erstes folgende Seite auf: `/admin/kmuhelper/`

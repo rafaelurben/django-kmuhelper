@@ -1,3 +1,7 @@
+---
+permalink: /
+---
+
 # KMUHelper
 
 Willkommen in der KMUHelper-Dokumentation!
@@ -6,10 +10,10 @@ Hier finden Sie alles, was Sie über den KMUHelper wissen müssen!
 
 ## Inhalt
 
--   [Geschichte](history)
--   [Funktionen](functions)
--   [Installation](installation)
--   [Benutzerhandbuch](manual)
+-   [Geschichte](history.md)
+-   [Funktionen](functions.md)
+-   [Installation](installation.md)
+-   [Benutzerhandbuch](manual.md)
 
 ### Kontakt
 

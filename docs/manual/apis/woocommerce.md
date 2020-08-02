@@ -1,3 +1,7 @@
+---
+permalink: /manual/apis/woocommerce
+---
+
 # WooCommerce-Integration
 
 Sie können den KMUHelper mit einem WooCommerce Shop verbinden, um Bestellungen, Produkte und Kunden von WooCommerce zu importieren.
@@ -35,4 +39,4 @@ Im KMUHelper-Admin findest Sie nun bei Produkten, Bestellungen und Kunden einen 
 
 ## Zurück
 
-[Zurück zur Einrichtung](../setup#integrationen)
+[Zurück zur Einrichtung](../setup.md#integrationen)

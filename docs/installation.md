@@ -1,3 +1,7 @@
+---
+permalink: /installation
+---
+
 # Installation
 
 Falls Sie keine Ahnung von all dem "Zeugs" da unten haben, können Sie mich gerne [kontaktieren](https://rafaelurben.github.io/diverses/rafaelurben/#kontakt). Bei Interesse helfe ich gerne (gegen einen kleinen Unkostenbetrag) bei der Aufsetzung des KMUHelpers.
