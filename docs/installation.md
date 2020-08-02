@@ -14,7 +14,7 @@ Natürlich kannst du mich auch gerne bei irgendwelchen Fragen kontaktieren.
 
 ## Anleitung
 
-1.  Füge "kmuhelper" zu deinen installierten Apps hinzu:
+1.  Füge `kmuhelper` zu deinen installierten Apps hinzu:
 
     ```python
     INSTALLED_APPS = [
