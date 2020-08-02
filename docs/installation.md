@@ -14,9 +14,13 @@ Natürlich können Sie mich auch gerne bei irgendwelchen Fragen kontaktieren.
     -   Django-Admin aktiviert
     -   Funktionierende Datenbank-Verbindung
     -   Funktionierende E-Mail Einstellungen
--   Alle Module aus requirements.txt sind installiert
 
 ## Anleitung
+
+0.  Installieren Sie den KMUHelper:
+
+    Aktuellste Vollversion: `pip install --upgrade django-kmuhelper`
+    Aktuellste Dev-Version: `pip install -i https://test.pypi.org/simple/ --upgrade django-kmuhelper`
 
 1.  Fügen Sie `kmuhelper` zu Ihren installierten Apps hinzu:
 
