@@ -32,4 +32,4 @@ Falls du eine Wordpress-Seite mit WooCommerce hast, kannst du diese [mit dem KMU
 
 Die grundlegende Einrichtung ist nun abgeschlossen.
 
-Bevor du bereit bist, Rechnungen zu erstellen, musst du jedoch zuerst noch Produkte und Kunden hinzufügen. Du findest Anleitungen dazu auf der [Startseite](../) des Benutzerhandbuches.
+Bevor du bereit bist, Rechnungen zu erstellen, musst du jedoch zuerst noch Produkte und Kunden hinzufügen. Du findest Anleitungen dazu auf der [Startseite](./) des Benutzerhandbuches.

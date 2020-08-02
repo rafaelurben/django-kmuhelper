@@ -43,4 +43,4 @@ Natürlich kannst du mich auch gerne bei irgendwelchen Fragen kontaktieren.
 
 ## Zurück
 
-[Zurück zur Startseite](../)
+[Zurück zur Startseite](./)

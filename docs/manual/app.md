@@ -19,4 +19,4 @@ Alle Seiten dieser App sind auf der Startseite erklärt.
 
 ## Zurück
 
-[Zurück zum Handbuch](../)
+[Zurück zum Handbuch](./)

@@ -19,5 +19,4 @@ Ich übernehme KEINE GARANTIE bei fehlerhafter Programmierung meinerseits, bin a
 
 ## Zurück
 
-[Zurück zur Startseite](../)
-
+[Zurück zur Startseite](./)

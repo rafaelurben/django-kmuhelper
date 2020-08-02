@@ -36,4 +36,4 @@ Bei Fragen kannst du mich gerne [kontaktieren](https://rafaelurben.github.io/div
 
 ## Zurück
 
-[Zurück zur Startseite](../)
+[Zurück zur Startseite](./)
