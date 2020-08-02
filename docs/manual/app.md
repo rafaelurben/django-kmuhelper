@@ -7,6 +7,6 @@ Wenn du diese Seite auf dem Handy öffnest, kannst du, je nach deinem Betreibssy
 
 Die App sollte nach dem Login so aussehen:
 
-![KMUHelper App - Home](../assets/images/screenshots/app_home.png)
+<img src="../assets/images/screenshots/app_home.png" alt="KMUHelper App - Home" style="max-width: 375px;">
 
 ## Seiten
