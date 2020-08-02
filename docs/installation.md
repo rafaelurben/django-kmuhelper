@@ -1,8 +1,8 @@
 # Installation
 
-Falls du keine Ahnung von all dem "Zeugs" da unten hast, kannst du mich gerne [kontaktieren](https://rafaelurben.github.io/diverses/rafaelurben/#kontakt). Bei Interesse helfe ich gerne (gegen einen kleinen Unkostenbetrag) bei der Aufsetzung des KMUHelpers.
+Falls Sie keine Ahnung von all dem "Zeugs" da unten haben, können Sie mich gerne [kontaktieren](https://rafaelurben.github.io/diverses/rafaelurben/#kontakt). Bei Interesse helfe ich gerne (gegen einen kleinen Unkostenbetrag) bei der Aufsetzung des KMUHelpers.
 
-Natürlich kannst du mich auch gerne bei irgendwelchen Fragen kontaktieren.
+Natürlich können Sie mich auch gerne bei irgendwelchen Fragen kontaktieren.
 
 ## Anforderungen
 
@@ -14,7 +14,7 @@ Natürlich kannst du mich auch gerne bei irgendwelchen Fragen kontaktieren.
 
 ## Anleitung
 
-1.  Füge `kmuhelper` zu deinen installierten Apps hinzu:
+1.  Fügen Sie `kmuhelper` zu Ihren installierten Apps hinzu:
 
     ```python
     INSTALLED_APPS = [
@@ -26,7 +26,7 @@ Natürlich kannst du mich auch gerne bei irgendwelchen Fragen kontaktieren.
     ]
     ```
 
-2.  Füge den KMUHelper zu deiner URL-Konfiguration hinzu:
+2.  Fügen Sie den KMUHelper zu Ihrer URL-Konfiguration hinzu:
 
     ```python
     urlpatterns = [
@@ -37,9 +37,9 @@ Natürlich kannst du mich auch gerne bei irgendwelchen Fragen kontaktieren.
     ]
     ```
 
-3.  Führe `python manage.py migrate` aus, um die Datenbank einzurichten.
+3.  Führen Sie `python manage.py migrate` aus, um die Datenbank einzurichten.
 
-4.  Besuche den Admin-Bereich deiner Webseite.
+4.  Besuchen Sie den Admin-Bereich Ihrer Webseite.
 
 ## Zurück
 

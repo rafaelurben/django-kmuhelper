@@ -79,9 +79,9 @@ GUTSCHEINTYPEN = [
 #############
 
 class Ansprechpartner(models.Model):
-    name = models.CharField('Name', max_length=50)
-    telefon = models.CharField('Telefon', max_length=50)
-    email = models.EmailField('E-Mail')
+    name = models.CharField('Name', max_length=50, help_text="Auf Rechnung ersichtlich!")
+    telefon = models.CharField('Telefon', max_length=50, help_text="Auf Rechnung ersichtlich!")
+    email = models.EmailField('E-Mail', help_text="Auf Rechnung ersichtlich!")
 
     def __str__(self):
         return self.name
@@ -805,16 +805,16 @@ class Produkt(models.Model):
 
 
 class Zahlungsempfaenger(models.Model):
-    qriban = models.CharField("QR-IBAN", max_length=21+5 , validators=[RegexValidator(r'^CH[0-9]{2}\s3[0-9]{3}\s[0-9]{4}\s[0-9]{4}\s[0-9]{4}\s[0-9]{1}$', 'Bite benutze folgendes Format: CHxx 3xxx xxxx xxxx xxxx x')])
-    logourl = models.URLField("Logo (URL)", validators=[RegexValidator(r'''^[0-9a-zA-Z\-\.\|\?\(\)\*\+&"'_:;/]+\.(png|jpg)$''', '''Nur folgende Zeichen gestattet: 0-9a-zA-Z-_.:;/|?&()"'*+ - Muss auf .jpg/.png enden.''')])
-    firmenname = models.CharField("Firmennname", max_length=70)
-    firmenuid = models.CharField("Firmen-UID", max_length=15 , validators=[RegexValidator(r'^CHE-[0-9]{3}\.[0-9]{3}\.[0-9]{3}$', 'Bite benutze folgendes Format: CHE-123.456.789')])
-    adresszeile1 = models.CharField("Strasse und Hausnummer oder Postfach", max_length=70)
+    qriban = models.CharField("QR-IBAN", max_length=21+5 , validators=[RegexValidator(r'^CH[0-9]{2}\s3[0-9]{3}\s[0-9]{4}\s[0-9]{4}\s[0-9]{4}\s[0-9]{1}$', 'Bite benutze folgendes Format: CHxx 3xxx xxxx xxxx xxxx x')], help_text="QR-IBAN mit Leerzeichen")
+    logourl = models.URLField("Logo (URL)", validators=[RegexValidator(r'''^[0-9a-zA-Z\-\.\|\?\(\)\*\+&"'_:;/]+\.(png|jpg)$''', '''Nur folgende Zeichen gestattet: 0-9a-zA-Z-_.:;/|?&()"'*+ - Muss auf .jpg/.png enden.''')], help_text="URL eines Bildes (.jpg/.png) - Wird auf die Rechnung gedruckt.")
+    firmenname = models.CharField("Firmennname", max_length=70, help_text="Name der Firma")
+    firmenuid = models.CharField("Firmen-UID", max_length=15 , validators=[RegexValidator(r'^CHE-[0-9]{3}\.[0-9]{3}\.[0-9]{3}$', 'Bite benutze folgendes Format: CHE-123.456.789')], help_text="UID der Firma - Format: CHE-123.456.789 (Mehrwertsteuernummer)")
+    adresszeile1 = models.CharField("Strasse und Hausnummer oder 'Postfach'", max_length=70)
     adresszeile2 = models.CharField("PLZ und Ort", max_length=70)
     land = models.CharField("Land", max_length=2, choices=LÄNDER, default="CH")
     email = models.EmailField("E-Mail", default="", blank=True, help_text="Nicht auf der Rechnung ersichtlich")
     telefon = models.CharField("Telefon", max_length=70, default="", blank=True, help_text="Nicht auf der Rechnung ersichtlich")
-    webseite = models.URLField("Webseite")
+    webseite = models.URLField("Webseite", help_text="Auf der Rechnung ersichtlich!")
 
     def __str__(self):
         return self.firmenname
@@ -823,6 +823,7 @@ class Zahlungsempfaenger(models.Model):
     class Meta:
         verbose_name = "Zahlungsempfänger"
         verbose_name_plural = "Zahlungsempfänger"
+
 
 
 

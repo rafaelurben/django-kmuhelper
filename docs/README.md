@@ -2,7 +2,7 @@
 
 Willkommen in der KMUHelper-Dokumentation!
 
-Hier findest du alles, was du über den KMUHelper wissen musst!
+Hier finden Sie alles, was Sie über den KMUHelper wissen müssen!
 
 ## Inhalt
 
@@ -13,4 +13,4 @@ Hier findest du alles, was du über den KMUHelper wissen musst!
 
 ### Kontakt
 
-Wenn du mich kontaktieren möchtest, findest du [hier](https://rafaelurben.github.io/diverses/rafaelurben/#kontakt) diverse Möglichkeiten dazu.
+Wenn Sie mich kontaktieren möchten, finden Sie [hier](https://rafaelurben.github.io/diverses/rafaelurben/#kontakt) diverse Möglichkeiten dazu.

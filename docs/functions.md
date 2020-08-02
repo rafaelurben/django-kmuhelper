@@ -13,9 +13,9 @@ Hier eine kleine Liste mit den wichtigsten Funktionen:
 
 ## Wichtige Infos
 
-Bitte beachtet, dass der KMUHelper (zurzeit) nur für Bestellungen innerhalb Schweiz/Liechtenstein ausgelegt ist.
+Bitte beachten SIe, dass der KMUHelper (zurzeit) nur für Bestellungen innerhalb Schweiz/Liechtenstein ausgelegt ist.
 
-Ich übernehme KEINE GARANTIE bei fehlerhafter Programmierung meinerseits, bin aber gerne bereit, euer Problem so schnell wie möglich zu lösen. (Eröffnet dazu ein [Issue](<{{ site.github.repository_url }}/issues>) oder [kontaktiert mich](https://rafaelurben.github.io/diverses/rafaelurben/#kontakt).)
+Ich übernehme KEINE GARANTIE bei fehlerhafter Programmierung meinerseits, bin aber gerne bereit, Ihr Problem so schnell wie möglich zu lösen. (Eröffnen Sie dazu ein [Issue](<{{ site.github.repository_url }}/issues>) oder [kontaktieren Sie mich](https://rafaelurben.github.io/diverses/rafaelurben/#kontakt).)
 
 ## Zurück
 
