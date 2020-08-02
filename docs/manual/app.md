@@ -9,4 +9,14 @@ Die App sollte nach dem Login so aussehen:
 
 <img src="../assets/images/screenshots/app_home.png" alt="KMUHelper App - Home" style="max-width: min(375px, 90vw);">
 
+## Funktionen
+
+Diese App beinhaltet versteckte Seiten des Django-Adminbereichs, welche die einfachere Massenverwaltung von Bestellungen, Lagerbestand, Notizen und Lieferungen.
+
 ## Seiten
+
+Alle Seiten dieser App sind auf der Startseite erklärt.
+
+## Zurück
+
+[Zurück zum Handbuch](../)
