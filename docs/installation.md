@@ -40,3 +40,7 @@ Natürlich kannst du mich auch gerne bei irgendwelchen Fragen kontaktieren.
 3.  Führe `python manage.py migrate` aus, um die Datenbank einzurichten.
 
 4.  Besuche den Admin-Bereich deiner Webseite.
+
+## Zurück
+
+[Zurück zur Startseite](../)

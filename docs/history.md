@@ -33,3 +33,7 @@ Mit Django wurde der KMUHelper für mich ein Projekt, in welchem ich Potential s
 Die [Funktionen](functions) des KMUHelpers werden stetig ergänzt und verbessert.
 
 Bei Fragen kannst du mich gerne [kontaktieren](https://rafaelurben.github.io/diverses/rafaelurben/#kontakt).
+
+## Zurück
+
+[Zurück zur Startseite](../)
