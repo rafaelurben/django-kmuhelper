@@ -8,4 +8,4 @@ Diese Bedienungsanleitung sollte dir dazu helfen, den KMUHelper zu verstehen und
 
 -   [Einrichtung](setup)
 
-Hinweis: Zu Demonstrationszwecken werden in dieser Bedienungsanleitung relative Urls verwendet.
+Hinweis: Zu Demonstrationszwecken werden in dieser Bedienungsanleitung relative Urls oder die Domain `example.com` verwendet. In beiden Fällen solltest du diese mit deiner Domain ergänzen bzw. ersetzen.

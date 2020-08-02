@@ -11,6 +11,10 @@
   --kmuhelper-lightest: #FFEE88;
 }
 
+body {
+    scroll-behavior: smooth;
+}
+
 .page-header {
     background-color: var(--kmuhelper-darkest);
     background-image: linear-gradient(120deg, var(--kmuhelper-darkest), var(--kmuhelper-light));
@@ -26,6 +30,7 @@ a {
 
 img {
     border-radius: 5px;
+    margin: 5px;
     -webkit-box-shadow: 0px 0px 10px 2px rgba(0,0,0,0.5);
     -moz-box-shadow: 0px 0px 10px 2px rgba(0,0,0,0.5);
     box-shadow: 0px 0px 10px 2px rgba(0,0,0,0.5);
