@@ -1,11 +1,16 @@
 # Installation
 
+Falls du keine Ahnung von all dem "Zeugs" da unten hast, kannst du mich gerne [kontaktieren](https://rafaelurben.github.io/diverses/rafaelurben/#kontakt). Bei Interesse helfe ich gerne (gegen einen kleinen Unkostenbetrag) bei der Aufsetzung des KMUHelpers.
+
+Natürlich kannst du mich auch gerne bei irgendwelchen Fragen kontaktieren.
+
 ## Anforderungen
 
 -   Ein Django-Projekt
     -   Django-Admin aktiviert
-    -   E-Mail Einstellungen funktionierend
--   Alle Module aus requirements.txt
+    -   Funktionierende Datenbank-Verbindung
+    -   Funktionierende E-Mail Einstellungen
+-   Alle Module aus requirements.txt sind installiert
 
 ## Anleitung
 
