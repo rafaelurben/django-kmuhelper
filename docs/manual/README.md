@@ -14,5 +14,6 @@ Diese Anleitung setzt die [Installation](../installation.md) des KMUHelper vorau
 
 -   [Einrichtung](setup.md)
 -   [App](app.md)
+-   [Lagermanagement](storage.md)
 
 Hinweis: Zu Demonstrationszwecken werden in dieser Bedienungsanleitung relative Urls oder die Domain `example.com` verwendet. In beiden Fällen sollten Sie diese mit Ihrer Domain ergänzen bzw. ersetzen.
