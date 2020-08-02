@@ -7,3 +7,5 @@ Diese Bedienungsanleitung sollte dir dazu helfen, den KMUHelper zu verstehen und
 ## Inhalt
 
 -   [Einrichtung](setup)
+
+Hinweis: Zu Demonstrationszwecken werden in dieser Bedienungsanleitung relative Urls verwendet.
