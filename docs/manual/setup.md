@@ -2,7 +2,7 @@
 
 Rufen Sie als erstes folgende Seite auf: `/admin/kmuhelper/`
 
-Sie solltest folgende Ansicht erhalten:
+Sie sollten folgende Ansicht erhalten:
 
 ![KMUHelper Admin - Home](../assets/images/screenshots/admin_home.png)
 

@@ -1,3 +1,7 @@
+---
+permalink: /manual/app
+---
+
 # App
 
 Der KMUHelper kommt mit seiner eigenen kleinen (Web-)App.
