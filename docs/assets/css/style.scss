@@ -1,7 +1,7 @@
 ---
 ---
 
-@import "style.css";
+@import "{{ site.theme }}";
 
 :root {
   --kmuhelper-darkest: #880044;
