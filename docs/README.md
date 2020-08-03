@@ -13,7 +13,7 @@ Hier finden Sie alles, was Sie über den KMUHelper wissen müssen!
 -   [Geschichte](history.md)
 -   [Funktionen](functions.md)
 -   [Installation](installation.md)
--   [Benutzerhandbuch](manual.md)
+-   [Benutzerhandbuch](manual/)
 
 ### Kontakt
 

@@ -3,7 +3,12 @@
 
 name: Upload Python Package to TestPyPi
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'setup.cfg'
 
 jobs:
   deploy:
