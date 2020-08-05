@@ -17,6 +17,16 @@ from .pdf_generators.bestellung import pdf_bestellung
 
 ###################
 
+from rich import print
+
+prefix = "[deep_pink4][KMUHelper][/] -"
+
+
+def log(string, *args):
+    print(prefix, string, *args)
+
+###################
+
 def defaultlieferungsname():
     return "Lieferung vom "+str(datetime.now().strftime("%d.%m.%Y"))
 
@@ -286,7 +296,7 @@ class Bestellung(models.Model):
     summe_gesamt.short_description = "Summe in CHF"
 
     def name(self):
-        return (self.datum if self.datum else datetime.today()).strftime("%Y")+"-"+str(self.pk).zfill(6)+(" (WC#"+str(self.woocommerceid)+")" if self.woocommerceid else "")+" - "+(str(self.kunde) if self.kunde is not None else "Gast")
+        return (self.datum.strftime("%Y")+"-" if self.datum and not isinstance(self.datum, str) else "")+str(self.pk).zfill(6)+(" (WC#"+str(self.woocommerceid)+")" if self.woocommerceid else "")+" - "+(str(self.kunde) if self.kunde is not None else "Gast")
     name.short_description = "Name"
 
     def info(self):
@@ -417,7 +427,7 @@ class Kategorie(models.Model):
     anzahl_produkte.short_description = "Anzahl Produkte"
 
     def __str__(self):
-        return self.name
+        return clean(self.name)
     __str__.short_description = "Kategorie"
 
     class Meta:

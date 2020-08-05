@@ -14,6 +14,16 @@ import json
 from .models import Einstellung, Geheime_Einstellung, Produkt, Kunde, Kategorie, Lieferant, Lieferung, Bestellung
 from .apis import WooCommerce
 
+###############
+
+from rich import print
+
+prefix = "[deep_pink4][KMUHelper][/] -"
+
+
+def log(string, *args):
+    print(prefix, string, *args)
+
 # Create your views here.
 
 
@@ -69,7 +79,6 @@ def wc_auth_start(request):
             shopurl = "https://" + shopurl
 
         url = "%s%s?%s" % (shopurl, '/wc-auth/v1/authorize', query_string)
-        print(url)
         return redirect(url)
 
 
@@ -144,7 +153,7 @@ def wc_webhooks(request):
         erhaltene_url = request.headers["x-wc-webhook-source"].lstrip(
             "https://").lstrip("http://").split("/")[0]
         if erhaltene_url == erwartete_url:
-            print("[KMUHelper] - WooCommerce Webhook erhalten...")
+            log("WooCommerce Webhook erhalten...")
             topic = request.headers["x-wc-webhook-topic"]
             obj = json.loads(request.body)
             if topic == "product.updated" or topic == "product.created":
@@ -181,8 +190,8 @@ def wc_webhooks(request):
                     order.woocommerceid = 0
                     order.save()
         else:
-            print("[KMUHelper] - WooCommerce Webhook von einer falschen Webseite ignoriert! - Erwartet: '" +
-                  erwartete_url + "' - Erhalten: '" + erhaltene_url + "'")
+            log("[orange_red1]WooCommerce Webhook von einer falschen Webseite ignoriert![/] - Erwartet:",
+                erwartete_url, "- Erhalten:", erhaltene_url)
             return HttpResponseBadRequest("Zugriff nicht gestattet!")
     return HttpResponse("Erfolgreich erhalten!")
 

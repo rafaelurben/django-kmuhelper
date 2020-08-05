@@ -6,6 +6,17 @@ from pytz import utc
 from .models import Ansprechpartner, Bestellung, Kategorie, Kosten, Kunde, Lieferant, Lieferung, Notiz, Produkt, Zahlungsempfaenger, Einstellung
 from .apis import WooCommerce
 
+###################
+
+from rich import print
+
+prefix = "[deep_pink4][KMUHelper][/] -"
+
+
+def log(string, *args):
+    print(prefix, string, *args)
+
+
 # Disable "view on site" globally
 
 admin.site.site_url = None
@@ -127,7 +138,7 @@ class BestellungsAdmin(admin.ModelAdmin):
 
     save_on_top = True
 
-    list_select_related = ["kunde"]
+    list_select_related = ["kunde", "notiz"]
 
     def get_fieldsets(self, request, obj=None):
         if obj:
@@ -287,6 +298,8 @@ class KundenAdmin(admin.ModelAdmin):
     readonly_fields = ["html_notiz"]
 
     actions = ["wc_update"]
+
+    list_select_related = ["notiz"]
 
     save_on_top = True
 

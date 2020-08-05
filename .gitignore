@@ -129,5 +129,6 @@ dmypy.json
 .pyre/
 
 
+# CUSTOM
 
-affinity/*
+affinity/

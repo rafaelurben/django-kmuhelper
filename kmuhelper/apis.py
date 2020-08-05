@@ -2,9 +2,17 @@ from woocommerce import API as WCAPI
 from .models import Einstellung, Geheime_Einstellung, Produkt, Kunde, Kategorie, Bestellung, Bestellungsposten, Kosten
 from .utils import runden
 from django.utils.html import strip_tags
-import pytz
 
 ###############
+
+from rich import print
+from rich.progress import Progress
+
+prefix = "[deep_pink4][KMUHelper][/] -"
+
+
+def log(string, *args):
+    print(prefix, string, *args)
 
 
 def preparestring(string):
@@ -55,7 +63,7 @@ class WooCommerce():
                 self.category_update(tup[0])
             newproduct.kategorien.add(tup[0])
         newproduct.save()
-        print("[KMUHelper] - Produkt erstellt: " + str(newproduct))
+        log("Produkt erstellt:", str(newproduct))
         return newproduct
 
     @classmethod
@@ -67,6 +75,13 @@ class WooCommerce():
             product.verkaufspreis = float(newproduct["price"])
         except ValueError:
             pass
+        except KeyError:
+            if "code" in newproduct and newproduct["code"] == "woocommerce_rest_product_invalid_id":
+                log(prefix +
+                    " [red]Produkt existiert in WooCommerce nicht![/]")
+                product.woocommerceid = 0
+                product.save()
+                return product
 
         product.artikelnummer = newproduct["sku"]
         product.name = preparestring(newproduct["name"])
@@ -91,44 +106,63 @@ class WooCommerce():
         product.kategorien.add(*newcategories)
 
         product.save()
-        print("[KMUHelper] - Produkt aktualisiert: " + str(product))
+        log("Produkt aktualisiert:", str(product))
         return product
 
     @classmethod
     def product_import(self):
-        excludeids = str([obj.woocommerceid for obj in Produkt.objects.all().exclude(
-            woocommerceid=0)])[1:-1]
-        wcapi = self.get_api()
-        print("[KMUHelper] - Produkte von WooCommerce herunterladen...")
-        productlist = []
-        r = wcapi.get("products?exclude=" + excludeids)
-        productlist += r.json()
-        for page in range(2, int(r.headers['X-WP-TotalPages']) + 1):
-            productlist += wcapi.get("products?exclude=" +
-                                     excludeids + "&page=" + str(page)).json()
-        print("[KMUHelper] - Produkte von WooCommerce heruntergeladen: " +
-              str(len(productlist)))
-        print("[KMUHelper] - Produkte von WooCommerce importieren...")
-        for product in productlist:
-            self.product_create(product)
-        print("[KMUHelper] - Produkte von WooCommerce importiert: " +
-              str(len(productlist)))
+        with Progress() as progress:
+            task_prepare = progress.add_task(
+                prefix + " [orange_red1]Produktdownload vorbereiten...", total=1)
+
+            excludeids = str([obj.woocommerceid for obj in Produkt.objects.all().exclude(
+                woocommerceid=0)])[1:-1]
+            wcapi = self.get_api()
+            productlist = []
+
+            progress.update(task_prepare, advance=1)
+            progress.stop_task(task_prepare)
+
+            task_download = progress.add_task(
+                prefix + " [green]Produkte herunterladen...")
+
+            r = wcapi.get("products?exclude=" + excludeids)
+            productlist += r.json()
+
+            progress.update(task_download, advance=1,
+                            total=int(r.headers['X-WP-TotalPages']))
+
+            for page in range(2, int(r.headers['X-WP-TotalPages']) + 1):
+                productlist += wcapi.get("products?exclude=" +
+                                         excludeids + "&page=" + str(page)).json()
+                progress.update(task_download, advance=1)
+
+            progress.stop_task(task_download)
+
+            if productlist:
+                task_process = progress.add_task(
+                    prefix + " [cyan]Produkte verarbeiten...", total=len(productlist))
+                for product in productlist:
+                    self.product_create(product)
+                    progress.update(task_process, advance=1)
+                progress.stop_task(task_process)
         return len(productlist)
 
     @classmethod
     def product_bulk_update(self, products):
-        print("[KMUHelper] - Produkte von WooCommerce aktualisieren: " +
-              str(len(products)))
-        successcount = 0
-        errorcount = 0
-        for product in products:
-            if product.woocommerceid:
-                self.product_update(product)
-                successcount += 1
-            else:
-                errorcount += 1
-        print("[KMUHelper] - Produkte von WooCommerce aktualisiert: " +
-              str(successcount))
+        with Progress() as progress:
+            task = progress.add_task(
+                prefix + " [orange_red1]Produkte aktualisieren...", total=products.count())
+            successcount = 0
+            errorcount = 0
+            for product in products:
+                if product.woocommerceid:
+                    self.product_update(product)
+                    successcount += 1
+                else:
+                    errorcount += 1
+                progress.update(task, advance=1)
+            progress.stop_task(task)
         return (successcount, errorcount)
 
     @classmethod
@@ -167,13 +201,20 @@ class WooCommerce():
 
             registrierungsemail_gesendet=True
         )
-        print("[KMUHelper] - Kunde erstellt: " + str(newcustomer))
+        log("Kunde erstellt:", str(newcustomer))
         return newcustomer
 
     @classmethod
     def customer_update(self, customer, newcustomer=None):
         if not newcustomer:
             newcustomer = self.get_api().get("customers/" + str(customer.woocommerceid)).json()
+
+        if "code" in newcustomer and newcustomer["code"] == "woocommerce_rest_customer_invalid_id":
+            log("[red]Kunde existiert in WooCommerce nicht![/]")
+            customer.woocommerceid = 0
+            customer.save()
+            return customer
+
         customer.email = newcustomer["email"]
         customer.vorname = newcustomer["first_name"]
         customer.nachname = newcustomer["last_name"]
@@ -203,44 +244,62 @@ class WooCommerce():
         customer.lieferadresse_plz = newcustomer["shipping"]["postcode"]
         customer.lieferadresse_land = newcustomer["shipping"]["country"]
         customer.save()
-        print("[KMUHelper] - Kunde aktualisiert: " + str(customer))
+        log("Kunde aktualisiert:", str(customer))
         return customer
 
     @classmethod
     def customer_import(self):
-        excludeids = str(
-            [obj.woocommerceid for obj in Kunde.objects.all().exclude(woocommerceid=0)])[1:-1]
-        wcapi = self.get_api()
-        print("[KMUHelper] - Kunden von WooCommerce herunterladen...")
-        customerlist = []
-        r = wcapi.get("customers?exclude=" + excludeids)
-        customerlist += r.json()
-        for page in range(2, int(r.headers['X-WP-TotalPages']) + 1):
-            customerlist += wcapi.get("customers?exclude=" +
-                                      excludeids + "&page=" + str(page)).json()
-        print("[KMUHelper] - Kunden von WooCommerce heruntergeladen: " +
-              str(len(customerlist)))
-        print("[KMUHelper] - Kunden von WooCommerce importieren...")
-        for customer in customerlist:
-            self.customer_create(customer)
-        print("[KMUHelper] - Kunden von WooCommerce importiert: " +
-              str(len(customerlist)))
+        with Progress() as progress:
+            task_prepare = progress.add_task(
+                prefix + " [orange_red1]Kundendownload vorbereiten...", total=1)
+
+            excludeids = str([obj.woocommerceid for obj in Kunde.objects.all().exclude(
+                woocommerceid=0)])[1:-1]
+            wcapi = self.get_api()
+            customerlist = []
+
+            progress.update(task_prepare, advance=1)
+            progress.stop_task(task_prepare)
+
+            task_download = progress.add_task(
+                prefix + " [green]Kunden herunterladen...")
+
+            r = wcapi.get("customers?exclude=" + excludeids)
+            customerlist += r.json()
+
+            progress.update(task_download, advance=1,
+                            total=int(r.headers['X-WP-TotalPages']))
+
+            for page in range(2, int(r.headers['X-WP-TotalPages']) + 1):
+                customerlist += wcapi.get("customers?exclude=" +
+                                          excludeids + "&page=" + str(page)).json()
+                progress.update(task_download, advance=1)
+            progress.stop_task(task_download)
+
+            if customerlist:
+                task_process = progress.add_task(
+                    prefix + " [cyan]Kunden verarbeiten...", total=len(customerlist))
+                for customer in customerlist:
+                    self.customer_create(customer)
+                    progress.update(task_process, advance=1)
+                progress.stop_task(task_process)
         return len(customerlist)
 
     @classmethod
     def customer_bulk_update(self, customers):
-        print("[KMUHelper] - Kunden von WooCommerce aktualisieren: " +
-              str(len(customers)))
-        successcount = 0
-        errorcount = 0
-        for customer in customers:
-            if customer.woocommerceid:
-                self.customer_update(customer)
-                successcount += 1
-            else:
-                errorcount += 1
-        print("[KMUHelper] - Kunden von WooCommerce aktualisiert: " +
-              str(successcount))
+        with Progress() as progress:
+            task = progress.add_task(
+                prefix + " [orange_red1]Kunden aktualisieren...", total=customers.count())
+            successcount = 0
+            errorcount = 0
+            for customer in customers:
+                if customer.woocommerceid:
+                    self.customer_update(customer)
+                    successcount += 1
+                else:
+                    errorcount += 1
+                progress.update(task, advance=1)
+            progress.stop_task(task)
         return (successcount, errorcount)
 
     @classmethod
@@ -248,6 +307,13 @@ class WooCommerce():
         if not newcategory:
             newcategory = self.get_api().get("products/categories/" +
                                              str(category.woocommerceid)).json()
+
+        if "code" in newcategory and newcategory["code"] == "woocommerce_rest_category_invalid_id":
+            log("[red]Kategorie existiert in WooCommerce nicht![/]")
+            category.woocommerceid = 0
+            category.save()
+            return category
+
         category.name = preparestring(newcategory["name"])
         category.beschrieb = preparestring(newcategory["description"])
         category.bildlink = (
@@ -259,58 +325,118 @@ class WooCommerce():
                 self.category_update(tup[0])
             category.uebergeordnete_kategorie = tup[0]
         category.save()
-        print("[KMUHelper] - Kategorie aktualisiert: " + str(category))
+        log("Kategorie aktualisiert:", str(category))
         return category
 
     @classmethod
     def category_import(self):
-        excludeids = str([obj.woocommerceid for obj in Kategorie.objects.all().exclude(
-            woocommerceid=0)])[1:-1]
-        wcapi = self.get_api()
-        print("[KMUHelper] - Kategorien von WooCommerce herunterladen...")
-        categorylist = []
-        r = wcapi.get("products/categories?exclude=" + excludeids)
-        categorylist += r.json()
-        for page in range(2, int(r.headers['X-WP-TotalPages']) + 1):
-            categorylist += wcapi.get("products/categories?exclude=" +
-                                      excludeids + "&page=" + str(page)).json()
-        print("[KMUHelper] - Kategorien von WooCommerce heruntergeladen: " +
-              str(len(categorylist)))
-        print("[KMUHelper] - Kategorien von WooCommerce importieren...")
-        categorieswithparents = []
-        for category in categorylist:
-            newcategory = Kategorie.objects.create(
-                name=preparestring(category["name"]),
-                beschrieb=preparestring(category["description"]),
-                bildlink=(category["image"]["src"]
-                          ) if category["image"] else "",
-                woocommerceid=category["id"]
-            )
-            print("[KMUHelper] - Kategorie erstellt: " + category["name"])
-            if category["parent"]:
-                categorieswithparents.append((newcategory, category["parent"]))
-        for tup in categorieswithparents:
-            tup[0].uebergeordnete_kategorie = Kategorie.objects.get(
-                woocommerceid=tup[1])
-            tup[0].save()
-        print("[KMUHelper] - Kategorien von WooCommerce importiert: " +
-              str(len(categorylist)))
+        # excludeids = str([obj.woocommerceid for obj in Kategorie.objects.all().exclude(
+        #     woocommerceid=0)])[1:-1]
+        # wcapi = self.get_api()
+        # log("Kategorien von WooCommerce herunterladen...")
+        # categorylist = []
+        # r = wcapi.get("products/categories?exclude=" + excludeids)
+        # categorylist += r.json()
+        # for page in range(2, int(r.headers['X-WP-TotalPages']) + 1):
+        #     categorylist += wcapi.get("products/categories?exclude=" +
+        #                               excludeids + "&page=" + str(page)).json()
+        # log("Kategorien von WooCommerce heruntergeladen:",
+        #     len(categorylist))
+        # log("Kategorien von WooCommerce importieren...")
+        # categorieswithparents = []
+        # for category in categorylist:
+        #     newcategory = Kategorie.objects.create(
+        #         name=preparestring(category["name"]),
+        #         beschrieb=preparestring(category["description"]),
+        #         bildlink=(category["image"]["src"]
+        #                   ) if category["image"] else "",
+        #         woocommerceid=category["id"]
+        #     )
+        #     log("Kategorie erstellt:", category["name"])
+        #     if category["parent"]:
+        #         categorieswithparents.append((newcategory, category["parent"]))
+        # for tup in categorieswithparents:
+        #     tup[0].uebergeordnete_kategorie = Kategorie.objects.get(
+        #         woocommerceid=tup[1])
+        #     tup[0].save()
+        # log("Kategorien von WooCommerce importiert:",
+        #     len(categorylist))
+        # return len(categorylist)
+
+        with Progress() as progress:
+            task_prepare = progress.add_task(
+                prefix + " [orange_red1]Kategoriendownload vorbereiten...", total=1)
+
+            excludeids = str([obj.woocommerceid for obj in Kategorie.objects.all().exclude(
+                woocommerceid=0)])[1:-1]
+            wcapi = self.get_api()
+            categorylist = []
+
+            progress.update(task_prepare, advance=1)
+            progress.stop_task(task_prepare)
+
+            task_download = progress.add_task(
+                prefix + " [green]Kategorien herunterladen...")
+
+            r = wcapi.get("products/categories?exclude=" + excludeids)
+            categorylist += r.json()
+
+            progress.update(task_download, advance=1,
+                            total=int(r.headers['X-WP-TotalPages']))
+
+            for page in range(2, int(r.headers['X-WP-TotalPages']) + 1):
+                categorylist += wcapi.get("products/categories?exclude=" +
+                                          excludeids + "&page=" + str(page)).json()
+                progress.update(task_download, advance=1)
+
+            progress.stop_task(task_download)
+
+            categorieswithparents = []
+
+            if categorylist:
+                task_process = progress.add_task(
+                    prefix + " [cyan]Kategorien verarbeiten...", total=len(categorylist))
+                for category in categorylist:
+                    newcategory = Kategorie.objects.create(
+                        name=preparestring(category["name"]),
+                        beschrieb=preparestring(category["description"]),
+                        bildlink=(category["image"]["src"]
+                                  ) if category["image"] else "",
+                        woocommerceid=category["id"]
+                    )
+                    log("Kategorie erstellt:", category["name"])
+                    if category["parent"]:
+                        categorieswithparents.append(
+                            (newcategory, category["parent"]))
+                    progress.update(task_process, advance=1)
+                progress.stop_task(task_process)
+
+            if categorieswithparents:
+                task_process2 = progress.add_task(
+                    prefix + " [cyan]Kategorieabhängigkeiten verarbeiten...", total=len(categorieswithparents))
+                for tup in categorieswithparents:
+                    tup[0].uebergeordnete_kategorie = Kategorie.objects.get(
+                        woocommerceid=tup[1])
+                    tup[0].save()
+                    progress.update(task_process2, advance=1)
+                progress.stop_task(task_process2)
         return len(categorylist)
 
     @classmethod
     def category_bulk_update(self, categories):
-        print("[KMUHelper] - Kategorien von WooCommerce aktualisieren: " +
-              str(len(categories)))
-        successcount = 0
-        errorcount = 0
-        for category in categories:
-            if category.woocommerceid:
-                self.category_update(category)
-                successcount += 1
-            else:
-                errorcount += 1
-        print(
-            "[KMUHelper] - Kategorien von WooCommerce aktualisiert: " + str(successcount))
+        with Progress() as progress:
+            task = progress.add_task(
+                prefix + " [orange_red1]Kategorien aktualisieren...", total=categories.count())
+            successcount = 0
+            errorcount = 0
+            for category in categories:
+                if category.woocommerceid:
+                    self.category_update(category)
+                    successcount += 1
+                else:
+                    errorcount += 1
+                progress.update(task, advance=1)
+            progress.stop_task(task)
         return (successcount, errorcount)
 
     @classmethod
@@ -376,13 +502,20 @@ class WooCommerce():
             neworder.kosten.add(Kosten.objects.get_or_create(name=item["method_title"], preis=float(
                 item["total"]), mwstsatz=(7.7 if float(item["total_tax"]) > 0 else 0))[0])
         neworder.save()
-        print("[KMUHelper] - Bestellung erstellt: " + str(neworder.pk))
+        log("Bestellung erstellt:", str(neworder))
         return neworder
 
     @classmethod
     def order_update(self, order, neworder=None):
         if not neworder:
             neworder = self.get_api().get("orders/" + str(order.woocommerceid)).json()
+
+        if "code" in neworder and neworder["code"] == "woocommerce_rest_order_invalid_id":
+            log("[red]Bestellung existiert in WooCommerce nicht![/]")
+            order.woocommerceid = 0
+            order.save()
+            return order
+
         if neworder["date_paid"]:
             order.bezahlt = True
         order.status = neworder["status"]
@@ -410,42 +543,60 @@ class WooCommerce():
         order.lieferadresse_plz = neworder["shipping"]["postcode"]
         order.lieferadresse_land = neworder["shipping"]["country"]
         order.save()
-        print("[KMUHelper] - Bestellung aktualisiert: " + str(order))
+        log("Bestellung aktualisiert: ", str(order))
         return order
 
     @classmethod
     def order_import(self):
-        excludeids = str([obj.woocommerceid for obj in Bestellung.objects.all(
-        ).exclude(woocommerceid=0)])[1:-1]
-        wcapi = self.get_api()
-        print("[KMUHelper] - Bestellungen von WooCommerce herunterladen...")
-        orderlist = []
-        r = wcapi.get("orders?exclude=" + excludeids)
-        orderlist += r.json()
-        for page in range(2, int(r.headers['X-WP-TotalPages']) + 1):
-            orderlist += wcapi.get("orders?exclude=" +
-                                   excludeids + "&page=" + str(page)).json()
-        print("[KMUHelper] - Bestellungen von WooCommerce heruntergeladen: " +
-              str(len(orderlist)))
-        print("[KMUHelper] - Bestellungen von WooCommerce importieren...")
-        for order in orderlist:
-            self.order_create(order)
-        print("[KMUHelper] - Bestellungen von WooCommerce importiert: " +
-              str(len(orderlist)))
+        with Progress() as progress:
+            task_prepare = progress.add_task(
+                prefix + " [orange_red1]Bestellungsdownload vorbereiten...", total=1)
+
+            excludeids = str([obj.woocommerceid for obj in Bestellung.objects.all().exclude(
+                woocommerceid=0)])[1:-1]
+            wcapi = self.get_api()
+            orderlist = []
+
+            progress.update(task_prepare, advance=1)
+            progress.stop_task(task_prepare)
+
+            task_download = progress.add_task(
+                prefix + " [green]Bestellungen herunterladen...")
+
+            r = wcapi.get("orders?exclude=" + excludeids)
+            orderlist += r.json()
+
+            progress.update(task_download, advance=1,
+                            total=int(r.headers['X-WP-TotalPages']))
+
+            for page in range(2, int(r.headers['X-WP-TotalPages']) + 1):
+                orderlist += wcapi.get("orders?exclude=" +
+                                       excludeids + "&page=" + str(page)).json()
+                progress.update(task_download, advance=1)
+            progress.stop_task(task_download)
+
+            if orderlist:
+                task_process = progress.add_task(
+                    prefix + " [cyan]Bestellungen verarbeiten...", total=len(orderlist))
+                for order in orderlist:
+                    self.order_create(order)
+                    progress.update(task_process, advance=1)
+                progress.stop_task(task_process)
         return len(orderlist)
 
     @classmethod
     def order_bulk_update(self, orders):
-        print("[KMUHelper] - Kunden von WooCommerce aktualisieren: " +
-              str(len(orders)))
-        successcount = 0
-        errorcount = 0
-        for order in orders:
-            if order.woocommerceid:
-                self.order_update(order)
-                successcount += 1
-            else:
-                errorcount += 1
-        print("[KMUHelper] - Kunden von WooCommerce aktualisiert: " +
-              str(successcount))
+        with Progress() as progress:
+            task = progress.add_task(
+                prefix + " [orange_red1]Bestellungen aktualisieren...", total=orders.count())
+            successcount = 0
+            errorcount = 0
+            for order in orders:
+                if order.woocommerceid:
+                    self.order_update(order)
+                    successcount += 1
+                else:
+                    errorcount += 1
+                progress.update(task, advance=1)
+            progress.stop_task(task)
         return (successcount, errorcount)
