@@ -1,5 +1,6 @@
 ---
 permalink: /
+nobreadcrumbs: true
 ---
 
 # KMUHelper
@@ -15,6 +16,6 @@ Hier finden Sie alles, was Sie über den KMUHelper wissen müssen!
 -   [Installation](installation.md)
 -   [Benutzerhandbuch](manual/)
 
-### Kontakt
+## Kontakt
 
 Wenn Sie mich kontaktieren möchten, finden Sie [hier](https://rafaelurben.github.io/diverses/rafaelurben/#kontakt) diverse Möglichkeiten dazu.

@@ -1,0 +1,32 @@
+home:
+    title: Home
+    url: /
+    pages:
+        functions:
+            title: Funktionen
+            url: /functions
+        history:
+            title: Geschichte
+            url: /history
+        installation:
+            title: Installation
+            url: /installation
+        manual:
+            title: Handbuch
+            url: /manual/
+            pages:
+                apis:
+                    title: Integrationen
+                    pages:
+                        woocommerce:
+                            title: WooCommerce
+                            url: /manual/apis/woocommerce/
+                app:
+                    title: App
+                    url: /manual/app
+                setup:
+                    title: Setup
+                    url: /manual/setup
+                storage:
+                    title: Lagerverwaltung
+                    url: /manual/storage

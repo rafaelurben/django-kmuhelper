@@ -20,6 +20,7 @@
         <meta name="theme-color" content="#AA1155">
         <meta name="apple-mobile-web-app-status-bar-style" content="black">
         <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
+        <link rel="manifest" href="{{ '/assets/manifest.webmanifest' | relative_url }}">
     </head>
     <body>
         <a style="display: none;" id="skip-to-content" href="#content">Zum Inhalt springen.</a>
@@ -36,6 +37,10 @@
                 <a href="{{ site.github.zip_url }}" class="btn hideonmobile">Download .zip</a>
                 <a href="{{ site.github.tar_url }}" class="btn hideonmobile">Download .tar.gz</a>
             {% endif %}
+
+            {% unless page.nobreadcrumbs %}
+                {% include breadcrumbs.html %}
+            {% endunless %}
         </header>
 
         <main id="content" class="main-content" role="main">

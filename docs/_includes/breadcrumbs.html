@@ -1,0 +1,25 @@
+{% assign pageid = page.url | replace_first : "/",
+"" | append : "@" | replace : "/@",
+"" | replace : "@",
+"" | replace : "/",
+"_" %}
+{% assign pageparts = page.url | replace_first : "/",
+"" | append : "@" | replace : "/@",
+"" | replace : "@",
+"" | split : "/" %}
+
+<nav id="breadcrumbs">
+    <div>
+        {% assign part = site.data.pagelist["home"] %}
+        <a href="{{ part.url }}">{{ part.title }}</a>
+        {% if pageid %}
+            {% for partname in pageparts %}
+                {% assign part = part.pages[partname] %}
+                <span class="arrow">
+                    >
+                </span>
+                <a {% if part.url %} href="{{ part.url }}" {% endif %}>{{ part.title }}</a>
+            {% endfor %}
+        {% endif %}
+    </div>
+</nav>
