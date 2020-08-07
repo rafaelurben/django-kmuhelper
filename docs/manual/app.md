@@ -1,5 +1,6 @@
 ---
 permalink: /manual/app
+fbcontact: true
 ---
 
 # App

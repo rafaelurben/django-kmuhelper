@@ -1,5 +1,6 @@
 ---
 permalink: /manual/setup
+fbcontact: true
 ---
 
 # Einrichtung

@@ -1,5 +1,6 @@
 ---
 permalink: /installation
+fbcontact: true
 ---
 
 # Installation

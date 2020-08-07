@@ -1,5 +1,6 @@
 ---
 permalink: /
+fbcontact: true
 nobreadcrumbs: true
 ---
 

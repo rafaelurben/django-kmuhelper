@@ -1,5 +1,6 @@
 ---
 permalink: /manual/apis/woocommerce
+fbcontact: true
 ---
 
 # WooCommerce-Integration

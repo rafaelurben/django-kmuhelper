@@ -1,5 +1,6 @@
 ---
 permalink: /functions
+fbcontact: true
 ---
 
 # Funktionen

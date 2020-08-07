@@ -1,5 +1,6 @@
 ---
 permalink: /history
+fbcontact: true
 ---
 
 # Geschichte
