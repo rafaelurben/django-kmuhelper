@@ -7,7 +7,7 @@ fbcontact: true
 
 In diesem Tutorial wird erklärt, wie Sie Ihre Kunden verwalten können.
 
-Diese Seite ist noch in Arbeit.
+**Diese Seite ist noch in Arbeit.**
 
 <!-- TODO -->
 

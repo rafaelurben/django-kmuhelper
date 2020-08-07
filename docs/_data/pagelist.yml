@@ -24,6 +24,12 @@ home:
                 app:
                     title: App
                     url: /manual/app
+                customers:
+                    title: Kundenmanagement
+                    url: /manual/customers
+                order-and-invoice:
+                    title: Bestellung & Rechnung
+                    url: /manual/order-and-invoice
                 setup:
                     title: Setup
                     url: /manual/setup
