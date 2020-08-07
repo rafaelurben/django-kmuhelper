@@ -43,12 +43,17 @@ class BestellungInlineBestellungsposten(admin.TabularInline):
     verbose_name_plural = "Bestellungsposten"
     extra = 0
 
-    readonly_fields = ["zwischensumme", "mwstsatz", "produkt", "produktpreis"]
     fieldsets = [(None, {'fields': ['produkt', 'bemerkung',
                                     'produktpreis', 'menge', 'mwstsatz', 'zwischensumme']})]
 
+    def get_readonly_fields(self, request, obj=None):
+        if obj and (obj.versendet or obj.bezahlt):
+            return ["zwischensumme", "mwstsatz", "produkt", "produktpreis", "menge"]
+        else:
+            return ["zwischensumme", "mwstsatz", "produkt", "produktpreis"]
+
     def has_change_permission(self, request, obj=None):
-        return False if (obj and (obj.versendet or obj.bezahlt)) else True
+        return False if (obj and (obj.versendet and obj.bezahlt)) else True
 
     def has_add_permission(self, request, obj=None):
         return False
@@ -91,13 +96,13 @@ class BestellungInlineBestellungskosten(admin.TabularInline):
         (None, {'fields': ['kosten', 'bemerkung', 'mwstsatz', 'zwischensumme']})]
 
     def has_change_permission(self, request, obj=None):
-        return False if (obj and (obj.versendet or obj.bezahlt)) else True
+        return False if (obj and obj.bezahlt) else True
 
     def has_add_permission(self, request, obj=None):
         return False
 
     def has_delete_permission(self, request, obj=None):
-        return False if (obj and (obj.versendet or obj.bezahlt)) else True
+        return False if (obj and obj.bezahlt) else True
 
 
 class BestellungInlineBestellungskostenAdd(admin.TabularInline):
@@ -112,7 +117,7 @@ class BestellungInlineBestellungskostenAdd(admin.TabularInline):
         return False
 
     def has_add_permission(self, request, obj=None):
-        return False if (obj and (obj.versendet or obj.bezahlt)) else True
+        return False if (obj and obj.bezahlt) else True
 
     def has_delete_permission(self, request, obj=None):
         return False
