@@ -15,6 +15,11 @@ body {
     scroll-behavior: smooth;
 }
 
+header a.home {
+    text-decoration: none;
+    color: white;
+}
+
 .page-header {
     background-color: var(--kmuhelper-darkest);
     background-image: linear-gradient(120deg, var(--kmuhelper-darkest), var(--kmuhelper-light));

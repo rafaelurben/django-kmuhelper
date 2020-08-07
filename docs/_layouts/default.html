@@ -26,9 +26,10 @@
         <a style="display: none;" id="skip-to-content" href="#content">Zum Inhalt springen.</a>
 
         <header class="page-header" role="banner">
-            <h1 class="project-name">KMUHelper</h1>
-            <h2 class="project-tagline">{{ site.description | default: site.github.project_tagline }}</h2>
-            <a href="{{ '/' | relative_url }}" class="btn">Home</a>
+            <a class="home" href="{{ '/' | relative_url }}">
+                <h1 class="project-name">{{ site.title }}</h1>
+                <h2 class="project-tagline">{{ site.description | default: site.github.project_tagline }}</h2>
+            </a>
             <a href="{{ '/manual/' | relative_url }}" class="btn hideonmobile">Handbuch</a>
             {% if site.github.is_project_page %}
                 <a href="{{ site.github.repository_url }}" class="btn hideonmobile">Auf GitHub ansehen</a>
@@ -54,9 +55,12 @@
                         <a href="{{ site.github.owner_url }}">{{ site.github.owner_name }}</a>
                         unterhalten.</span>
                 {% endif %}
-                <span class="site-footer-credits">Diese Seite wurde von
-                    <a href="https://pages.github.com">GitHub Pages</a>
-                    generiert.</span>
+
+                <span class="site-footer-credits">Seite erstellt von
+                    <a href="https://rafaelurben.github.io/diverses/rafaelurben/">Rafael Urben</a>
+                    - Gehostet von
+                    <a href="https://pages.github.com">GitHub Pages</a>. Danke &lt;3
+                </span>
             </footer>
         </main>
     </body>

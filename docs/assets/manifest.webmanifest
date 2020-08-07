@@ -2,14 +2,14 @@
 -- -
 
 {
-    "name": "KMUHelper Dokumentation",
-    "short_name": "KMUHelper Docs",
+    "name": "{{ site.app.title }}",
+    "short_name": "{{ site.app.short_title }}",
     "start_url": "{{ site.url }}",
     "scope": "{{ site.url }}",
     "display": "standalone",
     "background_color": "#000",
     "theme_color": "#DD1155",
-    "description": "Dokumentation zum KMUHelper",
+    "description": "{{ site.app.description }}",
     "dir": "ltr",
     "lang": "de",
     "icons": []

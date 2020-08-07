@@ -1,2 +1,8 @@
 theme: jekyll-theme-cayman
 url: https://rafaelurben.github.io/django-kmuhelper/
+title: KMUHelper
+description: Ein Helfer für Schweizer KMU mit QR-Rechnungen
+app:
+    title: KMUHelper Dokumenation
+    short_title: KMUHelper Docs
+    description: Dokumentation zum KMUHelper
