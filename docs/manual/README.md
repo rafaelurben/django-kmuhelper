@@ -18,6 +18,6 @@ Diese Anleitung setzt die [Installation](../installation.md) des KMUHelper vorau
 
 -   [Lagermanagement](storage.md)
 -   [Kundenmanagement](customers.md)
--   [Bestellungen & Rechnungen](oder-and-invoice.md)
+-   [Bestellungen & Rechnungen](order-and-invoice.md)
 
 Hinweis: Zu Demonstrationszwecken werden in dieser Bedienungsanleitung relative Urls oder die Domain `example.com` verwendet. In beiden Fällen sollten Sie diese mit Ihrer Domain ergänzen bzw. ersetzen.
