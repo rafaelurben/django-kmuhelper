@@ -1,32 +1,32 @@
 home:
     title: Home
-    url: /
+    url: {{ '/' | relative_url }}
     pages:
         functions:
             title: Funktionen
-            url: /functions
+            url: {{ '/functions' | relative_url }}
         history:
             title: Geschichte
-            url: /history
+            url: {{ '/history' | relative_url }}
         installation:
             title: Installation
-            url: /installation
+            url: {{ '/installation' | relative_url }}
         manual:
             title: Handbuch
-            url: /manual/
+            url: {{ '/manual/' | relative_url }}
             pages:
                 apis:
                     title: Integrationen
                     pages:
                         woocommerce:
                             title: WooCommerce
-                            url: /manual/apis/woocommerce/
+                            url: {{ '/manual/apis/woocommerce/' | relative_url }}
                 app:
                     title: App
-                    url: /manual/app
+                    url: {{ '/manual/app' | relative_url }}
                 setup:
                     title: Setup
-                    url: /manual/setup
+                    url: {{ '/manual/setup' | relative_url }}
                 storage:
                     title: Lagerverwaltung
-                    url: /manual/storage
+                    url: {{ '/manual/storage' | relative_url }}
