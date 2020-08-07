@@ -18,7 +18,7 @@
                 <span class="arrow">
                     >
                 </span>
-                <a {% if part.url %} href="{{ part.url }}" {% endif %}>{{ part.title }}</a>
+                <a {% if part.url %} href="{{ part.url | relative_url }}" {% endif %}>{{ part.title }}</a>
             {% endfor %}
         {% endif %}
     </div>
