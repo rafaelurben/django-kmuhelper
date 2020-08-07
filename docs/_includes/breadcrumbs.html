@@ -11,7 +11,7 @@
 <nav id="breadcrumbs">
     <div>
         {% assign part = site.data.pagelist["home"] %}
-        <a href="{{ part.url }}">{{ part.title }}</a>
+        <a href="{{ site.url }}">{{ part.title }}</a>
         {% if pageid %}
             {% for partname in pageparts %}
                 {% assign part = part.pages[partname] %}
