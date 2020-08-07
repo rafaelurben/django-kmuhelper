@@ -5,7 +5,7 @@ fbcontact: true
 
 # Installation
 
-Falls Sie keine Ahnung von all dem "Zeugs" da unten haben, können Sie mich gerne [kontaktieren](https://rafaelurben.github.io/diverses/rafaelurben/#kontakt). Bei Interesse helfe ich gerne (gegen einen kleinen Unkostenbetrag) bei der Aufsetzung des KMUHelpers.
+Falls Sie keine Ahnung von all dem "Zeugs" da unten haben, können Sie mich gerne [kontaktieren](<{{ site.kontakt_url }}>). Bei Interesse helfe ich gerne (gegen einen kleinen Unkostenbetrag) bei der Aufsetzung des KMUHelpers.
 
 Natürlich können Sie mich auch gerne bei irgendwelchen Fragen kontaktieren.
 
@@ -20,8 +20,8 @@ Natürlich können Sie mich auch gerne bei irgendwelchen Fragen kontaktieren.
 
 0.  Installieren Sie den KMUHelper:
 
-    Aktuellste Vollversion: `pip install --upgrade django-kmuhelper`
-    Aktuellste Dev-Version: `pip install -i https://test.pypi.org/simple/ --upgrade django-kmuhelper`
+    -   Stable (empfohlen): `pip install -U django-kmuhelper`
+    -   Dev-Version: `pip install -i https://test.pypi.org/simple/ -U django-kmuhelper`
 
 1.  Fügen Sie `kmuhelper` zu Ihren installierten Apps hinzu:
 
@@ -50,6 +50,6 @@ Natürlich können Sie mich auch gerne bei irgendwelchen Fragen kontaktieren.
 
 4.  Besuchen Sie den Admin-Bereich Ihrer Webseite.
 
-## Zurück
+## Weiter
 
-[Zurück zur Startseite](./)
+Die Installation ist nun soweit abgeschlossen. Sie können nun [zurück zur Startseite](./) oder [mit der Einleitung fortfahren](manual/).

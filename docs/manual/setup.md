@@ -31,7 +31,7 @@ Sie können so viele Ansprechpartner erstellen, wie Sie wollen. Die Informatione
 
 ## Integrationen
 
-Falls Sie eine Wordpress-Seite mit WooCommerce haben, können Sie diese [mit dem KMUHelper verbinden](apis/woocommerce).
+Falls Sie eine Wordpress-Seite mit WooCommerce haben, können Sie diese [mit dem KMUHelper verbinden](apis/woocommerce.md).
 
 ## Fertig
 

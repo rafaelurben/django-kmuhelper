@@ -19,4 +19,4 @@ Hier finden Sie alles, was Sie über den KMUHelper wissen müssen!
 
 ## Kontakt
 
-Wenn Sie mich kontaktieren möchten, finden Sie [hier](https://rafaelurben.github.io/diverses/rafaelurben/#kontakt) diverse Möglichkeiten dazu.
+Wenn Sie mich kontaktieren möchten, finden Sie [hier](<{{ site.kontakt_url }}>) diverse Möglichkeiten dazu.

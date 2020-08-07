@@ -13,6 +13,10 @@ Bei jedem Produkt gibt es das Feld "Lagerbestand". Dieses wird bei folgenden Ere
 -   Lieferung als "eingelagert" markieren
 -   Bestellung als "versendet" markieren
 
+## Inventar
+
+Wenn Sie Ihren Lagerbestand in den KMUHelper übertragen möchten, geht dies am Besten auf der Seite "Lagerbestand" in der [KMUHelper-App](app.md). (`/kmuhelper/app/#lagerbestand`)
+
 ## Zurück
 
 [Zurück zum Handbuch](./)

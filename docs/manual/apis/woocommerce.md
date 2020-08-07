@@ -36,7 +36,7 @@ Webhooks einrichten:
 
 ## Verwendung
 
-Im KMUHelper-Admin findest Sie nun bei Produkten, Bestellungen und Kunden einen Importieren-Knopf. Je nach Menge von Daten kann der Importprozess von Objekten sehr lange dauern. Je nach Hosting-Provider könnte die Verbindung nach 30 Sekunden abgebrochen werden. In diesem Fall ist ein (mehrfaches) Neu-laden der Seite hilfreich.
+Im KMUHelper-Admin findest Sie nun bei Produkten, Bestellungen und Kunden einen Importieren-Knopf. Je nach Menge von Daten kann der Importprozess von Objekten sehr lange dauern. Je nach Hosting-Provider könnte die Verbindung nach 30 Sekunden abgebrochen werden. In diesem Fall ist ein (mehrfaches) Neuladen der Seite hilfreich.
 
 ## Zurück
 
