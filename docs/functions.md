@@ -11,10 +11,12 @@ Hier eine kleine Liste mit den wichtigsten Funktionen:
 
 -   Erfassen von Bestellungen
 -   Druck von QR-Rechnungen
--   [Lagerverwaltung](manual/storage.md)
+-   Lagerverwaltung
 -   Kundenmanagement
--   [Eigene (Web-)App für unterwegs](manual/app.md)
+-   Eigene (Web-)App für unterwegs
 -   ... und noch viel mehr!
+
+Anletungen und Erklärungen zu den jeweiligen Funktionen finden Sie im [Handbuch](manual/).
 
 ## Wichtige Infos
 
