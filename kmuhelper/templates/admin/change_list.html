@@ -25,7 +25,13 @@
                     return 'Du hast ungesicherte Änderungen vorgenommen. Wenn du die Seite verlässt, werden diese gelöscht.'
                 }
             });
-        })
+        });
+
+        function blur() {
+            var $ = django.jQuery;
+
+            $(".results td").css({"color": "transparent", "text-shadow": "0 0 6.5px rgba(0,0,0,0.55)"})
+        }
     </script>
     {{ block.super }}
 {% endblock %}

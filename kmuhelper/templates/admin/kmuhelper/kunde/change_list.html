@@ -15,8 +15,13 @@
             });
         };
     </script>
-    <li>
-        <a onclick="laden();" href="{% url 'kmuhelper:wc-import-customers' %}" class="addlink">Kunden von WooCommerce importieren</a>
-    </li>
+
+    {% load kmuhelper_tags %}
+    {% kmuhelper_woocommerce_connected as woocommerce_is_connected %}
+    {% if woocommerce_is_connected %}
+        <li>
+            <a onclick="laden();" href="{% url 'kmuhelper:wc-import-customers' %}" class="addlink">Kunden von WooCommerce importieren</a>
+        </li>
+    {% endif %}
     {{ block.super }}
 {% endblock %}

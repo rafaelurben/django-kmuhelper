@@ -84,65 +84,106 @@ def wc_auth_start(request):
 
 @login_required(login_url="/admin/login")
 def wc_import_products(request):
-    count = WooCommerce.product_import()
-    messages.success(request, (('{} neue Produkte' if count !=
-                                1 else 'Ein neues Produkt') + ' von WooCommerce importiert!').format(count))
-    return redirect(reverse("admin:kmuhelper_produkt_changelist"))
+    if not bool(Geheime_Einstellung.objects.filter(id="wc-url").exists() and Geheime_Einstellung.objects.get(id="wc-url").inhalt):
+        messages.error(
+            request, "WooCommerce wurde scheinbar nicht richtig verbunden!")
+        return redirect(reverse("admin:kmuhelper_produkt_changelist"))
+    else:
+        count = WooCommerce.product_import()
+        messages.success(request, (('{} neue Produkte' if count !=
+                                    1 else 'Ein neues Produkt') + ' von WooCommerce importiert!').format(count))
+        return redirect(reverse("admin:kmuhelper_produkt_changelist"))
 
 
 @login_required(login_url="/admin/login")
 def wc_import_customers(request):
-    count = WooCommerce.customer_import()
-    messages.success(request, (('{} neue Kunden' if count !=
-                                1 else 'Ein neuer Kunde') + ' von WooCommerce importiert!').format(count))
-    return redirect(reverse("admin:kmuhelper_kunde_changelist"))
+    if not bool(Geheime_Einstellung.objects.filter(id="wc-url").exists() and Geheime_Einstellung.objects.get(id="wc-url").inhalt):
+        messages.error(
+            request, "WooCommerce wurde scheinbar nicht richtig verbunden!")
+        return redirect(reverse("admin:kmuhelper_kunde_changelist"))
+    else:
+        count = WooCommerce.customer_import()
+        messages.success(request, (('{} neue Kunden' if count !=
+                                    1 else 'Ein neuer Kunde') + ' von WooCommerce importiert!').format(count))
+        return redirect(reverse("admin:kmuhelper_kunde_changelist"))
 
 
 @login_required(login_url="/admin/login")
 def wc_import_categories(request):
-    count = WooCommerce.category_import()
-    messages.success(request, (('{} neue Kategorien' if count !=
-                                1 else 'Eine neue Kategorie') + ' von WooCommerce importiert!').format(count))
-    return redirect(reverse("admin:kmuhelper_kategorie_changelist"))
+    if not bool(Geheime_Einstellung.objects.filter(id="wc-url").exists() and Geheime_Einstellung.objects.get(id="wc-url").inhalt):
+        messages.error(
+            request, "WooCommerce wurde scheinbar nicht richtig verbunden!")
+        return redirect(reverse("admin:kmuhelper_kategorie_changelist"))
+    else:
+        count = WooCommerce.category_import()
+        messages.success(request, (('{} neue Kategorien' if count !=
+                                    1 else 'Eine neue Kategorie') + ' von WooCommerce importiert!').format(count))
+        return redirect(reverse("admin:kmuhelper_kategorie_changelist"))
 
 
 @login_required(login_url="/admin/login")
 def wc_import_orders(request):
-    count = WooCommerce.order_import()
-    messages.success(request, (('{} neue Bestellungen' if count !=
-                                1 else 'Eine neue Bestellung') + ' von WooCommerce importiert!').format(count))
-    return redirect(reverse("admin:kmuhelper_bestellung_changelist"))
+    if not bool(Geheime_Einstellung.objects.filter(id="wc-url").exists() and Geheime_Einstellung.objects.get(id="wc-url").inhalt):
+        messages.error(
+            request, "WooCommerce wurde scheinbar nicht richtig verbunden!")
+        return redirect(reverse("admin:kmuhelper_bestellung_changelist"))
+    else:
+        count = WooCommerce.order_import()
+        messages.success(request, (('{} neue Bestellungen' if count !=
+                                    1 else 'Eine neue Bestellung') + ' von WooCommerce importiert!').format(count))
+        return redirect(reverse("admin:kmuhelper_bestellung_changelist"))
 
 
 @login_required(login_url="/admin/login")
 def wc_update_product(request, object_id):
-    product = WooCommerce.product_update(
-        Produkt.objects.get(id=int(object_id)))
-    messages.success(request, "Produkt aktualisiert: " + str(product))
-    return redirect(reverse("admin:kmuhelper_produkt_change", args=[object_id]))
+    if not bool(Geheime_Einstellung.objects.filter(id="wc-url").exists() and Geheime_Einstellung.objects.get(id="wc-url").inhalt):
+        messages.error(
+            request, "WooCommerce wurde scheinbar nicht richtig verbunden!")
+        return redirect(reverse("admin:kmuhelper_produkt_change", args=[object_id]))
+    else:
+        product = WooCommerce.product_update(
+            Produkt.objects.get(id=int(object_id)))
+        messages.success(request, "Produkt aktualisiert: " + str(product))
+        return redirect(reverse("admin:kmuhelper_produkt_change", args=[object_id]))
 
 
 @login_required(login_url="/admin/login")
 def wc_update_customer(request, object_id):
-    customer = WooCommerce.customer_update(
-        Kunde.objects.get(id=int(object_id)))
-    messages.success(request, "Kunde aktualisiert: " + str(customer))
-    return redirect(reverse("admin:kmuhelper_kunde_change", args=[object_id]))
+    if not bool(Geheime_Einstellung.objects.filter(id="wc-url").exists() and Geheime_Einstellung.objects.get(id="wc-url").inhalt):
+        messages.error(
+            request, "WooCommerce wurde scheinbar nicht richtig verbunden!")
+        return redirect(reverse("admin:kmuhelper_kunde_change", args=[object_id]))
+    else:
+        customer = WooCommerce.customer_update(
+            Kunde.objects.get(id=int(object_id)))
+        messages.success(request, "Kunde aktualisiert: " + str(customer))
+        return redirect(reverse("admin:kmuhelper_kunde_change", args=[object_id]))
 
 
 @login_required(login_url="/admin/login")
 def wc_update_category(request, object_id):
-    category = WooCommerce.category_update(
-        Kategorie.objects.get(id=int(object_id)))
-    messages.success(request, "Kategorie aktualisiert: " + str(category))
-    return redirect(reverse("admin:kmuhelper_kategorie_change", args=[object_id]))
+    if not bool(Geheime_Einstellung.objects.filter(id="wc-url").exists() and Geheime_Einstellung.objects.get(id="wc-url").inhalt):
+        messages.error(
+            request, "WooCommerce wurde scheinbar nicht richtig verbunden!")
+        return redirect(reverse("admin:kmuhelper_kategorie_change", args=[object_id]))
+    else:
+        category = WooCommerce.category_update(
+            Kategorie.objects.get(id=int(object_id)))
+        messages.success(request, "Kategorie aktualisiert: " + str(category))
+        return redirect(reverse("admin:kmuhelper_kategorie_change", args=[object_id]))
 
 
 @login_required(login_url="/admin/login")
 def wc_update_order(request, object_id):
-    order = WooCommerce.order_update(Bestellung.objects.get(id=int(object_id)))
-    messages.success(request, "Bestellung aktualisiert: " + str(order))
-    return redirect(reverse("admin:kmuhelper_bestellung_change", args=[object_id]))
+    if not bool(Geheime_Einstellung.objects.filter(id="wc-url").exists() and Geheime_Einstellung.objects.get(id="wc-url").inhalt):
+        messages.error(
+            request, "WooCommerce wurde scheinbar nicht richtig verbunden!")
+        return redirect(reverse("admin:kmuhelper_bestellung_change", args=[object_id]))
+    else:
+        order = WooCommerce.order_update(
+            Bestellung.objects.get(id=int(object_id)))
+        messages.success(request, "Bestellung aktualisiert: " + str(order))
+        return redirect(reverse("admin:kmuhelper_bestellung_change", args=[object_id]))
 
 
 @csrf_exempt
