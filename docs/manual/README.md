@@ -20,4 +20,6 @@ Diese Anleitung setzt die [Installation](../installation.md) des KMUHelper vorau
 -   [Kundenmanagement](customers.md)
 -   [Bestellungen & Rechnungen](order-and-invoice.md)
 
+-   [Sprachen](languages.md)
+
 Hinweis: Zu Demonstrationszwecken werden in dieser Bedienungsanleitung relative Urls oder die Domain `example.com` verwendet. In beiden Fällen sollten Sie diese mit Ihrer Domain ergänzen bzw. ersetzen.

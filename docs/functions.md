@@ -10,7 +10,7 @@ Der KMUHelper ist ein Tool für Schweizer KMU, mit welchem die Buchhaltung erled
 Hier eine kleine Liste mit den wichtigsten Funktionen:
 
 -   Erfassen von Bestellungen
--   Druck von QR-Rechnungen
+-   Druck von QR-Rechnungen (DE, FR, IT, EN)
 -   Lagerverwaltung
 -   Kundenmanagement
 -   Eigene (Web-)App für unterwegs
@@ -26,4 +26,4 @@ Ich übernehme KEINE GARANTIE bei fehlerhafter Programmierung meinerseits, bin a
 
 ## Zurück
 
-[Zurück zur Startseite](./)
+[Zurück zur Startseite](./setup.md)

@@ -41,4 +41,4 @@ Bei Fragen können Sie mich gerne [kontaktieren](<{{ site.kontakt_url }}>).
 
 ## Zurück
 
-[Zurück zur Startseite](./)
+[Zurück zur Startseite](./setup.md)

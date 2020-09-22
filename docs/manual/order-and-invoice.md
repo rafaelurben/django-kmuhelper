@@ -13,4 +13,4 @@ In diesem Tutorial wird erklärt, wie eine Bestellung erstellt und die dazugehö
 
 ## Zurück
 
-[Zurück zum Handbuch](./)
+[Zurück zum Handbuch](./setup.md)

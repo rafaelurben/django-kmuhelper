@@ -18,8 +18,8 @@ Die App sollte nach dem Login so aussehen:
 
 Diese App beinhaltet versteckte Seiten des Django-Adminbereichs, welche die einfachere Massenverwaltung von Bestellungen, Lagerbestand, Notizen und Lieferungen ermöglichen.
 
-Die einzelnen Seiten sind auf der Startseite beschrieben.
+Die einzelnen Seiten sind auf der Startseite der App kurz beschrieben.
 
 ## Zurück
 
-[Zurück zum Handbuch](./)
+[Zurück zum Handbuch](./setup.md)
