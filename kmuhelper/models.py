@@ -1,7 +1,9 @@
+# pylint: disable=no-member
+
 from django.db import models
 from django.core import mail
 from django.conf import settings
-from django.core.validators import RegexValidator
+from django.core.validators import RegexValidator, MinValueValidator, MaxValueValidator
 from django.http import FileResponse
 from django.template.loader import get_template
 from django.utils.html import mark_safe
@@ -129,13 +131,21 @@ class Bestellungsposten(models.Model):
     bestellung = models.ForeignKey("Bestellung", on_delete=models.CASCADE)
     produkt = models.ForeignKey("Produkt", on_delete=models.PROTECT)
     bemerkung = models.CharField("Bemerkung", default="", max_length=250, blank=True, help_text="Wird auf die Rechnung gedruckt.")
+
     menge = models.IntegerField("Menge", default=1)
+    rabatt = models.IntegerField("Rabatt in %", default=0, validators=[MinValueValidator(0), MaxValueValidator(100)])
 
     produktpreis = models.FloatField("Produktpreis in CHF (exkl. MwSt)", default=0.0)
 
     def zwischensumme(self):
-        return runden(self.produktpreis*self.menge)
+        return runden(self.produktpreis*self.menge*((100-self.rabatt)/100))
     zwischensumme.short_description = "Zwischensumme (exkl. MwSt) in CHF"
+
+    def zwischensumme_ohne_rabatt(self):
+        return runden(self.produktpreis*self.menge)
+
+    def nur_rabatt(self):
+        return runden(self.produktpreis*self.menge*(self.rabatt/100))*-1
 
     def mwstsatz(self):
         return formatprice(self.produkt.mwstsatz)
@@ -212,7 +222,7 @@ class Bestellung(models.Model):
         if self.pk:
             self.fix_summe = self.summe_gesamt()
             double_save = False
-        if self.pk is None and not self.woocommerceid and self.kunde:
+        elif (not self.woocommerceid) and self.kunde:
             self.rechnungsadresse_vorname = self.kunde.rechnungsadresse_vorname
             self.rechnungsadresse_nachname = self.kunde.rechnungsadresse_nachname
             self.rechnungsadresse_firma = self.kunde.rechnungsadresse_firma

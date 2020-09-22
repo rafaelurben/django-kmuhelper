@@ -37,8 +37,17 @@ class PriceTable(Table):
                 str(bp.menge),
                 clean(bp.produkt.mengenbezeichnung, sprache),
                 formatprice(bp.produktpreis),
-                formatprice(bp.zwischensumme())
+                formatprice(bp.zwischensumme_ohne_rabatt())
             ))
+            if bp.rabatt:
+                data.append((
+                    "",
+                    _("Rabatt"),
+                    str(bp.rabatt),
+                    "%",
+                    formatprice(bp.zwischensumme_ohne_rabatt()),
+                    formatprice(bp.nur_rabatt())
+                ))
             if bp.bemerkung:
                 data.append((
                     "",

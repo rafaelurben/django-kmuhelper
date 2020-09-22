@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-27 16:11+0200\n"
+"POT-Creation-Date: 2020-09-22 22:39+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,19 +18,19 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: .\pdf_generators\bestellung.py:27 .\pdf_generators\bestellung.py:115
+#: .\pdf_generators\bestellung.py:27 .\pdf_generators\bestellung.py:124
 msgid "Art-Nr."
 msgstr "Art-Nr."
 
-#: .\pdf_generators\bestellung.py:27 .\pdf_generators\bestellung.py:115
+#: .\pdf_generators\bestellung.py:27 .\pdf_generators\bestellung.py:124
 msgid "Bezeichnung"
 msgstr "Bezeichnung"
 
-#: .\pdf_generators\bestellung.py:27 .\pdf_generators\bestellung.py:115
+#: .\pdf_generators\bestellung.py:27 .\pdf_generators\bestellung.py:124
 msgid "Anzahl"
 msgstr "Anzahl"
 
-#: .\pdf_generators\bestellung.py:27 .\pdf_generators\bestellung.py:115
+#: .\pdf_generators\bestellung.py:27 .\pdf_generators\bestellung.py:124
 msgid "Einheit"
 msgstr "Einheit"
 
@@ -42,86 +42,90 @@ msgstr "Preis"
 msgid "Total"
 msgstr "Total"
 
-#: .\pdf_generators\bestellung.py:79 .\pdf_generators\bestellung.py:451
+#: .\pdf_generators\bestellung.py:45
+msgid "Rabatt"
+msgstr "Rabatt"
+
+#: .\pdf_generators\bestellung.py:88 .\pdf_generators\bestellung.py:460
 msgid "MwSt"
 msgstr "MwSt"
 
-#: .\pdf_generators\bestellung.py:88
+#: .\pdf_generators\bestellung.py:97
 msgid "RECHNUNGSBETRAG"
 msgstr "RECHNUNGSBETRAG"
 
-#: .\pdf_generators\bestellung.py:140
+#: .\pdf_generators\bestellung.py:149
 msgid "ANZAHL PRODUKTE"
 msgstr "ANZAHL PRODUKTE"
 
-#: .\pdf_generators\bestellung.py:318
+#: .\pdf_generators\bestellung.py:327
 msgid "Vor der Einzahlung abzutrennen"
 msgstr "Vor der Einzahlung abzutrennen"
 
-#: .\pdf_generators\bestellung.py:330 .\pdf_generators\bestellung.py:347
+#: .\pdf_generators\bestellung.py:339 .\pdf_generators\bestellung.py:356
 msgid "Konto / Zahlbar an"
 msgstr "Konto / Zahlbar an"
 
-#: .\pdf_generators\bestellung.py:336 .\pdf_generators\bestellung.py:353
+#: .\pdf_generators\bestellung.py:345 .\pdf_generators\bestellung.py:362
 msgid "Referenz"
 msgstr "Referenz"
 
-#: .\pdf_generators\bestellung.py:339 .\pdf_generators\bestellung.py:361
+#: .\pdf_generators\bestellung.py:348 .\pdf_generators\bestellung.py:370
 msgid "Zahlbar durch"
 msgstr "Zahlbar durch"
 
-#: .\pdf_generators\bestellung.py:356
+#: .\pdf_generators\bestellung.py:365
 msgid "Zusätzliche Informationen"
 msgstr "Zusätzliche Informationen"
 
-#: .\pdf_generators\bestellung.py:369
+#: .\pdf_generators\bestellung.py:378
 msgid "Empfangsschein"
 msgstr "Empfangsschein"
 
-#: .\pdf_generators\bestellung.py:370
+#: .\pdf_generators\bestellung.py:379
 msgid "Zahlteil"
 msgstr "Zahlteil"
 
-#: .\pdf_generators\bestellung.py:373 .\pdf_generators\bestellung.py:382
+#: .\pdf_generators\bestellung.py:382 .\pdf_generators\bestellung.py:391
 msgid "Währung"
 msgstr "Währung"
 
-#: .\pdf_generators\bestellung.py:374 .\pdf_generators\bestellung.py:383
+#: .\pdf_generators\bestellung.py:383 .\pdf_generators\bestellung.py:392
 msgid "Betrag"
 msgstr "Betrag"
 
-#: .\pdf_generators\bestellung.py:375
+#: .\pdf_generators\bestellung.py:384
 msgid "Annahmestelle"
 msgstr "Annahmestelle"
 
-#: .\pdf_generators\bestellung.py:448
+#: .\pdf_generators\bestellung.py:457
 msgid "Tel."
 msgstr "Tel"
 
-#: .\pdf_generators\bestellung.py:449
+#: .\pdf_generators\bestellung.py:458
 msgid "E-Mail"
 msgstr "E-Mail"
 
-#: .\pdf_generators\bestellung.py:450
+#: .\pdf_generators\bestellung.py:459
 msgid "Web"
 msgstr "Web"
 
-#: .\pdf_generators\bestellung.py:466
+#: .\pdf_generators\bestellung.py:475
 msgid "Ihr/e Ansprechpartner/in"
 msgstr "Ihr/e Ansprechpartner/in"
 
-#: .\pdf_generators\bestellung.py:467
+#: .\pdf_generators\bestellung.py:476
 msgid "Ihre Bestellung vom"
 msgstr "Ihre Bestellung vom"
 
-#: .\pdf_generators\bestellung.py:468
+#: .\pdf_generators\bestellung.py:477
 msgid "Ihre Kundennummer"
 msgstr "Ihre Kundennummer"
 
-#: .\pdf_generators\bestellung.py:506
+#: .\pdf_generators\bestellung.py:515
 msgid "LIEFERSCHEIN"
 msgstr "LIEFERSCHEIN"
 
-#: .\pdf_generators\bestellung.py:508
+#: .\pdf_generators\bestellung.py:517
 msgid "RECHNUNG"
 msgstr "RECHNUNG"

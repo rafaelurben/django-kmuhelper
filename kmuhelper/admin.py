@@ -1,3 +1,5 @@
+# pylint: disable=no-member
+
 from .models import ToDoNotiz, ToDoVersand, ToDoZahlungseingang, ToDoLagerbestand, ToDoLieferung
 from django.contrib import admin, messages
 from datetime import datetime
@@ -43,14 +45,17 @@ class BestellungInlineBestellungsposten(admin.TabularInline):
     verbose_name_plural = "Bestellungsposten"
     extra = 0
 
-    fieldsets = [(None, {'fields': ['produkt', 'bemerkung',
-                                    'produktpreis', 'menge', 'mwstsatz', 'zwischensumme']})]
+    fieldsets = [
+        (None, {'fields': ['produkt', 'bemerkung', 'produktpreis', 'menge', 'rabatt', 'mwstsatz', 'zwischensumme']})
+    ]
 
     def get_readonly_fields(self, request, obj=None):
-        if obj and (obj.versendet or obj.bezahlt):
-            return ["zwischensumme", "mwstsatz", "produkt", "produktpreis", "menge"]
-        else:
-            return ["zwischensumme", "mwstsatz", "produkt", "produktpreis"]
+        fields = ["zwischensumme", "mwstsatz", "produkt", "produktpreis"]
+        if obj and obj.versendet:
+            fields.append("menge")
+        if obj and obj.bezahlt:
+            fields.append("rabatt")
+        return fields
 
     def has_change_permission(self, request, obj=None):
         return False if (obj and (obj.versendet and obj.bezahlt)) else True
@@ -70,7 +75,9 @@ class BestellungInlineBestellungspostenAdd(admin.TabularInline):
 
     raw_id_fields = ("produkt",)
 
-    fieldsets = [(None, {'fields': ['produkt', 'bemerkung', 'menge']})]
+    fieldsets = [
+        (None, {'fields': ['produkt', 'bemerkung', 'menge', 'rabatt']})
+    ]
 
     def has_change_permission(self, request, obj=None):
         return False
