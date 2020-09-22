@@ -52,4 +52,4 @@ Natürlich können Sie mich auch gerne bei irgendwelchen Fragen kontaktieren.
 
 ## Weiter
 
-Die Installation ist nun soweit abgeschlossen. Sie können nun [zurück zur Startseite](./README.md) oder [mit der Einleitung fortfahren](manual/).
+Die Installation ist nun soweit abgeschlossen. Sie können nun [zurück zur Startseite](./README.md) oder [mit der Einleitung fortfahren](manual/README.md).
