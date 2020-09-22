@@ -22,4 +22,4 @@ Die einzelnen Seiten sind auf der Startseite der App kurz beschrieben.
 
 ## Zurück
 
-[Zurück zum Handbuch](./setup.md)
+[Zurück zum Handbuch](./README.md)

@@ -19,4 +19,4 @@ Wenn Sie Ihren Lagerbestand in den KMUHelper übertragen möchten, geht dies am 
 
 ## Zurück
 
-[Zurück zum Handbuch](./setup.md)
+[Zurück zum Handbuch](./README.md)

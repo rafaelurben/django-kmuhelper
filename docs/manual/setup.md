@@ -37,4 +37,4 @@ Falls Sie eine Wordpress-Seite mit WooCommerce haben, können Sie diese [mit dem
 
 Die grundlegende Einrichtung ist nun abgeschlossen.
 
-Bevor Sie bereit sind, Rechnungen zu erstellen, müssen Sie jedoch zuerst noch Produkte und Kunden hinzufügen. Sie finden Anleitungen dazu auf der [Startseite](./setup.md) des Benutzerhandbuches.
+Bevor Sie bereit sind, Rechnungen zu erstellen, müssen Sie jedoch zuerst noch Produkte und Kunden hinzufügen. Sie finden Anleitungen dazu auf der [Startseite](./README.md) des Benutzerhandbuches.

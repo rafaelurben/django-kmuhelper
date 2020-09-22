@@ -26,4 +26,4 @@ Ich übernehme KEINE GARANTIE bei fehlerhafter Programmierung meinerseits, bin a
 
 ## Zurück
 
-[Zurück zur Startseite](./setup.md)
+[Zurück zur Startseite](./README.md)

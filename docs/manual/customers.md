@@ -32,4 +32,4 @@ Im Anschluss sehen Sie eine Ansicht des Kundenmanagements
 
 ## Zurück
 
-[Zurück zum Handbuch](./setup.md)
+[Zurück zum Handbuch](./README.md)

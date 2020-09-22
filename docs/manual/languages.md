@@ -20,4 +20,4 @@ Die Unterstützung für mehrere Sprachen existiert bisher nur bei folgenden Feld
 
 ## Zurück
 
-[Zurück zum Handbuch](./setup.md)
+[Zurück zum Handbuch](./README.md)
