@@ -111,9 +111,19 @@ class Bestellungskosten(models.Model):
     kosten = models.ForeignKey("Kosten", on_delete=models.PROTECT)
     bemerkung = models.CharField("Bemerkung", default="", max_length=250, blank=True, help_text="Wird auf die Rechnung gedruckt.")
 
+    rabatt = models.IntegerField("Rabatt in %", default=0, validators=[MinValueValidator(0), MaxValueValidator(100)])
+
+    kostenpreis = models.FloatField("Preis (exkl. MwSt)", default=0.0)
+
     def zwischensumme(self):
-        return runden(self.kosten.preis)
-    zwischensumme.short_description = "Zwischensumme (exkl. MwSt) in CHF"
+        return runden(self.kostenpreis*((100-self.rabatt)/100))
+    zwischensumme.short_description = "Zwischensumme (exkl. MwSt)"
+
+    def zwischensumme_ohne_rabatt(self):
+        return runden(self.kostenpreis)
+
+    def nur_rabatt(self):
+        return runden(self.kostenpreis*(self.rabatt/100))*-1
 
     def mwstsatz(self):
         return formatprice(self.kosten.mwstsatz)
@@ -122,6 +132,11 @@ class Bestellungskosten(models.Model):
     def __str__(self):
         return "1x "+str(self.kosten)
     __str__.short_description = "Bestellungskosten"
+
+    def save(self, *args, **kwargs):
+        if not self.kostenpreis:
+            self.kostenpreis = runden(self.kosten.preis)
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = "Bestellungskosten"
@@ -135,11 +150,11 @@ class Bestellungsposten(models.Model):
     menge = models.IntegerField("Menge", default=1)
     rabatt = models.IntegerField("Rabatt in %", default=0, validators=[MinValueValidator(0), MaxValueValidator(100)])
 
-    produktpreis = models.FloatField("Produktpreis in CHF (exkl. MwSt)", default=0.0)
+    produktpreis = models.FloatField("Produktpreis (exkl. MwSt)", default=0.0)
 
     def zwischensumme(self):
         return runden(self.produktpreis*self.menge*((100-self.rabatt)/100))
-    zwischensumme.short_description = "Zwischensumme (exkl. MwSt) in CHF"
+    zwischensumme.short_description = "Zwischensumme (exkl. MwSt)"
 
     def zwischensumme_ohne_rabatt(self):
         return runden(self.produktpreis*self.menge)
@@ -448,11 +463,18 @@ class Kategorie(models.Model):
 
 class Kosten(models.Model):
     name = models.CharField("Name", max_length=500, default="Zusätzliche Kosten")
-    preis = models.FloatField("Preis", default=0.0)
-    mwstsatz = models.FloatField('Mehrwertsteuersatz', choices= MWSTSÄTZE, default=7.7)
+    preis = models.FloatField("Preis (exkl. MwSt)", default=0.0)
+    mwstsatz = models.FloatField('MwSt-Satz', choices=MWSTSÄTZE, default=7.7)
+
+    @property
+    def mengenbezeichnung(self):
+        return clean("[:de]Stück[:fr]Pièce[:it]Pezzo[:en]Piece[:]")
+
+    def clean_name(self):
+        return clean(self.name)
 
     def __str__(self):
-        return clean(str(self.name))+(" ("+str(self.preis)+" CHF"+(" + "+str(self.mwstsatz)+"% MwSt" if self.mwstsatz else "")+")")
+        return self.clean_name()
     __str__.short_description = "Kosten"
 
     class Meta:

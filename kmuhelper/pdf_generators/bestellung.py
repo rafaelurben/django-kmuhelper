@@ -42,7 +42,7 @@ class PriceTable(Table):
             if bp.rabatt:
                 data.append((
                     "",
-                    _("Rabatt"),
+                    "- "+_("Rabatt"),
                     str(bp.rabatt),
                     "%",
                     formatprice(bp.zwischensumme_ohne_rabatt()),
@@ -51,7 +51,7 @@ class PriceTable(Table):
             if bp.bemerkung:
                 data.append((
                     "",
-                    Paragraph(bp.bemerkung, style_bold),
+                    Paragraph("- "+bp.bemerkung, style_bold),
                     "",
                     "",
                     "",
@@ -64,16 +64,26 @@ class PriceTable(Table):
             data.append((
                 "",
                 Paragraph(clean(bk.kosten.name, sprache), style_default),
-                "",
-                "",
-                "",
+                "1",
+                bk.kosten.mengenbezeichnung,
+                formatprice(bk.kosten.preis),
                 formatprice(bk.kosten.preis)
             ))
             kostenzeilen += 1
+            if bk.rabatt:
+                data.append((
+                    "",
+                    "- "+_("Rabatt"),
+                    str(bk.rabatt),
+                    "%",
+                    formatprice(bk.zwischensumme_ohne_rabatt()),
+                    formatprice(bk.nur_rabatt())
+                ))
+                kostenzeilen += 1
             if bk.bemerkung:
                 data.append((
                     "",
-                    Paragraph(bk.bemerkung, style_bold),
+                    Paragraph("- "+bk.bemerkung, style_bold),
                     "",
                     "",
                     "",
@@ -110,6 +120,7 @@ class PriceTable(Table):
             ('LINEBELOW', (0,-1), (-1,-1), 1, black),
             ('ALIGN', (-1, 0), (-1, -1), "RIGHT"),
             ('ALIGN', (-2, 0), (-2, -1), "RIGHT"),
+            ('ALIGN', (-4, 0), (-4, -1), "RIGHT"),
             ('ALIGN', (1, -1), (1, -1), "CENTER"),
             ('FONTNAME', (0, -1), (-1, -1), "Helvetica-Bold"),
             ('VALIGN', (0, 0), (-1, -1), "TOP"),

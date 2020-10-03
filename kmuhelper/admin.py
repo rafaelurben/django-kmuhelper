@@ -98,9 +98,15 @@ class BestellungInlineBestellungskosten(admin.TabularInline):
     verbose_name_plural = "Bestellungskosten"
     extra = 0
 
-    readonly_fields = ["zwischensumme", "mwstsatz", "kosten"]
     fieldsets = [
-        (None, {'fields': ['kosten', 'bemerkung', 'mwstsatz', 'zwischensumme']})]
+        (None, {'fields': ['kosten', 'bemerkung', 'kostenpreis', 'rabatt', 'mwstsatz', 'zwischensumme']})
+    ]
+
+    def get_readonly_fields(self, request, obj=None):
+        fields = ["zwischensumme", "mwstsatz", "kosten", "kostenpreis"]
+        if obj and obj.bezahlt:
+            fields.append("rabatt")
+        return fields
 
     def has_change_permission(self, request, obj=None):
         return False if (obj and obj.bezahlt) else True
@@ -118,7 +124,9 @@ class BestellungInlineBestellungskostenAdd(admin.TabularInline):
     verbose_name_plural = "Bestellungskosten hinzufügen"
     extra = 0
 
-    fieldsets = [(None, {'fields': ['kosten', 'bemerkung']})]
+    fieldsets = [
+        (None, {'fields': ['kosten', 'bemerkung', 'rabatt']})
+    ]
 
     def has_change_permission(self, request, obj=None):
         return False
@@ -265,12 +273,11 @@ class KategorienAdmin(admin.ModelAdmin):
 
 @admin.register(Kosten)
 class KostenAdmin(admin.ModelAdmin):
+    list_display = ["clean_name", "preis", "mwstsatz"]
+
     fieldsets = [
         (None, {"fields": ("name", "preis", "mwstsatz")})
     ]
-
-    def get_readonly_fields(self, request, obj=None):
-        return ("preis", "versteuerbar") if obj else []
 
 
 @admin.register(Kunde)
