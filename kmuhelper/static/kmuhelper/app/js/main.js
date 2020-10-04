@@ -2,7 +2,7 @@ function loadPage() {
     const frame = document.getElementById("frame");
     const hash = window.location.hash.substr(1);
     if (hash) {
-        const page =  document.getElementById(hash);
+        const page = document.getElementById(hash);
         if (page) {
             frame.src = "about:blank";
             setTimeout(function () {
@@ -24,7 +24,5 @@ function checkFrame(frame) {
 
 window.onhashchange = loadPage;
 window.onload = function () {
-    if (!(window.location.hash.substr(1) === "home")) {
-        loadPage();
-    }
+    loadPage();
 };

@@ -17,11 +17,17 @@
 
         <script src="https://kit.fontawesome.com/67ab7aa4a7.js" crossorigin="anonymous"></script>
         <script src="{% static 'kmuhelper/app/js/main.js' %}"></script>
+        
+        <style>
+            #body {
+                background-image: url("{% static 'kmuhelper/images/loading.gif' %}");
+            }
+        </style>
     </head>
 
     <body>
         <div id="body">
-            <iframe id="frame" name="frame" src="{% url 'kmuhelper:app-home' %}" seamless="seamless" onerror="window.location.hash='error';" onload="checkFrame(this);">Hi</iframe>
+            <iframe id="frame" name="frame" src="about:blank" seamless="seamless" onerror="window.location.hash='{% url 'kmuhelper:app-error' %}';" onload="checkFrame(this);"></iframe>
         </div>
 
         <div class="appbar">

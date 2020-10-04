@@ -4,7 +4,7 @@
 {% block title %}{{ title }} | KMUHelper{% endblock %}
 
 {% block branding %}
-    <h1 id="site-name"><a id="kmuhelper_admin" href="{% url 'admin:app_list' app_label='kmuhelper' %}">KMUHelper Admin</a> / <a id="kmuhelper_app" target="_top" href="{% url 'kmuhelper:app-main' %}">App</a></h1>
+    <h1 id="site-name"><a target="_top" href="{% url 'kmuhelper:home' %}">KMUHelper</a> | <a href="{% url 'admin:app_list' app_label='kmuhelper' %}">Admin</a></h1>
 {% endblock %}
 
 {% block extrastyle %}
@@ -16,5 +16,6 @@
     {{ block.super }}
     <link rel="shortcut icon" type="image/x-icon" href="{% static 'kmuhelper/favicon.ico' %}">
     <link rel="apple-touch-icon" href="{% static 'kmuhelper/favicon.ico' %}">
+
     <script src="{% static 'admin/js/collapse-open.js' %}" type="text/javascript"></script>
 {% endblock %}

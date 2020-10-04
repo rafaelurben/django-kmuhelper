@@ -9,9 +9,11 @@
     <h3>Mögliche Ursachen</h3>
     <ul>
         <li>Du hast keinen Zugriff auf diese Seite.</li>
-        <li>Diese Seite existiert nicht</li>
-        <li>Anderer Grund - <a target="_top" href="{% url 'kmuhelper:app-main' %}">Zur Startseite</a></li>
+        <li>Diese Seite existiert nicht.</li>
+        <li>Diese Seite darf nicht in der App geöffnet werden.</li>
     </ul>
+    <br>
+    <a target="_top" href="{% url 'kmuhelper:app-main' %}#home">Zur Startseite</a>
 
     {% if user.is_anonymous %}
         <script>

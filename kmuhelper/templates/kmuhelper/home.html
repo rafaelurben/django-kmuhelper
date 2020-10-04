@@ -1,0 +1,64 @@
+{% extends "admin/base.html" %}
+
+{% load static %}
+
+{% block title %}KMUHelper{% endblock %}
+
+{% block branding %}
+    <h1 id="site-name"><a target="_top" href="{% url 'kmuhelper:home' %}">KMUHelper</a></h1>
+{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static "admin/kmuhelper/css/style.css" %}">
+    <style>
+        #app-admin-chooser a {
+            padding: 50px;
+            border-radius: 5px;
+            display: block;
+            color: white;
+            background-color: var(--kmuhelper-dark);
+            transition-duration: 0.5s;
+        }
+        
+        #app-admin-chooser a:hover {
+            background-color: var(--kmuhelper-darkest);
+        }
+
+    </style>
+{% endblock %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <script src="https://kit.fontawesome.com/67ab7aa4a7.js" crossorigin="anonymous"></script>
+
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'kmuhelper/favicon.ico' %}">
+    <link rel="apple-touch-icon" href="{% static 'kmuhelper/favicon.ico' %}">
+{% endblock %}
+
+{% block content %}
+    <h1>Willkommen im KMUHelper!</h1>
+   
+    <div id="app-admin-chooser">
+        <a href="{% url 'admin:app_list' app_label='kmuhelper' %}" target="_top">
+            <center>
+                <i class="fas fa-2x fa-fw fa-key"></i>
+                <br><br>
+                <h2>Admin</h2>
+                <p>Volle Kontrolle über alle Daten</p>
+            </center>
+        </a>
+        <br>
+        <a href="{% url 'kmuhelper:app-main' %}#home" target="_top">
+            <center>
+                <i class="fas fa-2x fa-fw fa-clipboard-list"></i>
+                <br><br>
+                <h2>App</h2>
+                <p>Eingeschränkte Verwaltung von Daten in verschiedenen Arbeitsschritten</p>
+            </center>
+        </a>        
+    </div>
+
+{% endblock %}

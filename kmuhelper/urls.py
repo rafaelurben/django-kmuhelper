@@ -1,3 +1,5 @@
+# pylint: disable=no-member
+
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from django.conf import settings
@@ -21,6 +23,8 @@ except:
 
 app_name = 'kmuhelper'
 urlpatterns = [
+    path('', views.home, name="home"),
+
     path('wc/auth/start', views.wc_auth_start, name="wc-auth-start"),
     path('wc/auth/end', views.wc_auth_end, name="wc-auth-end"),
     path('wc/auth/key', views.wc_auth_key, name="wc-auth-key"),

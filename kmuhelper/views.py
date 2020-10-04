@@ -1,8 +1,10 @@
+# pylint: disable=no-member
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, redirect
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_exempt
 
@@ -27,6 +29,14 @@ def log(string, *args):
 # Create your views here.
 
 
+@login_required(login_url=reverse_lazy("admin:login"))
+def home(request):
+    return render(request, "kmuhelper/home.html", {"has_permission": True})
+
+
+#####
+
+
 @csrf_exempt
 def wc_auth_key(request):
     JSON = json.loads(request.body)
@@ -49,7 +59,7 @@ def wc_auth_key(request):
     return HttpResponse("success")
 
 
-@login_required(login_url="/admin/login")
+@login_required(login_url=reverse_lazy("admin:login"))
 def wc_auth_end(request):
     if request.GET.get("success") == "1":
         messages.success(request, "WooCommerce erfolgreich verbunden!")
@@ -58,7 +68,7 @@ def wc_auth_end(request):
     return redirect(reverse('admin:kmuhelper_einstellung_changelist'))
 
 
-@login_required(login_url="/admin/login")
+@login_required(login_url=reverse_lazy("admin:login"))
 def wc_auth_start(request):
     shopurl = Einstellung.objects.get(id="wc-url").inhalt
     if "Bestätigt" in shopurl:
@@ -82,7 +92,7 @@ def wc_auth_start(request):
         return redirect(url)
 
 
-@login_required(login_url="/admin/login")
+@login_required(login_url=reverse_lazy("admin:login"))
 def wc_import_products(request):
     if not bool(Geheime_Einstellung.objects.filter(id="wc-url").exists() and Geheime_Einstellung.objects.get(id="wc-url").inhalt):
         messages.error(
@@ -95,7 +105,7 @@ def wc_import_products(request):
         return redirect(reverse("admin:kmuhelper_produkt_changelist"))
 
 
-@login_required(login_url="/admin/login")
+@login_required(login_url=reverse_lazy("admin:login"))
 def wc_import_customers(request):
     if not bool(Geheime_Einstellung.objects.filter(id="wc-url").exists() and Geheime_Einstellung.objects.get(id="wc-url").inhalt):
         messages.error(
@@ -108,7 +118,7 @@ def wc_import_customers(request):
         return redirect(reverse("admin:kmuhelper_kunde_changelist"))
 
 
-@login_required(login_url="/admin/login")
+@login_required(login_url=reverse_lazy("admin:login"))
 def wc_import_categories(request):
     if not bool(Geheime_Einstellung.objects.filter(id="wc-url").exists() and Geheime_Einstellung.objects.get(id="wc-url").inhalt):
         messages.error(
@@ -121,7 +131,7 @@ def wc_import_categories(request):
         return redirect(reverse("admin:kmuhelper_kategorie_changelist"))
 
 
-@login_required(login_url="/admin/login")
+@login_required(login_url=reverse_lazy("admin:login"))
 def wc_import_orders(request):
     if not bool(Geheime_Einstellung.objects.filter(id="wc-url").exists() and Geheime_Einstellung.objects.get(id="wc-url").inhalt):
         messages.error(
@@ -134,7 +144,7 @@ def wc_import_orders(request):
         return redirect(reverse("admin:kmuhelper_bestellung_changelist"))
 
 
-@login_required(login_url="/admin/login")
+@login_required(login_url=reverse_lazy("admin:login"))
 def wc_update_product(request, object_id):
     if not bool(Geheime_Einstellung.objects.filter(id="wc-url").exists() and Geheime_Einstellung.objects.get(id="wc-url").inhalt):
         messages.error(
@@ -147,7 +157,7 @@ def wc_update_product(request, object_id):
         return redirect(reverse("admin:kmuhelper_produkt_change", args=[object_id]))
 
 
-@login_required(login_url="/admin/login")
+@login_required(login_url=reverse_lazy("admin:login"))
 def wc_update_customer(request, object_id):
     if not bool(Geheime_Einstellung.objects.filter(id="wc-url").exists() and Geheime_Einstellung.objects.get(id="wc-url").inhalt):
         messages.error(
@@ -160,7 +170,7 @@ def wc_update_customer(request, object_id):
         return redirect(reverse("admin:kmuhelper_kunde_change", args=[object_id]))
 
 
-@login_required(login_url="/admin/login")
+@login_required(login_url=reverse_lazy("admin:login"))
 def wc_update_category(request, object_id):
     if not bool(Geheime_Einstellung.objects.filter(id="wc-url").exists() and Geheime_Einstellung.objects.get(id="wc-url").inhalt):
         messages.error(
@@ -173,7 +183,7 @@ def wc_update_category(request, object_id):
         return redirect(reverse("admin:kmuhelper_kategorie_change", args=[object_id]))
 
 
-@login_required(login_url="/admin/login")
+@login_required(login_url=reverse_lazy("admin:login"))
 def wc_update_order(request, object_id):
     if not bool(Geheime_Einstellung.objects.filter(id="wc-url").exists() and Geheime_Einstellung.objects.get(id="wc-url").inhalt):
         messages.error(
@@ -237,7 +247,7 @@ def wc_webhooks(request):
     return HttpResponse("Erfolgreich erhalten!")
 
 
-@login_required(login_url="/admin/login")
+@login_required(login_url=reverse_lazy("admin:login"))
 def lieferant_zuordnen(request, object_id):
     if Lieferant.objects.filter(id=int(object_id)).exists():
         count = Lieferant.objects.get(id=int(object_id)).zuordnen()
@@ -248,7 +258,7 @@ def lieferant_zuordnen(request, object_id):
     return redirect(reverse("admin:kmuhelper_lieferant_change", args=[object_id]))
 
 
-@login_required(login_url="/admin/login")
+@login_required(login_url=reverse_lazy("admin:login"))
 def lieferung_einlagern(request, object_id):
     if Lieferung.objects.filter(id=int(object_id)).exists():
         if Lieferung.objects.get(id=int(object_id)).einlagern():
@@ -261,7 +271,7 @@ def lieferung_einlagern(request, object_id):
     return redirect(reverse("admin:kmuhelper_lieferung_change", args=[object_id]))
 
 
-@login_required(login_url="/admin/login")
+@login_required(login_url=reverse_lazy("admin:login"))
 def kunde_email_registriert(request, object_id):
     if Kunde.objects.filter(id=int(object_id)).exists():
         if Kunde.objects.get(id=int(object_id)).send_register_mail():
@@ -274,7 +284,7 @@ def kunde_email_registriert(request, object_id):
     return redirect(reverse("admin:kmuhelper_kunde_change", args=[object_id]))
 
 
-@login_required(login_url="/admin/login")
+@login_required(login_url=reverse_lazy("admin:login"))
 def bestellung_pdf_ansehen(request, object_id):
     if Bestellung.objects.filter(id=int(object_id)).exists():
         obj = Bestellung.objects.get(id=int(object_id))
@@ -287,7 +297,7 @@ def bestellung_pdf_ansehen(request, object_id):
         return redirect(reverse("admin:kmuhelper_bestellung_changelist"))
 
 
-@login_required(login_url="/admin/login")
+@login_required(login_url=reverse_lazy("admin:login"))
 def bestellung_pdf_an_kunden_senden(request, object_id):
     if Bestellung.objects.filter(id=int(object_id)).exists():
         if Bestellung.objects.get(id=int(object_id)).send_pdf_rechnung_to_customer():
