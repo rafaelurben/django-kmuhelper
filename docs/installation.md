@@ -11,7 +11,7 @@ Natürlich können Sie mich auch gerne bei irgendwelchen Fragen kontaktieren.
 
 ## Anforderungen
 
-- Ein Server, welcher Python unterstützt (Ich empfehle dazu [Heroku](https://heroku.com))
+- Ein Server, welcher Python und Django unterstützt (Ich empfehle dazu [Heroku](https://heroku.com))
 - Ein funktionierendes Django-Projekt (Vorlage dazu werde ich noch erstellen...) <!-- TODO -->
 - Eine Datenbank
 
@@ -29,8 +29,9 @@ Natürlich können Sie mich auch gerne bei irgendwelchen Fragen kontaktieren.
         ...
         'kmuhelper',
         ...
-        'django.contrib.messages',
         'django.contrib.admin',
+        'django.contrib.auth',
+        'django.contrib.messages',
     ]
     ```
 

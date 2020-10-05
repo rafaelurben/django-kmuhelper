@@ -11,9 +11,11 @@ Beispielrechnung: (Hinweis: Das Logo kann geändert werden!)
 
 [![KMUHelper Beispielrechnung](../assets/images/screenshots/example-invoice.jpg)](../assets/pdfs/example-invoice.pdf)
 
-*** <!-- TODO -->
+*****
 
 Als erstes müssen Sie die Erstellseite für Bestellungen (`/admin/kmuhelper/bestellung/add`) öffnen. Diese ist via Admin-Bereich (`/admin/kmuhelper`) -> Bestellung -> Hinzufügen erreichbar.
+
+**Diese Seite ist noch in Arbeit** <!-- TODO -->
 
 ## Zurück
 
