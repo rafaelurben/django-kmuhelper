@@ -5,7 +5,7 @@ fbcontact: true
 
 # Geschichte
 
-Die Entstehung des KMUHelpers ist eigentlich eine ziemlich lange Geschichte.
+Die Entstehung des KMUHelper ist eigentlich eine ziemlich lange Geschichte.
 
 Ursprünglich war es mehr oder weniger ein kleines Testprojekt, um mich mit Web-Development auseinanderzusetzen, mittlerweile ist es jedoch ein brauchbares Tool für die Buchhaltung von Schweizer KMU.
 
@@ -13,7 +13,7 @@ Im Hinterkopf hatte ich immer die Hoffnung, der KMUHelper wäre irgendwann wirkl
 
 ## Flask
 
-Die erste Version des KMUHelpers war nicht für wirklich viel zu gebrauchen, sie wurde sogar gar nie fertiggestellt. Diese Version hatte ich mit dem Python-Flask Framework gebaut, welches ich mittlerweile so gut wie nicht mehr benutze, seit ich Django brauche.
+Die erste Version des KMUHelper war nicht für wirklich viel zu gebrauchen, sie wurde sogar gar nie fertiggestellt. Diese Version hatte ich mit dem Python-Flask Framework gebaut, welches ich mittlerweile so gut wie nicht mehr benutze, seit ich Django brauche.
 
 Ich weiss nicht, was ich mir damals überlegt habe, aber diese Version speicherte alle Daten in einer JSON Datei auf dem Server, was eigentlich nicht wirklich die beste Idee ist.
 
@@ -35,7 +35,7 @@ Mittlerweile ist der KMUHelper eine brauchbare, auf django-admin basierende Web-
 
 Mit Django wurde der KMUHelper für mich ein Projekt, in welchem ich Potential sah, da Buchhaltungssoftware für viele KMU viel zu teuer ist, und dies eine meiner Meinung nach gute Alternative zu konstenpflichtiger Buchhaltungssoftware ist.
 
-Die [Funktionen](functions.md) des KMUHelpers werden stetig ergänzt und verbessert.
+Die [Funktionen](functions.md) des KMUHelper werden stetig ergänzt und verbessert.
 
 Bei Fragen können Sie mich gerne [kontaktieren](<{{ site.kontakt_url }}>).
 

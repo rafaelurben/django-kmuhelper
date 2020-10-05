@@ -5,23 +5,23 @@ fbcontact: true
 
 # Installation
 
-Falls Sie keine Ahnung von all dem "Zeugs" da unten haben, können Sie mich gerne [kontaktieren](<{{ site.kontakt_url }}>). Bei Interesse helfe ich gerne (gegen einen kleinen Unkostenbetrag) bei der Aufsetzung des KMUHelpers.
+Falls Sie keine Ahnung von all dem "Zeugs" da unten haben, können Sie mich gerne [kontaktieren](<{{ site.kontakt_url }}>). Bei Interesse helfe ich gerne (gegen einen kleinen Unkostenbetrag) bei der Aufsetzung des KMUHelper.
 
 Natürlich können Sie mich auch gerne bei irgendwelchen Fragen kontaktieren.
 
 ## Anforderungen
 
--   Ein Server, welcher Python unterstützt
--   Ein funktionierendes Django-Projekt
+- Ein Server, welcher Python unterstützt
+- Ein funktionierendes Django-Projekt
 
 ## Anleitung
 
-0.  Installieren Sie den KMUHelper:
+0. Installieren Sie den KMUHelper:
 
-    -   Stable (empfohlen): `pip install -U django-kmuhelper`
-    -   Dev-Version: `pip install -i https://test.pypi.org/simple/ -U django-kmuhelper`
+    - Stable (empfohlen): `pip install -U django-kmuhelper`
+    - Dev-Version: `pip install -i https://test.pypi.org/simple/ -U django-kmuhelper`
 
-1.  Fügen Sie `kmuhelper` zu Ihren installierten Apps hinzu:
+1. Fügen Sie `kmuhelper` zu Ihren installierten Apps hinzu:
 
     ```python
     INSTALLED_APPS = [
@@ -33,7 +33,7 @@ Natürlich können Sie mich auch gerne bei irgendwelchen Fragen kontaktieren.
     ]
     ```
 
-2.  Fügen Sie den KMUHelper zu Ihrer URL-Konfiguration hinzu:
+2. Fügen Sie den KMUHelper zu Ihrer URL-Konfiguration hinzu:
 
     ```python
     urlpatterns = [
@@ -44,9 +44,9 @@ Natürlich können Sie mich auch gerne bei irgendwelchen Fragen kontaktieren.
     ]
     ```
 
-3.  Führen Sie `python manage.py migrate` aus, um die Datenbank einzurichten.
+3. Führen Sie `python manage.py migrate` aus, um die Datenbank einzurichten.
 
-4.  Besuchen Sie `/kmuhelper`.
+4. Besuchen Sie `/kmuhelper`.
 
 ## Weiter
 

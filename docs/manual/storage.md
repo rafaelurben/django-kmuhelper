@@ -9,9 +9,9 @@ Der KMUHelper besitzt ein integriertes Lagermanagement, leider können jedoch ni
 
 Bei jedem Produkt gibt es das Feld "Lagerbestand". Dieses wird bei folgenden Ereignissen aktualisiert:
 
--   Manuelle Änderung
--   Lieferung als "eingelagert" markieren
--   Bestellung als "versendet" markieren
+- Manuelle Änderung
+- Lieferung als "eingelagert" markieren
+- Bestellung als "versendet" markieren
 
 ## Inventar
 

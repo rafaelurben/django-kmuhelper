@@ -8,7 +8,7 @@ fbcontact: true
 Der KMUHelper kommt mit seiner eigenen kleinen (Web-)App.
 Diese befindet sich unter `/kmuhelper/app/`.
 
-Wenn Sie diese Seite auf dem Handy öffnen, können Sie, je nach Ihrem Betreibssystem, die Webseite zum Home-Bildschirm hinzufügen. (Googlen Sie dazu nach Ihrem Betreibssystem + `PWA installieren`, falls Sie noch nicht wissen, wie und ob das geht. -> z.B. ["iOs PWA installieren"](https://www.google.com/search?q=iOs+PWA+installieren) oder ["Android PWA installieren"](https://www.google.com/search?q=Android+PWA+installieren))
+Wenn Sie diese Seite auf dem Handy öffnen, können Sie, je nach Ihrem Betriebssystem, die Webseite zum Home-Bildschirm hinzufügen. (Googeln Sie dazu nach Ihrem Betriebssystem + `PWA installieren`, falls Sie noch nicht wissen, wie und ob das geht. -> z.B. ["iOs PWA installieren"](https://www.google.com/search?q=iOs+PWA+installieren) oder ["Android PWA installieren"](https://www.google.com/search?q=Android+PWA+installieren))
 
 Die App sollte nach dem Login so aussehen:
 

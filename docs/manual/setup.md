@@ -21,7 +21,7 @@ Füllen Sie alle Felder realitätsgetreu aus und klicken Sie auf `Sichern`.
 
 Dies ist notwendig, da mindestens ein Zahlungsempfänger vorhanden sein muss, um Bestellungen erstellen zu können.
 
-PS: Leider können im KMUHelper direkt keine Bilder hochgeladen werden, deshalb muss auf ein externes Bild verwiesen werden.
+PS: Leider können im KMUHelper direkt keine Bilder hochgeladen werden, deshalb muss auf ein extern gespeichertes Bild verwiesen werden.
 
 ## Ansprechpartner
 
