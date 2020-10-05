@@ -12,12 +12,12 @@ Hier finden Sie alles, was Sie über den KMUHelper wissen müssen!
 
 ## Inhalt
 
--   [Geschichte](history.md)
--   [Funktionen](functions.md)
--   [Installation](installation.md)
--   [Benutzerhandbuch](manual/README.md)
+- [Geschichte](history.md)
+- [Funktionen](functions.md)
+- [Installation](installation.md)
+- [Benutzerhandbuch](manual/README.md)
 
--   [Unterstützt mich](support.md)
+- [Unterstützt mich](support.md)
 
 ## Kontakt
 

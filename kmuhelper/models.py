@@ -129,6 +129,10 @@ class Bestellungskosten(models.Model):
         return formatprice(self.kosten.mwstsatz)
     mwstsatz.short_description = "MwSt-Satz"
 
+    def kosten_name(self):
+        return self.kosten.clean_name()
+    kosten_name.short_description = "Name"
+
     def __str__(self):
         return "1x "+str(self.kosten)
     __str__.short_description = "Bestellungskosten"
@@ -481,7 +485,7 @@ class Kosten(models.Model):
         return clean(self.name)
 
     def __str__(self):
-        return self.clean_name()
+        return f"{ self.clean_name() } ({ self.preis } CHF " + ("+ "+str(self.mwstsatz)+"% MwSt" if self.mwstsatz else "") + ")"
     __str__.short_description = "Kosten"
 
     class Meta:

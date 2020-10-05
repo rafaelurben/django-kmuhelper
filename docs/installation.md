@@ -11,8 +11,9 @@ Natürlich können Sie mich auch gerne bei irgendwelchen Fragen kontaktieren.
 
 ## Anforderungen
 
-- Ein Server, welcher Python unterstützt
-- Ein funktionierendes Django-Projekt
+- Ein Server, welcher Python unterstützt (Ich empfehle dazu [Heroku](https://heroku.com))
+- Ein funktionierendes Django-Projekt (Vorlage dazu werde ich noch erstellen...) <!-- TODO -->
+- Eine Datenbank
 
 ## Anleitung
 
@@ -46,7 +47,7 @@ Natürlich können Sie mich auch gerne bei irgendwelchen Fragen kontaktieren.
 
 3. Führen Sie `python manage.py migrate` aus, um die Datenbank einzurichten.
 
-4. Besuchen Sie `/kmuhelper`.
+4. Besuchen Sie `/kmuhelper/`.
 
 ## Weiter
 

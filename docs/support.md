@@ -13,3 +13,5 @@ Da dies nur ein Freizeitprojekt ist, bin ich auf jegliche Unterstützung angewie
 ## Zurück
 
 [Zurück zur Startseite](./README.md)
+
+[Zurück zum Handbuch](./manual/README.md)

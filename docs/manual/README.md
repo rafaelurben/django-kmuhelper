@@ -13,7 +13,7 @@ PS: Diese Anleitung setzt die [Installation](../installation.md) des KMUHelper v
 
 ## Hilfe & Support
 
-Falls Sie irgendwelche Fragen haben, können Sie mich sehr gerne [kontaktieren](https://rafaelurben.github.io/diverses/rafaelurben/#kontakt).
+Falls Sie irgendwelche Fragen haben, können Sie mich sehr gerne [kontaktieren](<{{ site.kontakt_url }}>).
 
 Die Entwicklung und Unterhaltung des KMUHelper benötigt sehr viel Zeit, deshalb bin ich sehr auf [Unterstützung](../support.md) angewiesen.
 

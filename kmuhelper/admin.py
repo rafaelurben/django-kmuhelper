@@ -99,11 +99,11 @@ class BestellungInlineBestellungskosten(admin.TabularInline):
     extra = 0
 
     fieldsets = [
-        (None, {'fields': ['kosten', 'bemerkung', 'kostenpreis', 'rabatt', 'mwstsatz', 'zwischensumme']})
+        (None, {'fields': ['kosten_name', 'bemerkung', 'kostenpreis', 'rabatt', 'mwstsatz', 'zwischensumme']})
     ]
 
     def get_readonly_fields(self, request, obj=None):
-        fields = ["zwischensumme", "mwstsatz", "kosten", "kostenpreis"]
+        fields = ["zwischensumme", "mwstsatz", "kostenpreis", "kosten_name"]
         if obj and obj.bezahlt:
             fields.append("rabatt")
         return fields
@@ -518,11 +518,12 @@ class ProduktAdmin(admin.ModelAdmin):
                 ('Daten', {'fields': [
                  'mengenbezeichnung', 'verkaufspreis', 'mwstsatz', 'lagerbestand', 'soll_lagerbestand']}),
                 ('Lieferant', {'fields': [
-                 'lieferant', 'lieferant_preis', 'lieferant_artikelnummer']}),
+                 'lieferant', 'lieferant_preis', 'lieferant_artikelnummer'], 'classes': [
+                 "collapse start-open"]}),
                 ('Aktion', {'fields': ['aktion_von', 'aktion_bis', 'aktion_preis'], 'classes': [
                  "collapse start-open"]}),
                 ('Links', {'fields': ['datenblattlink', 'bildlink'], 'classes': [
-                 "collapse start-open"]}),
+                 "collapse"]}),
                 # packlistenbemerkung
                 ('Bemerkung / Notiz',
                  {'fields': ['bemerkung', 'html_notiz'], 'classes': ["collapse start-open"]})
@@ -535,13 +536,15 @@ class ProduktAdmin(admin.ModelAdmin):
                 ('Daten', {'fields': [
                  'mengenbezeichnung', 'verkaufspreis', 'mwstsatz', 'lagerbestand', 'soll_lagerbestand']}),
                 ('Lieferant', {'fields': [
-                 'lieferant', 'lieferant_preis', 'lieferant_artikelnummer']}),
+                 'lieferant', 'lieferant_preis', 'lieferant_artikelnummer'], 'classes': [
+                 "collapse start-open"]}),
                 ('Aktion', {'fields': ['aktion_von', 'aktion_bis', 'aktion_preis'], 'classes': [
                  "collapse start-open"]}),
                 ('Links', {'fields': ['datenblattlink', 'bildlink'], 'classes': [
-                 "collapse start-open"]}),
+                 "collapse"]}),
+                # packlistenbemerkung
                 ('Bemerkung', {'fields': ['bemerkung'], 'classes': [
-                 "collapse start-open"]})  # packlistenbemerkung
+                 "collapse start-open"]}) 
             ]
 
     ordering = ('artikelnummer', 'name')
