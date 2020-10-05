@@ -9,7 +9,13 @@ Willkommen beim KMUHelper!
 
 Diese Bedienungsanleitung sollte Ihnen dazu helfen, den KMUHelper zu verstehen und ihn zu benutzen.
 
-Diese Anleitung setzt die [Installation](../installation.md) des KMUHelper voraus.
+PS: Diese Anleitung setzt die [Installation](../installation.md) des KMUHelper voraus.
+
+## Hilfe & Support
+
+Falls Sie irgendwelche Fragen betreffend des KMUHelpers haben, können Sie mich sehr gerne [kontaktieren](https://rafaelurben.github.io/diverses/rafaelurben/#kontakt).
+
+Die Entwicklung und Unterhaltung des KMUHelpers benötigt sehr viel Zeit, deshalb bin ich sehr auf Ihre [Unterstützung](../support.md) angewiesen.
 
 ## Inhalt
 

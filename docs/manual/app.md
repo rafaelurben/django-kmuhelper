@@ -16,7 +16,7 @@ Die App sollte nach dem Login so aussehen:
 
 ## Funktionen
 
-Diese App beinhaltet versteckte Seiten des Django-Adminbereichs, welche die einfachere Massenverwaltung von Bestellungen, Lagerbestand, Notizen und Lieferungen ermöglichen.
+Diese App beinhaltet versteckte Seiten des Django-Adminbereichs, welche die einfachere Massenverwaltung von Bestellungen, Lagerbestand, Notizen und Lieferungen ermöglichen, jedoch sind manche Funktionen eingeschränkt, um die App nicht zu überladen. Dies beinhaltet zum Beispiel das Löschen von Objekten.
 
 Die einzelnen Seiten sind auf der Startseite der App kurz beschrieben.
 

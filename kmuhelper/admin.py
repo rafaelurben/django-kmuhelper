@@ -234,6 +234,16 @@ class BestellungsAdmin(admin.ModelAdmin):
 
     actions = [als_bezahlt_markieren, wc_update]
 
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        if obj:
+            data = obj.get_reserved_stock()
+            for i in data:
+                if i[1] < 0:
+                    messages.error(request, f"'{ i[0].clean_name() }': Zu wenig Lagerbestand! Aktuell: { i[0].lagerbestand } - Danach: { i[1] }")
+                elif i[1] < i[0].soll_lagerbestand:
+                    messages.warning(request, f"'{ i[0].clean_name() }': Knapper Lagerbestand! Aktuell: { i[0].lagerbestand } - Danach: { i[1] }")
+
 
 class KategorienInlineUntergeordneteKategorien(admin.TabularInline):
     model = Produkt.kategorien.through
@@ -506,7 +516,7 @@ class ProduktAdmin(admin.ModelAdmin):
                 ('Beschrieb', {'fields': [
                  'kurzbeschrieb', 'beschrieb'], 'classes': ["collapse start-open"]}),
                 ('Daten', {'fields': [
-                 'mengenbezeichnung', 'verkaufspreis', 'mwstsatz', 'lagerbestand']}),
+                 'mengenbezeichnung', 'verkaufspreis', 'mwstsatz', 'lagerbestand', 'soll_lagerbestand']}),
                 ('Lieferant', {'fields': [
                  'lieferant', 'lieferant_preis', 'lieferant_artikelnummer']}),
                 ('Aktion', {'fields': ['aktion_von', 'aktion_bis', 'aktion_preis'], 'classes': [
@@ -523,7 +533,7 @@ class ProduktAdmin(admin.ModelAdmin):
                 ('Beschrieb', {'fields': [
                  'kurzbeschrieb', 'beschrieb'], 'classes': ["collapse start-open"]}),
                 ('Daten', {'fields': [
-                 'mengenbezeichnung', 'verkaufspreis', 'mwstsatz', 'lagerbestand']}),
+                 'mengenbezeichnung', 'verkaufspreis', 'mwstsatz', 'lagerbestand', 'soll_lagerbestand']}),
                 ('Lieferant', {'fields': [
                  'lieferant', 'lieferant_preis', 'lieferant_artikelnummer']}),
                 ('Aktion', {'fields': ['aktion_von', 'aktion_bis', 'aktion_preis'], 'classes': [
@@ -577,6 +587,15 @@ class ProduktAdmin(admin.ModelAdmin):
         ) != 1 else 'Aktion von einem Produkt') + ' beendet!').format(queryset.count()))
     aktion_beenden.short_description = "Aktion beenden"
 
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        if obj:
+            l = obj.lagerbestand-obj.get_reserved_stock()
+            if l < 0:
+                messages.error(request, f"Zu wenig Lagerbestand! Aktuell: { obj.lagerbestand } - Nach allen offenen Bestellungen: { l }")
+            elif l < obj.soll_lagerbestand:
+                messages.warning(request, f"Knapper Lagerbestand! Aktuell: { obj.lagerbestand } - Nach allen offenen Bestellungen: { l }")
+
 
 @admin.register(Zahlungsempfaenger)
 class ZahlungsempfaengerAdmin(admin.ModelAdmin):
@@ -593,6 +612,13 @@ class ZahlungsempfaengerAdmin(admin.ModelAdmin):
                      'adresszeile2', 'qriban', 'firmenuid']
 
     save_on_top = True
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        if obj and not obj.has_valid_qr_iban():
+            messages.error(request, "Ungültige QR-IBAN!")
+        if obj and not obj.has_valid_uid():
+            messages.warning(request, "Ungültige UID!")
 
 
 ###################

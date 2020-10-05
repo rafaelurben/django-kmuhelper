@@ -11,6 +11,9 @@ home:
         installation:
             title: Installation
             url: /installation
+        support:
+            title: Unterstützung
+            url: /support
         manual:
             title: Handbuch
             url: /manual/

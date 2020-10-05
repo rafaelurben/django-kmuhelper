@@ -1,4 +1,4 @@
-# pylint: disable=no-member
+# pylint: disable=no-member, unsubscriptable-object
 
 from django.db import models
 from django.core import mail
@@ -374,6 +374,13 @@ class Bestellung(models.Model):
             link = reverse("admin:kmuhelper_notiz_add")+'?from_bestellung='+str(self.pk)
             return mark_safe('<a target="_blank" href="'+link+'">Notiz hinzufügen</a>')
     html_notiz.short_description = "Notiz"
+
+    def get_reserved_stock(self):
+        data = []
+        for p in self.produkte.all():
+            n = p.get_reserved_stock()
+            data.append((p, p.lagerbestand-n))
+        return data
 
     class Meta:
         verbose_name = "Bestellung"
@@ -762,7 +769,9 @@ class Produkt(models.Model):
     mengenbezeichnung = models.CharField('Mengenbezeichnung', max_length=100, default="[:de]Stück[:fr]Pièce[:it]Pezzo[:en]Piece[:]", blank=True)
     verkaufspreis = models.FloatField('Normalpreis in CHF (exkl. MwSt)', default=0)
     mwstsatz = models.FloatField('Mehrwertsteuersatz', choices= MWSTSÄTZE, default=7.7)
+
     lagerbestand = models.IntegerField("Lagerbestand", default=0)
+    soll_lagerbestand = models.IntegerField("Soll-Lagerbestand", default=1)
 
     bemerkung = models.TextField('Bemerkung', default="", blank=True, help_text="Wird nicht gedruckt oder angezeigt; nur für eigene Zwecke.")
     #packlistenbemerkung = models.TextField('Packlistenbemerkung', default="", blank=True, help_text="Wird auf die Packliste gedruckt.")
@@ -809,6 +818,12 @@ class Produkt(models.Model):
         return ""
     bild.short_description = "Bild"
 
+    def get_reserved_stock(self):
+        n = 0  
+        for bp in Bestellungsposten.objects.filter(bestellung__versendet=False, produkt__id=self.id): 
+            n += bp.menge
+        return n
+
     def save(self, *args, **kwargs):
         if self.mengenbezeichnung == "Stück":
             self.mengenbezeichnung = "[:de]Stück[:fr]Pièce[:it]Pezzo[:en]Piece[:]"
@@ -847,7 +862,7 @@ class Produkt(models.Model):
 
 
 class Zahlungsempfaenger(models.Model):
-    qriban = models.CharField("QR-IBAN", max_length=21+5 , validators=[RegexValidator(r'^CH[0-9]{2}\s3[0-9]{3}\s[0-9]{4}\s[0-9]{4}\s[0-9]{4}\s[0-9]{1}$', 'Bite benutze folgendes Format: CHxx 3xxx xxxx xxxx xxxx x')], help_text="QR-IBAN mit Leerzeichen")
+    qriban = models.CharField("QR-IBAN", max_length=21+5 , validators=[RegexValidator(r'^(CH|LI)[0-9]{2}\s3[0-9]{3}\s[0-9]{4}\s[0-9]{4}\s[0-9]{4}\s[0-9]{1}$', 'Bite benutze folgendes Format: (CH|LI)pp 3xxx xxxx xxxx xxxx x')], help_text="QR-IBAN mit Leerzeichen")
     logourl = models.URLField("Logo (URL)", validators=[RegexValidator(r'''^[0-9a-zA-Z\-\.\|\?\(\)\*\+&"'_:;/]+\.(png|jpg)$''', '''Nur folgende Zeichen gestattet: 0-9a-zA-Z-_.:;/|?&()"'*+ - Muss auf .jpg/.png enden.''')], help_text="URL eines Bildes (.jpg/.png) - Wird auf die Rechnung gedruckt.")
     firmenname = models.CharField("Firmennname", max_length=70, help_text="Name der Firma")
     firmenuid = models.CharField("Firmen-UID", max_length=15 , validators=[RegexValidator(r'^CHE-[0-9]{3}\.[0-9]{3}\.[0-9]{3}$', 'Bite benutze folgendes Format: CHE-123.456.789')], help_text="UID der Firma - Format: CHE-123.456.789 (Mehrwertsteuernummer)")
@@ -857,6 +872,31 @@ class Zahlungsempfaenger(models.Model):
     email = models.EmailField("E-Mail", default="", blank=True, help_text="Nicht auf der Rechnung ersichtlich")
     telefon = models.CharField("Telefon", max_length=70, default="", blank=True, help_text="Nicht auf der Rechnung ersichtlich")
     webseite = models.URLField("Webseite", help_text="Auf der Rechnung ersichtlich!")
+
+    def has_valid_qr_iban(self):
+        import string
+        try:
+            b = ''
+            for i in (0,1):
+                a = self.qriban[i].upper()
+                if a not in string.ascii_uppercase:
+                    return False
+                else:
+                    b += str(ord(a)-55)
+            Nr = ''.join([z for z in self.qriban[2:] if z in string.digits])
+            return (int(int(Nr[2:] + b + Nr [:2])%97) == 1)
+        except IndexError:
+            return False
+
+    def has_valid_uid(self):
+        try:
+            u = self.firmenuid.split("-")[1].replace(".", "")
+            p = 11 - (((int(u[0])*5)+(int(u[1])*4)+(int(u[2])*3)+(int(u[3])*2)+(int(u[4])*7)+(int(u[5])*6)+(int(u[6])*5)+(int(u[7])*4)) % 11)
+            print(u,p)
+            return int(u[8]) == p
+        except Exception as e:
+            print(e)
+            return False
 
     def __str__(self):
         return self.firmenname

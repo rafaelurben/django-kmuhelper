@@ -17,6 +17,8 @@ Hier finden Sie alles, was Sie über den KMUHelper wissen müssen!
 -   [Installation](installation.md)
 -   [Benutzerhandbuch](manual/README.md)
 
+-   [Unterstützt mich](support.md)
+
 ## Kontakt
 
 Wenn Sie mich kontaktieren möchten, finden Sie [hier](<{{ site.kontakt_url }}>) diverse Möglichkeiten dazu.

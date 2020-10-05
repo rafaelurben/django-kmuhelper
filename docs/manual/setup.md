@@ -17,7 +17,11 @@ Falls dies nicht der Fall ist, stimmt irgendetwas nicht und Sie sollten überpr�
 
 Klicken Sie im Adminbereich auf `Zahlungsempfänger` und danach auf `Zahlungsempfänger hinzufügen` oder direkt neben `Zahlungsempfänger` auf `hinzufügen`.
 
-Füllen Sie alle Felder realitätsgetreu aus und klicken Sie auf `Sichern`
+Füllen Sie alle Felder realitätsgetreu aus und klicken Sie auf `Sichern`.
+
+Dies ist notwendig, da mindestens ein Zahlungsempfänger vorhanden sein muss, um Bestellungen erstellen zu können.
+
+PS: Leider können im KMUHelper direkt keine Bilder hochgeladen werden, deshalb muss auf ein externes Bild verwiesen werden.
 
 ## Ansprechpartner
 

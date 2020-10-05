@@ -9,13 +9,13 @@ Die Entstehung des KMUHelpers ist eigentlich eine ziemlich lange Geschichte.
 
 Ursprünglich war es mehr oder weniger ein kleines Testprojekt, um mich mit Web-Development auseinanderzusetzen, mittlerweile ist es jedoch ein brauchbares Tool für die Buchhaltung von Schweizer KMU.
 
-Im Hinterkopf hatte ich immer die Hoffnung, der KMUHelper wäre irgendwann wiklich von einem KMU in Gebrauch (was er heute sogar tatsächlich ist), aber irgendwie glaubte ich nie wirklich daran.
+Im Hinterkopf hatte ich immer die Hoffnung, der KMUHelper wäre irgendwann wirklich von einem KMU in Gebrauch (was er heute sogar tatsächlich ist), aber irgendwie glaubte ich nie wirklich daran.
 
 ## Flask
 
 Die erste Version des KMUHelpers war nicht für wirklich viel zu gebrauchen, sie wurde sogar gar nie fertiggestellt. Diese Version hatte ich mit dem Python-Flask Framework gebaut, welches ich mittlerweile so gut wie nicht mehr benutze, seit ich Django brauche.
 
-Ich weiss nicht, was ich mir damals überlegt habe, aber diese Version speicherte alle Daten in einer JSON Datei auf dem Server, was eigentlich nicht wirklich die Beste Idee ist.
+Ich weiss nicht, was ich mir damals überlegt habe, aber diese Version speicherte alle Daten in einer JSON Datei auf dem Server, was eigentlich nicht wirklich die beste Idee ist.
 
 ## Datenbanken
 

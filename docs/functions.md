@@ -16,7 +16,7 @@ Hier eine kleine Liste mit den wichtigsten Funktionen:
 -   Eigene (Web-)App für unterwegs
 -   ... und noch viel mehr!
 
-Anletungen und Erklärungen zu den jeweiligen Funktionen finden Sie im [Handbuch](manual/README.md).
+Anleitungen und Erklärungen zu den jeweiligen Funktionen finden Sie im [Handbuch](manual/README.md).
 
 ## Wichtige Infos
 

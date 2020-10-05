@@ -11,10 +11,8 @@ Natürlich können Sie mich auch gerne bei irgendwelchen Fragen kontaktieren.
 
 ## Anforderungen
 
--   Ein Django-Projekt
-    -   Django-Admin aktiviert
-    -   Funktionierende Datenbank-Verbindung
-    -   Funktionierende E-Mail Einstellungen
+-   Ein Server, welcher Python unterstützt
+-   Ein funktionierendes Django-Projekt
 
 ## Anleitung
 
@@ -48,7 +46,7 @@ Natürlich können Sie mich auch gerne bei irgendwelchen Fragen kontaktieren.
 
 3.  Führen Sie `python manage.py migrate` aus, um die Datenbank einzurichten.
 
-4.  Besuchen Sie den Admin-Bereich Ihrer Webseite.
+4.  Besuchen Sie `/kmuhelper`.
 
 ## Weiter
 
