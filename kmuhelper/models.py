@@ -189,13 +189,13 @@ class Bestellung(models.Model):
     datum = models.DateTimeField("Datum", default=timezone.now)
 
     status = models.CharField("Status", max_length=11, default="pending", choices=STATUS)
-    versendet = models.BooleanField("Versendet", default=False, help_text="Sobald eine Bestellung als versendet markiert wurde, kann sie nicht mehr bearbeitet werden! (Ausgenommen Status/Bezahlt) Ausserdem werden die Produkte aus dem Lagerbestand entfernt.")
+    versendet = models.BooleanField("Versendet", default=False, help_text="Sobald eine Bestellung als versendet markiert wurde, können Teile der Bestellung nicht mehr bearbeitet werden! Ausserdem werden die Produkte aus dem Lagerbestand entfernt.")
     trackingnummer = models.CharField("Trackingnummer", default="", blank=True, max_length=25, validators=[RegexValidator(r'^99\.[0-9]{2}\.[0-9]{6}\.[0-9]{8}$', 'Bite benutze folgendes Format: 99.xx.xxxxxx.xxxxxxxx')], help_text="Bitte gib hier eine Trackingnummer der Schweizer Post ein. (optional)")
 
     ausgelagert = models.BooleanField("Ausgelagert", default=False)
 
     zahlungsmethode = models.CharField("Zahlungsmethode", max_length=7, default="cod", choices=ZAHLUNGSMETHODEN)
-    bezahlt = models.BooleanField("Bezahlt", default=False, help_text="Sobald eine Bestellung als bezahlt markiert wurde, kann sie nicht mehr bearbeitet werden! (Ausgenommen Status/Versendet/Trackingnummer)")
+    bezahlt = models.BooleanField("Bezahlt", default=False, help_text="Sobald eine Bestellung als bezahlt markiert wurde, können Teile der Bestellung nicht mehr bearbeitet werden!")
 
     kundennotiz = models.TextField("Kundennotiz", default="", blank=True, help_text="Vom Kunden erfasste Notiz.")
     #rechnungsnotiz = models.TextField("Rechnungsnotiz", default="", blank=True, help_text="Wird auf der Rechnung gedruckt.")
@@ -379,11 +379,15 @@ class Bestellung(models.Model):
             return mark_safe('<a target="_blank" href="'+link+'">Notiz hinzufügen</a>')
     html_notiz.short_description = "Notiz"
 
-    def get_reserved_stock(self):
-        data = []
+    def get_future_stock(self):
+        data = {}
         for p in self.produkte.all():
-            n = p.get_reserved_stock()
-            data.append((p, p.lagerbestand-n))
+            n_current = p.lagerbestand
+            n_going = p.get_reserved_stock()
+            n_coming = p.get_incoming_stock()
+            n_min = p.soll_lagerbestand
+
+            data[p.clean_name()] = {"current": n_current, "going": n_going, "coming": n_coming, "min": n_min}
         return data
 
     class Meta:
@@ -826,6 +830,12 @@ class Produkt(models.Model):
         n = 0  
         for bp in Bestellungsposten.objects.filter(bestellung__versendet=False, produkt__id=self.id): 
             n += bp.menge
+        return n
+
+    def get_incoming_stock(self):
+        n = 0
+        for lp in Lieferungsposten.objects.filter(lieferung__eingelagert=False, produkt__id=self.id):
+            n += lp.menge
         return n
 
     def save(self, *args, **kwargs):

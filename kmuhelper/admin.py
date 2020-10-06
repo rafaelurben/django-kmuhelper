@@ -51,10 +51,10 @@ class BestellungInlineBestellungsposten(admin.TabularInline):
 
     def get_readonly_fields(self, request, obj=None):
         fields = ["zwischensumme", "mwstsatz", "produkt", "produktpreis"]
-        if obj and obj.versendet:
-            fields.append("menge")
+        if obj and (obj.versendet or obj.bezahlt):
+            fields += ["menge"]
         if obj and obj.bezahlt:
-            fields.append("rabatt")
+            fields += ["rabatt"]
         return fields
 
     def has_change_permission(self, request, obj=None):
@@ -104,8 +104,6 @@ class BestellungInlineBestellungskosten(admin.TabularInline):
 
     def get_readonly_fields(self, request, obj=None):
         fields = ["zwischensumme", "mwstsatz", "kostenpreis", "kosten_name"]
-        if obj and obj.bezahlt:
-            fields.append("rabatt")
         return fields
 
     def has_change_permission(self, request, obj=None):
@@ -123,6 +121,8 @@ class BestellungInlineBestellungskostenAdd(admin.TabularInline):
     verbose_name = "Bestellungskosten"
     verbose_name_plural = "Bestellungskosten hinzufügen"
     extra = 0
+
+    raw_id_fields = ("kosten",)
 
     fieldsets = [
         (None, {'fields': ['kosten', 'bemerkung', 'rabatt']})
@@ -181,8 +181,10 @@ class BestellungsAdmin(admin.ModelAdmin):
             return [
                 ('Einstellungen', {'fields': [
                  'zahlungsempfaenger', 'ansprechpartner']}),
-                ('Lieferung', {'fields': ['trackingnummer']}),
-                ('Bezahlung', {'fields': ['bezahlt', 'zahlungsmethode']}),
+                ('Lieferung', {'fields': ['trackingnummer'], 'classes': [
+                 "collapse"]}),
+                ('Bezahlung', {'fields': ['zahlungsmethode'], 'classes': [
+                 "collapse start-open"]}),
                 ('Kunde', {'fields': ['kunde']}),
                 ('Notizen', {'fields': ['kundennotiz'],
                              'classes': ["collapse start-open"]}),
@@ -202,8 +204,6 @@ class BestellungsAdmin(admin.ModelAdmin):
                 fields += ['bezahlt', 'zahlungsmethode'] + rechnungsadresse
             if obj.woocommerceid:
                 fields += ["kundennotiz"]
-        else:
-            fields += ["status"]
         return fields
 
     def als_bezahlt_markieren(self, request, queryset):
@@ -214,6 +214,8 @@ class BestellungsAdmin(admin.ModelAdmin):
                 errorcount += 1
             else:
                 bestellung.bezahlt = True
+                if bestellung.versendet:
+                    bestellung.status = "completed"
                 bestellung.save()
                 successcount += 1
         messages.success(request, (('{} Bestellungen' if successcount !=
@@ -237,12 +239,19 @@ class BestellungsAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
         if obj:
-            data = obj.get_reserved_stock()
-            for i in data:
-                if i[1] < 0:
-                    messages.error(request, f"'{ i[0].clean_name() }': Zu wenig Lagerbestand! Aktuell: { i[0].lagerbestand } - Danach: { i[1] }")
-                elif i[1] < i[0].soll_lagerbestand:
-                    messages.warning(request, f"'{ i[0].clean_name() }': Knapper Lagerbestand! Aktuell: { i[0].lagerbestand } - Danach: { i[1] }")
+            products = obj.get_future_stock()
+            for pname in products:
+                p = products[pname]
+
+                n_current = p["current"]
+                n_going = p["going"]
+                n_coming = p["coming"]
+                n_min = p["min"]
+                
+                if n_current-n_going < 0:
+                    messages.error(request, f"'{ pname }': Zu wenig Lagerbestand! Aktuell: { n_current } | Offene Bestellungen: { n_going }" + (f" | Kommende Lieferungen: { n_coming }" if n_coming else ""))
+                elif n_current-n_going < n_min:
+                    messages.warning(request, f"'{ pname }': Knapper Lagerbestand! Aktuell: { n_current } | Offene Bestellungen: { n_going }" + (f" | Kommende Lieferungen: { n_coming }" if n_coming else ""))
 
 
 class KategorienInlineUntergeordneteKategorien(admin.TabularInline):
@@ -296,7 +305,7 @@ class KundenAdmin(admin.ModelAdmin):
         if obj:
             return [
                 ('Infos', {'fields': ['vorname', 'nachname',
-                                      'firma', 'email', 'benutzername', 'sprache']}),
+                                      'firma', 'email', 'sprache']}),
                 ('Rechnungsadresse', {'fields': [('rechnungsadresse_vorname', 'rechnungsadresse_nachname'), 'rechnungsadresse_firma', ('rechnungsadresse_adresszeile1', 'rechnungsadresse_adresszeile2'), (
                     'rechnungsadresse_plz', 'rechnungsadresse_ort'), ('rechnungsadresse_kanton', 'rechnungsadresse_land'), ('rechnungsadresse_email', 'rechnungsadresse_telefon')]}),
                 ('Lieferadresse', {'fields': [('lieferadresse_vorname', 'lieferadresse_nachname'), 'lieferadresse_firma', ('lieferadresse_adresszeile1', 'lieferadresse_adresszeile2'), (
@@ -309,7 +318,7 @@ class KundenAdmin(admin.ModelAdmin):
         else:
             return [
                 ('Infos', {'fields': ['vorname', 'nachname',
-                                      'firma', 'email', 'benutzername', 'sprache']}),
+                                      'firma', 'email', 'sprache']}),
                 ('Rechnungsadresse', {'fields': [('rechnungsadresse_vorname', 'rechnungsadresse_nachname'), 'rechnungsadresse_firma', ('rechnungsadresse_adresszeile1', 'rechnungsadresse_adresszeile2'), (
                     'rechnungsadresse_plz', 'rechnungsadresse_ort'), ('rechnungsadresse_kanton', 'rechnungsadresse_land'), ('rechnungsadresse_email', 'rechnungsadresse_telefon')]}),
                 ('Lieferadresse', {'fields': [('lieferadresse_vorname', 'lieferadresse_nachname'), 'lieferadresse_firma', ('lieferadresse_adresszeile1', 'lieferadresse_adresszeile2'), (
@@ -593,11 +602,17 @@ class ProduktAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
         if obj:
-            l = obj.lagerbestand-obj.get_reserved_stock()
+            n_current = obj.lagerbestand
+            n_going = obj.get_reserved_stock()
+            n_coming = obj.get_incoming_stock()
+            n_min = obj.soll_lagerbestand
+
+            l = obj.lagerbestand-n_going
+            
             if l < 0:
-                messages.error(request, f"Zu wenig Lagerbestand! Aktuell: { obj.lagerbestand } - Nach allen offenen Bestellungen: { l }")
-            elif l < obj.soll_lagerbestand:
-                messages.warning(request, f"Knapper Lagerbestand! Aktuell: { obj.lagerbestand } - Nach allen offenen Bestellungen: { l }")
+                messages.error(request, f"Zu wenig Lagerbestand! Aktuell: { n_current } | Offene Bestellungen: { n_going }" + (f" | Kommende Lieferungen: { n_coming }" if n_coming else ""))
+            elif l < n_min:
+                messages.warning(request, f"Knapper Lagerbestand! Aktuell: { n_current } | Offene Bestellungen: { n_going }" + (f" | Kommende Lieferungen: { n_coming }" if n_coming else ""))
 
 
 @admin.register(Zahlungsempfaenger)

@@ -149,7 +149,7 @@ class ProductTable(Table):
             if bp.bemerkung:
                 data.append((
                     "",
-                    Paragraph(bp.bemerkung, style_bold),
+                    "- "+Paragraph(bp.bemerkung, style_bold),
                     "",
                     ""
                 ))
