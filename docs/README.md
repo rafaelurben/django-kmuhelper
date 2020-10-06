@@ -17,7 +17,7 @@ Hier finden Sie alles, was Sie über den KMUHelper wissen müssen!
 - [Installation](installation.md)
 - [Benutzerhandbuch](manual/README.md)
 
-- [Unterstützt mich](support.md)
+- [Unterstützt den KMUHelper](support.md)
 
 ## Kontakt
 

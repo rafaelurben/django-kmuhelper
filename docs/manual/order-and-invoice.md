@@ -34,9 +34,9 @@ Sobald eine Bestellung als versendet markiert wurde, können Bestellungsposten, 
 
 *****
 
-Nun sind sie bereit, eine Rechnung zu drucken. Dazu können Sie oben rechts auf der Seite auf `Rechnung (Druck)` klicken und das PDF-Dokument ausdrucken. **Beachten Sie dabei, dass Sie möglicherweise die Druckgrösse auf 100% einstellen müssen, falls dies nicht Standard ist.**
+Nachdem Sie alles gespeichert haben sind sie bereit, eine Rechnung zu drucken. Dazu können Sie oben rechts auf der Seite auf `Rechnung (Druck)` klicken und das PDF-Dokument ausdrucken. **Beachten Sie dabei, dass Sie möglicherweise die Druckgrösse auf 100% einstellen müssen, falls dies nicht Standard ist.**
 
-Dort können Sie auch eine digitale Rechnung sowie einen Lieferschein abrufen.
+Oben rechts können Sie auch eine digitale Rechnung sowie einen Lieferschein abrufen.
 
 ## Zurück
 
