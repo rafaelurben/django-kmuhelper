@@ -38,6 +38,7 @@ urlpatterns = [
     path('wc/update/category/<object_id>', views.wc_update_category, name="wc-update-category"),
     path('wc/update/order/<object_id>', views.wc_update_order, name="wc-update-order"),
     path('wc/webhooks', views.wc_webhooks, name="wc-webhooks"),
+    
     path('kunde/<object_id>/email-registriert', views.kunde_email_registriert, name='kunde-email-registriert'),
     path('lieferant/<object_id>/zuordnen', views.lieferant_zuordnen, name='lieferant-zuordnen'),
     path('lieferung/<object_id>/einlagern', views.lieferung_einlagern, name='lieferung-einlagern'),
@@ -45,4 +46,7 @@ urlpatterns = [
     path('bestellung/<object_id>/pdf/ankundensenden', views.bestellung_pdf_an_kunden_senden, name='bestellung-pdf-an-kunden-senden'),
 
     path('kunde/bestellung/<order_id>/<order_key>/', views.kunde_rechnung_ansehen, name='kunde-rechnung-ansehen'),
+
+    path('stats/', views.stats, name='stats'),
+    path('stats/products-price', views.stats_products_price, name='stats-products-price'),
 ] + app_urlpatterns

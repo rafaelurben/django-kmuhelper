@@ -1,0 +1,23 @@
+{% extends "admin/base_site.html" %}
+
+{% load static %}
+
+{% block title %}KMUHelper Statistiken{% endblock %}
+
+{% block branding %}
+    <h1 id="site-name"><a target="_top" href="{% url 'kmuhelper:home' %}">KMUHelper</a> | <a href="{% url 'kmuhelper:stats' %}">Statistiken</a></h1>
+{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static "admin/kmuhelper/css/style.css" %}">
+{% endblock %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'kmuhelper/favicon.ico' %}">
+    <link rel="apple-touch-icon" href="{% static 'kmuhelper/favicon.ico' %}">
+{% endblock %}
+

@@ -1,0 +1,91 @@
+{% extends "kmuhelper/stats/base.html" %}
+
+{% block content %}
+
+    <!-- https://www.chartjs.org/docs/latest/getting-started/ -->
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const ctx = document.getElementById('myChart').getContext('2d');
+
+            const productsSold = {{ products_sold | safe }};
+            productsSold.forEach((d) => {
+                d.x = new Date(d.date);
+            });
+
+            const moneyIncome = {{ money_income | safe }};
+            moneyIncome.forEach((d) => {
+                d.x = new Date(d.date);
+            });
+
+            const chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    datasets: [
+                        {
+                            label: 'Verkaufte Produkte',
+                            data: productsSold,
+                            backgroundColor: 'rgba(20,20,220,0.5)',
+                            yAxisID: 'y-products',
+                        },
+                        {
+                            type: 'line',
+                            label: 'Brutto-Umsatz',
+                            data: moneyIncome,
+                            backgroundColor: 'rgba(20,220,20,0.5)',
+                            yAxisID: 'y-umsatz',
+                        },
+                    ],
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        xAxes: [
+                            {
+                                type: 'time',
+                                time: {
+                                    round: 'month',
+                                    displayFormats: {
+                                        month: 'MMM YY',
+                                    },
+                                    tooltipFormat: 'MMMM YYYY',
+                                },
+                            },
+                        ],
+                        yAxes: [
+                            {
+                                type: 'linear', 
+                                display: true,
+                                position: 'left',
+                                id: 'y-products',
+                                ticks: {
+                                    beginAtZero: true,
+                                },
+                            },
+                            {
+                                type: 'linear', 
+                                display: true,
+                                position: 'right',
+                                id: 'y-umsatz',
+                                ticks: {
+                                    beginAtZero: true,
+                                    callback: function(value, index, values) {
+                                        return value + " CHF";
+                                    },
+                                },
+                            }
+                        ],
+                    },
+                },
+            });
+        });
+    </script>
+        
+    <div style="position: relative; width: 100%;">
+        <canvas id="myChart"></canvas>
+    </div>
+
+{% endblock %}
