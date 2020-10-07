@@ -1,0 +1,70 @@
+{% extends "admin/kmuhelper/app_index.html" %}
+
+{% block content_title %}
+    <h1>Willkommen in der KMUHelper App!</h1>
+{% endblock %}
+
+{% block branding %}
+    <h1 id="site-name"><a target="_top" href="{% url 'kmuhelper:home' %}">KMUHelper</a> | <a target="_top" href="{% url 'kmuhelper:app-index' %}">App</a></h1>
+{% endblock %}
+
+{% block breadcrumbs %}
+{% endblock %}
+
+{% block extrahead %}
+    {{ block.super }}
+
+    <script src="https://kit.fontawesome.com/67ab7aa4a7.js" crossorigin="anonymous"></script>
+    <style>
+        #pages {
+            padding-left: 16px;
+        }
+
+        #pages li i {
+            width: 25px;
+            text-align: center;
+        }
+
+        #pages-container,
+        #app-info {
+            padding: 0 10px;
+        }
+
+    </style>
+{% endblock %}
+
+{% block content %}
+    <p id="app-info">In dieser App hast du Zugriff auf bestimmte Seiten des <a href="{% url 'admin:app_list' app_label='kmuhelper' %}" target="_top">Adminbereichs</a>, 
+        welche normalerweise versteckt sind und eine einfachere Verarbeitung von grösseren Mengen an Daten ermöglichen.
+    </p>
+    <br>
+
+    {{ block.super }}
+
+    <br>
+    <div id="pages-container">
+        <h3>Erklärungen der Seiten</h3>
+        <ul style="padding-left: 16px;" id="pages">
+            <li>
+                <i class="fas fa-clipboard-list"></i><span>ToDo-Liste (Unerledigte Notizen)</span>
+                <p>Erstelle dir eine To-Do Liste (Erledigte Einträge sind weiterhin im Adminbereich unter "Notizen" ersichtlich.)</p>
+            </li>
+            <li>
+                <i class="fas fa-shipping-fast"></i><span>Versand (Unversendete Bestellungen)</span>
+                <p>Füge Trackingnummern zu Bestellungen hinzu und markiere sie als versendet.</p>
+            </li>
+            <li>
+                <i class="fas fa-hand-holding-usd"></i><span>Zahlungseingang (Unbezahlte Bestellungen)</span>
+                <p>Vergleiche deinen Kontoauszug mit den offenen Bestellungen und markiere bezahlte Bestellungen als bezahlt.</p>
+            </li>
+            <li>
+                <i class="fas fa-warehouse"></i><span>Lagerbestand (Produkte)</span>
+                <p>Sieh dir den Lagerbestand an und nimm manuelle Änderungen daran vor.</p>
+            </li>
+            <li>
+                <i class="fas fa-truck-loading"></i><span>Wareneingang (Lieferungen)</span>
+                <p>Erfasse Lieferungen und lagere sie ein. (Eingelagerte Lieferungen sind weiterhin im Adminbereich unter "Lieferungen" ersichtlich.)</p>
+            </li>
+        </ul>
+    </div>
+{% endblock %}

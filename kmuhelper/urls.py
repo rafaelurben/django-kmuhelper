@@ -24,6 +24,7 @@ except:
 app_name = 'kmuhelper'
 urlpatterns = [
     path('', views.home, name="home"),
+    path('admin', views.admin, name="admin"),
 
     path('wc/auth/start', views.wc_auth_start, name="wc-auth-start"),
     path('wc/auth/end', views.wc_auth_end, name="wc-auth-end"),

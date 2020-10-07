@@ -1,3 +1,5 @@
+# pylint: disable=no-member
+
 from django import template
 from ..models import Geheime_Einstellung
 
@@ -11,3 +13,10 @@ def kmuhelper_woocommerce_connected(context):
         Geheime_Einstellung.objects.get(id="wc-url").inhalt
     )
     return is_connected
+
+
+@register.filter
+def replace_start_url(value):
+    value = value.replace('<a href="/admin/">Start</a>', '')
+    value = value.replace('&rsaquo; <a href="/admin/kmuhelper/">KMUHelper</a>','<a href="/admin/kmuhelper/">KMUHelper Admin</a>')
+    return value

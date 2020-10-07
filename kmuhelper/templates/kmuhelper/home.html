@@ -12,7 +12,7 @@
 
 {% block extrastyle %}
     {{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{% static "admin/kmuhelper/css/style.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/kmuhelper/css/style.css' %}">
     <style>
         #app-admin-chooser a {
             padding: 50px;
@@ -25,6 +25,22 @@
         
         #app-admin-chooser a:hover {
             background-color: var(--kmuhelper-darkest);
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        .split {
+            display: grid;
+            grid-gap: 15px;
+            grid-auto-flow: column;
+        }
+
+        @media screen and (max-width: 767px) {
+            .split {
+                grid-auto-flow: unset;
+            }
         }
 
     </style>
@@ -42,31 +58,43 @@
     <h1>Willkommen im KMUHelper!</h1>
    
     <div id="app-admin-chooser">
-        <a href="{% url 'admin:app_list' app_label='kmuhelper' %}" target="_top">
-            <center>
+        <a href="{% url 'kmuhelper:admin' %}" target="_top">
+            <div class="center">
                 <i class="fas fa-2x fa-fw fa-key"></i>
                 <br><br>
                 <h2>Admin</h2>
                 <p>Volle Kontrolle über alle Daten</p>
-            </center>
+            </div>
         </a>
         <br>
-        <a href="{% url 'kmuhelper:app-main' %}#home" target="_top">
-            <center>
-                <i class="fas fa-2x fa-fw fa-clipboard-list"></i>
-                <br><br>
-                <h2>App</h2>
-                <p>Eingeschränkte Verwaltung von Daten in verschiedenen Arbeitsschritten</p>
-            </center>
-        </a>     
+        <div class="split">
+            <a href="{% url 'kmuhelper:app-main' %}#home" target="_top">
+                <div class="center">
+                    <!-- <i class="fas fa-2x fa-fw fa-clipboard-list"></i> -->
+                    <i class="fas fa-2x fa-fw fa-mobile-alt"></i>
+                    <br><br>
+                    <h2>App V1 (App-Style)</h2>
+                    <p>Eingeschränkte Verwaltung von Daten in verschiedenen Arbeitsschritten</p>
+                </div>
+            </a>    
+            <a href="{% url 'kmuhelper:app-index' %}" target="_top">
+                <div class="center">
+                    <!-- <i class="fas fa-2x fa-fw fa-clipboard-list"></i> -->
+                    <i class="fas fa-2x fa-fw fa-desktop"></i>
+                    <br><br>
+                    <h2>App V2 (Admin-Style)</h2>
+                    <p>Eingeschränkte Verwaltung von Daten in verschiedenen Arbeitsschritten</p>
+                </div>
+            </a>
+        </div> 
         <br>
         <a href="https://rafaelurben.github.io/django-kmuhelper/manual/" target="_top">
-            <center>
+            <div class="center">
                 <i class="fas fa-2x fa-fw fa-book"></i>
                 <br><br>
                 <h2>Handbuch</h2>
                 <p>Dokumentation zum KMUHelper</p>
-            </center>
+            </div>
         </a>     
     </div>
 

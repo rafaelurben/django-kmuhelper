@@ -1,10 +1,10 @@
 # pylint: disable=no-member
 
-from .models import ToDoNotiz, ToDoVersand, ToDoZahlungseingang, ToDoLagerbestand, ToDoLieferung
 from django.contrib import admin, messages
 from datetime import datetime
 from pytz import utc
 
+from .app_models import ToDoNotiz, ToDoVersand, ToDoZahlungseingang, ToDoLagerbestand, ToDoLieferung
 from .models import Ansprechpartner, Bestellung, Kategorie, Kosten, Kunde, Lieferant, Lieferung, Notiz, Produkt, Zahlungsempfaenger, Einstellung
 from .apis import WooCommerce
 
@@ -268,7 +268,7 @@ class KategorienAdmin(admin.ModelAdmin):
         ('Übergeordnete Kategorie', {'fields': ['uebergeordnete_kategorie']})
     ]
 
-    list_display = ('name', 'beschrieb',
+    list_display = ('clean_name', 'clean_beschrieb',
                     'uebergeordnete_kategorie', 'bild', 'anzahl_produkte')
     search_fields = ['name', 'beschrieb']
 
@@ -457,20 +457,21 @@ class NotizenAdmin(admin.ModelAdmin):
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         if obj is None:
+            form.base_fields['beschrieb'].initial = ""
             if "from_bestellung" in request.GET:
                 form.base_fields['name'].initial = 'Bestellung #' + \
                     request.GET.get("from_bestellung")
-                form.base_fields['beschrieb'].initial = '\n\nDiese Notiz gehört zu Bestellung #' + \
+                form.base_fields['beschrieb'].initial += '\n\nDiese Notiz gehört zu Bestellung #' + \
                     request.GET.get("from_bestellung")
             if "from_produkt" in request.GET:
                 form.base_fields['name'].initial = 'Produkt #' + \
                     request.GET.get("from_produkt")
-                form.base_fields['beschrieb'].initial = '\n\nDiese Notiz gehört zu Produkt ' + \
+                form.base_fields['beschrieb'].initial += '\n\nDiese Notiz gehört zu Produkt #' + \
                     request.GET.get("from_produkt")
             if "from_kunde" in request.GET:
                 form.base_fields['name'].initial = 'Kunde #' + \
                     request.GET.get("from_kunde")
-                form.base_fields['beschrieb'].initial = '\n\nDiese Notiz gehört zu Kunde ' + \
+                form.base_fields['beschrieb'].initial += '\n\nDiese Notiz gehört zu Kunde #' + \
                     request.GET.get("from_kunde")
         return form
 
@@ -674,7 +675,8 @@ class EinstellungenAdmin(admin.ModelAdmin):
 
         return fieldsets
 
-# TO DO
+
+# App-Seiten
 
 
 @admin.register(ToDoNotiz)

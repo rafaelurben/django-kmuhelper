@@ -1,7 +1,11 @@
 {% extends "admin/change_form.html" %}
-{% load static %}
+{% load static kmuhelper_tags %}
 
 {% block title %}{{ title }} | KMUHelper{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super | replace_start_url | safe }}
+{% endblock %}
 
 {% block branding %}
     <h1 id="site-name"><a target="_top" href="{% url 'kmuhelper:home' %}">KMUHelper</a> | <a href="{% url 'admin:app_list' app_label='kmuhelper' %}">Admin</a></h1>
