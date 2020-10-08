@@ -390,6 +390,28 @@ class Bestellung(models.Model):
             data[p.clean_name()] = {"current": n_current, "going": n_going, "coming": n_coming, "min": n_min}
         return data
 
+    def email_stock_warning(self):
+        warnings = []
+        stock = self.get_future_stock()
+        for n in stock:
+            s = stock[n]
+            if (s["current"]-s["going"]) < s["min"]:
+                warnings.append({"product": n, "stock": s})
+
+        if warnings != []:
+            print(warnings)
+            try:
+                print("E-Mail Success:", send_mail(
+                    subject="[KMUHelper] - Lagerbestand knapp!",
+                    to=self.zahlungsempfaenger.email,
+                    template_name="bestellung_stock_warning.html",
+                    context={
+                        "warnings": warnings,
+                    },
+                ))
+            except Exception as e:
+                print("E-Mail Error!", e)
+
     class Meta:
         verbose_name = "Bestellung"
         verbose_name_plural = "Bestellungen"
@@ -611,7 +633,7 @@ class Kunde(models.Model):
         super().save(*args, **kwargs)
 
     def send_register_mail(self):
-        self.registrierungsemail_gesendet = send_mail(
+        self.registrierungsemail_gesendet = bool(send_mail(
             subject="Registrierung erfolgreich!",
             to=self.email,
             template_name="kunde_registriert.html",
@@ -619,7 +641,7 @@ class Kunde(models.Model):
                 "kunde": self
             },
             headers={"Kunden-ID": str(self.id)}
-        )
+        ))
         self.save()
         return self.registrierungsemail_gesendet
 

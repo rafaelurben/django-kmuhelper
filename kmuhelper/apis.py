@@ -1,3 +1,5 @@
+# pylint: disable=no-member
+
 from woocommerce import API as WCAPI
 from .models import Einstellung, Geheime_Einstellung, Produkt, Kunde, Kategorie, Bestellung, Bestellungsposten, Kosten
 from .utils import runden
@@ -503,6 +505,12 @@ class WooCommerce():
                 item["total"]), mwstsatz=(7.7 if float(item["total_tax"]) > 0 else 0))[0])
         neworder.save()
         log("Bestellung erstellt:", str(neworder))
+
+        try:
+            neworder.email_stock_warning()
+        except Exception as e:
+            print("E-Mail Error:", e)
+
         return neworder
 
     @classmethod
