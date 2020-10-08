@@ -6,7 +6,37 @@ from django.utils import translation
 
 from datetime import datetime
 from io import BytesIO
-import os
+
+import sys
+import requests
+import subprocess
+
+################
+
+
+def python_version():
+    return str(sys.version.split(" ")[0])
+
+def _package_versions_pypi(project, testpypi=False):
+    from packaging.version import Version
+    url = "https://"+("test." if testpypi else "")+"pypi.org/pypi/"+project+"/json"
+    versions = requests.get(url).json()["releases"].keys()
+    versions = sorted(versions, key=Version)
+    return versions
+
+def package_version(package, testpypi=False):
+    from packaging.version import parse as parse_version
+    all_versions = _package_versions_pypi(package, testpypi)
+    latest_version = all_versions[-1]
+    current_version = str(subprocess.run([sys.executable, '-m', 'pip', 'show', '{}'.format(package)], capture_output=True, text=True))
+    current_version = current_version[current_version.find('Version:')+8:]
+    current_version = current_version[:current_version.find('\\n')].replace(' ', '')
+    return {
+        "all":      all_versions,
+        "latest":   latest_version, 
+        "current":  current_version, 
+        "uptodate": parse_version(latest_version) <= parse_version(current_version),
+    }
 
 ################
 

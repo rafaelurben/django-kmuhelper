@@ -17,11 +17,12 @@
             <tbody>
                 <tr>
                     <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;">Produkt</th>
-                    <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;" colspan=3>Lagerbestand</th>
+                    <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;" colspan=4>Lagerbestand</th>
                 </tr>
                 <tr>
                     <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;">Name</th>
                     <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;">Aktuell</th>
+                    <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;">Soll</th>
                     <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;">Bestellt</th>
                     <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;">Lieferungen</th>
                 </tr>
@@ -29,6 +30,7 @@
                     <tr>
                         <td style="border: 1px solid #ddd; padding: 8px;">{{ w.product }}</td>
                         <td style="border: 1px solid #ddd; padding: 8px;">{{ w.stock.current }}</td>
+                        <td style="border: 1px solid #ddd; padding: 8px;">{{ w.stock.min }}</td>
                         <td style="border: 1px solid #ddd; padding: 8px;">{{ w.stock.going }}</td>
                         <td style="border: 1px solid #ddd; padding: 8px;">{{ w.stock.coming }}</td>
                     </tr>

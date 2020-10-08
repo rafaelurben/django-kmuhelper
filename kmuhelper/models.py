@@ -399,7 +399,6 @@ class Bestellung(models.Model):
                 warnings.append({"product": n, "stock": s})
 
         if warnings != []:
-            print(warnings)
             try:
                 print("E-Mail Success:", send_mail(
                     subject="[KMUHelper] - Lagerbestand knapp!",

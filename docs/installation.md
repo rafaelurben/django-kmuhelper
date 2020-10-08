@@ -12,15 +12,18 @@ Natürlich können Sie mich auch gerne bei irgendwelchen Fragen kontaktieren.
 ## Anforderungen
 
 - Ein Server, welcher Python und Django unterstützt (Ich empfehle dazu [Heroku](https://heroku.com))
-- Ein funktionierendes Django-Projekt (Vorlage dazu werde ich noch erstellen...) <!-- TODO -->
 - Eine Datenbank
+- E-Mail Account für den KMUHelper
+- Ein funktionierendes Django-Projekt ([Vorlage](https://github.com/rafaelurben/django-kmuhelper-template-heroku))
 
 ## Anleitung
+
+*Diese Anleitung ist veraltet, bitte beachten Sie die [Vorlage](https://github.com/rafaelurben/django-kmuhelper-template-heroku)!*
 
 0. Installieren Sie den KMUHelper:
 
     - Stable (empfohlen): `pip install -U django-kmuhelper`
-    - Dev-Version: `pip install -i https://test.pypi.org/simple/ -U django-kmuhelper`
+    - Entwicklungs-Version: `pip install -i https://test.pypi.org/simple/ -U django-kmuhelper`
 
 1. Fügen Sie `kmuhelper` zu Ihren installierten Apps hinzu:
 

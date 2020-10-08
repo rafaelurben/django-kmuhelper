@@ -1,6 +1,46 @@
 {% extends 'admin/kmuhelper/change_list.html' %}
 
+{% load static %}
+
 {% block object-tools-items %}
     <li><a href="{% url 'kmuhelper:wc-auth-start' %}">WooCommerce verbinden</a></li>
     {{ block.super }}
+{% endblock %}
+
+{% block content %}
+
+    {{ block.super }}
+
+    <div>
+        <h1>Build info:</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Modul</th>
+                    <th>Current</th>
+                    <th>Latest</th>
+                    <th>UpToDate</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pkg, vers in versions.items %}
+                    <tr>
+                        <td>{{ pkg }}</td>
+                        <td>{{ vers.current }}</td>
+                        <td>{{ vers.latest }}</td>
+                        <td>
+                            {% if vers.uptodate == True %}
+                                <img src="{% static 'admin/img/icon-yes.svg' %}">
+                            {% elif vers.uptodate == False %}
+                                <img src="{% static 'admin/img/icon-no.svg' %}">
+                            {% else %}
+                                <img src="{% static 'admin/img/icon-unknown.svg' %}">
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
 {% endblock %}

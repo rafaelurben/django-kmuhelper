@@ -6,6 +6,7 @@ from pytz import utc
 
 from .app_models import ToDoNotiz, ToDoVersand, ToDoZahlungseingang, ToDoLagerbestand, ToDoLieferung
 from .models import Ansprechpartner, Bestellung, Kategorie, Kosten, Kunde, Lieferant, Lieferung, Notiz, Produkt, Zahlungsempfaenger, Einstellung
+from .utils import package_version, python_version
 from .apis import WooCommerce
 
 ###################
@@ -640,7 +641,7 @@ class ZahlungsempfaengerAdmin(admin.ModelAdmin):
             messages.warning(request, "Ungültige UID!")
 
 
-###################
+################### Einstellungen
 
 @admin.register(Einstellung)
 class EinstellungenAdmin(admin.ModelAdmin):
@@ -675,8 +676,19 @@ class EinstellungenAdmin(admin.ModelAdmin):
 
         return fieldsets
 
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        extra_context["versions"] = {
+            "Python": {"current": python_version(), "latest": "-", "uptodate": None}, 
+            "Django": package_version("Django"),
+            "django-kmuhelper": package_version("django-kmuhelper"),
+            "gunicorn": package_version("gunicorn"),
+            "requests": package_version("requests"),
+        }
+        return super().changelist_view(request, extra_context=extra_context)
 
-# App-Seiten
+
+#################### App-Seiten
 
 
 @admin.register(ToDoNotiz)
