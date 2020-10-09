@@ -1,9 +1,7 @@
-# pylint: disable=no-member
-
 from django.db import models
 from django.utils.html import mark_safe
 
-from .models import Notiz, Bestellung, Produkt, Lieferung
+from kmuhelper.models import Notiz, Bestellung, Produkt, Lieferung
 
 #####
 
@@ -53,11 +51,6 @@ class ToDoZahlungseingang(Bestellung):
 
 
 class ToDoLagerbestand(Produkt):
-    def html_todo_notiz_erstellen(self):
-        link = self.get_todo_notiz_link()
-        return mark_safe('<a target="_blank" href="'+link+'">+ ToDo Notiz</a>')
-    html_todo_notiz_erstellen.short_description = "ToDo Notiz Erstellen"
-
     def preis(self, *args, **kwargs):
         return super().preis(*args, **kwargs)
     preis.short_description = "Preis"
@@ -79,11 +72,6 @@ class ToDoLieferungsManager(models.Manager):
 
 
 class ToDoLieferung(Lieferung):
-    def html_todo_notiz_erstellen(self):
-        link = self.get_todo_notiz_link()
-        return mark_safe('<a target="_blank" href="'+link+'">+ ToDo Notiz</a>')
-    html_todo_notiz_erstellen.short_description = "ToDo Notiz Erstellen"
-
     objects = ToDoLieferungsManager()
 
     class Meta:

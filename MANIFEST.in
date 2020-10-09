@@ -1,9 +1,4 @@
 include LICENSE
 include README.md
-recursive-include kmuhelper/locale *
-recursive-include kmuhelper/static *
-recursive-include kmuhelper/templates *
-recursive-include kmuhelper/management *
-recursive-include kmuhelper/migrations *
-recursive-include kmuhelper/pdf_generators *
-recursive-include docs *
+include CHANGELOG.md
+recursive-include kmuhelper/ *

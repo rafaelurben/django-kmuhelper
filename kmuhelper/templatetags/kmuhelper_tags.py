@@ -1,10 +1,9 @@
-# pylint: disable=no-member
-
 from django import template
-from ..models import Geheime_Einstellung
+from kmuhelper.models import Geheime_Einstellung
 
 register = template.Library()
 
+##########
 
 @register.simple_tag(takes_context=True, name="kmuhelper_woocommerce_connected")
 def kmuhelper_woocommerce_connected(context):

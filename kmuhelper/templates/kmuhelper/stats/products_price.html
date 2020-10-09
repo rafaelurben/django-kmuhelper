@@ -28,14 +28,14 @@
                         {
                             label: 'Verkaufte Produkte',
                             data: productsSold,
-                            backgroundColor: 'rgba(20,20,220,0.5)',
+                            backgroundColor: 'rgba(246,196,0,0.75)',
                             yAxisID: 'y-products',
                         },
                         {
-                            type: 'line',
+                            //type: 'line',
                             label: 'Brutto-Umsatz',
                             data: moneyIncome,
-                            backgroundColor: 'rgba(20,220,20,0.5)',
+                            backgroundColor: 'rgba(221,17,85,1)',
                             yAxisID: 'y-umsatz',
                         },
                     ],
@@ -63,6 +63,9 @@
                                 id: 'y-products',
                                 ticks: {
                                     beginAtZero: true,
+                                    callback: function(value, index, values) {
+                                        return value + " P.";
+                                    },
                                 },
                             },
                             {

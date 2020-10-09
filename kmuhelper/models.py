@@ -14,8 +14,8 @@ from random import randint
 from pytz import utc
 from django.utils import timezone
 
-from .utils import send_mail, runden, clean, formatprice, modulo10rekursiv, send_pdf
-from .pdf_generators.bestellung import pdf_bestellung
+from kmuhelper.utils import send_mail, runden, clean, formatprice, modulo10rekursiv, send_pdf
+from kmuhelper.pdf_generators.bestellung import pdf_bestellung
 
 ###################
 
@@ -57,10 +57,10 @@ STATUS = [
 ]
 
 MWSTSÄTZE = [
-(0.0, "0.0% (Mehrwertsteuerfrei)"),
-(7.7, "7.7% (Normalsatz)"),
-(3.7, "3.7% (Sondersatz für Beherbergungsdienstleistungen)"),
-(2.5, "2.5% (Reduzierter Satz)")
+    (0.0, "0.0% (Mehrwertsteuerfrei)"),
+    (7.7, "7.7% (Normalsatz)"),
+    (3.7, "3.7% (Sondersatz für Beherbergungsdienstleistungen)"),
+    (2.5, "2.5% (Reduzierter Satz)")
 ]
 
 ZAHLUNGSMETHODEN = [
@@ -104,6 +104,8 @@ class Ansprechpartner(models.Model):
         verbose_name = "Ansprechpartner"
         verbose_name_plural = "Ansprechpartner"
 
+    objects = models.Manager()
+
 
 
 class Bestellungskosten(models.Model):
@@ -146,6 +148,8 @@ class Bestellungskosten(models.Model):
         verbose_name = "Bestellungskosten"
         verbose_name_plural = "Bestellungskosten"
 
+    objects = models.Manager()
+
 class Bestellungsposten(models.Model):
     bestellung = models.ForeignKey("Bestellung", on_delete=models.CASCADE)
     produkt = models.ForeignKey("Produkt", on_delete=models.PROTECT)
@@ -182,6 +186,8 @@ class Bestellungsposten(models.Model):
     class Meta:
         verbose_name = "Bestellungsposten"
         verbose_name_plural = "Bestellungsposten"
+
+    objects = models.Manager()
 
 class Bestellung(models.Model):
     woocommerceid = models.IntegerField('WooCommerce ID', default=0)
@@ -415,6 +421,8 @@ class Bestellung(models.Model):
         verbose_name = "Bestellung"
         verbose_name_plural = "Bestellungen"
 
+    objects = models.Manager()
+
 
 # class Gutschein(models.Model):
 #     woocommerceid = models.IntegerField('WooCommerce ID', default=0)
@@ -465,6 +473,8 @@ class Bestellung(models.Model):
 #     class Meta:
 #         verbose_name = "Gutschein"
 #         verbose_name_plural = "Gutscheine"
+#
+#     objects = models.Manager()
 
 
 
@@ -503,6 +513,8 @@ class Kategorie(models.Model):
         verbose_name = "Kategorie"
         verbose_name_plural = "Kategorien"
 
+    objects = models.Manager()
+
 
 
 class Kosten(models.Model):
@@ -524,6 +536,8 @@ class Kosten(models.Model):
     class Meta:
         verbose_name = "Kosten"
         verbose_name_plural = "Kosten"
+    
+    objects = models.Manager()
 
 
 
@@ -662,6 +676,8 @@ class Kunde(models.Model):
             return mark_safe('<a target="_blank" href="'+link+'">Notiz hinzufügen</a>')
     html_notiz.short_description = "Notiz"
 
+    objects = models.Manager()
+
 
 
 class Lieferant(models.Model):
@@ -694,6 +710,8 @@ class Lieferant(models.Model):
         verbose_name = "Lieferant"
         verbose_name_plural = "Lieferanten"
 
+    objects = models.Manager()
+
 
 
 class Lieferungsposten(models.Model):
@@ -709,10 +727,11 @@ class Lieferungsposten(models.Model):
         verbose_name = "Lieferungsposten"
         verbose_name_plural = "Lieferungsposten"
 
+    objects = models.Manager()
+
 class Lieferung(models.Model):
     name = models.CharField("Name", max_length=50, default=defaultlieferungsname)
     datum = models.DateField("Erfasst am", auto_now_add=True)
-    notiz = models.TextField("Notiz", default="", blank=True)
 
     lieferant = models.ForeignKey("Lieferant", on_delete=models.SET_NULL, null=True, blank=True)
     produkte = models.ManyToManyField("Produkt", through="Lieferungsposten", through_fields=("lieferung","produkt"))
@@ -737,9 +756,23 @@ class Lieferung(models.Model):
         else:
             return False
 
-    def get_todo_notiz_link(self):
-        return reverse("admin:kmuhelper_todonotiz_add")+'?from_lieferung='+str(self.id)
-    get_todo_notiz_link.short_description = "ToDo Notiz"
+    def html_todo_notiz(self):
+        if hasattr(self, "notiz"):
+            link = reverse("admin:kmuhelper_todonotiz_change", kwargs={"object_id": self.notiz.pk})
+            return mark_safe('<a target="_blank" href="'+link+'">Notiz ansehen</a>')
+        else:
+            link = reverse("admin:kmuhelper_todonotiz_add")+'?from_lieferung='+str(self.pk)
+            return mark_safe('<a target="_blank" href="'+link+'">Notiz hinzufügen</a>')
+    html_todo_notiz.short_description = "ToDo Notiz"
+
+    def html_notiz(self):
+        if hasattr(self, "notiz"):
+            link = reverse("admin:kmuhelper_notiz_change", kwargs={"object_id": self.notiz.pk})
+            return mark_safe('<a target="_blank" href="'+link+'">Notiz ansehen</a>')
+        else:
+            link = reverse("admin:kmuhelper_notiz_add")+'?from_lieferung='+str(self.pk)
+            return mark_safe('<a target="_blank" href="'+link+'">Notiz hinzufügen</a>')
+    html_notiz.short_description = "Notiz"
 
     def __str__(self):
         return self.name
@@ -748,6 +781,8 @@ class Lieferung(models.Model):
     class Meta:
         verbose_name = "Lieferung"
         verbose_name_plural = "Lieferungen"
+
+    objects = models.Manager()
 
 
 class Notiz(models.Model):
@@ -762,6 +797,7 @@ class Notiz(models.Model):
     bestellung = models.OneToOneField("Bestellung", blank=True, null=True, on_delete=models.CASCADE, related_name="notiz")
     produkt = models.OneToOneField("Produkt", blank=True, null=True, on_delete=models.CASCADE, related_name="notiz")
     kunde = models.OneToOneField("Kunde", blank=True, null=True, on_delete=models.CASCADE, related_name="notiz")
+    lieferung = models.OneToOneField("Lieferung", blank=True, null=True, on_delete=models.CASCADE, related_name="notiz")
 
     def __str__(self):
         return self.name
@@ -775,11 +811,15 @@ class Notiz(models.Model):
             text += "Produkt <a href='"+reverse("admin:kmuhelper_produkt_change", kwargs={"object_id":self.produkt.pk})+"'>#"+str(self.produkt.pk)+"</a><br>"
         if self.kunde:
             text += "Kunde <a href='"+reverse("admin:kmuhelper_kunde_change", kwargs={"object_id":self.kunde.pk})+"'>#"+str(self.kunde.pk)+"</a><br>"
+        if self.lieferung:
+            text += "Lieferung <a href='"+reverse("admin:kmuhelper_lieferung_change", kwargs={"object_id":self.lieferung.pk})+"'>#"+str(self.lieferung.pk)+"</a><br>"
         return mark_safe(text or "Diese Notiz hat keine Verknüpfungen.")
 
     class Meta:
         verbose_name = "Notiz"
         verbose_name_plural = "Notizen"
+
+    objects = models.Manager()
 
 
 class Produktkategorie(models.Model):
@@ -793,6 +833,8 @@ class Produktkategorie(models.Model):
     class Meta:
         verbose_name = "Produktkategorie"
         verbose_name_plural = "Produktkategorien"
+
+    objects = models.Manager()
 
 class Produkt(models.Model):
     artikelnummer = models.CharField("Artikelnummer", max_length=25)
@@ -902,6 +944,8 @@ class Produkt(models.Model):
         verbose_name = "Produkt"
         verbose_name_plural = "Produkte"
 
+    objects = models.Manager()
+
 
 
 class Zahlungsempfaenger(models.Model):
@@ -949,6 +993,7 @@ class Zahlungsempfaenger(models.Model):
         verbose_name = "Zahlungsempfänger"
         verbose_name_plural = "Zahlungsempfänger"
 
+    objects = models.Manager()
 
 
 
@@ -1013,6 +1058,8 @@ class Einstellung(models.Model):
         verbose_name = "Einstellung"
         verbose_name_plural = "Einstellungen"
 
+    objects = models.Manager()
+
 
 
 class Geheime_Einstellung(models.Model):
@@ -1062,3 +1109,5 @@ class Geheime_Einstellung(models.Model):
     class Meta:
         verbose_name = "Geheime Einstellung"
         verbose_name_plural = "Geheime Einstellungen"
+
+    objects = models.Manager()

@@ -9,7 +9,6 @@ from io import BytesIO
 
 import sys
 import requests
-import subprocess
 
 ################
 
@@ -18,24 +17,45 @@ def python_version():
     return str(sys.version.split(" ")[0])
 
 def _package_versions_pypi(project, testpypi=False):
-    from packaging.version import Version
+    from packaging.version import Version, InvalidVersion
     url = "https://"+("test." if testpypi else "")+"pypi.org/pypi/"+project+"/json"
     versions = requests.get(url).json()["releases"].keys()
-    versions = sorted(versions, key=Version)
-    return versions
+    versions_safe = []
+    for v in versions:
+        try:
+            Version(v)
+            versions_safe.append(v)
+        except (InvalidVersion):
+            continue
+    return sorted(versions_safe, key=Version)
 
 def package_version(package, testpypi=False):
     from packaging.version import parse as parse_version
+    import subprocess
+
     all_versions = _package_versions_pypi(package, testpypi)
+
     latest_version = all_versions[-1]
+
+    # cmd = [sys.executable, '-m', 'pip', 'install', '{}==random'.format(package)]
+
+    # if testpypi:
+    #     cmd.insert(4, "https://test.pypi.org/simple/")
+    #     cmd.insert(4, "-i")
+    
+    # latest_version = str(subprocess.run(cmd, capture_output=True, text=True))
+    # latest_version = latest_version[latest_version.find('(from versions:')+15:]
+    # latest_version = latest_version[:latest_version.find(')')]
+    # latest_version = latest_version.replace(' ','').split(',')[-1]
+
     current_version = str(subprocess.run([sys.executable, '-m', 'pip', 'show', '{}'.format(package)], capture_output=True, text=True))
     current_version = current_version[current_version.find('Version:')+8:]
     current_version = current_version[:current_version.find('\\n')].replace(' ', '')
     return {
-        "all":      all_versions,
-        "latest":   latest_version, 
-        "current":  current_version, 
-        "uptodate": parse_version(latest_version) <= parse_version(current_version),
+        #"all":      all_versions,
+        "latest":    latest_version, 
+        "current":   current_version, 
+        "uptodate":  parse_version(latest_version) <= parse_version(current_version),
     }
 
 ################

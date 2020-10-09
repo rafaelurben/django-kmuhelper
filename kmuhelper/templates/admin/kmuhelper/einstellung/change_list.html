@@ -22,25 +22,53 @@
                     <th>UpToDate</th>
                 </tr>
             </thead>
-            <tbody>
-                {% for pkg, vers in versions.items %}
-                    <tr>
-                        <td>{{ pkg }}</td>
-                        <td>{{ vers.current }}</td>
-                        <td>{{ vers.latest }}</td>
-                        <td>
-                            {% if vers.uptodate == True %}
-                                <img src="{% static 'admin/img/icon-yes.svg' %}">
-                            {% elif vers.uptodate == False %}
-                                <img src="{% static 'admin/img/icon-no.svg' %}">
-                            {% else %}
-                                <img src="{% static 'admin/img/icon-unknown.svg' %}">
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% endfor %}
+            <tbody id="versions-body">
+                <tr id="versions-loading">
+                    <td colspan=4>Loading...</td>
+                </tr>
             </tbody>
         </table>
+
+        <script>      
+            const url_yes = "{% static 'admin/img/icon-yes.svg' %}";
+            const url_no = "{% static 'admin/img/icon-no.svg' %}";
+            const url_unknown = "{% static 'admin/img/icon-unknown.svg' %}";
+        
+            const vbody = document.getElementById("versions-body");
+            const vloading = document.getElementById("versions-loading");
+
+            fetch("{% url 'kmuhelper:api-versions' %}").then(res => {
+                res.json().then(json => {
+                    for ([name, v] of Object.entries(json.versions)) {
+                        const tr = document.createElement("tr");
+                        const td1 = document.createElement("td");
+                        const td2 = document.createElement("td");
+                        const td3 = document.createElement("td");
+                        const td4 = document.createElement("td");
+                        const img = document.createElement("img");
+
+                        td1.innerHTML = name;
+                        td2.innerHTML = v.current;
+                        td3.innerHTML = v.latest;
+                        if (v.uptodate === null) {
+                            img.src = url_unknown;
+                        } else if (v.uptodate === false) {
+                            img.src = url_no;
+                        } else if (v.uptodate === true) {
+                            img.src = url_yes;
+                        }
+
+                        vbody.appendChild(tr);
+                        tr.appendChild(td1);
+                        tr.appendChild(td2);
+                        tr.appendChild(td3);
+                        tr.appendChild(td4);
+                        td4.appendChild(img);
+                    }
+                    vloading.remove();
+                });
+            });
+        </script>
     </div>
 
 {% endblock %}

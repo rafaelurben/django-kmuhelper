@@ -113,13 +113,3 @@ def app_manifest(request):
     return response
 
 
-#####
-
-urlpatterns = [
-    path('app/', app_main, name="app-main"),
-    path('app/home', app_home, name="app-home"),
-    path('app/error', app_error, name="app-error"),
-    path('app/index', app_index, name="app-index"),
-
-    path('app/manifest.webmanifest', app_manifest, name="app-manifest"),
-]

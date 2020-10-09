@@ -2,9 +2,21 @@
 
 Wichtige Änderungen am KMUHelper werden in dieser Datei dokumentiert.
 
-## [1.1] - 2020/10/09
+## [1.1.1] - Future
 
 ### Added
+
+### Changed
+
+- Codestruktur komplett überarbeitet
+- Notiz aus Lieferungen entfernt -> Verlinkung mit Notiz möglich
+- Build Info wird später geladen (Ladezeit verkürzt)
+
+### Fixed
+
+## [1.1] - 2020/10/09
+
+### Added in 1.1
 
 - KMUHelper Startseite `/kmuhelper`
 - KMUHelper App V2
@@ -15,13 +27,13 @@ Wichtige Änderungen am KMUHelper werden in dieser Datei dokumentiert.
 - Warnung bei ungültiger UID/IBAN eines Zahlungsempfängers
 - Statistiken (Beta; `/kmuhelper/stats`)
 
-### Changed
+### Changed in 1.1
 
 - Kleine Designänderungen in der App V1
 - `Start` im Admin-Bereich entfernt
 - Diverse kleine Verbesserungen
 
-### Fixed
+### Fixed in 1.1
 
 - Sprachdateien haben gefehlt
 - Diverse kleine Fehler

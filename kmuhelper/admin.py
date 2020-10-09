@@ -1,26 +1,15 @@
-# pylint: disable=no-member
-
 from django.contrib import admin, messages
 from datetime import datetime
 from pytz import utc
 
-from .app_models import ToDoNotiz, ToDoVersand, ToDoZahlungseingang, ToDoLagerbestand, ToDoLieferung
-from .models import Ansprechpartner, Bestellung, Kategorie, Kosten, Kunde, Lieferant, Lieferung, Notiz, Produkt, Zahlungsempfaenger, Einstellung
-from .utils import package_version, python_version
-from .apis import WooCommerce
+from kmuhelper.app.models import ToDoNotiz, ToDoVersand, ToDoZahlungseingang, ToDoLagerbestand, ToDoLieferung
+from kmuhelper.models import Ansprechpartner, Bestellung, Kategorie, Kosten, Kunde, Lieferant, Lieferung, Notiz, Produkt, Zahlungsempfaenger, Einstellung
+from kmuhelper.utils import package_version, python_version
+from kmuhelper.integrations.woocommerce import WooCommerce
 
 ###################
 
-from rich import print
-
-prefix = "[deep_pink4][KMUHelper][/] -"
-
-
-def log(string, *args):
-    print(prefix, string, *args)
-
-
-# Disable "view on site" globally
+# Disable "view on site" globally (for other apps too!)
 
 admin.site.site_url = None
 
@@ -374,42 +363,58 @@ class LieferungInlineProdukte(admin.TabularInline):
     verbose_name_plural = "Produkte"
     extra = 0
 
-    raw_id_fields = ("produkt",)
+    readonly_fields = ("produkt",)
+
+    fields = ("produkt", "menge",)
 
     def has_change_permission(self, request, obj=None):
-        if obj and obj.eingelagert:
-            return False
-        else:
-            return True
+        return not (obj and obj.eingelagert)
 
     def has_add_permission(self, request, obj=None):
-        if obj and obj.eingelagert:
-            return False
-        else:
-            return True
+        return False
 
     def has_delete_permission(self, request, obj=None):
-        if obj and obj.eingelagert:
-            return False
-        else:
-            return True
+        return not (obj and obj.eingelagert)
 
+class LieferungInlineProdukteAdd(admin.TabularInline):
+    model = Lieferung.produkte.through
+    verbose_name = "Produkt"
+    verbose_name_plural = "Produkte hinzufügen"
+    extra = 0
+
+    raw_id_fields = ("produkt",)
+
+    fields = ("produkt", "menge",)
+
+    def has_view_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_add_permission(self, request, obj=None):
+        return not (obj and obj.eingelagert)
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 @admin.register(Lieferung)
 class LieferungenAdmin(admin.ModelAdmin):
-    list_display = ('name', 'datum', 'notiz', 'anzahlprodukte', 'eingelagert')
+    list_display = ('name', 'datum', 'anzahlprodukte', 'eingelagert', 'html_notiz')
     list_filter = ("eingelagert",)
 
-    search_fields = ["name", "datum", "notiz"]
+    search_fields = ["name", "datum", "notiz__name", "notiz__beschrieb"]
+    
+    readonly_fields = ["html_notiz"]
 
     ordering = ('name',)
 
     fieldsets = [
-        ('Infos', {'fields': ['name', 'notiz']}),
-        ('Lieferant', {'fields': ['lieferant']})
+        ('Infos', {'fields': ['name', 'html_notiz']}),
+        ('Lieferant', {'fields': ['lieferant'], 'classes': ['collapse']})
     ]
 
-    inlines = [LieferungInlineProdukte]
+    inlines = [LieferungInlineProdukte, LieferungInlineProdukteAdd]
 
     save_on_top = True
 
@@ -474,6 +479,11 @@ class NotizenAdmin(admin.ModelAdmin):
                     request.GET.get("from_kunde")
                 form.base_fields['beschrieb'].initial += '\n\nDiese Notiz gehört zu Kunde #' + \
                     request.GET.get("from_kunde")
+            if "from_lieferung" in request.GET:
+                form.base_fields['name'].initial = 'Lieferung #' + \
+                    request.GET.get("from_lieferung")
+                form.base_fields['beschrieb'].initial += '\n\nDiese Notiz gehört zu Lieferung #' + \
+                    request.GET.get("from_lieferung")
         return form
 
     def save_model(self, request, obj, form, change):
@@ -511,6 +521,16 @@ class NotizenAdmin(admin.ModelAdmin):
                 else:
                     messages.warning(
                         request, "Kunde #" + request.GET["from_kunde"] + " konnte nicht gefunden werden. Die Notiz wurde trotzdem erstellt.")
+            if "from_lieferung" in request.GET:
+                if Lieferung.objects.filter(pk=request.GET["from_lieferung"]).exists():
+                    lieferung = Lieferung.objects.get(pk=request.GET["from_lieferung"])
+                    obj.lieferung = lieferung
+                    obj.save()
+                    messages.info(request, "Lieferung #" + str(lieferung.pk) +
+                                  " wurde mit dieser Notiz verknüpft.")
+                else:
+                    messages.warning(
+                        request, "Lieferung #" + request.GET["from_lieferung"] + " konnte nicht gefunden werden. Die Notiz wurde trotzdem erstellt.")
 
 
 class ProduktInlineProduktkategorien(admin.TabularInline):
@@ -676,17 +696,6 @@ class EinstellungenAdmin(admin.ModelAdmin):
 
         return fieldsets
 
-    def changelist_view(self, request, extra_context=None):
-        extra_context = extra_context or {}
-        extra_context["versions"] = {
-            "Python": {"current": python_version(), "latest": "-", "uptodate": None}, 
-            "Django": package_version("Django"),
-            "django-kmuhelper": package_version("django-kmuhelper"),
-            "gunicorn": package_version("gunicorn"),
-            "requests": package_version("requests"),
-        }
-        return super().changelist_view(request, extra_context=extra_context)
-
 
 #################### App-Seiten
 
@@ -718,16 +727,12 @@ class ToDoNotizenAdmin(NotizenAdmin):
         info = self.model._meta.app_label, self.model._meta.model_name
 
         return [
-            path('', wrap(self.changelist_view),
-                 name='%s_%s_changelist' % info),
+            path('', wrap(self.changelist_view), name='%s_%s_changelist' % info),
             path('add/', wrap(self.add_view), name='%s_%s_add' % info),
-            path('autocomplete/', wrap(self.autocomplete_view),
-                 name='%s_%s_autocomplete' % info),
-            path('<path:object_id>/history/', wrap(self.history_view),
-                 name='%s_%s_history' % info),
+            path('autocomplete/', wrap(self.autocomplete_view), name='%s_%s_autocomplete' % info),
+            # path('<path:object_id>/history/', wrap(self.history_view), name='%s_%s_history' % info),
             # path('<path:object_id>/delete/', wrap(self.delete_view), name='%s_%s_delete' % info),
-            path('<path:object_id>/change/', wrap(self.change_view),
-                 name='%s_%s_change' % info),
+            path('<path:object_id>/change/', wrap(self.change_view), name='%s_%s_change' % info),
         ]
 
 
@@ -762,16 +767,12 @@ class ToDoVersandAdmin(BestellungsAdmin):
         info = self.model._meta.app_label, self.model._meta.model_name
 
         return [
-            path('', wrap(self.changelist_view),
-                 name='%s_%s_changelist' % info),
+            path('', wrap(self.changelist_view), name='%s_%s_changelist' % info),
             path('add/', wrap(self.add_view), name='%s_%s_add' % info),
-            path('autocomplete/', wrap(self.autocomplete_view),
-                 name='%s_%s_autocomplete' % info),
-            path('<path:object_id>/history/', wrap(self.history_view),
-                 name='%s_%s_history' % info),
+            path('autocomplete/', wrap(self.autocomplete_view), name='%s_%s_autocomplete' % info),
+            # path('<path:object_id>/history/', wrap(self.history_view), name='%s_%s_history' % info),
             # path('<path:object_id>/delete/', wrap(self.delete_view), name='%s_%s_delete' % info),
-            path('<path:object_id>/change/', wrap(self.change_view),
-                 name='%s_%s_change' % info),
+            path('<path:object_id>/change/', wrap(self.change_view), name='%s_%s_change' % info),
         ]
 
 
@@ -806,16 +807,12 @@ class ToDoZahlungseingangAdmin(BestellungsAdmin):
         info = self.model._meta.app_label, self.model._meta.model_name
 
         return [
-            path('', wrap(self.changelist_view),
-                 name='%s_%s_changelist' % info),
+            path('', wrap(self.changelist_view), name='%s_%s_changelist' % info),
             path('add/', wrap(self.add_view), name='%s_%s_add' % info),
-            path('autocomplete/', wrap(self.autocomplete_view),
-                 name='%s_%s_autocomplete' % info),
-            path('<path:object_id>/history/', wrap(self.history_view),
-                 name='%s_%s_history' % info),
+            path('autocomplete/', wrap(self.autocomplete_view), name='%s_%s_autocomplete' % info),
+            # path('<path:object_id>/history/', wrap(self.history_view), name='%s_%s_history' % info),
             # path('<path:object_id>/delete/', wrap(self.delete_view), name='%s_%s_delete' % info),
-            path('<path:object_id>/change/', wrap(self.change_view),
-                 name='%s_%s_change' % info),
+            path('<path:object_id>/change/', wrap(self.change_view), name='%s_%s_change' % info),
         ]
 
 
@@ -847,24 +844,18 @@ class ToDoLagerbestandAdmin(ProduktAdmin):
         info = self.model._meta.app_label, self.model._meta.model_name
 
         return [
-            path('', wrap(self.changelist_view),
-                 name='%s_%s_changelist' % info),
+            path('', wrap(self.changelist_view), name='%s_%s_changelist' % info),
             path('add/', wrap(self.add_view), name='%s_%s_add' % info),
-            path('autocomplete/', wrap(self.autocomplete_view),
-                 name='%s_%s_autocomplete' % info),
-            path('<path:object_id>/history/', wrap(self.history_view),
-                 name='%s_%s_history' % info),
+            path('autocomplete/', wrap(self.autocomplete_view), name='%s_%s_autocomplete' % info),
+            # path('<path:object_id>/history/', wrap(self.history_view), name='%s_%s_history' % info),
             # path('<path:object_id>/delete/', wrap(self.delete_view), name='%s_%s_delete' % info),
-            path('<path:object_id>/change/', wrap(self.change_view),
-                 name='%s_%s_change' % info),
+            path('<path:object_id>/change/', wrap(self.change_view), name='%s_%s_change' % info),
         ]
 
 
 @admin.register(ToDoLieferung)
 class ToDoLieferungenAdmin(LieferungenAdmin):
-    list_display = ('name', 'anzahlprodukte', 'eingelagert',
-                    'notiz', 'html_todo_notiz_erstellen')
-    list_editable = ("eingelagert",)
+    list_display = ('name', 'datum', 'anzahlprodukte', 'html_todo_notiz')
     list_filter = ()
 
     def has_module_permission(self, request):
@@ -887,14 +878,10 @@ class ToDoLieferungenAdmin(LieferungenAdmin):
         info = self.model._meta.app_label, self.model._meta.model_name
 
         return [
-            path('', wrap(self.changelist_view),
-                 name='%s_%s_changelist' % info),
+            path('', wrap(self.changelist_view), name='%s_%s_changelist' % info),
             path('add/', wrap(self.add_view), name='%s_%s_add' % info),
-            path('autocomplete/', wrap(self.autocomplete_view),
-                 name='%s_%s_autocomplete' % info),
-            path('<path:object_id>/history/', wrap(self.history_view),
-                 name='%s_%s_history' % info),
+            path('autocomplete/', wrap(self.autocomplete_view), name='%s_%s_autocomplete' % info),
+            # path('<path:object_id>/history/', wrap(self.history_view), name='%s_%s_history' % info),
             # path('<path:object_id>/delete/', wrap(self.delete_view), name='%s_%s_delete' % info),
-            path('<path:object_id>/change/', wrap(self.change_view),
-                 name='%s_%s_change' % info),
+            path('<path:object_id>/change/', wrap(self.change_view), name='%s_%s_change' % info),
         ]
