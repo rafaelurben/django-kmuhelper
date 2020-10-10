@@ -1,0 +1,32 @@
+<html lang="de" style="height: 100%;">
+    <head>
+        {% block extrahead %}
+          
+        {% endblock extrahead %}
+    </head>
+    <body style="height: 100%; margin: 0; padding: 0; font-size: 14px; color: #333; background: #fff; font-family: 'Roboto','Lucida Grande','DejaVu Sans','Bitstream Vera Sans',Verdana,Arial,sans-serif;">
+        <div id="container" style="position: relative; width: 100%; min-width: 980px; padding: 0; display: flex; flex-direction: column; height: 100%;">
+            {% block header %}
+                <div id="header" style="flex-shrink: 0; color: #FFEE88; background-color: #AA1155; width: auto; height: auto; display: flex; justify-content: space-between; align-items: center; padding: 10px 40px; overflow: hidden;">
+                    <div id="branding" style="float: left;">
+                        <h1 id="site-name" style=" padding: 0; margin: 0 20px 0 0; font-weight: 300; font-size: 24px;">{% block sitename %}KMUHelper | E-Mail{% endblock %}</h1>
+                    </div>
+                    <div id="user-tools" style="float: right; padding: 0; margin: 0 0 0 20px; font-weight: 300; font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase; text-align: right; color: #F6C400;">
+                        
+                    </div>
+                </div>
+            {% endblock %}
+
+            <div id="main" style="display: flex; flex: 1 0 auto;">
+                <div class="content" style="flex: 1 0; max-width: 100%;">
+                    <div id="content" style="padding: 20px 40px;">
+                        <br>
+                        <h1 style="margin: 0 0 20px; font-weight: 300; font-size: 20px; color: #666;">{% block title %}{% endblock title %}</h1>
+
+                        {% block content %}{% endblock content %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

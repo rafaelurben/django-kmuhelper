@@ -6,13 +6,19 @@ Wichtige Änderungen am KMUHelper werden in dieser Datei dokumentiert.
 
 ### Added
 
+- E-Mail Vorlage
+
 ### Changed
 
 - Codestruktur komplett überarbeitet
 - Notiz aus Lieferungen entfernt -> Verlinkung mit Notiz möglich
-- Build Info wird später geladen (Ladezeit verkürzt)
+- Einstellungen angepasst
+  - Build Info wird später geladen (Ladezeit verkürzt)
+  - Neue Typen: Wahrheitswert / E-Mail
 
 ### Fixed
+
+- Kleine Fehlerbehebungen
 
 ## [1.1] - 2020/10/09
 

@@ -1,3 +1,11 @@
-<h1>Guten Tag Herr/Frau <strong>{{ kunde.vorname }} {{ kunde.nachname }}</strong>!</h1>
+{% extends 'kmuhelper/emails/base.html' %}
 
-<p>Sie wurden erfolgreich in unserer Datenbank registriert!</p>
+{% block title %}Willkommen Herr/Frau <strong>{{ kunde.vorname }} {{ kunde.nachname }}</strong>!{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block content %}
+
+    <p>Sie wurden erfolgreich in unserer Datenbank registriert!</p>
+
+{% endblock %}

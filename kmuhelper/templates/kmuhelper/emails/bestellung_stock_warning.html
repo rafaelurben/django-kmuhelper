@@ -1,41 +1,48 @@
-<html lang="de">
-    <head>
-        <style>
-            table tr:nth-child(even){
-                background-color: #f2f2f2;
-            }
-        </style>
-    </head>
-    <body style="background-color: white;">
-        <h1>KMUHelper Lagermanagement Info</h1>
+{% extends 'kmuhelper/emails/base.html' %}
 
-        <p>Seit einer kürzlich importierten Bestellung von WooCommerce herrscht Knappheit beim Lagerbestand folgender Produkte:</p>
+{% block extrahead %}
+    <style>
+        table tr:nth-child(even){
+            background-color: #f2f2f2;
+        }
+    </style>
+{% endblock %}
 
-        <br>
+{% block title %}Lagermanagement ist knapp!{% endblock %}
 
-        <table style="border-collapse: collapse; width: 100%;">
-            <tbody>
+{% block content %}
+
+    <p>Seit einer kürzlich importierten Bestellung herrscht Knappheit beim Lagerbestand folgender Produkte:</p>
+
+    <br>
+
+    <table style="border-collapse: collapse; width: 100%;">
+        <tbody>
+            <tr>
+                <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;">Produkt</th>
+                <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;" colspan=4>Lagerbestand</th>
+            </tr>
+            <tr>
+                <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;">Name</th>
+                <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;">Aktuell</th>
+                <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;">Soll</th>
+                <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;">Bestellt</th>
+                <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;">Lieferungen</th>
+            </tr>
+            {% for w in warnings %}
                 <tr>
-                    <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;">Produkt</th>
-                    <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;" colspan=4>Lagerbestand</th>
+                    <td style="border: 1px solid #ddd; padding: 8px;">{{ w.product }}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">{{ w.stock.current }}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">{{ w.stock.min }}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">{{ w.stock.going }}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">{{ w.stock.coming }}</td>
                 </tr>
-                <tr>
-                    <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;">Name</th>
-                    <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;">Aktuell</th>
-                    <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;">Soll</th>
-                    <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;">Bestellt</th>
-                    <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;">Lieferungen</th>
-                </tr>
-                {% for w in warnings %}
-                    <tr>
-                        <td style="border: 1px solid #ddd; padding: 8px;">{{ w.product }}</td>
-                        <td style="border: 1px solid #ddd; padding: 8px;">{{ w.stock.current }}</td>
-                        <td style="border: 1px solid #ddd; padding: 8px;">{{ w.stock.min }}</td>
-                        <td style="border: 1px solid #ddd; padding: 8px;">{{ w.stock.going }}</td>
-                        <td style="border: 1px solid #ddd; padding: 8px;">{{ w.stock.coming }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        </body>
-</html>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <br>
+
+    <p>PS: Sie erhalten diese E-Mail, weil Sie in den Einstellungen diese E-Mail Adresse für Warnungen zum Lagerbestand eingetragen haben.</p>
+
+{% endblock %}

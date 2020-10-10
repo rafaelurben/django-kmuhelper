@@ -4,7 +4,7 @@
 {% block title %}{{ title }} | KMUHelper{% endblock %}
 
 {% block breadcrumbs %}
-    {{ block.super | replace_start_url | safe }}
+    {{ block.super | kmuhelper_replace_start_url | safe }}
 {% endblock %}
 
 {% block branding %}

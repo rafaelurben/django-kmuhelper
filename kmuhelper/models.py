@@ -408,7 +408,7 @@ class Bestellung(models.Model):
             try:
                 print("E-Mail Success:", send_mail(
                     subject="[KMUHelper] - Lagerbestand knapp!",
-                    to=self.zahlungsempfaenger.email,
+                    to=Einstellung.objects.get(id="email-stock-warning-receiver").inhalt,
                     template_name="bestellung_stock_warning.html",
                     context={
                         "warnings": warnings,
@@ -1004,21 +1004,25 @@ class Zahlungsempfaenger(models.Model):
 EINSTELLUNGSTYPEN = [
     ("char", "Text"),
     ("text", "Mehrzeiliger Text"),
+    ("bool", "Wahrheitswert"),
     ("int",  "Zahl"),
-    ("floa", "Fliesskommazahl"),
-    ("url",  "Url")
+    ("float", "Fliesskommazahl"),
+    ("url",  "Url"),
+    ("email", "E-Mail"),
 ]
 
 class Einstellung(models.Model):
-    id   = models.CharField("ID", max_length=20, primary_key=True)
-    name = models.CharField("Name", max_length=100)
-    typ  = models.CharField("Typ", max_length=4, default="char", choices=EINSTELLUNGSTYPEN)
+    id   = models.CharField("ID", max_length=50, primary_key=True)
+    name = models.CharField("Name", max_length=200)
+    typ  = models.CharField("Typ", max_length=5, default="char", choices=EINSTELLUNGSTYPEN)
 
-    char = models.CharField(    "Inhalt (Text)              ", max_length=250, default="",  blank=True)
-    text = models.TextField(    "Inhalt (Mehrzeiliger Text) ", default="",                  blank=True)
-    inte = models.IntegerField( "Inhalt (Zahl)              ", default=0,                   blank=True)
-    floa = models.FloatField(   "Inhalt (Fliesskommazahl)   ", default=0.0,                 blank=True)
-    url  = models.URLField(     "Inhalt (Url)               ", default="",                  blank=True)
+    char  = models.CharField(    "Inhalt (Text)", max_length=250, default="",    blank=True)
+    text  = models.TextField(    "Inhalt (Mehrzeiliger Text)",    default="",    blank=True)
+    boo   = models.BooleanField( "Inhalt (Wahrheitswert)",        default=False, blank=True)
+    inte  = models.IntegerField( "Inhalt (Zahl)",                 default=0,     blank=True)
+    floa  = models.FloatField(   "Inhalt (Fliesskommazahl)",      default=0.0,   blank=True)
+    url   = models.URLField(     "Inhalt (Url)",                  default="",    blank=True)
+    email = models.EmailField(   "Inhalt (E-Mail)",               default="",    blank=True)
 
     def __str__(self):
         return self.name
@@ -1030,12 +1034,16 @@ class Einstellung(models.Model):
             return self.char
         elif self.typ == "text":
             return self.text
+        elif self.typ == "bool":
+            return self.boo
         elif self.typ == "int":
             return self.inte
-        elif self.typ == "floa":
+        elif self.typ == "float":
             return self.floa
         elif self.typ == "url":
             return self.url
+        elif self.typ == "email":
+            return self.email
 
     @inhalt.setter
     def inhalt(self, var):
@@ -1043,12 +1051,16 @@ class Einstellung(models.Model):
             self.char = var
         elif self.typ == "text":
             self.text = var
+        elif self.typ == "bool":
+            self.boo = var
         elif self.typ == "int":
             self.inte = var
-        elif self.typ == "floa":
+        elif self.typ == "float":
             self.floa = var
         elif self.typ == "url":
             self.url = var
+        elif self.typ == "email":
+            self.email = var
 
     def get_inhalt(self):
         return self.inhalt
@@ -1063,17 +1075,19 @@ class Einstellung(models.Model):
 
 
 class Geheime_Einstellung(models.Model):
-    id = models.CharField("ID", max_length=20, primary_key=True)
-    typ  = models.CharField("Typ", max_length=4, default="char", choices=EINSTELLUNGSTYPEN)
+    id = models.CharField("ID", max_length=50, primary_key=True)
+    typ  = models.CharField("Typ", max_length=5, default="char", choices=EINSTELLUNGSTYPEN)
 
-    char = models.CharField(    "Inhalt (Text)              ", max_length=250, default="",  blank=True)
-    text = models.TextField(    "Inhalt (Mehrzeiliger Text) ", default="",                  blank=True)
-    inte = models.IntegerField( "Inhalt (Zahl)              ", default=0,                   blank=True)
-    floa = models.FloatField(   "Inhalt (Fliesskommazahl)   ", default=0.0,                 blank=True)
-    url  = models.URLField(     "Inhalt (Url)               ", default="",                  blank=True)
+    char  = models.CharField(    "Inhalt (Text)", max_length=250, default="",    blank=True)
+    text  = models.TextField(    "Inhalt (Mehrzeiliger Text)",    default="",    blank=True)
+    boo   = models.BooleanField( "Inhalt (Wahrheitswert)",        default=False, blank=True)
+    inte  = models.IntegerField( "Inhalt (Zahl)",                 default=0,     blank=True)
+    floa  = models.FloatField(   "Inhalt (Fliesskommazahl)",      default=0.0,   blank=True)
+    url   = models.URLField(     "Inhalt (Url)",                  default="",    blank=True)
+    email = models.EmailField(   "Inhalt (E-Mail)",               default="",    blank=True)
 
     def __str__(self):
-        return self.id+" "+str(self.inhalt)
+        return self.id
     __str__.short_description = "Geheime Einstellung"
 
     @property
@@ -1082,12 +1096,16 @@ class Geheime_Einstellung(models.Model):
             return self.char
         elif self.typ == "text":
             return self.text
+        elif self.typ == "bool":
+            return self.boo
         elif self.typ == "int":
             return self.inte
-        elif self.typ == "floa":
+        elif self.typ == "float":
             return self.floa
         elif self.typ == "url":
             return self.url
+        elif self.typ == "email":
+            return self.email
 
     @inhalt.setter
     def inhalt(self, var):
@@ -1095,12 +1113,16 @@ class Geheime_Einstellung(models.Model):
             self.char = var
         elif self.typ == "text":
             self.text = var
+        elif self.typ == "bool":
+            self.boo = var
         elif self.typ == "int":
             self.inte = var
-        elif self.typ == "floa":
+        elif self.typ == "float":
             self.floa = var
         elif self.typ == "url":
             self.url = var
+        elif self.typ == "emal":
+            return self.email
 
     def get_inhalt(self):
         return self.inhalt

@@ -1,7 +1,15 @@
-<h1>Guten Tag!</h1>
+{% extends 'kmuhelper/emails/base.html' %}
 
-<p>Im Anhang finden Sie Ihre Rechnung zur Bestellung Nr. {{ id }}{% if woocommercedata %} (Online #{{ woocommerceid }}){% endif %}</p>
+{% block title %}Ihre Rechnung #{{ id }}{% endblock %}
 
-{% if trackingdata %}
-    <p>Sie können die Bestellung über <a href="{{ trackinglink }}">diesen Link</a> verfolgen, sobald Sie von der Post verarbeitet wurde.</p>
-{% endif %}
+{% block header %}{% endblock %}
+
+{% block content %}
+
+    <p>Im Anhang finden Sie Ihre Rechnung zur Bestellung Nr. {{ id }}{% if woocommercedata %} (Online #{{ woocommerceid }}){% endif %}</p>
+
+    {% if trackingdata %}
+        <p>Sie können die Bestellung über <a href="{{ trackinglink }}">diesen Link</a> verfolgen, sobald Sie von der Post verarbeitet wurde.</p>
+    {% endif %}
+
+{% endblock %}

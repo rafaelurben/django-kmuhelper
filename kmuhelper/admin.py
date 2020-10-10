@@ -467,23 +467,23 @@ class NotizenAdmin(admin.ModelAdmin):
             if "from_bestellung" in request.GET:
                 form.base_fields['name'].initial = 'Bestellung #' + \
                     request.GET.get("from_bestellung")
-                form.base_fields['beschrieb'].initial += '\n\nDiese Notiz gehört zu Bestellung #' + \
-                    request.GET.get("from_bestellung")
+                form.base_fields['beschrieb'].initial += '\n\n[Bestellung #' + \
+                    request.GET.get("from_bestellung") + "]"
             if "from_produkt" in request.GET:
                 form.base_fields['name'].initial = 'Produkt #' + \
                     request.GET.get("from_produkt")
-                form.base_fields['beschrieb'].initial += '\n\nDiese Notiz gehört zu Produkt #' + \
-                    request.GET.get("from_produkt")
+                form.base_fields['beschrieb'].initial += '\n\n[Produkt #' + \
+                    request.GET.get("from_produkt") + "]"
             if "from_kunde" in request.GET:
                 form.base_fields['name'].initial = 'Kunde #' + \
                     request.GET.get("from_kunde")
-                form.base_fields['beschrieb'].initial += '\n\nDiese Notiz gehört zu Kunde #' + \
-                    request.GET.get("from_kunde")
+                form.base_fields['beschrieb'].initial += '\n\n[Kunde #' + \
+                    request.GET.get("from_kunde") + "]"
             if "from_lieferung" in request.GET:
                 form.base_fields['name'].initial = 'Lieferung #' + \
                     request.GET.get("from_lieferung")
-                form.base_fields['beschrieb'].initial += '\n\nDiese Notiz gehört zu Lieferung #' + \
-                    request.GET.get("from_lieferung")
+                form.base_fields['beschrieb'].initial += '\n\n[Lieferung #' + \
+                    request.GET.get("from_lieferung") + "]"
         return form
 
     def save_model(self, request, obj, form, change):
@@ -674,26 +674,23 @@ class EinstellungenAdmin(admin.ModelAdmin):
     list_display = ('name', 'get_inhalt')
     ordering = ('name',)
 
-    search_fields = ["name"]
+    search_fields = ['name', 'char', 'text', 'inte', 'floa', 'url', 'email']
 
     readonly_fields = ["id", "name"]
 
     def get_fieldsets(self, request, obj=None):
         fieldsets = [
             ('Name', {'fields': ['name']}),
-            ('Inhalt', {'fields': ['char']}),
+            ('Inhalt', {'fields': [
+                'char' if obj.typ == 'char' else
+                'text' if obj.typ == 'text' else 
+                'boo' if obj.typ == 'bool' else
+                'inte' if obj.typ == 'int' else
+                'floa' if obj.typ == 'float' else 
+                'url' if obj.typ == 'url' else
+                'email' if obj.typ == 'email' else ''
+            ]}),
         ]
-        if obj.typ == "char":
-            fieldsets[1][1]["fields"][0] = "char"
-        elif obj.typ == "text":
-            fieldsets[1][1]["fields"][0] = "text"
-        elif obj.typ == "int":
-            fieldsets[1][1]["fields"][0] = "inte"
-        elif obj.typ == "floa":
-            fieldsets[1][1]["fields"][0] = "floa"
-        elif obj.typ == "url":
-            fieldsets[1][1]["fields"][0] = "url"
-
         return fieldsets
 
 

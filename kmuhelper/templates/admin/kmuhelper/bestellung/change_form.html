@@ -8,9 +8,13 @@
         <li><a href="{% url 'kmuhelper:bestellung-pdf-ansehen' object_id %}" target="_blank">Rechnung (digital)</a></li>
         <li><a href="{% url 'kmuhelper:bestellung-pdf-ansehen' object_id %}?druck" target="_blank">Rechnung (druck)</a></li>
         <li><a href="{% url 'kmuhelper:bestellung-pdf-ansehen' object_id %}?lieferschein" target="_blank">Lieferschein</a></li>
-        {% if original.versendet and original.rechnungsadresse_email and original.rechnung_gesendet %}
+
+        {% load kmuhelper_tags %}
+        {% kmuhelper_email_show_buttons as show_email_buttons %}
+        {% if show_email_buttons and original.versendet and original.rechnungsadresse_email and not original.rechnung_gesendet %}
             <li><a href="{% url 'kmuhelper:bestellung-pdf-an-kunden-senden' object_id %}">Rechnung an Kunden senden</a></li>
         {% endif %}
+        
         {% if original.trackingnummer %}
             <li><a target="_blank" href="{{ original.trackinglink }}">Tracking</a></li>
         {% endif %}

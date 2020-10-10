@@ -36,6 +36,9 @@ def home(request):
 def admin(request):
     return redirect(reverse("admin:app_list", kwargs={"app_label": "kmuhelper"}))
 
+def _templatetest(request, templatename):
+    return render(request, templatename, {})
+
 #####
 
 @login_required(login_url=reverse_lazy("admin:login"))
