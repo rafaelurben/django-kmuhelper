@@ -1,7 +1,7 @@
 # pylint: disable=no-member
 
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse, path, reverse_lazy
@@ -61,6 +61,7 @@ def wc_auth_end(request):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
+@permission_required("kmuhelper.change_einstellung")
 def wc_auth_start(request):
     shopurl = Einstellung.objects.get(id="wc-url").inhalt
     if "Bestätigt" in shopurl:
@@ -85,6 +86,7 @@ def wc_auth_start(request):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
+@permission_required("kmuhelper.add_produkt")
 def wc_import_products(request):
     if not bool(Geheime_Einstellung.objects.filter(id="wc-url").exists() and Geheime_Einstellung.objects.get(id="wc-url").inhalt):
         messages.error(
@@ -98,6 +100,7 @@ def wc_import_products(request):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
+@permission_required("kmuhelper.add_kunde")
 def wc_import_customers(request):
     if not bool(Geheime_Einstellung.objects.filter(id="wc-url").exists() and Geheime_Einstellung.objects.get(id="wc-url").inhalt):
         messages.error(
@@ -111,6 +114,7 @@ def wc_import_customers(request):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
+@permission_required("kmuhelper.add_kategorie")
 def wc_import_categories(request):
     if not bool(Geheime_Einstellung.objects.filter(id="wc-url").exists() and Geheime_Einstellung.objects.get(id="wc-url").inhalt):
         messages.error(
@@ -124,6 +128,7 @@ def wc_import_categories(request):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
+@permission_required("kmuhelper.add_bestellung")
 def wc_import_orders(request):
     if not bool(Geheime_Einstellung.objects.filter(id="wc-url").exists() and Geheime_Einstellung.objects.get(id="wc-url").inhalt):
         messages.error(
@@ -137,6 +142,7 @@ def wc_import_orders(request):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
+@permission_required("kmuhelper.change_produkt")
 def wc_update_product(request, object_id):
     if not bool(Geheime_Einstellung.objects.filter(id="wc-url").exists() and Geheime_Einstellung.objects.get(id="wc-url").inhalt):
         messages.error(
@@ -150,6 +156,7 @@ def wc_update_product(request, object_id):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
+@permission_required("kmuhelper.change_kunde")
 def wc_update_customer(request, object_id):
     if not bool(Geheime_Einstellung.objects.filter(id="wc-url").exists() and Geheime_Einstellung.objects.get(id="wc-url").inhalt):
         messages.error(
@@ -163,6 +170,7 @@ def wc_update_customer(request, object_id):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
+@permission_required("kmuhelper.change_kategorie")
 def wc_update_category(request, object_id):
     if not bool(Geheime_Einstellung.objects.filter(id="wc-url").exists() and Geheime_Einstellung.objects.get(id="wc-url").inhalt):
         messages.error(
@@ -176,6 +184,7 @@ def wc_update_category(request, object_id):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
+@permission_required("kmuhelper.change_bestellung")
 def wc_update_order(request, object_id):
     if not bool(Geheime_Einstellung.objects.filter(id="wc-url").exists() and Geheime_Einstellung.objects.get(id="wc-url").inhalt):
         messages.error(

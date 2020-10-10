@@ -14,7 +14,7 @@
     {{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'admin/kmuhelper/css/style.css' %}">
     <style>
-        #app-admin-chooser a {
+        #page-chooser a {
             padding: 50px;
             border-radius: 5px;
             display: block;
@@ -23,7 +23,7 @@
             transition-duration: 0.5s;
         }
         
-        #app-admin-chooser a:hover {
+        #page-chooser a:hover {
             background-color: var(--kmuhelper-darkest);
         }
 
@@ -34,12 +34,12 @@
         .split {
             display: grid;
             grid-gap: 15px;
-            grid-auto-flow: column;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         }
 
         @media screen and (max-width: 767px) {
             .split {
-                grid-auto-flow: unset;
+                grid-template-columns: 1fr;
             }
         }
 
@@ -57,15 +57,25 @@
 {% block content %}
     <h1>Willkommen im KMUHelper!</h1>
    
-    <div id="app-admin-chooser">
-        <a href="{% url 'kmuhelper:admin' %}" target="_top">
-            <div class="center">
-                <i class="fas fa-2x fa-fw fa-key"></i>
-                <br><br>
-                <h2>Admin</h2>
-                <p>Volle Kontrolle über alle Daten</p>
-            </div>
-        </a>
+    <div id="page-chooser">
+        <div class="split">
+            <a href="{% url 'kmuhelper:admin' %}" target="_top">
+                <div class="center">
+                    <i class="fas fa-2x fa-fw fa-key"></i>
+                    <br><br>
+                    <h2>Admin</h2>
+                    <p>Volle Kontrolle über alle Daten</p>
+                </div>
+            </a>
+            <a href="{% url 'kmuhelper:stats' %}" target="_top">
+                <div class="center">
+                    <i class="fas fa-2x fa-fw fa-chart-pie"></i>
+                    <br><br>
+                    <h2>Statistiken</h2>
+                    <p>Diagramme und co. [Beta]</p>
+                </div>
+            </a>
+        </div>
         <br>
         <div class="split">
             <a href="{% url 'kmuhelper:app-main' %}#home" target="_top">

@@ -8,7 +8,7 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.clickjacking import xframe_options_sameorigin as allow_iframe
 
-from kmuhelper.utils import package_version, python_version
+from kmuhelper.utils import clean
 from kmuhelper.models import Bestellungsposten, Bestellung
 
 import datetime
@@ -55,3 +55,22 @@ def stats_products_price(request):
         "money_income": money_income_data,
     }
     return render(request, "kmuhelper/stats/products_price.html", context)
+
+def best_products(request, max_count:int=20):
+    products = {}
+
+    for bp in Bestellungsposten.objects.all().order_by("produkt__name").values("produkt__name", "menge"):
+        if bp["produkt__name"] in products:
+            products[clean(bp["produkt__name"])] += bp["menge"]
+        else:
+            products[clean(bp["produkt__name"])] = bp["menge"]
+
+    products = sorted(products.items(), key=lambda x: x[1], reverse=True)
+    products = products[:max_count] if len(products) > max_count else products
+        
+    context = {
+        "has_permission": True,
+        "product_names": [p[0] for p in products],
+        "product_counts": [p[1] for p in products],
+    }
+    return render(request, "kmuhelper/stats/best_products.html", context)

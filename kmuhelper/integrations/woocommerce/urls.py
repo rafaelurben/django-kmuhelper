@@ -19,5 +19,6 @@ urlpatterns = [
     path('update/customer/<object_id>', views.wc_update_customer, name="wc-update-customer"),
     path('update/category/<object_id>', views.wc_update_category, name="wc-update-category"),
     path('update/order/<object_id>', views.wc_update_order, name="wc-update-order"),
+    
     path('webhooks', views.wc_webhooks, name="wc-webhooks"),
 ]

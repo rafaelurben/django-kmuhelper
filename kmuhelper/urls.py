@@ -24,7 +24,7 @@ except Exception as e:
 app_name = 'kmuhelper'
 urlpatterns = [
     path('', views.home, name="home"),
-    path('admin', views.admin, name="admin"),
+    path('admin/', views.admin, name="admin"),
 
     path('_templatetest/<path:templatename>', views._templatetest, name="_templatetest"),
     

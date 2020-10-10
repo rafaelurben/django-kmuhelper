@@ -2,11 +2,12 @@
 
 Wichtige Änderungen am KMUHelper werden in dieser Datei dokumentiert.
 
-## [1.1.1] - Future
+## [1.1.1] - 2020/10/10
 
 ### Added
 
 - E-Mail Vorlage
+- Statistiken: Beste Produkte
 
 ### Changed
 
