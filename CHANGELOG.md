@@ -2,14 +2,24 @@
 
 Wichtige Änderungen am KMUHelper werden in dieser Datei dokumentiert.
 
-## [1.1.1] - 2020/10/10
+## [1.1.2] - Future
 
 ### Added
+
+- Statistiken: Einschränkung der Ergebnisse mit Parametern
+
+### Changed
+
+### Fixed
+
+## [1.1.1] - 2020/10/10
+
+### Added in 1.1.1
 
 - E-Mail Vorlage
 - Statistiken: Beste Produkte
 
-### Changed
+### Changed in 1.1.1
 
 - Codestruktur komplett überarbeitet
 - Notiz aus Lieferungen entfernt -> Verlinkung mit Notiz möglich
@@ -17,7 +27,7 @@ Wichtige Änderungen am KMUHelper werden in dieser Datei dokumentiert.
   - Build Info wird später geladen (Ladezeit verkürzt)
   - Neue Typen: Wahrheitswert / E-Mail
 
-### Fixed
+### Fixed in 1.1.1
 
 - Kleine Fehlerbehebungen
 

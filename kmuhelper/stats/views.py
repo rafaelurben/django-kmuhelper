@@ -13,6 +13,7 @@ from kmuhelper.models import Bestellungsposten, Bestellung
 
 import datetime
 import json
+import pytz
 
 #####
 
@@ -21,9 +22,19 @@ def stats(request):
 
 
 def stats_products_price(request):
+    try:
+        from_date = pytz.utc.localize(datetime.datetime.strptime(str(request.GET.get("from")), "%Y-%m-%d"))
+    except (ValueError, IndexError):
+        from_date = Bestellung.objects.order_by("datum").first().datum
+
+    try:
+        to_date = pytz.utc.localize(datetime.datetime.strptime(str(request.GET.get("to")), "%Y-%m-%d"))
+    except (ValueError, IndexError):
+        to_date = Bestellung.objects.order_by("datum").last().datum
+
     products_sold = {}
 
-    for bp in Bestellungsposten.objects.filter().order_by("bestellung__datum").values("bestellung__datum", "menge"):
+    for bp in Bestellungsposten.objects.filter(bestellung__datum__gte=from_date, bestellung__datum__lte=to_date).order_by("bestellung__datum").values("bestellung__datum", "menge"):
         d = datetime.date(year=bp["bestellung__datum"].year,
                           month=bp["bestellung__datum"].month, day=1).isoformat()
         if d in products_sold:
@@ -37,7 +48,7 @@ def stats_products_price(request):
 
     money_income = {}
 
-    for b in Bestellung.objects.filter().order_by("datum").values("datum", "fix_summe"):
+    for b in Bestellung.objects.filter(datum__gte=from_date, datum__lte=to_date).order_by("datum").values("datum", "fix_summe"):
         d = datetime.date(year=b["datum"].year,
                           month=b["datum"].month, day=1).isoformat()
         if d in money_income:
@@ -56,10 +67,28 @@ def stats_products_price(request):
     }
     return render(request, "kmuhelper/stats/products_price.html", context)
 
-def best_products(request, max_count:int=20):
+def best_products(request):
+    try:
+        if "max" in request.GET:
+            max_count = int(request.GET.get("max"))
+        else:
+            max_count = 20
+    except (ValueError, IndexError):
+        max_count = 20
+
+    try:
+        from_date = pytz.utc.localize(datetime.datetime.strptime(str(request.GET.get("from")), "%Y-%m-%d"))
+    except (ValueError, IndexError):
+        from_date = Bestellung.objects.order_by("datum").first().datum
+
+    try:
+        to_date = pytz.utc.localize(datetime.datetime.strptime(str(request.GET.get("to")), "%Y-%m-%d"))
+    except (ValueError, IndexError):
+        to_date = Bestellung.objects.order_by("datum").last().datum
+
     products = {}
 
-    for bp in Bestellungsposten.objects.all().order_by("produkt__name").values("produkt__name", "menge"):
+    for bp in Bestellungsposten.objects.filter(bestellung__datum__gte=from_date, bestellung__datum__lte=to_date).order_by("produkt__name").values("produkt__name", "menge"):
         if bp["produkt__name"] in products:
             products[clean(bp["produkt__name"])] += bp["menge"]
         else:
