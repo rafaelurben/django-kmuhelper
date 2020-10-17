@@ -1,5 +1,5 @@
 from django import template
-from kmuhelper.models import Geheime_Einstellung, Einstellung
+from kmuhelper.main.models import Geheime_Einstellung, Einstellung
 
 register = template.Library()
 

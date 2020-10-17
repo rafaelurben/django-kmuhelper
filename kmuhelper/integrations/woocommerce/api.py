@@ -4,7 +4,7 @@ from django.utils.html import strip_tags
 
 from woocommerce import API as WCAPI
 
-from kmuhelper.models import Einstellung, Geheime_Einstellung, Produkt, Kunde, Kategorie, Bestellung, Bestellungsposten, Kosten
+from kmuhelper.main.models import Einstellung, Geheime_Einstellung, Produkt, Kunde, Kategorie, Bestellung, Bestellungsposten, Kosten
 from kmuhelper.utils import runden
 
 ###############

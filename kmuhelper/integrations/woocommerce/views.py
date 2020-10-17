@@ -1,5 +1,3 @@
-# pylint: disable=no-member
-
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
@@ -12,7 +10,7 @@ from django.views.decorators.clickjacking import xframe_options_sameorigin as al
 from urllib.parse import urlencode
 from random import randint
 
-from kmuhelper.models import Einstellung, Geheime_Einstellung, Produkt, Kunde, Kategorie, Lieferant, Lieferung, Bestellung, Bestellungsposten
+from kmuhelper.main.models import Einstellung, Geheime_Einstellung, Produkt, Kunde, Kategorie, Lieferant, Lieferung, Bestellung, Bestellungsposten
 from kmuhelper.integrations.woocommerce.api import WooCommerce
 
 import json

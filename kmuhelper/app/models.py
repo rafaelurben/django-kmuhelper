@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.html import mark_safe
 
-from kmuhelper.models import Notiz, Bestellung, Produkt, Lieferung
+from kmuhelper.main.models import Notiz, Bestellung, Produkt, Lieferung
 
 #####
 

@@ -82,30 +82,28 @@ def clean(string, lang="de"):
 
 ###############
 
-def send_mail(subject:str, to:str, template_name:str, context:dict={}, headers:dict={}, bcc:list=[]):
+def send_mail(subject:str, to:str, template_name:str, context:dict={}, **kwargs):
     html_message = get_template("kmuhelper/emails/"+template_name).render(context)
 
     msg = mail.EmailMessage(
         subject=subject,
         body=html_message,
         to=[to],
-        headers=headers,
-        bcc=bcc
+        **kwargs
     )
 
     msg.content_subtype = "html"
 
     return bool(msg.send())
 
-def send_pdf(subject:str, to:str, template_name:str, pdf:BytesIO, pdf_filename:str="file.pdf", context:dict={}, headers:dict={}, bcc:list=[]):
+def send_pdf(subject:str, to:str, template_name:str, pdf:BytesIO, pdf_filename:str="file.pdf", context:dict={}, **kwargs):
     html_message = get_template("kmuhelper/emails/"+template_name).render(context)
 
     msg = mail.EmailMessage(
         subject=subject,
         body=html_message,
         to=[to],
-        headers=headers,
-        bcc=bcc
+        **kwargs
     )
 
     msg.content_subtype = "html"

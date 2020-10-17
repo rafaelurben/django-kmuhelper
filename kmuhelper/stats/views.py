@@ -9,7 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.clickjacking import xframe_options_sameorigin as allow_iframe
 
 from kmuhelper.utils import clean
-from kmuhelper.models import Bestellungsposten, Bestellung
+from kmuhelper.main.models import Bestellungsposten, Bestellung
 
 import datetime
 import json

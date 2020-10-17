@@ -10,6 +10,8 @@ Wichtige Änderungen am KMUHelper werden in dieser Datei dokumentiert.
 
 ### Changed
 
+- Codestruktur nochmals angepasst
+
 ### Fixed
 
 ## [1.1.1] - 2020/10/10
