@@ -1,3 +1,5 @@
+# pylint: disable=no-member
+
 from django.db import models
 from django.core import mail
 from django.conf import settings
@@ -15,12 +17,13 @@ from django.utils import timezone
 from kmuhelper.utils import send_mail, runden, clean, formatprice, modulo10rekursiv, send_pdf
 from kmuhelper.pdf_generators.bestellung import pdf_bestellung
 
+from kmuhelper.emails.models import EMail
+
 ###################
 
 from rich import print
 
-prefix = "[deep_pink4][KMUHelper][/] -"
-
+prefix = "[deep_pink4][KMUHelper Main][/] -"
 
 def log(string, *args):
     print(prefix, string, *args)
@@ -280,7 +283,7 @@ class Bestellung(models.Model):
     kosten = models.ManyToManyField(
         "Kosten", through="Bestellungskosten", through_fields=("bestellung", "kosten"))
 
-    rechnung_gesendet = models.BooleanField("Rechnung gesendet", default=False)
+    rechnungsemail = models.ForeignKey("EMail", on_delete=models.SET_NULL, blank=True, null=True)
 
     fix_summe = models.FloatField("Summe in CHF", default=0.0)
 
@@ -391,29 +394,37 @@ class Bestellung(models.Model):
         return FileResponse(pdf_bestellung(self, lieferschein=lieferschein, digital=digital), as_attachment=False, filename=('Lieferschein' if lieferschein else 'Rechnung')+' zu Bestellung '+str(self)+'.pdf')
 
     def send_pdf_rechnung_to_customer(self):
-        success = send_pdf(
-            subject="Ihre Rechnung Nr. " +
-            str(self.id)+(" (Online #"+str(self.woocommerceid) +
-                          ")" if self.woocommerceid else ""),
-            to=self.rechnungsadresse_email,
-            template_name="kunde_rechnung.html",
-            pdf_filename="Rechnung Nr. " +
-            str(self.id)+(" (Online #"+str(self.woocommerceid) +
-                          ")" if self.woocommerceid else "")+".pdf",
-            pdf=pdf_bestellung(self, lieferschein=False, digital=True),
-            context={
-                "trackinglink": str(self.trackinglink()),
-                "trackingdata": bool(self.trackinglink() and self.versendet),
-                "id": str(self.id),
-                "woocommerceid": str(self.woocommerceid),
-                "woocommercedata": bool(self.woocommerceid)
+        context = {
+            "trackinglink": str(self.trackinglink()),
+            "trackingdata": bool(self.trackinglink() and self.versendet),
+            "id": str(self.id),
+            "woocommerceid": str(self.woocommerceid),
+            "woocommercedata": bool(self.woocommerceid)
+        }
+        
+        if self.rechnungsemail is None:
+            self.rechnungsemail = EMail.objects.create(
+                typ="bestellung_rechnung",
+                subject=f"Ihre Rechnung Nr. { self.id }"+(" (Online #"+str(self.woocommerceid) +")" if self.woocommerceid else ""),
+                to=self.rechnungsadresse_email,
+                html_template="bestellung_rechnung.html",
+                html_context=context,
+            )
+        else:
+            self.rechnungsemail.to = self.rechnungsadresse_email
+            self.rechnungsemail.html_context = context
+
+        success = self.rechnungsemail.send(
+            headers={
+                "Rechnungs-ID": str(self.id)
             },
-            headers={"Rechnungs-ID": str(self.id)},
-            bcc=[self.zahlungsempfaenger.email]
+            attachements=[{
+                "filename": f"Rechnung Nr. { self.id }"+(" (Online #"+str(self.woocommerceid)+")" if self.woocommerceid else "")+".pdf",
+                "data": pdf_bestellung(self, lieferschein=False, digital=True),
+            }],
+            bcc=[self.zahlungsempfaenger.email],
         )
-        if success:
-            self.rechnung_gesendet = True
-            self.save()
+        self.save()
         return success
 
     def html_todo_notiz(self):
@@ -459,18 +470,29 @@ class Bestellung(models.Model):
                 warnings.append({"product": n, "stock": s})
 
         if warnings != []:
-            try:
-                print("E-Mail Success:", send_mail(
+            email_receiver = Einstellung.objects.get(id="email-stock-warning-receiver").inhalt
+
+            if email_receiver:
+                email = EMail.objects.create(
+                    typ="bestellung_warnung_lagerbestand",
                     subject="[KMUHelper] - Lagerbestand knapp!",
-                    to=Einstellung.objects.get(
-                        id="email-stock-warning-receiver").inhalt,
-                    template_name="bestellung_stock_warning.html",
-                    context={
+                    to=email_receiver,
+                    html_template="bestellung_stock_warning.html",
+                    html_context={
                         "warnings": warnings,
                     },
-                ))
-            except Exception as e:
-                print("E-Mail Error!", e)
+                )
+
+                success = email.send(
+                    headers={
+                        "Bestellungs-ID": str(self.pk)
+                    },
+                )
+                return bool(success)
+            else:
+                log("Keine E-Mail für Warnungen zum Lagerbestand festgelegt!")
+        return None
+
 
     class Meta:
         verbose_name = "Bestellung"
@@ -656,8 +678,7 @@ class Kunde(models.Model):
     webseite = models.URLField("Webseite", blank=True, default="")
     bemerkung = models.TextField("Bemerkung", default="", blank=True)
 
-    registrierungsemail_gesendet = models.BooleanField(
-        "Registrierungsemail gesendet?", default=False)
+    registrierungsemail = models.ForeignKey("EMail", on_delete=models.SET_NULL, blank=True, null=True)
 
     def avatar(self):
         if self.avatar_url:
@@ -725,17 +746,28 @@ class Kunde(models.Model):
         super().save(*args, **kwargs)
 
     def send_register_mail(self):
-        self.registrierungsemail_gesendet = bool(send_mail(
-            subject="Registrierung erfolgreich!",
-            to=self.email,
-            template_name="kunde_registriert.html",
-            context={
-                "kunde": self
-            },
-            headers={"Kunden-ID": str(self.id)}
-        ))
+        context = {
+            "kunde": {
+                "vorname": self.vorname,
+                "nachname": self.nachname,
+            }
+        }
+
+        if self.registrierungsemail is None:
+            self.registrierungsemail = EMail.objects.create(
+                typ="kunde_registriert",
+                subject="Registrierung erfolgreich!", 
+                to=self.email, 
+                html_template="kunde_registriert.html",
+                html_context=context,
+            )
+        else:
+            self.registrierungsemail.to = self.email
+            self.registrierungsemail.html_context = context
+
+        success = self.registrierungsemail.send(headers={"Kunden-ID": str(self.pk)})
         self.save()
-        return self.registrierungsemail_gesendet
+        return success
 
     def html_todo_notiz(self):
         if hasattr(self, "notiz"):
@@ -1088,12 +1120,12 @@ class Zahlungsempfaenger(models.Model):
         try:
             b = ''
             for i in (0, 1):
-                a = self.qriban[i].upper()
+                a = str(self.qriban)[i].upper()
                 if a not in string.ascii_uppercase:
                     return False
                 else:
                     b += str(ord(a)-55)
-            Nr = ''.join([z for z in self.qriban[2:] if z in string.digits])
+            Nr = ''.join([z for z in str(self.qriban)[2:] if z in string.digits])
             return (int(int(Nr[2:] + b + Nr[:2]) % 97) == 1)
         except IndexError:
             return False
@@ -1103,10 +1135,9 @@ class Zahlungsempfaenger(models.Model):
             u = self.firmenuid.split("-")[1].replace(".", "")
             p = 11 - (((int(u[0])*5)+(int(u[1])*4)+(int(u[2])*3)+(int(u[3])*2) +
                        (int(u[4])*7)+(int(u[5])*6)+(int(u[6])*5)+(int(u[7])*4)) % 11)
-            print(u, p)
             return int(u[8]) == p
         except Exception as e:
-            print(e)
+            log("Error while validating UID:", e)
             return False
 
     def __str__(self):

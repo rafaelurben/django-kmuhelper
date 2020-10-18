@@ -202,8 +202,6 @@ class WooCommerce():
             lieferadresse_kanton=customer["shipping"]["state"],
             lieferadresse_plz=customer["shipping"]["postcode"],
             lieferadresse_land=customer["shipping"]["country"],
-
-            registrierungsemail_gesendet=True
         )
         log("Kunde erstellt:", str(newcustomer))
         return newcustomer
@@ -508,11 +506,7 @@ class WooCommerce():
         neworder.save()
         log("Bestellung erstellt:", str(neworder))
 
-        try:
-            neworder.email_stock_warning()
-        except Exception as e:
-            print("E-Mail Error:", e)
-
+        neworder.email_stock_warning()
         return neworder
 
     @classmethod

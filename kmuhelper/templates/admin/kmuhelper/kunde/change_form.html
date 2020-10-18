@@ -10,7 +10,7 @@
 
                 {% load kmuhelper_tags %}
                 {% kmuhelper_email_show_buttons as show_email_buttons %}
-                {% if show_email_buttons and original.email and not original.registrierungsemail_gesendet %}
+                {% if show_email_buttons and original.email and not original.registrierungsemail or not original.registrierungsemail.time_sent %}
                     <li><a href="{% url 'kmuhelper:kunde-email-registriert' object_id %}">Registrierungsemail senden</a></li>
                 {% endif %}
 

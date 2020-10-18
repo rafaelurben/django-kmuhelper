@@ -7,6 +7,8 @@ Wichtige Änderungen am KMUHelper werden in dieser Datei dokumentiert.
 ### Added
 
 - Statistiken: Einschränkung der Ergebnisse mit Parametern
+- E-Mail Log (Beta - `/admin/kmuhelper/email`)
+- E-Mails online ansehen (Beta)
 
 ### Changed
 
@@ -44,7 +46,7 @@ Wichtige Änderungen am KMUHelper werden in dieser Datei dokumentiert.
 - Build Info in den Einstellungen
 - Dokumentation hinzugefügt
 - Warnung bei ungültiger UID/IBAN eines Zahlungsempfängers
-- Statistiken (Beta; `/kmuhelper/stats`)
+- Statistiken (Beta - `/kmuhelper/stats`)
 
 ### Changed in 1.1
 

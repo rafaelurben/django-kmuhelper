@@ -6,5 +6,6 @@ admin.site.site_url = None
 
 # Register your models here.
 
-from kmuhelper.app.admin import (ToDoNotizenAdmin, ToDoVersandAdmin, ToDoZahlungseingangAdmin, ToDoLagerbestandAdmin, ToDoLieferungenAdmin)
-from kmuhelper.main.admin import (AnsprechpartnerAdmin, BestellungsAdmin, KategorienAdmin, KostenAdmin, KundenAdmin, LieferantenAdmin, LieferungenAdmin, NotizenAdmin, ProduktAdmin, ZahlungsempfaengerAdmin, EinstellungenAdmin)
+from kmuhelper.app import admin
+from kmuhelper.main import admin
+from kmuhelper.emails import admin

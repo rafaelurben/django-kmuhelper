@@ -11,8 +11,10 @@
 
         {% load kmuhelper_tags %}
         {% kmuhelper_email_show_buttons as show_email_buttons %}
-        {% if show_email_buttons and original.versendet and original.rechnungsadresse_email and not original.rechnung_gesendet %}
-            <li><a href="{% url 'kmuhelper:bestellung-pdf-an-kunden-senden' object_id %}">Rechnung an Kunden senden</a></li>
+        {% if show_email_buttons and original.versendet and original.rechnungsadresse_email %}
+            {% if not original.rechnungsemail or not original.rechnungsemail.time_sent %}
+                <li><a href="{% url 'kmuhelper:bestellung-pdf-an-kunden-senden' object_id %}">Rechnung an Kunden senden</a></li>
+            {% endif %}
         {% endif %}
         
         {% if original.trackingnummer %}
