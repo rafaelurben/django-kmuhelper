@@ -58,7 +58,7 @@ class BestellungInlineBestellungspostenAdd(admin.TabularInline):
     verbose_name_plural = "Bestellungsposten hinzufügen"
     extra = 0
 
-    raw_id_fields = ("produkt",)
+    autocomplete_fields = ("produkt",)
 
     fieldsets = [
         (None, {'fields': ['produkt', 'bemerkung', 'menge', 'rabatt']})
@@ -108,7 +108,7 @@ class BestellungInlineBestellungskostenAdd(admin.TabularInline):
     verbose_name_plural = "Bestellungskosten hinzufügen"
     extra = 0
 
-    raw_id_fields = ("kosten",)
+    autocomplete_fields = ("kosten",)
 
     fieldsets = [
         (None, {'fields': ['kosten', 'bemerkung', 'rabatt']})
@@ -140,7 +140,7 @@ class BestellungsAdmin(admin.ModelAdmin):
     inlines = [BestellungInlineBestellungsposten, BestellungInlineBestellungspostenAdd,
                BestellungInlineBestellungskosten, BestellungInlineBestellungskostenAdd]
 
-    raw_id_fields = ("kunde",)
+    autocomplete_fields = ("kunde",)
 
     save_on_top = True
 
@@ -282,6 +282,8 @@ class KategorienAdmin(admin.ModelAdmin):
 class KostenAdmin(admin.ModelAdmin):
     list_display = ["clean_name", "preis", "mwstsatz"]
 
+    search_fields = ('name', 'preis')
+
     fieldsets = [
         (None, {"fields": ("name", "preis", "mwstsatz")})
     ]
@@ -381,7 +383,7 @@ class LieferungInlineProdukteAdd(admin.TabularInline):
     verbose_name_plural = "Produkte hinzufügen"
     extra = 0
 
-    raw_id_fields = ("produkt",)
+    autocomplete_fields = ("produkt",)
 
     fields = ("produkt", "menge",)
 
