@@ -4,5 +4,5 @@ requests==2.24.0
 WooCommerce==2.1.1
 reportlab==3.5.55
 rich==9.1.0
-pytz==2020.1
+pytz==2020.4
 packaging==20.4
