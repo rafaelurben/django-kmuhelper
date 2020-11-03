@@ -2,7 +2,7 @@
 
 Wichtige Änderungen am KMUHelper werden in dieser Datei dokumentiert.
 
-## [1.1.2] - Future
+## [1.1.2] - 2020/11/03
 
 ### Added
 
@@ -13,6 +13,7 @@ Wichtige Änderungen am KMUHelper werden in dieser Datei dokumentiert.
 ### Changed
 
 - Codestruktur nochmals angepasst
+- Produkt-/ Kostenauswahl angepasst in Bestellung und Lieferung angepasst
 
 ### Fixed
 
