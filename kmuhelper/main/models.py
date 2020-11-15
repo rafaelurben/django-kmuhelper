@@ -94,6 +94,12 @@ GUTSCHEINTYPEN = [
     ("fixed_product",   "Fixer Betrag auf ein Produkt")
 ]
 
+ORDER_FREQUENCY_TYPES = [
+    ("weekly",      "Wöchentlich"),
+    ("monthly",     "Monatlich"),
+    ("yearly",      "Jährlich"),
+]
+
 #############
 
 
@@ -286,6 +292,13 @@ class Bestellung(models.Model):
     rechnungsemail = models.ForeignKey("EMail", on_delete=models.SET_NULL, blank=True, null=True)
 
     fix_summe = models.FloatField("Summe in CHF", default=0.0)
+
+    # # Wiederkehrende Rechnungen
+
+    # recurring = models.BooleanField("Wiederkehrend", default=False)
+    # recurring_next = models.DateField("Wiederkehrend am", default=None, blank=True, null=True)
+    # recurring_until = models.DateField("Wiederkehrend bis", default=None, blank=True, null=True)
+    # recurring_frequency = models.CharField("Häufigkeit", choices=ORDER_FREQUENCY_TYPES, default=None, blank=True, null=True)
 
     def save(self, *args, **kwargs):
         double_save = True

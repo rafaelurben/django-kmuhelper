@@ -21,7 +21,9 @@ Hinweis: Diese Anleitung zeigt natürlich nicht den einzigen Weg und ist auf bes
 
 3. [Domain](https://www.hostpoint.ch/domains/domains.html) sowie [Webhosting](https://www.hostpoint.ch/webhosting/webhosting-angebote.html) mieten. Das Webhosting wird hauptsächlich für Datenbank und E-Mails verwendet, deshalb kann hier sehr gut ein anderer Provider gewählt werden oder zusätzlich eine Webseite darauf gehostet werden, denn sonst lohnt es sich nicht wirklich.
 
-4. ... *Seite in Arbeit!*
+4. Auf dem Webhosting eine Datenbank sowie einen E-Mail Account erstellen und die Login-Daten notieren.
+
+5. ... *Seite in Arbeit!*
 
 ## Weiter
 

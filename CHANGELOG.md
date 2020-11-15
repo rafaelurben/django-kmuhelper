@@ -2,20 +2,28 @@
 
 Wichtige Änderungen am KMUHelper werden in dieser Datei dokumentiert.
 
-## [1.1.2] - 2020/11/03
+## [1.1.3] - Future
 
 ### Added
+
+### Changed
+
+### Fixed
+
+## [1.1.2] - 2020/11/03
+
+### Added in 1.1.2
 
 - Statistiken: Einschränkung der Ergebnisse mit Parametern
 - E-Mail Log (Beta - `/admin/kmuhelper/email`)
 - E-Mails online ansehen (Beta)
 
-### Changed
+### Changed in 1.1.2
 
 - Codestruktur nochmals angepasst
 - Produkt-/ Kostenauswahl angepasst in Bestellung und Lieferung angepasst
 
-### Fixed
+### Fixed in 1.1.2
 
 ## [1.1.1] - 2020/10/10
 
