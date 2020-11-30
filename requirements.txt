@@ -5,4 +5,4 @@ WooCommerce==2.1.1
 reportlab==3.5.55
 rich==9.2.0
 pytz==2020.4
-packaging==20.4
+packaging==20.7
