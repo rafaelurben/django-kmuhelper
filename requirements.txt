@@ -3,6 +3,6 @@ gunicorn==20.0.4
 requests==2.25.0
 WooCommerce==2.1.1
 reportlab==3.5.55
-rich==9.2.0
+rich==9.3.0
 pytz==2020.4
 packaging==20.4
