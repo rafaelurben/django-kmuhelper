@@ -212,3 +212,14 @@ class ToDoLieferungenAdmin(LieferungenAdmin):
             path('<path:object_id>/change/', wrap(self.change_view),
                  name='%s_%s_change' % info),
         ]
+
+# 
+
+modeladmins = [
+    (ToDoNotiz, ToDoNotizenAdmin),
+    (ToDoVersand, ToDoVersandAdmin),
+    (ToDoZahlungseingang, ToDoZahlungseingangAdmin),
+    (ToDoLagerbestand, ToDoLagerbestandAdmin),
+    (ToDoLieferung, ToDoLieferungenAdmin),
+]
+

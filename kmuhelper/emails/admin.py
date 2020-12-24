@@ -24,3 +24,8 @@ class EMailAdmin(admin.ModelAdmin):
     def has_module_permission(self, request):
         return {}
     
+# 
+
+modeladmins = [
+    (EMail, EMailAdmin),
+]

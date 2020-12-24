@@ -700,3 +700,18 @@ class EinstellungenAdmin(admin.ModelAdmin):
         return fieldsets
 
 
+#
+
+modeladmins = [
+    (Ansprechpartner, AnsprechpartnerAdmin),
+    (Bestellung, BestellungsAdmin),
+    (Kategorie, KategorienAdmin),
+    (Kosten, KostenAdmin),
+    (Kunde, KundenAdmin),
+    (Lieferant, LieferantenAdmin),
+    (Lieferung, LieferungenAdmin),
+    (Notiz, NotizenAdmin),
+    (Produkt, ProduktAdmin),
+    (Zahlungsempfaenger, ZahlungsempfaengerAdmin),
+    (Einstellung, EinstellungenAdmin),
+]

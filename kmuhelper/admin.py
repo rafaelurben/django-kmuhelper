@@ -6,6 +6,12 @@ admin.site.site_url = None
 
 # Register your models here.
 
-from kmuhelper.app import admin
-from kmuhelper.main import admin
-from kmuhelper.emails import admin
+from kmuhelper.app import admin as appadmin
+from kmuhelper.main import admin as mainadmin
+from kmuhelper.emails import admin as emailadmin
+
+# Custom Admin
+
+from django.urls import path, include
+
+modeladmins = appadmin.modeladmins + mainadmin.modeladmins + emailadmin.modeladmins
