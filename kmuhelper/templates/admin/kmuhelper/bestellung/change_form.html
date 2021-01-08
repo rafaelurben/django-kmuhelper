@@ -20,6 +20,23 @@
         {% if original.trackingnummer %}
             <li><a target="_blank" href="{{ original.trackinglink }}">Tracking</a></li>
         {% endif %}
+
+        {% if not original.versendet %}
+            <li><a href="#id_lieferadresse_vorname" onclick="copyform();">Rechnungsadresse -> Lieferadresse</a></li>
+            <script>
+                function copyform(){
+                    document.getElementById("id_lieferadresse_vorname").value = document.getElementById("id_rechnungsadresse_vorname").value;
+                    document.getElementById("id_lieferadresse_nachname").value = document.getElementById("id_rechnungsadresse_nachname").value;
+                    document.getElementById("id_lieferadresse_firma").value = document.getElementById("id_rechnungsadresse_firma").value;
+                    document.getElementById("id_lieferadresse_adresszeile1").value = document.getElementById("id_rechnungsadresse_adresszeile1").value;
+                    document.getElementById("id_lieferadresse_adresszeile2").value = document.getElementById("id_rechnungsadresse_adresszeile2").value;
+                    document.getElementById("id_lieferadresse_ort").value = document.getElementById("id_rechnungsadresse_ort").value;
+                    document.getElementById("id_lieferadresse_kanton").value = document.getElementById("id_rechnungsadresse_kanton").value;
+                    document.getElementById("id_lieferadresse_plz").value = document.getElementById("id_rechnungsadresse_plz").value;
+                    document.getElementById("id_lieferadresse_land").value = document.getElementById("id_rechnungsadresse_land").value;
+                }
+            </script>
+        {% endif %}
     {% endif %}
     {{ block.super }}
 {% endblock %}
