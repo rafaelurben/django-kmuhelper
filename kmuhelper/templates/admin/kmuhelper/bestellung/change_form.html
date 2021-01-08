@@ -5,9 +5,9 @@
         {% if original.woocommerceid %}
             <li><a href="{% url 'kmuhelper:wc-update-order' object_id %}">Von WooCommerce importieren und ersetzen</a></li>
         {% endif %}
-        <li><a href="{% url 'kmuhelper:bestellung-pdf-ansehen' object_id %}" target="_blank">Rechnung (digital)</a></li>
-        <li><a href="{% url 'kmuhelper:bestellung-pdf-ansehen' object_id %}?druck" target="_blank">Rechnung (druck)</a></li>
-        <li><a href="{% url 'kmuhelper:bestellung-pdf-ansehen' object_id %}?lieferschein" target="_blank">Lieferschein</a></li>
+        <li><a href="{% url 'kmuhelper:bestellung-pdf-ansehen' object_id %}" target="_blank" rel="noopener">Rechnung (digital)</a></li>
+        <li><a href="{% url 'kmuhelper:bestellung-pdf-ansehen' object_id %}?druck" target="_blank" rel="noopener">Rechnung (druck)</a></li>
+        <li><a href="{% url 'kmuhelper:bestellung-pdf-ansehen' object_id %}?lieferschein" target="_blank" rel="noopener">Lieferschein</a></li>
 
         {% load kmuhelper_tags %}
         {% kmuhelper_email_show_buttons as show_email_buttons %}
@@ -18,7 +18,7 @@
         {% endif %}
         
         {% if original.trackingnummer %}
-            <li><a target="_blank" href="{{ original.trackinglink }}">Tracking</a></li>
+            <li><a target="_blank" href="{{ original.trackinglink }}" rel="noopener">Tracking</a></li>
         {% endif %}
 
         {% if not original.versendet %}
