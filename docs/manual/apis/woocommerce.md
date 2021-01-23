@@ -9,12 +9,12 @@ Sie können den KMUHelper mit einem WooCommerce Shop verbinden, um Bestellungen,
 
 Import einrichten:
 
-1.  Öffnen Sie `/admin/kmuhelper/`
-2.  Klicken Sie auf `Einstellungen`
-3.  Klicken Sie auf `WooCommerce Shop-Url`
-4.  Geben Sie die Domain Ihrer Wordpress-Seite ein
-5.  Klicken Sie auf `Sichern`
-6.  Klicken Sie oben rechts auf `WooCommerce verbinden`
+1. Öffnen Sie `/admin/kmuhelper/`
+2. Klicken Sie auf `Einstellungen`
+3. Klicken Sie auf `WooCommerce Shop-Url`
+4. Geben Sie die Domain Ihrer Wordpress-Seite ein
+5. Klicken Sie auf `Sichern`
+6. Klicken Sie oben rechts auf `WooCommerce verbinden`
 
 Sie sollten nun auf Ihren Shop weitergeleitet werden, wo Sie dem KMUHelper Lese-Berechtigungen erteilen können. Sobald Sie die Berechtigungen erteilt haben, sollten Sie zurück auf den KMUHelper weitergeleitet werden und eine Meldung mit dem Inhalt `WooCommerce erfolgreich verbunden` erhalten. Ebenfalls sollte bei der URL nun `Bestätigt` stehen.
 
@@ -22,18 +22,18 @@ Damit die Daten im KMUHelper auch automatisch aktualisiert werden, können sogen
 
 Webhooks einrichten:
 
-1.  Gehen Sie in den Wordpress-Adminbereich Ihrer Wordpress-Seite
-2.  Gehen Sie zu `WooCommerce -> Einstellungen -> Erweitert -> Webhooks`
-3.  Fügen Sie für folgende Themen je einen Webhook mit der Auslieferungs-URL `https://EXAMPLE.COM/kmuhelper/wc/webhooks` hinzu:
-    -   Bestellung erstellt (order.created)
-    -   Bestellung aktualisiert (order.updated)
-    -   Bestellung gelöscht (order.deleted)
-    -   Kunde erstellt (customer.created)
-    -   Kunde aktualisiert (customer.updated)
-    -   Kunde gelöscht (customer.deleted)
-    -   Produkt erstellt (product.created)
-    -   Produkt aktualisiert (product.updated)
-    -   Produkt entfernt (product.deleted)
+1. Gehen Sie in den Wordpress-Adminbereich Ihrer Wordpress-Seite
+2. Gehen Sie zu `WooCommerce -> Einstellungen -> Erweitert -> Webhooks`
+3. Fügen Sie für folgende Themen je einen Webhook mit der Auslieferungs-URL `https://EXAMPLE.COM/kmuhelper/wc/webhooks` hinzu:
+   - Bestellung erstellt (order.created)
+   - Bestellung aktualisiert (order.updated)
+   - Bestellung gelöscht (order.deleted)
+   - Kunde erstellt (customer.created)
+   - Kunde aktualisiert (customer.updated)
+   - Kunde gelöscht (customer.deleted)
+   - Produkt erstellt (product.created)
+   - Produkt aktualisiert (product.updated)
+   - Produkt entfernt (product.deleted)
 
 ## Verwendung
 
