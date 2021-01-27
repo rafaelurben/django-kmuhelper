@@ -17,7 +17,7 @@ Hinweis: Diese Anleitung zeigt natürlich nicht den einzigen Weg und ist auf bes
 
 1. Accounts auf [github.com](https://github.com/join) und [heroku.com](https://signup.heroku.com/), sowie einem Datenbank/Domain/E-Mail Provider wie z.B. [hostpoint.ch](https://hostpoint.ch) erstellen.
 
-2. Privates Repository aus [Vorlage](https://github.com/rafaelurben/djangoproject-rafaelurben/generate) erstellen.
+2. Privates Repository aus [Vorlage](https://github.com/rafaelurben/djangoproject-template-kmuhelper-heroku/generate) erstellen.
 
 3. [Domain](https://www.hostpoint.ch/domains/domains.html) sowie [Webhosting](https://www.hostpoint.ch/webhosting/webhosting-angebote.html) mieten. Das Webhosting wird hauptsächlich für Datenbank und E-Mails verwendet, deshalb kann hier sehr gut ein anderer Provider gewählt werden oder zusätzlich eine Webseite darauf gehostet werden, denn sonst lohnt es sich nicht wirklich.
 
