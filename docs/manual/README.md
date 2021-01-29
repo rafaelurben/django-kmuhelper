@@ -15,7 +15,7 @@ PS: Diese Anleitung setzt die [Installation](../installation.md) des KMUHelper v
 
 Falls Sie irgendwelche Fragen haben, können Sie mich sehr gerne [kontaktieren](<{{ site.kontakt_url }}>).
 
-Die Entwicklung und Unterhaltung des KMUHelper benötigt sehr viel Zeit, deshalb bin ich sehr auf [Unterstützung](../support.md) angewiesen.
+Die Entwicklung und Unterhaltung des KMUHelper benötigt sehr viel Zeit, deshalb bin ich sehr auf [Unterstützung](https://rafaelurben.ch/kmuhelper/unterstützen) angewiesen.
 
 ## Inhalt
 
