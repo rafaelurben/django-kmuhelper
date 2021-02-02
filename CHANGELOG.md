@@ -2,7 +2,7 @@
 
 Wichtige Änderungen am KMUHelper werden in dieser Datei dokumentiert.
 
-## [1.1.4] - Future
+## [1.1.4] - 2020/02/02
 
 ### Added
 
