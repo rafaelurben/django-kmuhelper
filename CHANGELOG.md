@@ -7,7 +7,11 @@ Wichtige Änderungen am KMUHelper werden in dieser Datei dokumentiert.
 ### Added
 
 - Manche Aktionen müssen nun bestätigt werden
+- E-Mail Attachments online ansehen
+
 ### Changed
+
+- E-Mails aktualisiert
 
 ### Fixed
 

@@ -412,7 +412,7 @@ class Bestellung(models.Model):
             "trackingdata": bool(self.trackinglink() and self.versendet),
             "id": str(self.id),
             "woocommerceid": str(self.woocommerceid),
-            "woocommercedata": bool(self.woocommerceid)
+            "woocommercedata": bool(self.woocommerceid),
         }
         
         if self.rechnungsemail is None:
@@ -435,6 +435,7 @@ class Bestellung(models.Model):
                 EMailAttachment(
                     filename=f"Rechnung Nr. { self.id }"+(" (Online #"+str(self.woocommerceid)+")" if self.woocommerceid else "")+".pdf",
                     content=pdf_bestellung(self, lieferschein=False, digital=True),
+                    url=self.get_public_pdf_url(),
                 )
             ],
             bcc=[self.zahlungsempfaenger.email],
@@ -515,6 +516,8 @@ class Bestellung(models.Model):
             log("Keine E-Mail für Warnungen zum Lagerbestand festgelegt!")
         return None
 
+    def get_public_pdf_url(self):
+        return reverse('kmuhelper:public-view-order', args=(self.pk, self.order_key,))
 
     class Meta:
         verbose_name = "Bestellung"

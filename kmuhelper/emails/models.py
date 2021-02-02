@@ -1,3 +1,5 @@
+# pylint: disable=unsupported-assignment-operation
+
 from django.db import models
 from django.core import mail
 from django.urls import reverse
@@ -30,9 +32,10 @@ EMAILTYPEN = [
 #####
 
 class EMailAttachment():
-    def __init__(self, filename, content, mimetype="application/pdf"):
+    def __init__(self, filename, content, url=None, mimetype="application/pdf"):
         self.filename = filename
         self.content = content
+        self.url = url
         self.mimetype = mimetype
 
         if isinstance(content, BytesIO):
@@ -52,6 +55,8 @@ class EMail(models.Model):
     time_created = models.DateTimeField("Erstellt am", auto_now_add=True)
     time_sent = models.DateTimeField("Gesendet um", blank=True, null=True, default=None)
 
+    data = models.JSONField("Extradaten", default=dict)
+
     notes = models.TextField("Notizen", blank=True, default="")
 
     def __str__(self):
@@ -65,8 +70,9 @@ class EMail(models.Model):
 
     def render(self, online=False):
         context = dict(self.html_context)
-        context["show_view_online_button"] = not online
+        context["isonline"] = online
         context["view_online_url"] = None if online else self.get_url()
+        context["data"] = self.data if online else None
         return get_template("kmuhelper/emails/"+str(self.html_template)).render(context)
 
     def send(self, attachments=[], **options):
@@ -88,6 +94,7 @@ class EMail(models.Model):
 
         if success:
             self.time_sent = timezone.now()
+            self.data["attachments"] = [{"filename": a.filename, "url": a.url} for a in attachments]
             self.save()
         return success
 

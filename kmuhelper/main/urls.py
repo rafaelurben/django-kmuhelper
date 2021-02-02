@@ -13,7 +13,7 @@ urlpatterns = [
     path('bestellung/<object_id>/pdf', views.bestellung_pdf_ansehen, name='bestellung-pdf-ansehen'),
     path('bestellung/<object_id>/pdf/ankundensenden', views.bestellung_pdf_an_kunden_senden, name='bestellung-pdf-an-kunden-senden'),
 
-    path('kunde/bestellung/<order_id>/<order_key>/', views.kunde_rechnung_ansehen, name='kunde-rechnung-ansehen'),
+    path('public/order/<order_id>/<order_key>/', views.public_view_order, name='public-view-order'),
 ]
 
 

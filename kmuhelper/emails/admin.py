@@ -12,6 +12,7 @@ class EMailAdmin(admin.ModelAdmin):
         ("Infos", {'fields': ['subject', 'to', 'typ']}),
         ('Inhalt', {'fields': ['html_template', 'html_context']}),
         ('Zeiten', {'fields': ['time_created', 'time_sent']}),
+        ('Extra', {'fields': ['data']}),
     ]
 
     readonly_fields = ('time_created', 'time_sent')

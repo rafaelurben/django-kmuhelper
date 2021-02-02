@@ -89,13 +89,13 @@ def bestellung_pdf_an_kunden_senden(request, object_id):
 
 # Kunden-Entpunkte
 
-def kunde_rechnung_ansehen(request, order_id, order_key):
+def public_view_order(request, order_id, order_key):
     if Bestellung.objects.filter(id=int(order_id)).exists():
         obj = Bestellung.objects.get(id=int(order_id))
         lieferschein = bool("lieferschein" in dict(request.GET))
         digital = not bool("druck" in dict(request.GET))
-        if obj.order_key == order_key:
-            return obj.get_pdf_rechnung(lieferschein=lieferschein, digital=digital)
+        if str(obj.order_key) == order_key:
+            return obj.get_pdf(lieferschein=lieferschein, digital=digital)
         else:
             return HttpResponse("Der Bestellungsschlüssel dieser Bestellung ist falsch!")
     else:
