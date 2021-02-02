@@ -2,18 +2,26 @@
 
 Wichtige Änderungen am KMUHelper werden in dieser Datei dokumentiert.
 
-## [1.1.4] - 2020/02/02
+## Current
 
 ### Added
+
+### Changed
+
+### Fixed
+
+## [1.1.4] - 2020/02/02
+
+### Added in 1.1.4
 
 - Manche Aktionen müssen nun bestätigt werden
 - E-Mail Attachments online ansehen
 
-### Changed
+### Changed in 1.1.4
 
 - E-Mails aktualisiert
 
-### Fixed
+### Fixed in 1.1.4
 
 - Kleine Fehler behoben
 
