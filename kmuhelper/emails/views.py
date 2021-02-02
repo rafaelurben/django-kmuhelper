@@ -16,7 +16,9 @@ from kmuhelper.emails.models import EMail
 def email_view(request, object_id):
     if EMail.objects.filter(id=object_id).exists():
         email = EMail.objects.get(id=object_id)
-        if request.user.has_perm("kmuhelper.view_email") or ("token" in request.GET and request.GET["token"] == email.token):
+        t1 = request.GET.get("token", None)
+        t2 = str(email.token)
+        if request.user.has_perm("kmuhelper.view_email") or (t1 == t2):
             return HttpResponse(email.render(online=True))
         else:
             return HttpResponseBadRequest("Du hast keinen Zugriff auf diese E-Mail!")

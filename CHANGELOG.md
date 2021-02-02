@@ -2,7 +2,7 @@
 
 Wichtige Änderungen am KMUHelper werden in dieser Datei dokumentiert.
 
-## [1.1.3] - Future
+## [1.1.4] - Future
 
 ### Added
 

@@ -17,7 +17,7 @@ from django.utils import timezone
 from kmuhelper.utils import send_mail, runden, clean, formatprice, modulo10rekursiv, send_pdf
 from kmuhelper.pdf_generators.bestellung import pdf_bestellung
 
-from kmuhelper.emails.models import EMail
+from kmuhelper.emails.models import EMail, EMailAttachment
 
 ###################
 
@@ -431,10 +431,12 @@ class Bestellung(models.Model):
             headers={
                 "Rechnungs-ID": str(self.id)
             },
-            attachements=[{
-                "filename": f"Rechnung Nr. { self.id }"+(" (Online #"+str(self.woocommerceid)+")" if self.woocommerceid else "")+".pdf",
-                "data": pdf_bestellung(self, lieferschein=False, digital=True),
-            }],
+            attachments=[
+                EMailAttachment(
+                    filename=f"Rechnung Nr. { self.id }"+(" (Online #"+str(self.woocommerceid)+")" if self.woocommerceid else "")+".pdf",
+                    content=pdf_bestellung(self, lieferschein=False, digital=True),
+                )
+            ],
             bcc=[self.zahlungsempfaenger.email],
         )
         self.save()

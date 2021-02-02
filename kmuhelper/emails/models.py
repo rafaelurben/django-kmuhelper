@@ -7,6 +7,7 @@ from django.template.loader import get_template
 from django.conf import settings
 
 import uuid
+from io import BytesIO
 
 #####
 
@@ -28,13 +29,22 @@ EMAILTYPEN = [
 
 #####
 
+class EMailAttachment():
+    def __init__(self, filename, content, mimetype="application/pdf"):
+        self.filename = filename
+        self.content = content
+        self.mimetype = mimetype
+
+        if isinstance(content, BytesIO):
+            self.content = content.read()
+
 class EMail(models.Model):
     typ = models.CharField("Typ", choices=EMAILTYPEN, max_length=50, default="", blank=True)
     
     subject = models.CharField("Betreff", max_length=50)
     to = models.EmailField("Empfänger")
 
-    html_template = models.CharField("Name der Vorlage", max_length=100)
+    html_template = models.CharField("Dateiname der Vorlage", max_length=100)
     html_context = models.JSONField("Daten", default=dict)
 
     token = models.UUIDField("Token", default=uuid.uuid4, editable=False)
@@ -42,9 +52,16 @@ class EMail(models.Model):
     time_created = models.DateTimeField("Erstellt am", auto_now_add=True)
     time_sent = models.DateTimeField("Gesendet um", blank=True, null=True, default=None)
 
+    notes = models.TextField("Notizen", blank=True, default="")
+
     def __str__(self):
-        return ""
+        return f"{self.subject} ({self.pk})"
     __str__.short_description = "E-Mail"
+
+    def is_sent(self):
+        return self.time_sent is not None
+    is_sent.short_description = "Gesendet?"
+    is_sent.boolean = True
 
     def render(self, online=False):
         context = dict(self.html_context)
@@ -52,7 +69,7 @@ class EMail(models.Model):
         context["view_online_url"] = None if online else self.get_url()
         return get_template("kmuhelper/emails/"+str(self.html_template)).render(context)
 
-    def send(self, attachements=[], **options):
+    def send(self, attachments=[], **options):
         msg = mail.EmailMessage(
             subject=self.subject,
             body=self.render(),
@@ -62,14 +79,14 @@ class EMail(models.Model):
 
         msg.content_subtype = "html"
 
-        for attachement in attachements:
-            msg.attach(filename=attachement["filename"], content=(attachement["data"].read()), mimetype=(attachement["mimetype"] if "mimetype" in attachement else "application/pdf"))
+        for attachment in attachments:
+            msg.attach(filename=attachment.filename, content=attachment.content, mimetype=attachment.mimetype)
 
         success = msg.send()
 
         log("ID:", self.pk, "- Subject:", self.subject, "- Success:", success)
 
-        if success and not self.time_sent:
+        if success:
             self.time_sent = timezone.now()
             self.save()
         return success
