@@ -465,27 +465,34 @@ class Bestellung(models.Model):
     def get_future_stock(self):
         data = {}
         for p in self.produkte.all():
+            p_name = p.clean_name()
             n_current = p.lagerbestand
             n_going = p.get_reserved_stock()
             n_coming = p.get_incoming_stock()
             n_min = p.soll_lagerbestand
 
-            data[p.clean_name()] = {
-                "current": n_current, "going": n_going, "coming": n_coming, "min": n_min}
+            data[p.id] = {
+                "name": p_name, 
+                "current": n_current, 
+                "going": n_going, 
+                "coming": n_coming, 
+                "min": n_min
+            }
         return data
 
     def email_stock_warning(self):
-        warnings = []
-        stock = self.get_future_stock()
-        for n in stock:
-            s = stock[n]
-            if (s["current"]-s["going"]) < s["min"]:
-                warnings.append({"product": n, "stock": s})
+        email_receiver = Einstellung.objects.get(id="email-stock-warning-receiver").inhalt
 
-        if warnings != []:
-            email_receiver = Einstellung.objects.get(id="email-stock-warning-receiver").inhalt
+        if email_receiver:
+            warnings = []
+            stock = self.get_future_stock()
+            for p_id in stock:
+                s = stock[p_id]
+                if (s["current"]-s["going"]) < s["min"]:
+                    p = {"id": p_id, "name": s["name"]}
+                    warnings.append({"product": p, "stock": s})
 
-            if email_receiver:
+            if warnings != []:
                 email = EMail.objects.create(
                     typ="bestellung_warnung_lagerbestand",
                     subject="[KMUHelper] - Lagerbestand knapp!",
@@ -502,8 +509,8 @@ class Bestellung(models.Model):
                     },
                 )
                 return bool(success)
-            else:
-                log("Keine E-Mail für Warnungen zum Lagerbestand festgelegt!")
+        else:
+            log("Keine E-Mail für Warnungen zum Lagerbestand festgelegt!")
         return None
 
 

@@ -8,7 +8,7 @@
     </style>
 {% endblock %}
 
-{% block title %}Lagermanagement ist knapp!{% endblock %}
+{% block title %}Lagerbestand ist knapp!{% endblock %}
 
 {% block content %}
 
@@ -19,19 +19,21 @@
     <table style="border-collapse: collapse; width: 100%;">
         <tbody>
             <tr>
-                <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;">Produkt</th>
+                <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;" colspan=2>Produkt</th>
                 <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;" colspan=4>Lagerbestand</th>
             </tr>
             <tr>
+                <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;">ID</th>
                 <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;">Name</th>
                 <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;">Aktuell</th>
                 <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;">Soll</th>
-                <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;">Bestellt</th>
-                <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;">Lieferungen</th>
+                <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;">Ausgehend</th>
+                <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;">Eingehend</th>
             </tr>
             {% for w in warnings %}
                 <tr>
-                    <td style="border: 1px solid #ddd; padding: 8px;">{{ w.product }}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">{{ w.product.id }}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">{{ w.product.name }}</td>
                     <td style="border: 1px solid #ddd; padding: 8px;">{{ w.stock.current }}</td>
                     <td style="border: 1px solid #ddd; padding: 8px;">{{ w.stock.min }}</td>
                     <td style="border: 1px solid #ddd; padding: 8px;">{{ w.stock.going }}</td>
@@ -42,6 +44,8 @@
     </table>
 
     <br>
+
+    <p>Als "ausgehend" werden alle Produkte gezählt, welche sich in Bestellungen befinden, welche noch nicht als versendet markiert wurden. Als "eingehend" werden alle Produkte gezählt, welche sich in Lieferungen befinden, welche noch nicht als eingelagert markiert wurden.</p>
 
     <p>PS: Sie erhalten diese E-Mail, weil Sie in den Einstellungen diese E-Mail Adresse für Warnungen zum Lagerbestand eingetragen haben.</p>
 

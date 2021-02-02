@@ -225,21 +225,23 @@ class BestellungsAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
         if obj:
-            products = obj.get_future_stock()
-            for pname in products:
-                p = products[pname]
+            stock = obj.get_future_stock()
+            for p_id in stock:
+                s = stock[p_id]
 
-                n_current = p["current"]
-                n_going = p["going"]
-                n_coming = p["coming"]
-                n_min = p["min"]
+                p_name = s["name"]
+
+                n_current = s["current"]
+                n_going = s["going"]
+                n_coming = s["coming"]
+                n_min = s["min"]
 
                 if n_current-n_going < 0:
-                    messages.error(request, f"'{ pname }': Zu wenig Lagerbestand! Aktuell: { n_current } | Offene Bestellungen: { n_going }" + (
-                        f" | Kommende Lieferungen: { n_coming }" if n_coming else ""))
+                    messages.error(request, f"Zu wenig Lagerbestand bei '{ p_name }' [{p_id}]: Aktuell: { n_current } | Ausgehend: { n_going }" + (
+                        f" | Eingehend: { n_coming }" if n_coming else ""))
                 elif n_current-n_going < n_min:
-                    messages.warning(request, f"'{ pname }': Knapper Lagerbestand! Aktuell: { n_current } | Offene Bestellungen: { n_going }" + (
-                        f" | Kommende Lieferungen: { n_coming }" if n_coming else ""))
+                    messages.warning(request, f"Knapper Lagerbestand bei'{ p_name }' [{p_id}]: Aktuell: { n_current } | Ausgehend: { n_going }" + (
+                        f" | Eingehend: { n_coming }" if n_coming else ""))
 
 
 class KategorienInlineUntergeordneteKategorien(admin.TabularInline):
