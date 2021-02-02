@@ -1,0 +1,33 @@
+{% extends "admin/base_site.html" %}
+
+{% load static %}
+
+{% block title %}Aktion Bestätigen | KMUHelper{% endblock %}
+
+{% block breadcrumbs %}
+{% endblock %}
+
+{% block branding %}
+<h1 id="site-name"><a target="_top" href="{% url 'kmuhelper:home' %}">KMUHelper</a> | <a
+        href="{% url 'admin:app_list' app_label='kmuhelper' %}">Admin</a></h1>
+{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" type="text/css" href="{% static 'admin/kmuhelper/css/style.css' %}">
+{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<link rel="shortcut icon" type="image/x-icon" href="{% static 'kmuhelper/favicon.ico' %}">
+<link rel="apple-touch-icon" href="{% static 'kmuhelper/favicon.ico' %}">
+{% endblock %}
+
+{% block content %}
+<form method="POST">
+    {% csrf_token %}
+    <p>Bitte bestätige, dass du folgende Aktion ausführen möchtest:</p>
+    <p>-&gt; <i>{{ action }}</i></p>
+    <input type="submit" value="Bestätigen" class="{{ buttonclass }}" />
+</form>
+{% endblock %}

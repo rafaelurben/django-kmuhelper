@@ -6,9 +6,12 @@ Wichtige Änderungen am KMUHelper werden in dieser Datei dokumentiert.
 
 ### Added
 
+- Manche Aktionen müssen nun bestätigt werden
 ### Changed
 
 ### Fixed
+
+- Kleine Fehler behoben
 
 ## [1.1.2] - 2020/11/03
 
