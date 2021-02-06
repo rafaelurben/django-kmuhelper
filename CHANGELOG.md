@@ -8,6 +8,8 @@ Wichtige Änderungen am KMUHelper werden in dieser Datei dokumentiert.
 
 ### Changed
 
+- Lagerbestandswarnung aktualisiert
+
 ### Fixed
 
 ## [1.1.4] - 2020/02/02

@@ -5,6 +5,9 @@
         {% if original.woocommerceid %}
             <li><a href="{% url 'kmuhelper:wc-update-product' object_id %}">Von WooCommerce importieren und ersetzen</a></li>
         {% endif %}
+        {% if original.lieferant_url %}
+            <li><a rel="noopener" target="_blank" href="{{ original.lieferant_url }}">Nachbestellen</a></li>
+        {% endif %}
     {% endif %}
     {{ block.super }}
 {% endblock %}

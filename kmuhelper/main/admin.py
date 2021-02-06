@@ -1,4 +1,5 @@
 from django.contrib import admin, messages
+from django.utils.html import format_html, mark_safe
 from datetime import datetime
 from pytz import utc
 
@@ -224,24 +225,35 @@ class BestellungsAdmin(admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
+
+        # stock warnings
         if obj:
             stock = obj.get_future_stock()
             for p_id in stock:
                 s = stock[p_id]
+                p = s["product"]
 
-                p_name = s["name"]
+                p_name = p["name"]
+                p_artikelnummer = p["artikelnummer"]
+                p_adminurl = p["adminurl"]
 
                 n_current = s["current"]
                 n_going = s["going"]
                 n_coming = s["coming"]
                 n_min = s["min"]
 
+                adminlink = mark_safe(f'<a href="{p_adminurl}">{p_name}</a>')
+                stockdata = f"Aktuell: { n_current } | Ausgehend: { n_going }" + (
+                        f" | Eingehend: { n_coming }" if n_coming else "")
+
+                formatdata = (mark_safe(adminlink), p_artikelnummer, stockdata)
+
                 if n_current-n_going < 0:
-                    messages.error(request, f"Zu wenig Lagerbestand bei '{ p_name }' [{p_id}]: Aktuell: { n_current } | Ausgehend: { n_going }" + (
-                        f" | Eingehend: { n_coming }" if n_coming else ""))
+                    msg = format_html('Zu wenig Lagerbestand bei "{}" [{}]: {}', *formatdata)
+                    messages.error(request, msg)
                 elif n_current-n_going < n_min:
-                    messages.warning(request, f"Knapper Lagerbestand bei'{ p_name }' [{p_id}]: Aktuell: { n_current } | Ausgehend: { n_going }" + (
-                        f" | Eingehend: { n_coming }" if n_coming else ""))
+                    msg = format_html('Knapper Lagerbestand bei "{}" [{}]: {}', *formatdata)
+                    messages.warning(request, msg)
 
 
 class KategorienInlineUntergeordneteKategorien(admin.TabularInline):
@@ -555,7 +567,7 @@ class ProduktAdmin(admin.ModelAdmin):
                 ('Daten', {'fields': [
                  'mengenbezeichnung', 'verkaufspreis', 'mwstsatz', 'lagerbestand', 'soll_lagerbestand']}),
                 ('Lieferant', {'fields': [
-                 'lieferant', 'lieferant_preis', 'lieferant_artikelnummer'], 'classes': [
+                 'lieferant', 'lieferant_preis', 'lieferant_artikelnummer', 'lieferant_url'], 'classes': [
                     "collapse start-open"]}),
                 ('Aktion', {'fields': ['aktion_von', 'aktion_bis', 'aktion_preis'], 'classes': [
                  "collapse start-open"]}),
@@ -573,7 +585,7 @@ class ProduktAdmin(admin.ModelAdmin):
                 ('Daten', {'fields': [
                  'mengenbezeichnung', 'verkaufspreis', 'mwstsatz', 'lagerbestand', 'soll_lagerbestand']}),
                 ('Lieferant', {'fields': [
-                 'lieferant', 'lieferant_preis', 'lieferant_artikelnummer'], 'classes': [
+                 'lieferant', 'lieferant_preis', 'lieferant_artikelnummer', 'lieferant_url'], 'classes': [
                     "collapse start-open"]}),
                 ('Aktion', {'fields': ['aktion_von', 'aktion_bis', 'aktion_preis'], 'classes': [
                  "collapse start-open"]}),
@@ -635,14 +647,13 @@ class ProduktAdmin(admin.ModelAdmin):
             n_coming = obj.get_incoming_stock()
             n_min = obj.soll_lagerbestand
 
-            l = obj.lagerbestand-n_going
+            stockdata = f"Aktuell: { n_current } | Offene Bestellungen: { n_going }" + (
+                f" | Kommende Lieferungen: { n_coming }" if n_coming else "")
 
-            if l < 0:
-                messages.error(request, f"Zu wenig Lagerbestand! Aktuell: { n_current } | Offene Bestellungen: { n_going }" + (
-                    f" | Kommende Lieferungen: { n_coming }" if n_coming else ""))
-            elif l < n_min:
-                messages.warning(request, f"Knapper Lagerbestand! Aktuell: { n_current } | Offene Bestellungen: { n_going }" + (
-                    f" | Kommende Lieferungen: { n_coming }" if n_coming else ""))
+            if n_current-n_going < 0:
+                messages.error(request, f"Zu wenig Lagerbestand! "+stockdata)
+            elif n_current-n_going < n_min:
+                messages.warning(request, f"Knapper Lagerbestand! "+stockdata)
 
 
 @admin.register(Zahlungsempfaenger)

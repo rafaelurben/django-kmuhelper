@@ -469,13 +469,20 @@ class Bestellung(models.Model):
         data = {}
         for p in self.produkte.all():
             p_name = p.clean_name()
+            p_adminurl = reverse(f'admin:{p._meta.app_label}_{p._meta.model_name}_change', args=(p.pk,))
+
             n_current = p.lagerbestand
             n_going = p.get_reserved_stock()
             n_coming = p.get_incoming_stock()
             n_min = p.soll_lagerbestand
 
             data[p.id] = {
-                "name": p_name, 
+                "product": {
+                    "id": p.id,
+                    "artikelnummer": p.artikelnummer,
+                    "name": p_name,
+                    "adminurl": p_adminurl,
+                },
                 "current": n_current, 
                 "going": n_going, 
                 "coming": n_coming, 
@@ -491,8 +498,8 @@ class Bestellung(models.Model):
             stock = self.get_future_stock()
             for p_id in stock:
                 s = stock[p_id]
+                p = s.pop("product")
                 if (s["current"]-s["going"]) < s["min"]:
-                    p = {"id": p_id, "name": s["name"]}
                     warnings.append({"product": p, "stock": s})
 
             if warnings != []:
@@ -1033,6 +1040,9 @@ class Produkt(models.Model):
         "Lieferantenpreis", default="", blank=True, max_length=20)
     lieferant_artikelnummer = models.CharField(
         "Lieferantenartikelnummer", default="", blank=True, max_length=25)
+    lieferant_url = models.URLField(
+        "Lieferantenurl (Für Nachbestellungen)", default="", blank=True
+    )
 
     kategorien = models.ManyToManyField("Kategorie", through="Produktkategorie", through_fields=(
         "produkt", "kategorie"), verbose_name="Kategorie", related_name="produkte")
