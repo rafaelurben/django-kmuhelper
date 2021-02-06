@@ -2,17 +2,19 @@
 
 Wichtige Änderungen am KMUHelper werden in dieser Datei dokumentiert.
 
-## Current
+## [1.1.5] - 2021/02/06
 
-### Added
+### Added in 1.1.5
 
-### Changed
+- Url für Nachbestellungen hinzugefügt
+
+### Changed in 1.1.5
 
 - Lagerbestandswarnung aktualisiert
 
-### Fixed
+### Fixed 1.1.5
 
-## [1.1.4] - 2020/02/02
+## [1.1.4] - 2021/02/02
 
 ### Added in 1.1.4
 
