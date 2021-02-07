@@ -892,10 +892,7 @@ class Lieferung(models.Model):
     eingelagert = models.BooleanField("Eingelagert", default=False)
 
     def anzahlprodukte(self):
-        anzahl = 0
-        for i in self.produkte.through.objects.filter(lieferung=self):
-            anzahl += i.menge
-        return anzahl
+        return self.produkte.through.objects.filter(lieferung=self).aggregate(models.Sum('menge'))["menge__sum"]
     anzahlprodukte.short_description = "Produkte"
 
     def einlagern(self):

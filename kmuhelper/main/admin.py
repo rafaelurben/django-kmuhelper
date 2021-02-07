@@ -417,18 +417,18 @@ class LieferungInlineProdukteAdd(admin.TabularInline):
 @admin.register(Lieferung)
 class LieferungenAdmin(admin.ModelAdmin):
     list_display = ('name', 'datum', 'anzahlprodukte',
-                    'eingelagert', 'html_notiz')
-    list_filter = ("eingelagert",)
+                    'lieferant', 'eingelagert', 'html_notiz')
+    list_filter = ("eingelagert", "lieferant", )
 
-    search_fields = ["name", "datum", "notiz__name", "notiz__beschrieb"]
+    search_fields = ["name", "datum", "lieferant", "notiz__name", "notiz__beschrieb"]
 
     readonly_fields = ["html_notiz"]
 
-    ordering = ('name',)
+    ordering = ('-datum',)
 
     fieldsets = [
         ('Infos', {'fields': ['name', 'html_notiz']}),
-        ('Lieferant', {'fields': ['lieferant'], 'classes': ['collapse']})
+        ('Lieferant', {'fields': ['lieferant']})
     ]
 
     inlines = [LieferungInlineProdukte, LieferungInlineProdukteAdd]
