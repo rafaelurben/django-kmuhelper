@@ -1,6 +1,5 @@
 ---
 permalink: /manual/languages
-fbcontact: true
 ---
 
 # Sprachen

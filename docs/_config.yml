@@ -1,11 +1,10 @@
 theme: jekyll-theme-cayman
-url: https://www.rafaelurben.ch
+url: https://www.rafaelurben.ch/django-kmuhelper
 baseurl: /django-kmuhelper
-title: KMUHelper
+title: django-kmuhelper
 description: Ein Helfer für Schweizer KMU mit QR-Rechnungen
 app:
     title: KMUHelper Dokumenation
-    short_title: KMUHelper Docs
+    short_title: KMUH Docs
     description: Dokumentation zum KMUHelper
-facebook_page_id: 108950263962814
-kontakt_url: 'https://www.rafaelurben.ch/kmuhelper/kontakt'
+kontakt_url: https://www.rafaelurben.ch/kmuhelper/kontakt

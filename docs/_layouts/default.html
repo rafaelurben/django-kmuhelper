@@ -1,22 +1,11 @@
 <!DOCTYPE html>
-<html lang="{{ site.lang | default: " en-us" }}"="en-US" }}""="}}" "">
+<html lang="{{ site.lang | default: 'ch-DE' }}">
     <head>
+        <meta charset="UTF-8">
+
         <meta name="apple-mobile-web-app-title" content="{{ site.app.short_title }}">
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="black">
-
-        {% if site.google_analytics %}
-            <script async="async" src="https://www.googletagmanager.com/gtag/js?id={{ site.google_analytics }}"></script>
-            <script>
-                window.dataLayer = window.dataLayer || [];
-                function gtag() {
-                    dataLayer.push(arguments);
-                }
-                gtag('js', new Date());
-                gtag('config', '{{ site.google_analytics }}');
-            </script>
-        {% endif %}
-        <meta charset="UTF-8">
 
         {% seo %}
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -50,36 +39,6 @@
         <main id="content" class="main-content" role="main">
             {{ content }}
 
-            {% if page.fbcontact and site.facebook_page_id %}
-                <!-- Load Facebook SDK for JavaScript -->
-                <div id="fb-root"></div>
-                <script>
-                    window.fbAsyncInit = function () {
-                        FB.init({xfbml: true, version: 'v8.0'});
-                    };
-
-                    (function (d, s, id) {
-                        var js,
-                            fjs = d.getElementsByTagName(s)[0];
-                        if (d.getElementById(id)) 
-                            return;
-                        js = d.createElement(s);
-                        js.id = id;
-                        js.src = 'https://connect.facebook.net/de_DE/sdk/xfbml.customerchat.js';
-                        fjs.parentNode.insertBefore(js, fjs);
-                    }(document, 'script', 'facebook-jssdk'));
-                </script>
-
-                <!-- Your Chat Plugin code -->
-                <div
-                    class="fb-customerchat"
-                    attribution="setup_tool"
-                    page_id="{{ site.facebook_page_id }}"
-                    theme_color="#DD1155"
-                    logged_in_greeting="Hey! Falls Sie eine Frage haben, zögern Sie nicht und stelle Sie sie :)"
-                    logged_out_greeting="Hey! Falls Sie eine Frage haben, zögern Sie nicht und stelle Sie sie :)"></div>
-            {% endif %}
-
             <footer class="site-footer">
                 {% if site.github.is_project_page %}
                     <span class="site-footer-owner">
@@ -90,7 +49,7 @@
                 {% endif %}
 
                 <span class="site-footer-credits">Seite erstellt von
-                    <a href="https://rafaelurben.github.io/diverses/rafaelurben/">Rafael Urben</a>
+                    <a href="https://rafaelurben.ch">Rafael Urben</a>
                     - Gehostet von
                     <a href="https://pages.github.com">GitHub Pages</a>. Danke &lt;3
                 </span>

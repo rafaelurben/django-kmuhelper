@@ -1,6 +1,5 @@
 ---
 permalink: /manual/customers
-fbcontact: true
 ---
 
 # Kundenmanagement

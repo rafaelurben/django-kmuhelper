@@ -1,6 +1,5 @@
 ---
 permalink: /manual/order-and-invoice
-fbcontact: true
 ---
 
 # Bestellung & Rechnung

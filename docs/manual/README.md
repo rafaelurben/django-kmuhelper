@@ -1,6 +1,5 @@
 ---
 permalink: /manual/
-fbcontact: true
 ---
 
 # Benutzerhandbuch

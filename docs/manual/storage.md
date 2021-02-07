@@ -1,6 +1,5 @@
 ---
 permalink: /manual/storage
-fbcontact: true
 ---
 
 # Lagermanagement
