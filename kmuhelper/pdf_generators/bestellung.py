@@ -13,7 +13,7 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 from reportlab.platypus import Table, TableStyle, Paragraph, Spacer, BaseDocTemplate, SimpleDocTemplate, Frame, PageTemplate, TopPadder, Flowable
 
-from ..utils import clean, formatprice
+from kmuhelper.utils import clean, formatprice
 
 from django.utils import translation
 _ = translation.gettext
@@ -149,7 +149,7 @@ class ProductTable(Table):
             if bp.bemerkung:
                 data.append((
                     "",
-                    "- "+Paragraph(bp.bemerkung, style_bold),
+                    Paragraph("- "+bp.bemerkung, style_bold),
                     "",
                     ""
                 ))

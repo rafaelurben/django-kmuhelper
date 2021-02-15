@@ -1,1 +1,1 @@
-from .bestellung import pdf_bestellung
+from kmuhelper.pdf_generators.bestellung import pdf_bestellung
