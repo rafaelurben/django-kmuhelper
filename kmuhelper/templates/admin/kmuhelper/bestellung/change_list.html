@@ -25,3 +25,49 @@
     {% endif %}
     {{ block.super }}
 {% endblock %}
+
+{% block content %}
+
+    <table>
+        <thead>
+            <tr>
+                <th colspan="2">Unbezahlte Bestellungen</th>
+            </tr>
+        </thead>
+        <tbody id="unpaid">
+            <tr><td colspan="2">Wird geladen...</td></tr>
+        </tbody>
+    </table>
+
+    <br>
+    <br>
+    <br>
+
+    <script>
+        const elem = document.getElementById("unpaid");
+
+        try {
+            fetch("{% url 'kmuhelper:api-orders-unpaid' %}").then(res => {
+                res.json().then(json => {
+                    data = json.orders_unpaid_sum;
+                    elem.innerHTML = `
+                        <tr>
+                            <td>Versendet: </td><td>${data.sent} CHF</td>
+                        </tr>
+                        <tr>
+                            <td>In Bearbeitung: </td><td>${data.unsent} CHF</td>
+                        </tr>
+                        <tr>
+                            <td>Gesamt: </td><td>${data.all} CHF</td>
+                        </tr>
+                    `;
+                });
+            });
+        } catch (e) {
+            unpaid.firstChild().innerHTML = "<tr><td colspan='2'>Konnte nicht geladen werden!</td></tr>"
+        }
+    </script>
+
+    {{ block.super }}
+
+{% endblock %}

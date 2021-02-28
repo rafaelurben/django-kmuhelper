@@ -6,12 +6,21 @@ from django.urls import reverse, path, reverse_lazy
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.clickjacking import xframe_options_sameorigin as allow_iframe
+from django.db import models
 
 from kmuhelper.utils import package_version, python_version
+from kmuhelper.models import Bestellung
 
 #####
 
-@login_required(login_url=reverse_lazy("admin:login"))
+def not_authenticated(request):
+    return JsonResponse({
+        "error": "Not authenticated!"
+    })
+
+#####
+
+@login_required(login_url=reverse_lazy("kmuhelper:api-not-authenticated"))
 def versions(request):
     context = {
         "versions": {
@@ -24,4 +33,21 @@ def versions(request):
 
     for package in packages:
         context["versions"][package] = package_version(package)
+    return JsonResponse(context)
+
+
+@login_required(login_url=reverse_lazy("kmuhelper:api-not-authenticated"))
+def orders_unpaid(request):
+    sum_unsent = Bestellung.objects.filter(bezahlt=False, versendet=False).aggregate(
+        models.Sum('fix_summe'))["fix_summe__sum"]
+    sum_sent = Bestellung.objects.filter(bezahlt=False, versendet=True).aggregate(
+        models.Sum('fix_summe'))["fix_summe__sum"]
+
+    context = {
+        "orders_unpaid_sum": {
+            "unsent": round(sum_unsent, 2),
+            "sent": round(sum_sent, 2),
+            "all": round(sum_unsent, 2)+round(sum_sent, 2)
+        }
+    }
     return JsonResponse(context)
