@@ -10,17 +10,19 @@ from django.db import models
 
 from kmuhelper.utils import package_version, python_version
 from kmuhelper.models import Bestellung
+from kmuhelper.api.decorators import api_read, api_write, api_readwrite
 
 #####
 
-def not_authenticated(request):
+def not_found(request):
     return JsonResponse({
-        "error": "Not authenticated!"
+        "error": "endpoint-not-found",
+        "message": "This endpoint does not exist!"
     })
 
 #####
 
-@login_required(login_url=reverse_lazy("kmuhelper:api-not-authenticated"))
+@api_read()
 def versions(request):
     context = {
         "versions": {
@@ -36,7 +38,7 @@ def versions(request):
     return JsonResponse(context)
 
 
-@login_required(login_url=reverse_lazy("kmuhelper:api-not-authenticated"))
+@api_read()
 def orders_unpaid(request):
     sum_unsent = Bestellung.objects.filter(bezahlt=False, versendet=False).aggregate(
         models.Sum('fix_summe'))["fix_summe__sum"]

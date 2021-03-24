@@ -9,9 +9,10 @@ admin.site.site_url = None
 from kmuhelper.app import admin as appadmin
 from kmuhelper.main import admin as mainadmin
 from kmuhelper.emails import admin as emailadmin
+from kmuhelper.api import admin as apiadmin
 
 # Custom Admin
 
 from django.urls import path, include
 
-modeladmins = appadmin.modeladmins + mainadmin.modeladmins + emailadmin.modeladmins
+modeladmins = appadmin.modeladmins + mainadmin.modeladmins + emailadmin.modeladmins + apiadmin.modeladmins
