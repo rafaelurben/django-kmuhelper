@@ -15,6 +15,8 @@ from kmuhelper.api.decorators import api_read, api_write, api_readwrite
 #####
 
 def not_found(request):
+    """"""
+
     return JsonResponse({
         "error": "endpoint-not-found",
         "message": "This endpoint does not exist!"
@@ -24,6 +26,8 @@ def not_found(request):
 
 @api_read()
 def versions(request):
+    """Get the installed versions of some dependencies, their newest versions available and the current python version."""
+
     context = {
         "versions": {
             "Python": {"current": python_version(), "latest": "-", "uptodate": None},
@@ -40,6 +44,8 @@ def versions(request):
 
 @api_read()
 def orders_unpaid(request):
+    """Get sums of currently unpaid orders."""
+
     sum_unsent = Bestellung.objects.filter(bezahlt=False, versendet=False).aggregate(
         models.Sum('fix_summe'))["fix_summe__sum"]
     sum_sent = Bestellung.objects.filter(bezahlt=False, versendet=True).aggregate(
