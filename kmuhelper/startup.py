@@ -1,5 +1,6 @@
 from rich import print
 
+from django.conf import settings
 from kmuhelper.main.models import Einstellung, Geheime_Einstellung
 
 def log(string, *args):
@@ -8,6 +9,8 @@ def log(string, *args):
 # Einstellungen festlegen
 
 log("startup.py running...")
+
+log("startup.py DEBUG is", settings.DEBUG)
 
 try:
     Einstellung.objects.get_or_create(id="wc-url", typ="url", name="WooCommerce Shop-Url")
