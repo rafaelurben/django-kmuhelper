@@ -15,7 +15,7 @@ from pytz import utc
 from django.utils import timezone
 
 from kmuhelper.utils import send_mail, runden, clean, formatprice, modulo10rekursiv, send_pdf
-from kmuhelper.pdf_generators.bestellung import pdf_bestellung
+from kmuhelper.pdf_generators import PDFOrder
 
 from kmuhelper.emails.models import EMail, EMailAttachment
 
@@ -404,7 +404,7 @@ class Bestellung(models.Model):
     __str__.short_description = "Bestellung"
 
     def get_pdf(self, lieferschein: bool = False, digital: bool = True):
-        return FileResponse(pdf_bestellung(self, lieferschein=lieferschein, digital=digital), as_attachment=False, filename=('Lieferschein' if lieferschein else 'Rechnung')+' zu Bestellung '+str(self)+'.pdf')
+        return PDFOrder(self, lieferschein=lieferschein, digital=digital).get_response(as_attachment=False, filename=('Lieferschein' if lieferschein else 'Rechnung')+' zu Bestellung '+str(self)+'.pdf')
 
     def send_pdf_rechnung_to_customer(self):
         context = {
@@ -434,7 +434,7 @@ class Bestellung(models.Model):
             attachments=[
                 EMailAttachment(
                     filename=f"Rechnung Nr. { self.id }"+(" (Online #"+str(self.woocommerceid)+")" if self.woocommerceid else "")+".pdf",
-                    content=pdf_bestellung(self, lieferschein=False, digital=True),
+                    content=PDFOrder(self, lieferschein=False, digital=True).get_pdf(),
                     url=self.get_public_pdf_url(),
                 )
             ],

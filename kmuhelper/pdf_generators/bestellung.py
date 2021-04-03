@@ -4,23 +4,23 @@ from reportlab.graphics import renderPDF
 from reportlab.graphics.barcode import qr
 from reportlab.graphics.shapes import Drawing
 from reportlab.lib.colors import green, white, black
-from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.units import mm, cm
 from reportlab.lib.utils import ImageReader
-from reportlab.pdfbase.pdfmetrics import registerFont
-from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.pdfgen import canvas
-from reportlab.platypus import Table, TableStyle, Paragraph, Spacer, BaseDocTemplate, SimpleDocTemplate, Frame, PageTemplate, TopPadder, Flowable
+from reportlab.platypus import Table, TableStyle, Paragraph, Spacer, TopPadder, Flowable
 
 from kmuhelper.utils import clean, formatprice
+
+from kmuhelper.pdf_generators._base import PDFGenerator
 
 from django.utils import translation
 _ = translation.gettext
 
+
 #####
 
-class PriceTable(Table):
+
+class _PDFOrderPriceTable(Table):
     def __init__(self, bestellung):
         sprache = bestellung.kunde.sprache if bestellung.kunde and bestellung.kunde.sprache else "de"
 
@@ -126,9 +126,10 @@ class PriceTable(Table):
             ('VALIGN', (0, 0), (-1, -1), "TOP"),
         ]
 
-        Table.__init__(self, data, repeatRows=1, style=TableStyle(style), colWidths=[26*mm,80*mm,20*mm,20*mm,20*mm,20*mm])
+        super().__init__(data, repeatRows=1, style=TableStyle(style), colWidths=[26*mm,80*mm,20*mm,20*mm,20*mm,20*mm])
 
-class ProductTable(Table):
+
+class _PDFOrderProductTable(Table):
     def __init__(self, bestellung):
         sprache = bestellung.kunde.sprache if bestellung.kunde and bestellung.kunde.sprache else "de"
 
@@ -173,11 +174,12 @@ class ProductTable(Table):
             ('VALIGN', (0, 0), (-1, -1), "TOP"),
         ]
 
-        Table.__init__(self, data, repeatRows=1, style=TableStyle(style), colWidths=[36*mm,110*mm,20*mm,20*mm])
+        super().__init__(data, repeatRows=1, style=TableStyle(style), colWidths=[36*mm,110*mm,20*mm,20*mm])
 
-class QrInvoice(Flowable):
+
+class _PDFOrderQrInvoice(Flowable):
     def __init__(self, bestellung, digital=True):
-        Flowable.__init__(self)
+        super().__init__()
         self.width = 210
         self.height = 110
         self._fixedWidth = 210
@@ -423,9 +425,10 @@ class QrInvoice(Flowable):
         self.canv.translate(-12*mm,-12*mm)
         self.draw_qr_invoice()
 
-class Header(Flowable):
+
+class _PDFOrderHeader(Flowable):
     def __init__(self, bestellung, lieferschein=False):
-        Flowable.__init__(self)
+        super().__init__()
         self.width = 210
         self.height = 75
         self._fixedWidth = 210
@@ -535,40 +538,23 @@ class Header(Flowable):
         self.canv.translate(-12*mm,-40*mm)
         self.draw_header()
 
-def pdf_bestellung(bestellung, lieferschein=False, digital:bool=True):
-    sprache = bestellung.kunde.sprache if bestellung.kunde and bestellung.kunde.sprache else "de"
 
-    cur_language = translation.get_language()
-    translation.activate(sprache)
-
-    #####
-
-    def get_buffer(bestellung, lieferschein, digital):
-        buffer = BytesIO()
-
-        doc = SimpleDocTemplate(buffer, rightMargin=10*mm, leftMargin=10*mm, topMargin=10*mm, bottomMargin=10*mm)
+class PDFOrder(PDFGenerator):
+    def get_elements(self, bestellung, lieferschein=False, digital: bool = True):
         if lieferschein:
-            elements = [Header(bestellung, lieferschein=True), Spacer(1,48*mm), ProductTable(bestellung)]
+            return [
+                _PDFOrderHeader(bestellung, lieferschein=True), 
+                Spacer(1, 48*mm), 
+                _PDFOrderProductTable(bestellung)
+            ]
         else:
-            elements = [Header(bestellung, lieferschein=False), Spacer(1,48*mm), PriceTable(bestellung), Spacer(1,65*mm), TopPadder(QrInvoice(bestellung, digital))]
-        doc.build(elements)
-        buffer.seek(0)
-        return buffer
+            return [
+                _PDFOrderHeader(bestellung, lieferschein=False), 
+                Spacer(1, 48*mm), 
+                _PDFOrderPriceTable(bestellung),
+                Spacer(1, 65*mm), 
+                TopPadder(_PDFOrderQrInvoice(bestellung, digital))
+            ]
 
-    # def get_buffer_old(bestellung):
-    #     buffer = BytesIO()
-    #
-    #     template = PageTemplate(id="empty", pagesize=A4, frames=[Frame(10*mm, 10*mm, 190*mm, 277*mm)])
-    #     doc = BaseDocTemplate(buffer, pagesize=A4, pageTemplates=[template])
-    #     elements = [Header(bestellung, lieferschein=True), Spacer(1,48*mm), PriceTable(bestellung), Spacer(1,65*mm), TopPadder(QrInvoice(bestellung, digital))]
-    #     doc.build(elements)
-    #     buffer.seek(0)
-    #     return buffer
-
-    #####
-
-    buffer = get_buffer(bestellung, lieferschein=lieferschein, digital=digital)
-
-    translation.activate(cur_language)
-
-    return buffer
+    def get_language(self, bestellung, *args, **kwargs):
+        return bestellung.kunde.sprache if bestellung.kunde and bestellung.kunde.sprache else "de"
