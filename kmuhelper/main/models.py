@@ -213,6 +213,7 @@ class Bestellung(models.Model):
     woocommerceid = models.IntegerField('WooCommerce ID', default=0)
 
     datum = models.DateTimeField("Datum", default=timezone.now)
+    rechnungsdatum = models.DateField("Rechnungsdatum", default=None, blank=True, null=True)
 
     status = models.CharField("Status", max_length=11,
                               default="pending", choices=STATUS)
@@ -305,28 +306,30 @@ class Bestellung(models.Model):
         if self.pk:
             self.fix_summe = self.summe_gesamt()
             double_save = False
-        elif (not self.woocommerceid) and self.kunde:
-            self.rechnungsadresse_vorname = self.kunde.rechnungsadresse_vorname
-            self.rechnungsadresse_nachname = self.kunde.rechnungsadresse_nachname
-            self.rechnungsadresse_firma = self.kunde.rechnungsadresse_firma
-            self.rechnungsadresse_adresszeile1 = self.kunde.rechnungsadresse_adresszeile1
-            self.rechnungsadresse_adresszeile2 = self.kunde.rechnungsadresse_adresszeile2
-            self.rechnungsadresse_ort = self.kunde.rechnungsadresse_ort
-            self.rechnungsadresse_kanton = self.kunde.rechnungsadresse_kanton
-            self.rechnungsadresse_plz = self.kunde.rechnungsadresse_plz
-            self.rechnungsadresse_land = self.kunde.rechnungsadresse_land
-            self.rechnungsadresse_email = self.kunde.rechnungsadresse_email
-            self.rechnungsadresse_telefon = self.kunde.rechnungsadresse_telefon
+        else:
+            if (not self.woocommerceid) and self.kunde:
+                self.rechnungsadresse_vorname = self.kunde.rechnungsadresse_vorname
+                self.rechnungsadresse_nachname = self.kunde.rechnungsadresse_nachname
+                self.rechnungsadresse_firma = self.kunde.rechnungsadresse_firma
+                self.rechnungsadresse_adresszeile1 = self.kunde.rechnungsadresse_adresszeile1
+                self.rechnungsadresse_adresszeile2 = self.kunde.rechnungsadresse_adresszeile2
+                self.rechnungsadresse_ort = self.kunde.rechnungsadresse_ort
+                self.rechnungsadresse_kanton = self.kunde.rechnungsadresse_kanton
+                self.rechnungsadresse_plz = self.kunde.rechnungsadresse_plz
+                self.rechnungsadresse_land = self.kunde.rechnungsadresse_land
+                self.rechnungsadresse_email = self.kunde.rechnungsadresse_email
+                self.rechnungsadresse_telefon = self.kunde.rechnungsadresse_telefon
 
-            self.lieferadresse_vorname = self.kunde.lieferadresse_vorname
-            self.lieferadresse_nachname = self.kunde.lieferadresse_nachname
-            self.lieferadresse_firma = self.kunde.lieferadresse_firma
-            self.lieferadresse_adresszeile1 = self.kunde.lieferadresse_adresszeile1
-            self.lieferadresse_adresszeile2 = self.kunde.lieferadresse_adresszeile2
-            self.lieferadresse_ort = self.kunde.lieferadresse_ort
-            self.lieferadresse_kanton = self.kunde.lieferadresse_kanton
-            self.lieferadresse_plz = self.kunde.lieferadresse_plz
-            self.lieferadresse_land = self.kunde.lieferadresse_land
+                self.lieferadresse_vorname = self.kunde.lieferadresse_vorname
+                self.lieferadresse_nachname = self.kunde.lieferadresse_nachname
+                self.lieferadresse_firma = self.kunde.lieferadresse_firma
+                self.lieferadresse_adresszeile1 = self.kunde.lieferadresse_adresszeile1
+                self.lieferadresse_adresszeile2 = self.kunde.lieferadresse_adresszeile2
+                self.lieferadresse_ort = self.kunde.lieferadresse_ort
+                self.lieferadresse_kanton = self.kunde.lieferadresse_kanton
+                self.lieferadresse_plz = self.kunde.lieferadresse_plz
+                self.lieferadresse_land = self.kunde.lieferadresse_land
+            self.rechnungsdatum = timezone.now()
         if self.versendet and (not self.ausgelagert):
             for i in self.produkte.through.objects.filter(bestellung=self):
                 i.produkt.lagerbestand -= i.menge
@@ -348,7 +351,7 @@ class Bestellung(models.Model):
         return c
 
     def rechnungsinformationen(self):
-        date = self.datum.strftime("%y%m%d")
+        date = (self.rechnungsdatum or self.datum).strftime("%y%m%d")
         uid = self.zahlungsempfaenger.firmenuid.split("-")[1].replace(".", "")
         mwstdict = self.mwstdict()
         mwststring = ";".join(

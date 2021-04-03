@@ -151,7 +151,7 @@ class BestellungsAdmin(admin.ModelAdmin):
         if obj:
             return [
                 ('Einstellungen', {'fields': [
-                 'zahlungsempfaenger', 'ansprechpartner']}),
+                 'zahlungsempfaenger', 'ansprechpartner', 'rechnungsdatum']}),
                 ('Infos', {'fields': ['name', 'datum', 'status']}),
                 ('Lieferung', {'fields': ['versendet', 'trackingnummer']}),
                 ('Bezahlung', {'fields': [
@@ -167,7 +167,7 @@ class BestellungsAdmin(admin.ModelAdmin):
         else:
             return [
                 ('Einstellungen', {'fields': [
-                 'zahlungsempfaenger', 'ansprechpartner']}),
+                 'zahlungsempfaenger', 'ansprechpartner', 'rechnungsdatum']}),
                 ('Lieferung', {'fields': ['trackingnummer'], 'classes': [
                  "collapse"]}),
                 ('Bezahlung', {'fields': ['zahlungsmethode'], 'classes': [
@@ -188,7 +188,7 @@ class BestellungsAdmin(admin.ModelAdmin):
             if obj.versendet:
                 fields += ['versendet', 'trackingnummer'] + lieferadresse
             if obj.bezahlt:
-                fields += ['bezahlt', 'zahlungsmethode'] + rechnungsadresse
+                fields += ['bezahlt', 'zahlungsmethode', 'rechnungsdatum'] + rechnungsadresse
             if obj.woocommerceid:
                 fields += ["kundennotiz"]
         return fields

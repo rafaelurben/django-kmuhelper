@@ -487,16 +487,20 @@ class _PDFOrderHeader(Flowable):
         t = c.beginText(12*mm, 27*mm)
         t.setFont("Helvetica", 12)
         t.textLine(_("Ihr/e Ansprechpartner/in"))
-        t.textLine(_("Ihre Bestellung vom"))
         t.textLine(_("Ihre Kundennummer"))
+        t.textLine(_("Ihre Bestellung vom"))  
+        if not self.lieferschein:  
+            t.textLine(_("Rechnungsdatum"))
         c.drawText(t)
 
         # Rechnungsdaten: Inhalt
         t = c.beginText(64*mm, 27*mm)
         t.setFont("Helvetica", 12)
         t.textLine(bestellung.ansprechpartner.name)
-        t.textLine(bestelldatum)
         t.textLine(str(bestellung.kunde.pk).zfill(6) if bestellung.kunde else "n.a.")
+        t.textLine(bestelldatum)
+        if not self.lieferschein:  
+            t.textLine((bestellung.rechnungsdatum or bestellung.datum).strftime("%d.%m.%Y"))
         c.drawText(t)
 
         # Kundenadresse
@@ -511,7 +515,6 @@ class _PDFOrderHeader(Flowable):
             if bestellung.lieferadresse_adresszeile2:
                 t.textLine(bestellung.lieferadresse_adresszeile2)
             t.textLine(bestellung.lieferadresse_plz+" "+bestellung.lieferadresse_ort)
-            c.drawText(t)
         else:
             if bestellung.rechnungsadresse_firma:
                 t.textLine(bestellung.rechnungsadresse_firma)
@@ -521,7 +524,7 @@ class _PDFOrderHeader(Flowable):
             if bestellung.rechnungsadresse_adresszeile2:
                 t.textLine(bestellung.rechnungsadresse_adresszeile2)
             t.textLine(bestellung.rechnungsadresse_plz+" "+bestellung.rechnungsadresse_ort)
-            c.drawText(t)
+        c.drawText(t)
 
         # Rechnung
         c.setFont("Helvetica-Bold", 10)

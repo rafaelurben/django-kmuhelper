@@ -101,7 +101,7 @@ class ToDoZahlungseingangAdmin(BestellungsAdmin):
     list_editable = ("bezahlt", "status")
     list_filter = ('status', 'versendet', 'zahlungsmethode')
 
-    ordering = ("versendet", "-datum")
+    ordering = ("versendet", "-rechnungsdatum")
 
     actions = ()
 
