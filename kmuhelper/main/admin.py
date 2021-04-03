@@ -11,6 +11,7 @@ from kmuhelper.integrations.woocommerce import WooCommerce
 
 #######
 
+
 @admin.register(Ansprechpartner)
 class AnsprechpartnerAdmin(admin.ModelAdmin):
     fieldsets = [
@@ -161,10 +162,18 @@ class BestellungsAdmin(admin.ModelAdmin):
                 ('Kunde', {'fields': ['kunde']}),
                 ('Notizen & Texte', {'fields': ['kundennotiz', 'html_notiz'], 'classes': [
                  "collapse start-open"]}),
-                ('Rechnungsadresse', {'fields': ['rechnungsadresse_vorname', 'rechnungsadresse_nachname', 'rechnungsadresse_firma', 'rechnungsadresse_adresszeile1', 'rechnungsadresse_adresszeile2',
-                                                 'rechnungsadresse_plz', 'rechnungsadresse_ort', 'rechnungsadresse_kanton', 'rechnungsadresse_land', 'rechnungsadresse_email', 'rechnungsadresse_telefon'], 'classes': ["collapse default-open"]}),
-                ('Lieferadresse', {'fields': ['lieferadresse_vorname', 'lieferadresse_nachname', 'lieferadresse_firma', 'lieferadresse_adresszeile1',
-                                              'lieferadresse_adresszeile2', 'lieferadresse_plz', 'lieferadresse_ort', 'lieferadresse_kanton', 'lieferadresse_land'], 'classes': ["collapse start-open"]})
+                ('Rechnungsadresse', {'fields': [
+                 'rechnungsadresse_vorname', 'rechnungsadresse_nachname', 'rechnungsadresse_firma', 'rechnungsadresse_adresszeile1', 'rechnungsadresse_adresszeile2',
+                 'rechnungsadresse_plz', 'rechnungsadresse_ort', 'rechnungsadresse_kanton', 'rechnungsadresse_land', 'rechnungsadresse_email', 'rechnungsadresse_telefon'
+                 ] if obj.bezahlt else [
+                    ('rechnungsadresse_vorname', 'rechnungsadresse_nachname'), 'rechnungsadresse_firma', ('rechnungsadresse_adresszeile1', 'rechnungsadresse_adresszeile2'), (
+                        'rechnungsadresse_plz', 'rechnungsadresse_ort'), ('rechnungsadresse_kanton', 'rechnungsadresse_land'), ('rechnungsadresse_email', 'rechnungsadresse_telefon')], 'classes': ["collapse default-open"]}),
+                ('Lieferadresse', {'fields': [
+                    'lieferadresse_vorname', 'lieferadresse_nachname', 'lieferadresse_firma', 'lieferadresse_adresszeile1',
+                    'lieferadresse_adresszeile2', 'lieferadresse_plz', 'lieferadresse_ort', 'lieferadresse_kanton', 'lieferadresse_land'
+                ] if obj.versendet else [
+                    ('lieferadresse_vorname', 'lieferadresse_nachname'), 'lieferadresse_firma', ('lieferadresse_adresszeile1', 'lieferadresse_adresszeile2'), (
+                        'lieferadresse_plz', 'lieferadresse_ort'), ('lieferadresse_kanton', 'lieferadresse_land')], 'classes': ["collapse start-open"]})
             ]
         else:
             return [
@@ -178,7 +187,7 @@ class BestellungsAdmin(admin.ModelAdmin):
                  "collapse start-open"]}),
                 ('Kunde', {'fields': ['kunde']}),
                 ('Notizen & Texte', {'fields': ['kundennotiz'],
-                             'classes': ["collapse start-open"]}),
+                                     'classes': ["collapse start-open"]}),
             ]
 
     def get_readonly_fields(self, request, obj=None):
@@ -192,7 +201,8 @@ class BestellungsAdmin(admin.ModelAdmin):
             if obj.versendet:
                 fields += ['versendet', 'trackingnummer'] + lieferadresse
             if obj.bezahlt:
-                fields += ['bezahlt', 'zahlungsmethode', 'rechnungsdatum'] + rechnungsadresse
+                fields += ['bezahlt', 'zahlungsmethode', 'rechnungsdatum',
+                           'rechnungstitel', 'rechnungstext', 'zahlungskonditionen'] + rechnungsadresse
             if obj.woocommerceid:
                 fields += ["kundennotiz"]
         return fields
@@ -248,15 +258,17 @@ class BestellungsAdmin(admin.ModelAdmin):
 
                 adminlink = mark_safe(f'<a href="{p_adminurl}">{p_name}</a>')
                 stockdata = f"Aktuell: { n_current } | Ausgehend: { n_going }" + (
-                        f" | Eingehend: { n_coming }" if n_coming else "")
+                    f" | Eingehend: { n_coming }" if n_coming else "")
 
                 formatdata = (mark_safe(adminlink), p_artikelnummer, stockdata)
 
                 if n_current-n_going < 0:
-                    msg = format_html('Zu wenig Lagerbestand bei "{}" [{}]: {}', *formatdata)
+                    msg = format_html(
+                        'Zu wenig Lagerbestand bei "{}" [{}]: {}', *formatdata)
                     messages.error(request, msg)
                 elif n_current-n_going < n_min:
-                    msg = format_html('Knapper Lagerbestand bei "{}" [{}]: {}', *formatdata)
+                    msg = format_html(
+                        'Knapper Lagerbestand bei "{}" [{}]: {}', *formatdata)
                     messages.warning(request, msg)
 
 
@@ -307,6 +319,28 @@ class KostenAdmin(admin.ModelAdmin):
     ]
 
 
+class KundenAdminBestellungsInline(admin.TabularInline):
+    model = Bestellung
+    verbose_name = "Bestellung"
+    verbose_name_plural = "Bestellungen"
+    extra = 0
+
+    show_change_link = True
+
+    ordering = ('-datum', )
+
+    fields = ('id', 'datum', 'fix_summe', 'versendet', 'bezahlt')
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
 @admin.register(Kunde)
 class KundenAdmin(admin.ModelAdmin):
     def get_fieldsets(self, request, obj=None):
@@ -346,6 +380,8 @@ class KundenAdmin(admin.ModelAdmin):
     actions = ["wc_update"]
 
     list_select_related = ["notiz"]
+
+    inlines = [KundenAdminBestellungsInline]
 
     save_on_top = True
 
@@ -424,7 +460,8 @@ class LieferungenAdmin(admin.ModelAdmin):
                     'lieferant', 'eingelagert', 'html_notiz')
     list_filter = ("eingelagert", "lieferant", )
 
-    search_fields = ["name", "datum", "lieferant", "notiz__name", "notiz__beschrieb"]
+    search_fields = ["name", "datum", "lieferant",
+                     "notiz__name", "notiz__beschrieb"]
 
     readonly_fields = ["html_notiz"]
 
@@ -684,7 +721,7 @@ class ZahlungsempfaengerAdmin(admin.ModelAdmin):
             messages.warning(request, "Ungültige UID!")
 
 
-################### Einstellungen
+# Einstellungen
 
 @admin.register(Einstellung)
 class EinstellungenAdmin(admin.ModelAdmin):
