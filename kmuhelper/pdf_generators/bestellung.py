@@ -427,7 +427,7 @@ class _PDFOrderQrInvoice(Flowable):
 
 
 class _PDFOrderHeader(Flowable):
-    def __init__(self, bestellung, lieferschein=False):
+    def __init__(self, bestellung, lieferschein=False, title=None):
         super().__init__()
         self.width = 210
         self.height = 75
@@ -531,9 +531,11 @@ class _PDFOrderHeader(Flowable):
         if self.lieferschein:
             c.drawString(12*mm, 0*mm, _("LIEFERSCHEIN"))
         else:
-            c.drawString(12*mm, 0*mm, _("RECHNUNG"))
+            c.drawString(12*mm, 0*mm, self.bestellung.rechnungstitel or _("RECHNUNG"))
+
         c.setFont("Helvetica", 10)
-        c.drawString(64*mm, 0*mm, (bestellung.datum.strftime("%Y")+"-"+str(bestellung.pk).zfill(6)+(" (Online #"+str(bestellung.woocommerceid)+")" if bestellung.woocommerceid else "")))
+        if not (self.bestellung.rechnungstitel and len(self.bestellung.rechnungstitel) > 20):
+            c.drawString(64*mm, 0*mm, (bestellung.datum.strftime("%Y")+"-"+str(bestellung.pk).zfill(6)+(" (Online #"+str(bestellung.woocommerceid)+")" if bestellung.woocommerceid else "")))
 
         c.restoreState()
 
@@ -543,7 +545,7 @@ class _PDFOrderHeader(Flowable):
 
 
 class PDFOrder(PDFGenerator):
-    def get_elements(self, bestellung, lieferschein=False, digital: bool = True):
+    def get_elements(self, bestellung, lieferschein=False, digital: bool = True, title=None):
         # Header
         elements = [
             _PDFOrderHeader(bestellung, lieferschein=lieferschein),

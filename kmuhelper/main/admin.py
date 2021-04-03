@@ -151,13 +151,15 @@ class BestellungsAdmin(admin.ModelAdmin):
         if obj:
             return [
                 ('Einstellungen', {'fields': [
-                 'zahlungsempfaenger', 'ansprechpartner', 'rechnungsdatum']}),
+                 'zahlungsempfaenger', 'ansprechpartner']}),
                 ('Infos', {'fields': ['name', 'datum', 'status']}),
+                ('Rechnungsoptionen', {'fields': [
+                 'rechnungstitel', 'rechnungstext', 'rechnungsdatum', 'zahlungskonditionen']}),
                 ('Lieferung', {'fields': ['versendet', 'trackingnummer']}),
                 ('Bezahlung', {'fields': [
                  'bezahlt', 'zahlungsmethode', 'summe', 'summe_mwst', 'summe_gesamt']}),
                 ('Kunde', {'fields': ['kunde']}),
-                ('Notizen & Texte', {'fields': ['kundennotiz', 'html_notiz', 'rechnungstext'], 'classes': [
+                ('Notizen & Texte', {'fields': ['kundennotiz', 'html_notiz'], 'classes': [
                  "collapse start-open"]}),
                 ('Rechnungsadresse', {'fields': ['rechnungsadresse_vorname', 'rechnungsadresse_nachname', 'rechnungsadresse_firma', 'rechnungsadresse_adresszeile1', 'rechnungsadresse_adresszeile2',
                                                  'rechnungsadresse_plz', 'rechnungsadresse_ort', 'rechnungsadresse_kanton', 'rechnungsadresse_land', 'rechnungsadresse_email', 'rechnungsadresse_telefon'], 'classes': ["collapse default-open"]}),
@@ -167,13 +169,15 @@ class BestellungsAdmin(admin.ModelAdmin):
         else:
             return [
                 ('Einstellungen', {'fields': [
-                 'zahlungsempfaenger', 'ansprechpartner', 'rechnungsdatum']}),
+                 'zahlungsempfaenger', 'ansprechpartner']}),
+                ('Rechnungsoptionen', {'fields': [
+                 'rechnungstitel', 'rechnungstext', 'rechnungsdatum', 'zahlungskonditionen']}),
                 ('Lieferung', {'fields': ['trackingnummer'], 'classes': [
                  "collapse"]}),
                 ('Bezahlung', {'fields': ['zahlungsmethode'], 'classes': [
                  "collapse start-open"]}),
                 ('Kunde', {'fields': ['kunde']}),
-                ('Notizen & Texte', {'fields': ['kundennotiz', 'rechnungstext'],
+                ('Notizen & Texte', {'fields': ['kundennotiz'],
                              'classes': ["collapse start-open"]}),
             ]
 

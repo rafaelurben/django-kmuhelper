@@ -214,7 +214,16 @@ class Bestellung(models.Model):
     woocommerceid = models.IntegerField('WooCommerce ID', default=0)
 
     datum = models.DateTimeField("Datum", default=timezone.now)
-    rechnungsdatum = models.DateField("Rechnungsdatum", default=None, blank=True, null=True)
+
+    rechnungsdatum = models.DateField(
+        "Rechnungsdatum", default=None, blank=True, null=True, help_text="Datum der Rechnung. Wird auch als Startpunkt für die Zahlungskonditionen verwendet.")
+    rechnungstitel = models.CharField(
+        "Rechnungstitel", default="", blank=True, max_length=32, help_text="Titel der Rechnung. Leer lassen für 'RECHNUNG'")
+    rechnungstext = models.TextField(
+        "Rechnungstext", default="", blank=True, help_text=mark_safe("Wird auf der Rechnung gedruckt! Unterstützt <abbr title='<b>Fett</b><u>Unterstrichen</u><i>Kursiv</i>'>XML markup</abbr>."))
+    zahlungskonditionen = models.CharField(
+        "Zahlungskonditionen", default="0:30", validators=[RegexValidator("^[0-9]+:[0-9]+(;[0-9]+:[0-9]+)*$")], max_length=16, help_text="Skonto und Zahlfrist nach Syntaxdefinition von Swico. z.B. '2:15;0:30'"
+    )
 
     status = models.CharField("Status", max_length=11,
                               default="pending", choices=STATUS)
@@ -232,8 +241,6 @@ class Bestellung(models.Model):
 
     kundennotiz = models.TextField(
         "Kundennotiz", default="", blank=True, help_text="Vom Kunden erfasste Notiz.")
-    rechnungstext = models.TextField(
-        "Rechnungstext", default="", blank=True, help_text=mark_safe("Wird auf der Rechnung gedruckt! Unterstützt <abbr title='<b>Fett</b><u>Unterstrichen</u><i>Kursiv</i>'>bestimmten XML markup</abbr>."))
 
     order_key = models.CharField(
         "Bestellungs-Schlüssel", max_length=50, default=defaultorderkey, blank=True)
@@ -355,10 +362,11 @@ class Bestellung(models.Model):
     def rechnungsinformationen(self):
         date = (self.rechnungsdatum or self.datum).strftime("%y%m%d")
         uid = self.zahlungsempfaenger.firmenuid.split("-")[1].replace(".", "")
+        kond = self.zahlungskonditionen
         mwstdict = self.mwstdict()
         mwststring = ";".join(
             satz+":"+str(mwstdict[satz]) for satz in mwstdict)
-        return "//S1/10/"+str(self.pk)+"/11/"+date+"/30/"+uid+"/31/"+date+"/32/"+mwststring+"/40/"+"0:30"
+        return "//S1/10/"+str(self.pk)+"/11/"+date+"/30/"+uid+"/31/"+date+"/32/"+mwststring+"/40/"+kond
 
     def mwstdict(self):
         mwst = {}
