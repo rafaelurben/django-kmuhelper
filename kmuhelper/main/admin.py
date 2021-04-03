@@ -157,7 +157,7 @@ class BestellungsAdmin(admin.ModelAdmin):
                 ('Bezahlung', {'fields': [
                  'bezahlt', 'zahlungsmethode', 'summe', 'summe_mwst', 'summe_gesamt']}),
                 ('Kunde', {'fields': ['kunde']}),
-                ('Notizen', {'fields': ['kundennotiz', 'html_notiz'], 'classes': [
+                ('Notizen & Texte', {'fields': ['kundennotiz', 'html_notiz', 'rechnungstext'], 'classes': [
                  "collapse start-open"]}),
                 ('Rechnungsadresse', {'fields': ['rechnungsadresse_vorname', 'rechnungsadresse_nachname', 'rechnungsadresse_firma', 'rechnungsadresse_adresszeile1', 'rechnungsadresse_adresszeile2',
                                                  'rechnungsadresse_plz', 'rechnungsadresse_ort', 'rechnungsadresse_kanton', 'rechnungsadresse_land', 'rechnungsadresse_email', 'rechnungsadresse_telefon'], 'classes': ["collapse default-open"]}),
@@ -173,7 +173,7 @@ class BestellungsAdmin(admin.ModelAdmin):
                 ('Bezahlung', {'fields': ['zahlungsmethode'], 'classes': [
                  "collapse start-open"]}),
                 ('Kunde', {'fields': ['kunde']}),
-                ('Notizen', {'fields': ['kundennotiz'],
+                ('Notizen & Texte', {'fields': ['kundennotiz', 'rechnungstext'],
                              'classes': ["collapse start-open"]}),
             ]
 

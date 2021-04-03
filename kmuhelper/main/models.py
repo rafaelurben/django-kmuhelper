@@ -7,6 +7,7 @@ from django.core.validators import RegexValidator, MinValueValidator, MaxValueVa
 from django.http import FileResponse
 from django.template.loader import get_template
 from django.utils.html import mark_safe
+from django.utils.safestring import mark_safe
 from django.urls import reverse
 
 from datetime import datetime
@@ -231,7 +232,8 @@ class Bestellung(models.Model):
 
     kundennotiz = models.TextField(
         "Kundennotiz", default="", blank=True, help_text="Vom Kunden erfasste Notiz.")
-    #rechnungsnotiz = models.TextField("Rechnungsnotiz", default="", blank=True, help_text="Wird auf der Rechnung gedruckt.")
+    rechnungstext = models.TextField(
+        "Rechnungstext", default="", blank=True, help_text=mark_safe("Wird auf der Rechnung gedruckt! Unterstützt <abbr title='<b>Fett</b><u>Unterstrichen</u><i>Kursiv</i>'>bestimmten XML markup</abbr>."))
 
     order_key = models.CharField(
         "Bestellungs-Schlüssel", max_length=50, default=defaultorderkey, blank=True)
