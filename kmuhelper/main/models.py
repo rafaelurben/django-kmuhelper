@@ -812,44 +812,49 @@ class Kunde(models.Model):
 
     def save(self, *args, **kwargs):
         if self.zusammenfuegen:
-            self.woocommerceid = self.woocommerceid if self.woocommerceid else self.zusammenfuegen.woocommerceid
+            self.woocommerceid = self.woocommerceid or self.zusammenfuegen.woocommerceid
 
-            self.email = self.email if self.email else self.zusammenfuegen.email
-            self.vorname = self.vorname if self.vorname else self.zusammenfuegen.vorname
-            self.nachname = self.nachname if self.nachname else self.zusammenfuegen.nachname
-            self.firma = self.firma if self.firma else self.zusammenfuegen.firma
-            self.benutzername = self.benutzername if self.benutzername else self.zusammenfuegen.benutzername
-            self.avatar_url = self.avatar_url if self.avatar_url else self.zusammenfuegen.avatar_url
+            self.email = self.email or self.zusammenfuegen.email
+            self.vorname = self.vorname or self.zusammenfuegen.vorname
+            self.nachname = self.nachname or self.zusammenfuegen.nachname
+            self.firma = self.firma or self.zusammenfuegen.firma
+            self.benutzername = self.benutzername or self.zusammenfuegen.benutzername
+            self.avatar_url = self.avatar_url or self.zusammenfuegen.avatar_url
             self.sprache = self.sprache if self.sprache != "de" else self.zusammenfuegen.sprache
 
-            self.rechnungsadresse_vorname = self.rechnungsadresse_vorname if self.rechnungsadresse_vorname else self.zusammenfuegen.rechnungsadresse_vorname
-            self.rechnungsadresse_nachname = self.rechnungsadresse_nachname if self.rechnungsadresse_nachname else self.zusammenfuegen.rechnungsadresse_nachname
-            self.rechnungsadresse_firma = self.rechnungsadresse_firma if self.rechnungsadresse_firma else self.zusammenfuegen.rechnungsadresse_firma
-            self.rechnungsadresse_adresszeile1 = self.rechnungsadresse_adresszeile1 if self.rechnungsadresse_adresszeile1 else self.zusammenfuegen.rechnungsadresse_adresszeile1
-            self.rechnungsadresse_adresszeile2 = self.rechnungsadresse_adresszeile2 if self.rechnungsadresse_adresszeile2 else self.zusammenfuegen.rechnungsadresse_adresszeile2
-            self.rechnungsadresse_ort = self.rechnungsadresse_ort if self.rechnungsadresse_ort else self.zusammenfuegen.rechnungsadresse_ort
-            self.rechnungsadresse_kanton = self.rechnungsadresse_kanton if self.rechnungsadresse_kanton else self.zusammenfuegen.rechnungsadresse_kanton
-            self.rechnungsadresse_plz = self.rechnungsadresse_plz if self.rechnungsadresse_plz else self.zusammenfuegen.rechnungsadresse_plz
-            self.rechnungsadresse_land = self.rechnungsadresse_land if self.rechnungsadresse_land else self.zusammenfuegen.rechnungsadresse_land
-            self.rechnungsadresse_email = self.rechnungsadresse_email if self.rechnungsadresse_email else self.zusammenfuegen.rechnungsadresse_email
-            self.rechnungsadresse_telefon = self.rechnungsadresse_telefon if self.rechnungsadresse_telefon else self.zusammenfuegen.rechnungsadresse_telefon
+            self.rechnungsadresse_vorname = self.rechnungsadresse_vorname or self.zusammenfuegen.rechnungsadresse_vorname
+            self.rechnungsadresse_nachname = self.rechnungsadresse_nachname or self.zusammenfuegen.rechnungsadresse_nachname
+            self.rechnungsadresse_firma = self.rechnungsadresse_firma or self.zusammenfuegen.rechnungsadresse_firma
+            self.rechnungsadresse_adresszeile1 = self.rechnungsadresse_adresszeile1 or self.zusammenfuegen.rechnungsadresse_adresszeile1
+            self.rechnungsadresse_adresszeile2 = self.rechnungsadresse_adresszeile2 or self.zusammenfuegen.rechnungsadresse_adresszeile2
+            self.rechnungsadresse_ort = self.rechnungsadresse_ort or self.zusammenfuegen.rechnungsadresse_ort
+            self.rechnungsadresse_kanton = self.rechnungsadresse_kanton or self.zusammenfuegen.rechnungsadresse_kanton
+            self.rechnungsadresse_plz = self.rechnungsadresse_plz or self.zusammenfuegen.rechnungsadresse_plz
+            self.rechnungsadresse_land = self.rechnungsadresse_land or self.zusammenfuegen.rechnungsadresse_land
+            self.rechnungsadresse_email = self.rechnungsadresse_email or self.zusammenfuegen.rechnungsadresse_email
+            self.rechnungsadresse_telefon = self.rechnungsadresse_telefon or self.zusammenfuegen.rechnungsadresse_telefon
 
-            self.lieferadresse_vorname = self.lieferadresse_vorname if self.lieferadresse_vorname else self.zusammenfuegen.lieferadresse_vorname
-            self.lieferadresse_nachname = self.lieferadresse_nachname if self.lieferadresse_nachname else self.zusammenfuegen.lieferadresse_nachname
-            self.lieferadresse_firma = self.lieferadresse_firma if self.lieferadresse_firma else self.zusammenfuegen.lieferadresse_firma
-            self.lieferadresse_adresszeile1 = self.lieferadresse_adresszeile1 if self.lieferadresse_adresszeile1 else self.zusammenfuegen.lieferadresse_adresszeile1
-            self.lieferadresse_adresszeile2 = self.lieferadresse_adresszeile2 if self.lieferadresse_adresszeile2 else self.zusammenfuegen.lieferadresse_adresszeile2
-            self.lieferadresse_ort = self.lieferadresse_ort if self.lieferadresse_ort else self.zusammenfuegen.lieferadresse_ort
-            self.lieferadresse_kanton = self.lieferadresse_kanton if self.lieferadresse_kanton else self.zusammenfuegen.lieferadresse_kanton
-            self.lieferadresse_plz = self.lieferadresse_plz if self.lieferadresse_plz else self.zusammenfuegen.lieferadresse_plz
-            self.lieferadresse_land = self.lieferadresse_land if self.lieferadresse_land else self.zusammenfuegen.lieferadresse_land
+            self.lieferadresse_vorname = self.lieferadresse_vorname or self.zusammenfuegen.lieferadresse_vorname
+            self.lieferadresse_nachname = self.lieferadresse_nachname or self.zusammenfuegen.lieferadresse_nachname
+            self.lieferadresse_firma = self.lieferadresse_firma or self.zusammenfuegen.lieferadresse_firma
+            self.lieferadresse_adresszeile1 = self.lieferadresse_adresszeile1 or self.zusammenfuegen.lieferadresse_adresszeile1
+            self.lieferadresse_adresszeile2 = self.lieferadresse_adresszeile2 or self.zusammenfuegen.lieferadresse_adresszeile2
+            self.lieferadresse_ort = self.lieferadresse_ort or self.zusammenfuegen.lieferadresse_ort
+            self.lieferadresse_kanton = self.lieferadresse_kanton or self.zusammenfuegen.lieferadresse_kanton
+            self.lieferadresse_plz = self.lieferadresse_plz or self.zusammenfuegen.lieferadresse_plz
+            self.lieferadresse_land = self.lieferadresse_land or self.zusammenfuegen.lieferadresse_land
 
-            self.webseite = self.webseite if self.webseite else self.zusammenfuegen.webseite
-            self.notiz = self.notiz+" "+self.zusammenfuegen.notiz
+            self.webseite = self.webseite or self.zusammenfuegen.webseite
+            self.bemerkung = self.bemerkung+"\n"+self.zusammenfuegen.bemerkung
 
             for bestellung in self.zusammenfuegen.bestellung_set.all():
                 bestellung.kunde = self
                 bestellung.save()
+                
+            if self.zusammenfuegen.notiz:
+                self.zusammenfuegen.notiz.kunde = self
+                self.zusammenfuegen.notiz.save()
+
             self.zusammenfuegen.delete()
             self.zusammenfuegen = None
         super().save(*args, **kwargs)
