@@ -1,13 +1,8 @@
-@import "colors-kmuhelper.css"; 
+@import "colors-kmuhelper.css";
 
-.app-kmuhelper caption {
-    background-color: var(--kmuhelper-default);
-}
-
-.app-kmuhelper tr a:link, .app-kmuhelper tr a:visited {
-    color: var(--kmuhelper-dark);
-}
-
-.app-kmuhelper tr a:focus, .app-kmuhelper tr a:hover {
-    color: var(--kmuhelper-darkest);
+.app-kmuhelper * {
+    --primary: var(--kmuhelper-default);
+    --secondary: var(--kmuhelper-darkest);
+    --link-fg: var(--kmuhelper-dark);
+    --link-selected-fg: var(--kmuhelper-light);
 }

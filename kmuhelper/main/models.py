@@ -1072,7 +1072,7 @@ class Produktkategorie(models.Model):
     kategorie = models.ForeignKey("Kategorie", on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.kategorie.name
+        return f"({self.pk}) {self.kategorie.clean_name()} <-> {self.produkt.clean_name()}"
     __str__.short_description = "Produktkategorie"
 
     class Meta:
