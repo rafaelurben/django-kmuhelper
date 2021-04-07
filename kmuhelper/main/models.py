@@ -167,6 +167,12 @@ class Bestellungskosten(models.Model):
 
     objects = models.Manager()
 
+    def copyto(self, bestellung):
+        self.pk = None
+        self._state.adding = True
+        self.bestellung = bestellung
+        self.save()
+
 
 class Bestellungsposten(models.Model):
     bestellung = models.ForeignKey("Bestellung", on_delete=models.CASCADE)
@@ -208,6 +214,12 @@ class Bestellungsposten(models.Model):
         verbose_name_plural = "Bestellungsposten"
 
     objects = models.Manager()
+
+    def copyto(self, bestellung):
+        self.pk = None
+        self._state.adding = True
+        self.bestellung = bestellung
+        self.save()
 
 
 class Bestellung(models.Model):
@@ -315,29 +327,30 @@ class Bestellung(models.Model):
         if self.pk:
             self.fix_summe = self.summe_gesamt()
             double_save = False
-        else:
-            if (not self.woocommerceid) and self.kunde:
-                self.rechnungsadresse_vorname = self.kunde.rechnungsadresse_vorname
-                self.rechnungsadresse_nachname = self.kunde.rechnungsadresse_nachname
-                self.rechnungsadresse_firma = self.kunde.rechnungsadresse_firma
-                self.rechnungsadresse_adresszeile1 = self.kunde.rechnungsadresse_adresszeile1
-                self.rechnungsadresse_adresszeile2 = self.kunde.rechnungsadresse_adresszeile2
-                self.rechnungsadresse_ort = self.kunde.rechnungsadresse_ort
-                self.rechnungsadresse_kanton = self.kunde.rechnungsadresse_kanton
-                self.rechnungsadresse_plz = self.kunde.rechnungsadresse_plz
-                self.rechnungsadresse_land = self.kunde.rechnungsadresse_land
-                self.rechnungsadresse_email = self.kunde.rechnungsadresse_email
-                self.rechnungsadresse_telefon = self.kunde.rechnungsadresse_telefon
+        elif (not self.woocommerceid) and self.kunde:
+            self.rechnungsadresse_vorname = self.kunde.rechnungsadresse_vorname
+            self.rechnungsadresse_nachname = self.kunde.rechnungsadresse_nachname
+            self.rechnungsadresse_firma = self.kunde.rechnungsadresse_firma
+            self.rechnungsadresse_adresszeile1 = self.kunde.rechnungsadresse_adresszeile1
+            self.rechnungsadresse_adresszeile2 = self.kunde.rechnungsadresse_adresszeile2
+            self.rechnungsadresse_ort = self.kunde.rechnungsadresse_ort
+            self.rechnungsadresse_kanton = self.kunde.rechnungsadresse_kanton
+            self.rechnungsadresse_plz = self.kunde.rechnungsadresse_plz
+            self.rechnungsadresse_land = self.kunde.rechnungsadresse_land
+            self.rechnungsadresse_email = self.kunde.rechnungsadresse_email
+            self.rechnungsadresse_telefon = self.kunde.rechnungsadresse_telefon
 
-                self.lieferadresse_vorname = self.kunde.lieferadresse_vorname
-                self.lieferadresse_nachname = self.kunde.lieferadresse_nachname
-                self.lieferadresse_firma = self.kunde.lieferadresse_firma
-                self.lieferadresse_adresszeile1 = self.kunde.lieferadresse_adresszeile1
-                self.lieferadresse_adresszeile2 = self.kunde.lieferadresse_adresszeile2
-                self.lieferadresse_ort = self.kunde.lieferadresse_ort
-                self.lieferadresse_kanton = self.kunde.lieferadresse_kanton
-                self.lieferadresse_plz = self.kunde.lieferadresse_plz
-                self.lieferadresse_land = self.kunde.lieferadresse_land
+            self.lieferadresse_vorname = self.kunde.lieferadresse_vorname
+            self.lieferadresse_nachname = self.kunde.lieferadresse_nachname
+            self.lieferadresse_firma = self.kunde.lieferadresse_firma
+            self.lieferadresse_adresszeile1 = self.kunde.lieferadresse_adresszeile1
+            self.lieferadresse_adresszeile2 = self.kunde.lieferadresse_adresszeile2
+            self.lieferadresse_ort = self.kunde.lieferadresse_ort
+            self.lieferadresse_kanton = self.kunde.lieferadresse_kanton
+            self.lieferadresse_plz = self.kunde.lieferadresse_plz
+            self.lieferadresse_land = self.kunde.lieferadresse_land
+
+        if self.rechnungsdatum is None:
             self.rechnungsdatum = timezone.now()
         if self.versendet and (not self.ausgelagert):
             for i in self.produkte.through.objects.filter(bestellung=self):
@@ -542,6 +555,57 @@ class Bestellung(models.Model):
     class Meta:
         verbose_name = "Bestellung"
         verbose_name_plural = "Bestellungen"
+
+    def duplicate(self):
+        new = Bestellung.objects.create(
+            kunde=self.kunde,
+            zahlungsempfaenger=self.zahlungsempfaenger,
+            ansprechpartner=self.ansprechpartner,
+
+            rechnungstitel=self.rechnungstitel,
+            rechnungstext=self.rechnungstext,
+            zahlungskonditionen=self.zahlungskonditionen,
+
+            kundennotiz=f"Kopie aus Bestellung #{self.pk}\n--------------------------------\n{self.kundennotiz}",
+        )
+
+        new.rechnungsadresse_vorname=self.rechnungsadresse_vorname
+        new.rechnungsadresse_nachname=self.rechnungsadresse_nachname
+        new.rechnungsadresse_firma=self.rechnungsadresse_firma
+        new.rechnungsadresse_adresszeile1=self.rechnungsadresse_adresszeile1
+        new.rechnungsadresse_adresszeile2=self.rechnungsadresse_adresszeile2
+        new.rechnungsadresse_ort=self.rechnungsadresse_ort
+        new.rechnungsadresse_kanton=self.rechnungsadresse_kanton
+        new.rechnungsadresse_plz=self.rechnungsadresse_plz
+        new.rechnungsadresse_land=self.rechnungsadresse_land
+        new.rechnungsadresse_email=self.rechnungsadresse_email
+        new.rechnungsadresse_telefon=self.rechnungsadresse_telefon
+
+        new.lieferadresse_vorname=self.lieferadresse_vorname
+        new.lieferadresse_nachname=self.lieferadresse_nachname
+        new.lieferadresse_firma=self.lieferadresse_firma
+        new.lieferadresse_adresszeile1=self.lieferadresse_adresszeile1
+        new.lieferadresse_adresszeile2=self.lieferadresse_adresszeile2
+        new.lieferadresse_ort=self.lieferadresse_ort
+        new.lieferadresse_kanton=self.lieferadresse_kanton
+        new.lieferadresse_plz=self.lieferadresse_plz
+        new.lieferadresse_land = self.lieferadresse_land
+
+        for bp in self.produkte.through.objects.filter(bestellung=self):
+            bp.copyto(new)
+        for bk in self.kosten.through.objects.filter(bestellung=self):
+            bk.copyto(new)
+        new.save()
+        return new
+
+    def zu_lieferung(self):
+        new = Lieferung.objects.create(
+            name=f"Rücksendung von Bestellung #{self.pk}"
+        )
+        for lp in self.produkte.through.objects.filter(bestellung=self):
+            new.produkte.add(lp.produkt, through_defaults={"menge": lp.menge})
+        new.save()
+        return new
 
     objects = models.Manager()
 

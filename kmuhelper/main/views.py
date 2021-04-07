@@ -87,6 +87,33 @@ def bestellung_pdf_an_kunden_senden(request, object_id):
         return render(request, "admin/kmuhelper/_confirm.html", {"action": "Rechnung an Kunden senden"})
 
 
+@login_required(login_url=reverse_lazy("admin:login"))
+def bestellung_duplizieren(request, object_id):
+    if request.method == "POST":
+        if Bestellung.objects.filter(id=int(object_id)).exists():
+            new = Bestellung.objects.get(id=int(object_id)).duplicate()
+            messages.success(request, "Bestellung wurde dupliziert! HINWEIS: Dies ist die neu erstellte Bestellung!")
+            return redirect(reverse("admin:kmuhelper_bestellung_change", args=[new.pk]))
+        else:
+            messages.error(request, "Bestellung konnte nicht gefunden werden!")
+        return redirect(reverse("admin:kmuhelper_bestellung_change", args=[object_id]))
+    else:
+        return render(request, "admin/kmuhelper/_confirm.html", {"action": "Bestellung duplizieren"})
+
+
+@login_required(login_url=reverse_lazy("admin:login"))
+def bestellung_zu_lieferung(request, object_id):
+    if request.method == "POST":
+        if Bestellung.objects.filter(id=int(object_id)).exists():
+            new = Bestellung.objects.get(id=int(object_id)).zu_lieferung()
+            messages.success(request, "Bestellung wurde zu einer Lieferung kopiert!")
+            return redirect(reverse("admin:kmuhelper_lieferung_change", args=[new.pk]))
+        else:
+            messages.error(request, "Bestellung konnte nicht gefunden werden!")
+        return redirect(reverse("admin:kmuhelper_bestellung_change", args=[object_id]))
+    else:
+        return render(request, "admin/kmuhelper/_confirm.html", {"action": "Bestellung zu Lieferung kopieren"})
+
 # Kunden-Entpunkte
 
 def public_view_order(request, order_id, order_key):
