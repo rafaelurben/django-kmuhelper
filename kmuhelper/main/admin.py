@@ -142,7 +142,7 @@ class BestellungsAdmin(admin.ModelAdmin):
     inlines = [BestellungInlineBestellungsposten, BestellungInlineBestellungspostenAdd,
                BestellungInlineBestellungskosten, BestellungInlineBestellungskostenAdd]
 
-    autocomplete_fields = ("kunde",)
+    autocomplete_fields = ("kunde", "zahlungsempfaenger", "ansprechpartner", )
 
     save_on_top = True
 
@@ -278,6 +278,13 @@ class KategorienInlineUntergeordneteKategorien(admin.TabularInline):
     verbose_name_plural = "Produkte in dieser Kategorie"
     extra = 0
 
+    list_display = ('clean_name', )
+
+    autocomplete_fields = ("produkt", )
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
 
 @admin.register(Kategorie)
 class KategorienAdmin(admin.ModelAdmin):
@@ -295,6 +302,8 @@ class KategorienAdmin(admin.ModelAdmin):
     inlines = [KategorienInlineUntergeordneteKategorien]
 
     list_select_related = ("uebergeordnete_kategorie",)
+
+    autocomplete_fields = ("uebergeordnete_kategorie", )
 
     def wc_update(self, request, queryset):
         result = WooCommerce.category_bulk_update(queryset.all())
@@ -465,6 +474,8 @@ class LieferungenAdmin(admin.ModelAdmin):
 
     readonly_fields = ["html_notiz"]
 
+    autocomplete_fields = ("lieferant", )
+
     ordering = ('-datum',)
 
     fieldsets = [
@@ -596,6 +607,11 @@ class ProduktInlineProduktkategorien(admin.TabularInline):
     model = Produkt.kategorien.through
     extra = 0
 
+    autocomplete_fields = ("kategorie", )
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
 
 @admin.register(Produkt)
 class ProduktAdmin(admin.ModelAdmin):
@@ -627,6 +643,8 @@ class ProduktAdmin(admin.ModelAdmin):
                      'beschrieb', 'bemerkung', 'notiz__name', 'notiz__beschrieb']
 
     readonly_fields = ["html_notiz"]
+
+    autocomplete_fields = ("lieferant", )
 
     inlines = (ProduktInlineProduktkategorien,)
 
