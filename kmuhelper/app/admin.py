@@ -1,6 +1,11 @@
 from django.contrib import admin, messages
+from django.urls import path
+from django.views.decorators.clickjacking import xframe_options_sameorigin as allow_iframe
+from django.views.generic import RedirectView
+
 from datetime import datetime
 from pytz import utc
+from functools import update_wrapper
 
 from kmuhelper.app.models import ToDoNotiz, ToDoVersand, ToDoZahlungseingang, ToDoLagerbestand, ToDoLieferung
 from kmuhelper.main.admin import NotizenAdmin, BestellungsAdmin, LieferungenAdmin, ProduktAdmin
@@ -26,10 +31,6 @@ class ToDoNotizenAdmin(NotizenAdmin):
         return False
 
     def get_urls(self):
-        from django.urls import path
-        from django.views.decorators.clickjacking import xframe_options_sameorigin as allow_iframe
-        from functools import update_wrapper
-
         def wrap(view):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(allow_iframe(view))(*args, **kwargs)
@@ -42,12 +43,14 @@ class ToDoNotizenAdmin(NotizenAdmin):
             path('', wrap(self.changelist_view),
                  name='%s_%s_changelist' % info),
             path('add/', wrap(self.add_view), name='%s_%s_add' % info),
-            path('autocomplete/', wrap(self.autocomplete_view),
-                 name='%s_%s_autocomplete' % info),
             # path('<path:object_id>/history/', wrap(self.history_view), name='%s_%s_history' % info),
             # path('<path:object_id>/delete/', wrap(self.delete_view), name='%s_%s_delete' % info),
             path('<path:object_id>/change/', wrap(self.change_view),
                  name='%s_%s_change' % info),
+            path('<path:object_id>/', wrap(RedirectView.as_view(
+                pattern_name='%s:%s_%s_change' % (
+                    (self.admin_site.name,) + info)
+            ))),
         ]
 
 
@@ -69,10 +72,6 @@ class ToDoVersandAdmin(BestellungsAdmin):
         return False
 
     def get_urls(self):
-        from django.urls import path
-        from django.views.decorators.clickjacking import xframe_options_sameorigin as allow_iframe
-        from functools import update_wrapper
-
         def wrap(view):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(allow_iframe(view))(*args, **kwargs)
@@ -85,12 +84,14 @@ class ToDoVersandAdmin(BestellungsAdmin):
             path('', wrap(self.changelist_view),
                  name='%s_%s_changelist' % info),
             path('add/', wrap(self.add_view), name='%s_%s_add' % info),
-            path('autocomplete/', wrap(self.autocomplete_view),
-                 name='%s_%s_autocomplete' % info),
             # path('<path:object_id>/history/', wrap(self.history_view), name='%s_%s_history' % info),
             # path('<path:object_id>/delete/', wrap(self.delete_view), name='%s_%s_delete' % info),
             path('<path:object_id>/change/', wrap(self.change_view),
                  name='%s_%s_change' % info),
+            path('<path:object_id>/', wrap(RedirectView.as_view(
+                pattern_name='%s:%s_%s_change' % (
+                    (self.admin_site.name,) + info)
+            ))),
         ]
 
 
@@ -112,10 +113,6 @@ class ToDoZahlungseingangAdmin(BestellungsAdmin):
         return False
 
     def get_urls(self):
-        from django.urls import path
-        from django.views.decorators.clickjacking import xframe_options_sameorigin as allow_iframe
-        from functools import update_wrapper
-
         def wrap(view):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(allow_iframe(view))(*args, **kwargs)
@@ -128,12 +125,14 @@ class ToDoZahlungseingangAdmin(BestellungsAdmin):
             path('', wrap(self.changelist_view),
                  name='%s_%s_changelist' % info),
             path('add/', wrap(self.add_view), name='%s_%s_add' % info),
-            path('autocomplete/', wrap(self.autocomplete_view),
-                 name='%s_%s_autocomplete' % info),
             # path('<path:object_id>/history/', wrap(self.history_view), name='%s_%s_history' % info),
             # path('<path:object_id>/delete/', wrap(self.delete_view), name='%s_%s_delete' % info),
             path('<path:object_id>/change/', wrap(self.change_view),
                  name='%s_%s_change' % info),
+            path('<path:object_id>/', wrap(RedirectView.as_view(
+                pattern_name='%s:%s_%s_change' % (
+                    (self.admin_site.name,) + info)
+            ))),
         ]
 
 
@@ -152,10 +151,6 @@ class ToDoLagerbestandAdmin(ProduktAdmin):
         return False
 
     def get_urls(self):
-        from django.urls import path
-        from django.views.decorators.clickjacking import xframe_options_sameorigin as allow_iframe
-        from functools import update_wrapper
-
         def wrap(view):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(allow_iframe(view))(*args, **kwargs)
@@ -168,12 +163,14 @@ class ToDoLagerbestandAdmin(ProduktAdmin):
             path('', wrap(self.changelist_view),
                  name='%s_%s_changelist' % info),
             path('add/', wrap(self.add_view), name='%s_%s_add' % info),
-            path('autocomplete/', wrap(self.autocomplete_view),
-                 name='%s_%s_autocomplete' % info),
             # path('<path:object_id>/history/', wrap(self.history_view), name='%s_%s_history' % info),
             # path('<path:object_id>/delete/', wrap(self.delete_view), name='%s_%s_delete' % info),
             path('<path:object_id>/change/', wrap(self.change_view),
                  name='%s_%s_change' % info),
+            path('<path:object_id>/', wrap(RedirectView.as_view(
+                pattern_name='%s:%s_%s_change' % (
+                    (self.admin_site.name,) + info)
+            ))),
         ]
 
 
@@ -189,10 +186,6 @@ class ToDoLieferungenAdmin(LieferungenAdmin):
         return False
 
     def get_urls(self):
-        from django.urls import path
-        from django.views.decorators.clickjacking import xframe_options_sameorigin as allow_iframe
-        from functools import update_wrapper
-
         def wrap(view):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(allow_iframe(view))(*args, **kwargs)
@@ -205,12 +198,14 @@ class ToDoLieferungenAdmin(LieferungenAdmin):
             path('', wrap(self.changelist_view),
                  name='%s_%s_changelist' % info),
             path('add/', wrap(self.add_view), name='%s_%s_add' % info),
-            path('autocomplete/', wrap(self.autocomplete_view),
-                 name='%s_%s_autocomplete' % info),
             # path('<path:object_id>/history/', wrap(self.history_view), name='%s_%s_history' % info),
             # path('<path:object_id>/delete/', wrap(self.delete_view), name='%s_%s_delete' % info),
             path('<path:object_id>/change/', wrap(self.change_view),
                  name='%s_%s_change' % info),
+            path('<path:object_id>/', wrap(RedirectView.as_view(
+                pattern_name='%s:%s_%s_change' % (
+                    (self.admin_site.name,) + info)
+            ))),
         ]
 
 #
