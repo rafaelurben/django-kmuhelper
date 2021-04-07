@@ -9,9 +9,11 @@ from django.views.decorators.clickjacking import xframe_options_sameorigin as al
 
 #####
 
+
 @login_required(login_url=reverse_lazy("admin:login"))
 def app_main(request):
     return render(request, "kmuhelper/app/main.html", {})
+
 
 @allow_iframe
 @login_required(login_url=reverse_lazy("admin:login"))
@@ -20,11 +22,13 @@ def app_home(request):
         "has_permission": True,
     })
 
+
 @allow_iframe
 def app_error(request):
     return render(request, "kmuhelper/app/error.html", {
         "has_permission": True,
     })
+
 
 @allow_iframe
 @login_required(login_url=reverse_lazy("admin:login"))
@@ -111,5 +115,3 @@ def app_manifest(request):
     response['Content-Type'] = 'text/json'
     response["Service-Worker-Allowed"] = "/"
     return response
-
-

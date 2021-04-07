@@ -17,18 +17,21 @@ import pytz
 
 #####
 
+
 def stats(request):
     return render(request, "kmuhelper/stats/index.html", {})
 
 
 def stats_products_price(request):
     try:
-        from_date = pytz.utc.localize(datetime.datetime.strptime(str(request.GET.get("from")), "%Y-%m-%d"))
+        from_date = pytz.utc.localize(datetime.datetime.strptime(
+            str(request.GET.get("from")), "%Y-%m-%d"))
     except (ValueError, IndexError):
         from_date = Bestellung.objects.order_by("datum").first().datum
 
     try:
-        to_date = pytz.utc.localize(datetime.datetime.strptime(str(request.GET.get("to")), "%Y-%m-%d"))
+        to_date = pytz.utc.localize(datetime.datetime.strptime(
+            str(request.GET.get("to")), "%Y-%m-%d"))
     except (ValueError, IndexError):
         to_date = Bestellung.objects.order_by("datum").last().datum
 
@@ -67,6 +70,7 @@ def stats_products_price(request):
     }
     return render(request, "kmuhelper/stats/products_price.html", context)
 
+
 def best_products(request):
     try:
         if "max" in request.GET:
@@ -77,12 +81,14 @@ def best_products(request):
         max_count = 20
 
     try:
-        from_date = pytz.utc.localize(datetime.datetime.strptime(str(request.GET.get("from")), "%Y-%m-%d"))
+        from_date = pytz.utc.localize(datetime.datetime.strptime(
+            str(request.GET.get("from")), "%Y-%m-%d"))
     except (ValueError, IndexError):
         from_date = Bestellung.objects.order_by("datum").first().datum
 
     try:
-        to_date = pytz.utc.localize(datetime.datetime.strptime(str(request.GET.get("to")), "%Y-%m-%d"))
+        to_date = pytz.utc.localize(datetime.datetime.strptime(
+            str(request.GET.get("to")), "%Y-%m-%d"))
     except (ValueError, IndexError):
         to_date = Bestellung.objects.order_by("datum").last().datum
 
@@ -96,7 +102,7 @@ def best_products(request):
 
     products = sorted(products.items(), key=lambda x: x[1], reverse=True)
     products = products[:max_count] if len(products) > max_count else products
-        
+
     context = {
         "has_permission": True,
         "product_names": [p[0] for p in products],

@@ -8,19 +8,17 @@ from django.utils.html import mark_safe
 from django.template.loader import get_template
 from django.conf import settings
 
-import uuid
 from io import BytesIO
-
-#####
-
 from rich import print
 
-prefix = "[deep_pink4][KMUHelper E-Mails][/] -"
+import uuid
+
 
 def log(string, *args):
-    print(prefix, string, *args)
+    print("[deep_pink4][KMUHelper E-Mails][/] -", string, *args)
 
 #####
+
 
 EMAILTYPEN = [
     ("", "-"),
@@ -30,6 +28,7 @@ EMAILTYPEN = [
 ]
 
 #####
+
 
 class EMailAttachment():
     def __init__(self, filename, content, url=None, mimetype="application/pdf"):
@@ -41,9 +40,11 @@ class EMailAttachment():
         if isinstance(content, BytesIO):
             self.content = content.read()
 
+
 class EMail(models.Model):
-    typ = models.CharField("Typ", choices=EMAILTYPEN, max_length=50, default="", blank=True)
-    
+    typ = models.CharField("Typ", choices=EMAILTYPEN,
+                           max_length=50, default="", blank=True)
+
     subject = models.CharField("Betreff", max_length=50)
     to = models.EmailField("Empfänger")
 
@@ -53,7 +54,8 @@ class EMail(models.Model):
     token = models.UUIDField("Token", default=uuid.uuid4, editable=False)
 
     time_created = models.DateTimeField("Erstellt am", auto_now_add=True)
-    time_sent = models.DateTimeField("Gesendet um", blank=True, null=True, default=None)
+    time_sent = models.DateTimeField(
+        "Gesendet um", blank=True, null=True, default=None)
 
     data = models.JSONField("Extradaten", default=dict)
 
@@ -86,7 +88,8 @@ class EMail(models.Model):
         msg.content_subtype = "html"
 
         for attachment in attachments:
-            msg.attach(filename=attachment.filename, content=attachment.content, mimetype=attachment.mimetype)
+            msg.attach(filename=attachment.filename,
+                       content=attachment.content, mimetype=attachment.mimetype)
 
         success = msg.send()
 
@@ -94,7 +97,8 @@ class EMail(models.Model):
 
         if success:
             self.time_sent = timezone.now()
-            self.data["attachments"] = [{"filename": a.filename, "url": a.url} for a in attachments]
+            self.data["attachments"] = [
+                {"filename": a.filename, "url": a.url} for a in attachments]
             self.save()
         return success
 

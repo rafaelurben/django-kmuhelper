@@ -2,6 +2,7 @@ from django.contrib import admin
 
 from kmuhelper.api.models import ApiKey
 
+
 @admin.register(ApiKey)
 class ApiKeyAdmin(admin.ModelAdmin):
     list_display = ['id', 'name', 'user', 'read', 'write', 'key_preview']
@@ -20,6 +21,7 @@ class ApiKeyAdmin(admin.ModelAdmin):
         return {}
 
 #
+
 
 modeladmins = [
     (ApiKey, ApiKeyAdmin),

@@ -14,6 +14,7 @@ from kmuhelper.api.decorators import api_read, api_write, api_readwrite
 
 #####
 
+
 def not_found(request):
     """Return a json error message"""
 
@@ -23,6 +24,7 @@ def not_found(request):
     })
 
 #####
+
 
 @api_read()
 def versions(request):

@@ -8,6 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 
+
 @login_required(login_url=reverse_lazy("admin:login"))
 def home(request):
     return render(request, "kmuhelper/home.html", {"has_permission": True})
@@ -16,6 +17,7 @@ def home(request):
 @login_required(login_url=reverse_lazy("admin:login"))
 def admin(request):
     return redirect(reverse("admin:app_list", kwargs={"app_label": "kmuhelper"}))
+
 
 def _templatetest(request, templatename):
     return render(request, templatename, {})

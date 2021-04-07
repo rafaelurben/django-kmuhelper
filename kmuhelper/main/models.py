@@ -7,7 +7,6 @@ from django.core.validators import RegexValidator, MinValueValidator, MaxValueVa
 from django.http import FileResponse
 from django.template.loader import get_template
 from django.utils.html import mark_safe
-from django.utils.safestring import mark_safe
 from django.urls import reverse
 
 from datetime import datetime
@@ -20,24 +19,17 @@ from kmuhelper.pdf_generators import PDFOrder
 
 from kmuhelper.emails.models import EMail, EMailAttachment
 
-###################
-
 from rich import print
 
-prefix = "[deep_pink4][KMUHelper Main][/] -"
 
 def log(string, *args):
-    print(prefix, string, *args)
+    print("[deep_pink4][KMUHelper Main][/] -", string, *args)
 
 ###################
 
 
 def defaultlieferungsname():
     return "Lieferung vom "+str(datetime.now().strftime("%d.%m.%Y"))
-
-
-def defaultbestellungsname():
-    return "Bestellung vom "+str(datetime.now().strftime("%d.%m.%Y"))
 
 
 def defaultzahlungsempfaenger():
@@ -311,7 +303,8 @@ class Bestellung(models.Model):
     kosten = models.ManyToManyField(
         "Kosten", through="Bestellungskosten", through_fields=("bestellung", "kosten"))
 
-    rechnungsemail = models.ForeignKey("EMail", on_delete=models.SET_NULL, blank=True, null=True)
+    rechnungsemail = models.ForeignKey(
+        "EMail", on_delete=models.SET_NULL, blank=True, null=True)
 
     fix_summe = models.FloatField("Summe in CHF", default=0.0)
 
@@ -440,11 +433,12 @@ class Bestellung(models.Model):
             "woocommerceid": str(self.woocommerceid),
             "woocommercedata": bool(self.woocommerceid),
         }
-        
+
         if self.rechnungsemail is None:
             self.rechnungsemail = EMail.objects.create(
                 typ="bestellung_rechnung",
-                subject=f"Ihre Rechnung Nr. { self.id }"+(" (Online #"+str(self.woocommerceid) +")" if self.woocommerceid else ""),
+                subject=f"Ihre Rechnung Nr. { self.id }"+(
+                    " (Online #"+str(self.woocommerceid) + ")" if self.woocommerceid else ""),
                 to=self.rechnungsadresse_email,
                 html_template="bestellung_rechnung.html",
                 html_context=context,
@@ -459,8 +453,10 @@ class Bestellung(models.Model):
             },
             attachments=[
                 EMailAttachment(
-                    filename=f"Rechnung Nr. { self.id }"+(" (Online #"+str(self.woocommerceid)+")" if self.woocommerceid else "")+".pdf",
-                    content=PDFOrder(self, lieferschein=False, digital=True).get_pdf(),
+                    filename=f"Rechnung Nr. { self.id }"+(
+                        " (Online #"+str(self.woocommerceid)+")" if self.woocommerceid else "")+".pdf",
+                    content=PDFOrder(self, lieferschein=False,
+                                     digital=True).get_pdf(),
                     url=self.get_public_pdf_url(),
                 )
             ],
@@ -495,7 +491,8 @@ class Bestellung(models.Model):
         data = {}
         for p in self.produkte.all():
             p_name = p.clean_name()
-            p_adminurl = reverse(f'admin:{p._meta.app_label}_{p._meta.model_name}_change', args=(p.pk,))
+            p_adminurl = reverse(
+                f'admin:{p._meta.app_label}_{p._meta.model_name}_change', args=(p.pk,))
 
             n_current = p.lagerbestand
             n_going = p.get_reserved_stock()
@@ -509,15 +506,16 @@ class Bestellung(models.Model):
                     "name": p_name,
                     "adminurl": p_adminurl,
                 },
-                "current": n_current, 
-                "going": n_going, 
-                "coming": n_coming, 
+                "current": n_current,
+                "going": n_going,
+                "coming": n_coming,
                 "min": n_min
             }
         return data
 
     def email_stock_warning(self):
-        email_receiver = Einstellung.objects.get(id="email-stock-warning-receiver").inhalt
+        email_receiver = Einstellung.objects.get(
+            id="email-stock-warning-receiver").inhalt
 
         if email_receiver:
             warnings = []
@@ -569,26 +567,26 @@ class Bestellung(models.Model):
             kundennotiz=f"Kopie aus Bestellung #{self.pk}\n--------------------------------\n{self.kundennotiz}",
         )
 
-        new.rechnungsadresse_vorname=self.rechnungsadresse_vorname
-        new.rechnungsadresse_nachname=self.rechnungsadresse_nachname
-        new.rechnungsadresse_firma=self.rechnungsadresse_firma
-        new.rechnungsadresse_adresszeile1=self.rechnungsadresse_adresszeile1
-        new.rechnungsadresse_adresszeile2=self.rechnungsadresse_adresszeile2
-        new.rechnungsadresse_ort=self.rechnungsadresse_ort
-        new.rechnungsadresse_kanton=self.rechnungsadresse_kanton
-        new.rechnungsadresse_plz=self.rechnungsadresse_plz
-        new.rechnungsadresse_land=self.rechnungsadresse_land
-        new.rechnungsadresse_email=self.rechnungsadresse_email
-        new.rechnungsadresse_telefon=self.rechnungsadresse_telefon
+        new.rechnungsadresse_vorname = self.rechnungsadresse_vorname
+        new.rechnungsadresse_nachname = self.rechnungsadresse_nachname
+        new.rechnungsadresse_firma = self.rechnungsadresse_firma
+        new.rechnungsadresse_adresszeile1 = self.rechnungsadresse_adresszeile1
+        new.rechnungsadresse_adresszeile2 = self.rechnungsadresse_adresszeile2
+        new.rechnungsadresse_ort = self.rechnungsadresse_ort
+        new.rechnungsadresse_kanton = self.rechnungsadresse_kanton
+        new.rechnungsadresse_plz = self.rechnungsadresse_plz
+        new.rechnungsadresse_land = self.rechnungsadresse_land
+        new.rechnungsadresse_email = self.rechnungsadresse_email
+        new.rechnungsadresse_telefon = self.rechnungsadresse_telefon
 
-        new.lieferadresse_vorname=self.lieferadresse_vorname
-        new.lieferadresse_nachname=self.lieferadresse_nachname
-        new.lieferadresse_firma=self.lieferadresse_firma
-        new.lieferadresse_adresszeile1=self.lieferadresse_adresszeile1
-        new.lieferadresse_adresszeile2=self.lieferadresse_adresszeile2
-        new.lieferadresse_ort=self.lieferadresse_ort
-        new.lieferadresse_kanton=self.lieferadresse_kanton
-        new.lieferadresse_plz=self.lieferadresse_plz
+        new.lieferadresse_vorname = self.lieferadresse_vorname
+        new.lieferadresse_nachname = self.lieferadresse_nachname
+        new.lieferadresse_firma = self.lieferadresse_firma
+        new.lieferadresse_adresszeile1 = self.lieferadresse_adresszeile1
+        new.lieferadresse_adresszeile2 = self.lieferadresse_adresszeile2
+        new.lieferadresse_ort = self.lieferadresse_ort
+        new.lieferadresse_kanton = self.lieferadresse_kanton
+        new.lieferadresse_plz = self.lieferadresse_plz
         new.lieferadresse_land = self.lieferadresse_land
 
         for bp in self.produkte.through.objects.filter(bestellung=self):
@@ -787,7 +785,8 @@ class Kunde(models.Model):
     webseite = models.URLField("Webseite", blank=True, default="")
     bemerkung = models.TextField("Bemerkung", default="", blank=True)
 
-    registrierungsemail = models.ForeignKey("EMail", on_delete=models.SET_NULL, blank=True, null=True)
+    registrierungsemail = models.ForeignKey(
+        "EMail", on_delete=models.SET_NULL, blank=True, null=True)
 
     def avatar(self):
         if self.avatar_url:
@@ -850,10 +849,11 @@ class Kunde(models.Model):
             for bestellung in self.zusammenfuegen.bestellung_set.all():
                 bestellung.kunde = self
                 bestellung.save()
-                
-            if self.zusammenfuegen.notiz:
-                self.zusammenfuegen.notiz.kunde = self
-                self.zusammenfuegen.notiz.save()
+
+            if getattr(self.zusammenfuegen, "notiz", False):
+                notiz = self.zusammenfuegen.notiz
+                notiz.kunde = None if getattr(self, "notiz", False) else self
+                notiz.save()
 
             self.zusammenfuegen.delete()
             self.zusammenfuegen = None
@@ -870,8 +870,8 @@ class Kunde(models.Model):
         if self.registrierungsemail is None:
             self.registrierungsemail = EMail.objects.create(
                 typ="kunde_registriert",
-                subject="Registrierung erfolgreich!", 
-                to=self.email, 
+                subject="Registrierung erfolgreich!",
+                to=self.email,
                 html_template="kunde_registriert.html",
                 html_context=context,
             )
@@ -879,7 +879,8 @@ class Kunde(models.Model):
             self.registrierungsemail.to = self.email
             self.registrierungsemail.html_context = context
 
-        success = self.registrierungsemail.send(headers={"Kunden-ID": str(self.pk)})
+        success = self.registrierungsemail.send(
+            headers={"Kunden-ID": str(self.pk)})
         self.save()
         return success
 
@@ -1057,7 +1058,7 @@ class Notiz(models.Model):
         if self.lieferung:
             text += "Lieferung <a href='"+reverse("admin:kmuhelper_lieferung_change", kwargs={
                                                   "object_id": self.lieferung.pk})+"'>#"+str(self.lieferung.pk)+"</a><br>"
-        return mark_safe(text or "Diese Notiz hat keine Verknüpfungen.")
+        return mark_safe(text) or "Diese Notiz hat keine Verknüpfungen."
 
     class Meta:
         verbose_name = "Notiz"
@@ -1239,7 +1240,8 @@ class Zahlungsempfaenger(models.Model):
                     return False
                 else:
                     b += str(ord(a)-55)
-            Nr = ''.join([z for z in str(self.qriban)[2:] if z in string.digits])
+            Nr = ''.join([z for z in str(self.qriban)
+                          [2:] if z in string.digits])
             return (int(int(Nr[2:] + b + Nr[:2]) % 97) == 1)
         except IndexError:
             return False
@@ -1404,7 +1406,7 @@ class Geheime_Einstellung(models.Model):
             self.floa = var
         elif self.typ == "url":
             self.url = var
-        elif self.typ == "emal":
+        elif self.typ == "email":
             return self.email
 
     def get_inhalt(self):

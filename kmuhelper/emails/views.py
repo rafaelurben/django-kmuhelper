@@ -13,6 +13,7 @@ from kmuhelper.emails.models import EMail
 
 #####
 
+
 def email_view(request, object_id):
     if EMail.objects.filter(id=object_id).exists():
         email = EMail.objects.get(id=object_id)

@@ -7,12 +7,14 @@ from kmuhelper.api.models import ApiKey
 
 import uuid
 
+
 def _is_valid_uuid(val):
     try:
         uuid.UUID(str(val))
         return True
     except ValueError:
         return False
+
 
 def protected(read=False, write=False, perms_required=[]):
     def decorator(function):
@@ -52,11 +54,14 @@ def protected(read=False, write=False, perms_required=[]):
 
 # Shortcuts
 
+
 def api_read(perms_required=[]):
-    return protected(read=True, write=False, perms_required=perms_required) 
+    return protected(read=True, write=False, perms_required=perms_required)
+
 
 def api_write(perms_required=[]):
     return protected(read=False, write=True, perms_required=perms_required)
+
 
 def api_readwrite(perms_required=[]):
     return protected(read=True, write=True, perms_required=perms_required)

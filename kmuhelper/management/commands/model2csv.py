@@ -4,6 +4,7 @@
 
 import csv
 from django.core.management.base import BaseCommand, CommandError
+from django.apps import apps
 
 
 class Command(BaseCommand):
@@ -20,7 +21,6 @@ class Command(BaseCommand):
                             help='Save path, like </path/to/outfile.csv> or "/data/members.csv"')
 
     def handle(self, *app_labels, **options):
-        from django.apps import apps
         app_name, model_name = options['model'][0].split('.')
         model = apps.get_model(app_name, model_name)
         field_names = [f.name for f in model._meta.fields]

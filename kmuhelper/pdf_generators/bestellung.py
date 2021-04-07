@@ -24,13 +24,14 @@ class _PDFOrderPriceTable(Table):
     def __init__(self, bestellung):
         sprache = bestellung.kunde.sprache if bestellung.kunde and bestellung.kunde.sprache else "de"
 
-        data = [(_("Art-Nr."),_("Bezeichnung"),_("Anzahl"),_("Einheit"),_("Preis"),_("Total"))]
+        data = [(_("Art-Nr."), _("Bezeichnung"), _("Anzahl"),
+                 _("Einheit"), _("Preis"), _("Total"))]
 
-        style_default = ParagraphStyle("Normal",fontname="Helvetica")
-        style_bold = ParagraphStyle("Bold",fontname="Helvetica-Bold")
+        style_default = ParagraphStyle("Normal", fontname="Helvetica")
+        style_bold = ParagraphStyle("Bold", fontname="Helvetica-Bold")
 
-
-        for bp in bestellung.produkte.through.objects.filter(bestellung=bestellung):  # Produkte
+        # Produkte
+        for bp in bestellung.produkte.through.objects.filter(bestellung=bestellung):
             data.append((
                 bp.produkt.artikelnummer,
                 Paragraph(clean(bp.produkt.name, sprache), style_default),
@@ -60,7 +61,8 @@ class _PDFOrderPriceTable(Table):
 
         kostenzeilen = 0
 
-        for bk in bestellung.kosten.through.objects.filter(bestellung=bestellung):  # Kosten
+        # Kosten
+        for bk in bestellung.kosten.through.objects.filter(bestellung=bestellung):
             data.append((
                 "",
                 Paragraph(clean(bk.kosten.name, sprache), style_default),
@@ -113,11 +115,11 @@ class _PDFOrderPriceTable(Table):
         ))
 
         style = [
-            ('LINEABOVE', (0,0), (-1,0), 1, black),
-            ('LINEBELOW', (0,0), (-1,0), 1, black),
-            ('LINEABOVE', (0,-1-kostenzeilen), (-1,-1-kostenzeilen), 0.5, black),
-            ('LINEABOVE', (0,-1), (-1,-1), 1, black),
-            ('LINEBELOW', (0,-1), (-1,-1), 1, black),
+            ('LINEABOVE', (0, 0), (-1, 0), 1, black),
+            ('LINEBELOW', (0, 0), (-1, 0), 1, black),
+            ('LINEABOVE', (0, -1-kostenzeilen), (-1, -1-kostenzeilen), 0.5, black),
+            ('LINEABOVE', (0, -1), (-1, -1), 1, black),
+            ('LINEBELOW', (0, -1), (-1, -1), 1, black),
             ('ALIGN', (-1, 0), (-1, -1), "RIGHT"),
             ('ALIGN', (-2, 0), (-2, -1), "RIGHT"),
             ('ALIGN', (-4, 0), (-4, -1), "RIGHT"),
@@ -126,21 +128,23 @@ class _PDFOrderPriceTable(Table):
             ('VALIGN', (0, 0), (-1, -1), "TOP"),
         ]
 
-        super().__init__(data, repeatRows=1, style=TableStyle(style), colWidths=[26*mm,80*mm,20*mm,20*mm,20*mm,20*mm])
+        super().__init__(data, repeatRows=1, style=TableStyle(style),
+                         colWidths=[26*mm, 80*mm, 20*mm, 20*mm, 20*mm, 20*mm])
 
 
 class _PDFOrderProductTable(Table):
     def __init__(self, bestellung):
         sprache = bestellung.kunde.sprache if bestellung.kunde and bestellung.kunde.sprache else "de"
 
-        data = [(_("Art-Nr."),_("Bezeichnung"),_("Anzahl"),_("Einheit"))]
+        data = [(_("Art-Nr."), _("Bezeichnung"), _("Anzahl"), _("Einheit"))]
 
-        style_default = ParagraphStyle("Normal",fontname="Helvetica")
-        style_bold = ParagraphStyle("Bold",fontname="Helvetica-Bold")
+        style_default = ParagraphStyle("Normal", fontname="Helvetica")
+        style_bold = ParagraphStyle("Bold", fontname="Helvetica-Bold")
 
         produktanzahl = 0
 
-        for bp in bestellung.produkte.through.objects.filter(bestellung=bestellung):  # Produkte
+        # Produkte
+        for bp in bestellung.produkte.through.objects.filter(bestellung=bestellung):
             data.append((
                 bp.produkt.artikelnummer,
                 Paragraph(clean(bp.produkt.name, sprache), style_default),
@@ -165,16 +169,17 @@ class _PDFOrderProductTable(Table):
         ))
 
         style = [
-            ('LINEABOVE', (0,0), (-1,0), 1, black),
-            ('LINEBELOW', (0,0), (-1,0), 1, black),
-            ('LINEABOVE', (0,-1), (-1,-1), 1, black),
-            ('LINEBELOW', (0,-1), (-1,-1), 1, black),
+            ('LINEABOVE', (0, 0), (-1, 0), 1, black),
+            ('LINEBELOW', (0, 0), (-1, 0), 1, black),
+            ('LINEABOVE', (0, -1), (-1, -1), 1, black),
+            ('LINEBELOW', (0, -1), (-1, -1), 1, black),
             ('ALIGN', (1, -1), (1, -1), "CENTER"),
             ('FONTNAME', (0, -1), (-1, -1), "Helvetica-Bold"),
             ('VALIGN', (0, 0), (-1, -1), "TOP"),
         ]
 
-        super().__init__(data, repeatRows=1, style=TableStyle(style), colWidths=[36*mm,110*mm,20*mm,20*mm])
+        super().__init__(data, repeatRows=1, style=TableStyle(
+            style), colWidths=[36*mm, 110*mm, 20*mm, 20*mm])
 
 
 class _PDFOrderQrInvoice(Flowable):
@@ -196,16 +201,16 @@ class _PDFOrderQrInvoice(Flowable):
     def debug(self):
         c = self.canv
         c.setStrokeColor("green")
-        c.rect(5*mm,5*mm,52*mm,95*mm) # Empfangsschein
-        c.rect(67*mm,5*mm,138*mm,95*mm) # Zahlteil
-        c.rect(67*mm,42*mm,46*mm,46*mm) # QR-Code
-        c.line(5*mm,23*mm,57*mm,23*mm)
-        c.line(5*mm,37*mm,57*mm,37*mm)
-        c.line(5*mm,93*mm,57*mm,93*mm)
-        c.line(67*mm,93*mm,118*mm,93*mm)
-        c.line(67*mm,37*mm,118*mm,37*mm)
-        c.line(67*mm,15*mm,205*mm,15*mm)
-        c.line(118*mm,100*mm,118*mm,15*mm)
+        c.rect(5*mm, 5*mm, 52*mm, 95*mm)  # Empfangsschein
+        c.rect(67*mm, 5*mm, 138*mm, 95*mm)  # Zahlteil
+        c.rect(67*mm, 42*mm, 46*mm, 46*mm)  # QR-Code
+        c.line(5*mm, 23*mm, 57*mm, 23*mm)
+        c.line(5*mm, 37*mm, 57*mm, 37*mm)
+        c.line(5*mm, 93*mm, 57*mm, 93*mm)
+        c.line(67*mm, 93*mm, 118*mm, 93*mm)
+        c.line(67*mm, 37*mm, 118*mm, 37*mm)
+        c.line(67*mm, 15*mm, 205*mm, 15*mm)
+        c.line(118*mm, 100*mm, 118*mm, 15*mm)
         c.setStrokeColor("black")
 
     def get_swiss_qr_payload(self):
@@ -216,83 +221,89 @@ class _PDFOrderQrInvoice(Flowable):
         def ln(text=""):
             qrpayload.append(text)
 
-        #QRCH
-            #Header
-                #QRType
+        # QRCH
+        # - Header
+        # - - QRType
         ln("SPC")
-                #Version
+        # - - Version
         ln("0200")
-                #Coding
+        # - - Coding
         ln("1")
-            #CdtrInf (Empfänger)
-                #IBAN
+        
+        # - CdtrInf (Empfänger)
+        # - - IBAN
         ln(ze.qriban.replace(" ",""))
-                #Cdtr
-                    #AdrTp
+        # - - Cdtr
+        # - - - AdrTp
         ln("K")
-                    #Name
+        # - - - Name
         ln(ze.firmenname)
-                    #StrtNmOrAdrLine1
+        # - - - StrtNmOrAdrLine1
         ln(ze.adresszeile1)
-                    #BldgNbOrAdrLine2
+        # - - - BldgNbOrAdrLine2
         ln(ze.adresszeile2)
-                    #PstCd
+        # - - - PstCd
         ln()
-                    #TwnNm
+        # - - - TwnNm
         ln()
-                    #Ctry (2-stelliger Landescode gemäss ISO 3166-1)
+        # - - - Ctry (2-stelliger Landescode gemäss ISO 3166-1)
         ln(ze.land)
-            #UltmtCdtr (Entgültiger Zahlungsempfänger)
-                #AdrTp
+
+        # - UltmtCdtr (Entgültiger Zahlungsempfänger)
+        # - - AdrTp
         ln()
-                #Name
+        # - - Name
         ln()
-                #StrtNmOrAdrLine1
+        # - - StrtNmOrAdrLine1
         ln()
-                #BldgNbOrAdrLine2
+        # - - BldgNbOrAdrLine2
         ln()
-                #PstCd
+        # - - PstCd
         ln()
-                #TwnNm
+        # - - TwnNm
         ln()
-                #Ctry (2-stelliger Landescode gemäss ISO 3166-1)
+        # - - Ctry (2-stelliger Landescode gemäss ISO 3166-1)
         ln()
-            #CcyAmt
-                #Amt
+
+        # - CcyAmt
+        # - - Amt
         ln("{:.2f}".format(bestellung.summe_gesamt()))
-                #Ccy
+        # - - Ccy
         ln("CHF")
-            #UltmtDbtr (Entgültiger Zahlungspflichtiger)
-                #AdrTp
+
+        #- UltmtDbtr (Entgültiger Zahlungspflichtiger)
+        # - - AdrTp
         ln("K")
-                #Name
+        # - - Name
         ln((bestellung.rechnungsadresse_vorname+" "+bestellung.rechnungsadresse_nachname) if not bestellung.rechnungsadresse_firma else bestellung.rechnungsadresse_firma)
-                #StrtNmOrAdrLine1
+        # - - StrtNmOrAdrLine1
         ln(bestellung.rechnungsadresse_adresszeile1)
-                #BldgNbOrAdrLine2
+        # - - BldgNbOrAdrLine2
         ln(bestellung.rechnungsadresse_plz+" "+bestellung.rechnungsadresse_ort)
-                #PstCd
+        # - - PstCd
         ln()
-                #TwnNm
+        # - - TwnNm
         ln()
-                #Ctry (2-stelliger Landescode gemäss ISO 3166-1)
+        # - - Ctry (2-stelliger Landescode gemäss ISO 3166-1)
         ln(bestellung.rechnungsadresse_land)
-            #RmtIn
-                #TP
+
+        # - RmtIn
+        # - - TP
         ln("QRR")
-                #Ref
+        # - - Ref
         ln(bestellung.referenznummer().replace(" ",""))
-                #AddInf
-                    #Ustrd
+        # - - AddInf
+        # - - - Ustrd
         ln(str(bestellung.datum.strftime("%d.%m.%Y")))
-                    #Trailer
+        # - - - Trailer
         ln("EPD")
-                    #StrdBkgInf
+        # - - - StrdBkgInf
         ln(bestellung.rechnungsinformationen())
-            #AltPmtInf
-                #AltPmt
+
+        ## - AltPmtInf
+        ## - - AltPmt
         #ln()
-                #AltPmt
+        ## - - AltPmt
         #ln()
 
         return "\n".join(qrpayload)
@@ -302,7 +313,8 @@ class _PDFOrderQrInvoice(Flowable):
         bestelldatum = str(bestellung.datum.strftime("%d.%m.%Y"))
         rechnungsinformationen = bestellung.rechnungsinformationen().split("/31/")
         referenznummer = bestellung.referenznummer()
-        gesamtsumme = format(bestellung.summe_gesamt(),"08,.2f").replace(","," ").lstrip(" 0")
+        gesamtsumme = format(bestellung.summe_gesamt(),
+                             "08,.2f").replace(",", " ").lstrip(" 0")
         ze = bestellung.zahlungsempfaenger
 
         c = self.canv
@@ -315,18 +327,19 @@ class _PDFOrderQrInvoice(Flowable):
         qrbounds = qr_code.getBounds()
         qrwidth = qrbounds[2] - qrbounds[0]
         qrheight = qrbounds[3] - qrbounds[1]
-        d = Drawing(52.2*mm, 52.2*mm, transform=[52.2*mm/qrwidth,0,0,52.2*mm/qrheight,0,0]) # 46, 46
+        d = Drawing(
+            52.2*mm, 52.2*mm, transform=[52.2*mm/qrwidth, 0, 0, 52.2*mm/qrheight, 0, 0])  # 46, 46
         d.add(qr_code)
-        renderPDF.draw(d, c, 63.9*mm, 38.9*mm) # 67, 42
+        renderPDF.draw(d, c, 63.9*mm, 38.9*mm)  # 67, 42
 
         # Schweizerkreuz
 
         c.setFillColor("black")
         c.setStrokeColor("white")
-        c.rect(86.5*mm,61.5*mm,7*mm,7*mm,fill=1,stroke=1)
+        c.rect(86.5*mm, 61.5*mm, 7*mm, 7*mm, fill=1, stroke=1)
         c.setFillColor("white")
-        c.rect(89.25*mm,63*mm,1.5*mm,4*mm,fill=1,stroke=0)
-        c.rect(88*mm,64.25*mm,4*mm,1.5*mm,fill=1,stroke=0)
+        c.rect(89.25*mm, 63*mm, 1.5*mm, 4*mm, fill=1, stroke=0)
+        c.rect(88*mm, 64.25*mm, 4*mm, 1.5*mm, fill=1, stroke=0)
 
         c.setFillColor("black")
         c.setStrokeColor("black")
@@ -334,56 +347,61 @@ class _PDFOrderQrInvoice(Flowable):
         # Begrenzungen Empfangsschein und Zahlteil und Abzutrennen-Hinweis
 
         if self.digital:
-            c.line(0*mm,105*mm,210*mm,105*mm)
-            c.line(62*mm,0*mm,62*mm,105*mm)
+            c.line(0*mm, 105*mm, 210*mm, 105*mm)
+            c.line(62*mm, 0*mm, 62*mm, 105*mm)
             c.setFont("Helvetica-Bold", 8)
-            c.drawCentredString(105*mm, 107*mm, _("Vor der Einzahlung abzutrennen"))
+            c.drawCentredString(
+                105*mm, 107*mm, _("Vor der Einzahlung abzutrennen"))
 
         # Titel
 
         def titel(t, text, klein=False):
             t.setFont("Helvetica-Bold", 6 if klein else 8)
             t.textLine(text)
-            t.moveCursor(0,2)
+            t.moveCursor(0, 2)
             t.setFont("Helvetica", 8 if klein else 10)
 
         # Empfangsschein Angaben
-        t = c.beginText(5*mm,90*mm)
-        titel(t,_("Konto / Zahlbar an"),True)
+        t = c.beginText(5*mm, 90*mm)
+        titel(t, _("Konto / Zahlbar an"), True)
         t.textLine(ze.qriban)
         t.textLine(ze.firmenname)
         t.textLine(ze.adresszeile1)
         t.textLine(ze.adresszeile2)
-        t.moveCursor(0,9)
-        titel(t,_("Referenz"),True)
+        t.moveCursor(0, 9)
+        titel(t, _("Referenz"), True)
         t.textLine(referenznummer)
-        t.moveCursor(0,9)
-        titel(t,_("Zahlbar durch"),True)
-        t.textLine((bestellung.rechnungsadresse_vorname+" "+bestellung.rechnungsadresse_nachname) if not bestellung.rechnungsadresse_firma else bestellung.rechnungsadresse_firma)
+        t.moveCursor(0, 9)
+        titel(t, _("Zahlbar durch"), True)
+        t.textLine((bestellung.rechnungsadresse_vorname+" "+bestellung.rechnungsadresse_nachname)
+                   if not bestellung.rechnungsadresse_firma else bestellung.rechnungsadresse_firma)
         t.textLine(bestellung.rechnungsadresse_adresszeile1)
-        t.textLine(bestellung.rechnungsadresse_plz+" "+bestellung.rechnungsadresse_ort)
+        t.textLine(bestellung.rechnungsadresse_plz +
+                   " "+bestellung.rechnungsadresse_ort)
         c.drawText(t)
 
         # Zahlteil Angaben
-        t = c.beginText(118*mm,97*mm)
-        titel(t,_("Konto / Zahlbar an"))
+        t = c.beginText(118*mm, 97*mm)
+        titel(t, _("Konto / Zahlbar an"))
         t.textLine(ze.qriban)
         t.textLine(ze.firmenname)
         t.textLine(ze.adresszeile1)
         t.textLine(ze.adresszeile2)
-        t.moveCursor(0,9)
-        titel(t,_("Referenz"))
+        t.moveCursor(0, 9)
+        titel(t, _("Referenz"))
         t.textLine(referenznummer)
-        t.moveCursor(0,9)
-        titel(t,_("Zusätzliche Informationen"))
+        t.moveCursor(0, 9)
+        titel(t, _("Zusätzliche Informationen"))
         t.textLine(bestelldatum)
         t.textLine(rechnungsinformationen[0])
         t.textLine("/31/"+rechnungsinformationen[1])
-        t.moveCursor(0,9)
-        titel(t,_("Zahlbar durch"))
-        t.textLine((bestellung.rechnungsadresse_vorname+" "+bestellung.rechnungsadresse_nachname) if not bestellung.rechnungsadresse_firma else bestellung.rechnungsadresse_firma)
+        t.moveCursor(0, 9)
+        titel(t, _("Zahlbar durch"))
+        t.textLine((bestellung.rechnungsadresse_vorname+" "+bestellung.rechnungsadresse_nachname)
+                   if not bestellung.rechnungsadresse_firma else bestellung.rechnungsadresse_firma)
         t.textLine(bestellung.rechnungsadresse_adresszeile1)
-        t.textLine(bestellung.rechnungsadresse_plz+" "+bestellung.rechnungsadresse_ort)
+        t.textLine(bestellung.rechnungsadresse_plz +
+                   " "+bestellung.rechnungsadresse_ort)
         c.drawText(t)
 
         # Texte
@@ -417,12 +435,12 @@ class _PDFOrderQrInvoice(Flowable):
         # c.drawString(82*mm, 8*mm, "Linie 2")
 
         # if settings.DEBUG:
-            # self.debug()
+        # self.debug()
 
         c.restoreState()
 
     def draw(self):
-        self.canv.translate(-12*mm,-12*mm)
+        self.canv.translate(-12*mm, -12*mm)
         self.draw_qr_invoice()
 
 
@@ -452,7 +470,8 @@ class _PDFOrderHeader(Flowable):
 
         # Logo
         if ze.logourl:
-            c.drawImage(ImageReader(ze.logourl), 120*mm, 67*mm, width=20*mm, height=-20*mm, mask="auto", anchor="nw")
+            c.drawImage(ImageReader(ze.logourl), 120*mm, 67*mm,
+                        width=20*mm, height=-20*mm, mask="auto", anchor="nw")
 
         # Firmenname
         c.setFont("Helvetica-Bold", 14)
@@ -462,7 +481,8 @@ class _PDFOrderHeader(Flowable):
         t = c.beginText(12*mm, 57*mm)
         t.setFont("Helvetica", 10)
         t.textLine(ze.adresszeile1)
-        t.textLine((ze.land+"-" if not ze.land == "CH" else "")+ze.adresszeile2)
+        t.textLine((ze.land+"-" if not ze.land ==
+                    "CH" else "")+ze.adresszeile2)
         c.drawText(t)
 
         # Firmendaten: Texte
@@ -488,8 +508,8 @@ class _PDFOrderHeader(Flowable):
         t.setFont("Helvetica", 12)
         t.textLine(_("Ihr/e Ansprechpartner/in"))
         t.textLine(_("Ihre Kundennummer"))
-        t.textLine(_("Ihre Bestellung vom"))  
-        if not self.lieferschein:  
+        t.textLine(_("Ihre Bestellung vom"))
+        if not self.lieferschein:
             t.textLine(_("Rechnungsdatum"))
         c.drawText(t)
 
@@ -497,10 +517,12 @@ class _PDFOrderHeader(Flowable):
         t = c.beginText(64*mm, 27*mm)
         t.setFont("Helvetica", 12)
         t.textLine(bestellung.ansprechpartner.name)
-        t.textLine(str(bestellung.kunde.pk).zfill(6) if bestellung.kunde else "n.a.")
+        t.textLine(str(bestellung.kunde.pk).zfill(6)
+                   if bestellung.kunde else "n.a.")
         t.textLine(bestelldatum)
-        if not self.lieferschein:  
-            t.textLine((bestellung.rechnungsdatum or bestellung.datum).strftime("%d.%m.%Y"))
+        if not self.lieferschein:
+            t.textLine(
+                (bestellung.rechnungsdatum or bestellung.datum).strftime("%d.%m.%Y"))
         c.drawText(t)
 
         # Kundenadresse
@@ -510,20 +532,24 @@ class _PDFOrderHeader(Flowable):
             if bestellung.lieferadresse_firma:
                 t.textLine(bestellung.lieferadresse_firma)
             if bestellung.lieferadresse_vorname or bestellung.lieferadresse_nachname:
-                t.textLine((bestellung.lieferadresse_vorname+" " if bestellung.lieferadresse_vorname else "")+(bestellung.lieferadresse_nachname or ""))
+                t.textLine((bestellung.lieferadresse_vorname+" " if bestellung.lieferadresse_vorname else "")+(
+                    bestellung.lieferadresse_nachname or ""))
             t.textLine(bestellung.lieferadresse_adresszeile1)
             if bestellung.lieferadresse_adresszeile2:
                 t.textLine(bestellung.lieferadresse_adresszeile2)
-            t.textLine(bestellung.lieferadresse_plz+" "+bestellung.lieferadresse_ort)
+            t.textLine(bestellung.lieferadresse_plz +
+                       " "+bestellung.lieferadresse_ort)
         else:
             if bestellung.rechnungsadresse_firma:
                 t.textLine(bestellung.rechnungsadresse_firma)
             if bestellung.rechnungsadresse_vorname or bestellung.rechnungsadresse_nachname:
-                t.textLine((bestellung.rechnungsadresse_vorname+" " if bestellung.rechnungsadresse_vorname else "")+(bestellung.rechnungsadresse_nachname or ""))
+                t.textLine((bestellung.rechnungsadresse_vorname+" " if bestellung.rechnungsadresse_vorname else "")+(
+                    bestellung.rechnungsadresse_nachname or ""))
             t.textLine(bestellung.rechnungsadresse_adresszeile1)
             if bestellung.rechnungsadresse_adresszeile2:
                 t.textLine(bestellung.rechnungsadresse_adresszeile2)
-            t.textLine(bestellung.rechnungsadresse_plz+" "+bestellung.rechnungsadresse_ort)
+            t.textLine(bestellung.rechnungsadresse_plz +
+                       " "+bestellung.rechnungsadresse_ort)
         c.drawText(t)
 
         # Rechnung
@@ -531,16 +557,18 @@ class _PDFOrderHeader(Flowable):
         if self.lieferschein:
             c.drawString(12*mm, 0*mm, _("LIEFERSCHEIN"))
         else:
-            c.drawString(12*mm, 0*mm, self.bestellung.rechnungstitel or _("RECHNUNG"))
+            c.drawString(
+                12*mm, 0*mm, self.bestellung.rechnungstitel or _("RECHNUNG"))
 
         c.setFont("Helvetica", 10)
         if not (self.bestellung.rechnungstitel and len(self.bestellung.rechnungstitel) > 20):
-            c.drawString(64*mm, 0*mm, (bestellung.datum.strftime("%Y")+"-"+str(bestellung.pk).zfill(6)+(" (Online #"+str(bestellung.woocommerceid)+")" if bestellung.woocommerceid else "")))
+            c.drawString(64*mm, 0*mm, (bestellung.datum.strftime("%Y")+"-"+str(bestellung.pk).zfill(
+                6)+(" (Online #"+str(bestellung.woocommerceid)+")" if bestellung.woocommerceid else "")))
 
         c.restoreState()
 
     def draw(self):
-        self.canv.translate(-12*mm,-40*mm)
+        self.canv.translate(-12*mm, -40*mm)
         self.draw_header()
 
 
@@ -554,8 +582,8 @@ class PDFOrder(PDFGenerator):
 
         # Invoice text
         if bestellung.rechnungstext:
-            elements += [ 
-                Paragraph(bestellung.rechnungstext.replace("\n","\n<br />")),
+            elements += [
+                Paragraph(bestellung.rechnungstext.replace("\n", "\n<br />")),
                 Spacer(1, 10*mm),
             ]
 
@@ -565,9 +593,9 @@ class PDFOrder(PDFGenerator):
                 _PDFOrderProductTable(bestellung)
             ]
         else:
-            elements += [ 
+            elements += [
                 _PDFOrderPriceTable(bestellung),
-                Spacer(1, 65*mm), 
+                Spacer(1, 65*mm),
                 TopPadder(_PDFOrderQrInvoice(bestellung, digital))
             ]
 

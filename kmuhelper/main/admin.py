@@ -600,42 +600,23 @@ class ProduktInlineProduktkategorien(admin.TabularInline):
 @admin.register(Produkt)
 class ProduktAdmin(admin.ModelAdmin):
     def get_fieldsets(self, request, obj=None):
-        if obj:
-            return [
-                ('Infos', {'fields': ['artikelnummer', 'name']}),
-                ('Beschrieb', {'fields': [
-                 'kurzbeschrieb', 'beschrieb'], 'classes': ["collapse start-open"]}),
-                ('Daten', {'fields': [
-                 'mengenbezeichnung', 'verkaufspreis', 'mwstsatz', 'lagerbestand', 'soll_lagerbestand']}),
-                ('Lieferant', {'fields': [
-                 'lieferant', 'lieferant_preis', 'lieferant_artikelnummer', 'lieferant_url'], 'classes': [
-                    "collapse start-open"]}),
-                ('Aktion', {'fields': ['aktion_von', 'aktion_bis', 'aktion_preis'], 'classes': [
-                 "collapse start-open"]}),
-                ('Links', {'fields': ['datenblattlink', 'bildlink'], 'classes': [
-                 "collapse"]}),
-                # packlistenbemerkung
-                ('Bemerkung / Notiz',
-                 {'fields': ['bemerkung', 'html_notiz'], 'classes': ["collapse start-open"]})
-            ]
-        else:
-            return [
-                ('Infos', {'fields': ['artikelnummer', 'name']}),
-                ('Beschrieb', {'fields': [
-                 'kurzbeschrieb', 'beschrieb'], 'classes': ["collapse start-open"]}),
-                ('Daten', {'fields': [
-                 'mengenbezeichnung', 'verkaufspreis', 'mwstsatz', 'lagerbestand', 'soll_lagerbestand']}),
-                ('Lieferant', {'fields': [
-                 'lieferant', 'lieferant_preis', 'lieferant_artikelnummer', 'lieferant_url'], 'classes': [
-                    "collapse start-open"]}),
-                ('Aktion', {'fields': ['aktion_von', 'aktion_bis', 'aktion_preis'], 'classes': [
-                 "collapse start-open"]}),
-                ('Links', {'fields': ['datenblattlink', 'bildlink'], 'classes': [
-                 "collapse"]}),
-                # packlistenbemerkung
-                ('Bemerkung', {'fields': ['bemerkung'], 'classes': [
-                 "collapse start-open"]})
-            ]
+        return [
+            ('Infos', {'fields': ['artikelnummer', 'name']}),
+            ('Beschrieb', {'fields': [
+                'kurzbeschrieb', 'beschrieb'], 'classes': ["collapse start-open"]}),
+            ('Daten', {'fields': [
+                'mengenbezeichnung', 'verkaufspreis', 'mwstsatz', 'lagerbestand', 'soll_lagerbestand']}),
+            ('Lieferant', {'fields': [
+                'lieferant', 'lieferant_preis', 'lieferant_artikelnummer', 'lieferant_url'], 'classes': [
+                "collapse start-open"]}),
+            ('Aktion', {'fields': ['aktion_von', 'aktion_bis', 'aktion_preis'], 'classes': [
+                "collapse start-open"]}),
+            ('Links', {'fields': ['datenblattlink', 'bildlink'], 'classes': [
+                "collapse"]}),
+            # packlistenbemerkung
+            ('Bemerkung / Notiz',
+                {'fields': ['bemerkung', 'html_notiz'] if obj else ['bemerkung'], 'classes': ["collapse start-open"]})
+        ]
 
     ordering = ('artikelnummer', 'name')
 

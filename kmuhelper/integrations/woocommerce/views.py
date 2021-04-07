@@ -13,19 +13,16 @@ from random import randint
 from kmuhelper.main.models import Einstellung, Geheime_Einstellung, Produkt, Kunde, Kategorie, Lieferant, Lieferung, Bestellung, Bestellungsposten
 from kmuhelper.integrations.woocommerce.api import WooCommerce
 
-import json
-
-#####
-
 from rich import print
 
-prefix = "[deep_pink4][KMUHelper][/] -"
+import json
 
 
 def log(string, *args):
-    print(prefix, string, *args)
+    print("[deep_pink4][KMUHelper][/] -", string, *args)
 
 #####
+
 
 @csrf_exempt
 def wc_auth_key(request):

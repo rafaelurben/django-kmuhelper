@@ -7,16 +7,12 @@ from woocommerce import API as WCAPI
 from kmuhelper.main.models import Einstellung, Geheime_Einstellung, Produkt, Kunde, Kategorie, Bestellung, Bestellungsposten, Kosten
 from kmuhelper.utils import runden
 
-###############
-
 from rich import print
 from rich.progress import Progress
 
-prefix = "[deep_pink4][KMUHelper][/] -"
-
 
 def log(string, *args):
-    print(prefix, string, *args)
+    print("[deep_pink4][KMUHelper][/] -", string, *args)
 
 
 def preparestring(string):

@@ -5,6 +5,7 @@ from kmuhelper.main.models import Notiz, Bestellung, Produkt, Lieferung
 
 #####
 
+
 class ToDoNotizManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(erledigt=False)

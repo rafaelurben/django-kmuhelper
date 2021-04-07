@@ -2,10 +2,12 @@ from django.db import models
 from django.conf import settings
 import uuid
 
+
 class ApiKey(models.Model):
     key = models.UUIDField("Key", default=uuid.uuid4, unique=True)
     name = models.CharField("Name", max_length=100, blank=True, default="")
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE)
 
     read = models.BooleanField("Read permission?", default=True)
     write = models.BooleanField("Write permission?", default=False)

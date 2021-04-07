@@ -20,10 +20,11 @@ def lieferant_zuordnen(request, object_id):
     if Lieferant.objects.filter(id=int(object_id)).exists():
         count = Lieferant.objects.get(id=int(object_id)).zuordnen()
         messages.success(request, ('Lieferant wurde ' + (('{} neuen Produkten' if count > 1 else 'einem neuen Produkt')
-                                                        if count != 0 else "keinem neuen Produkt") + ' zugeordnet!').format(count))
+                                                         if count != 0 else "keinem neuen Produkt") + ' zugeordnet!').format(count))
     else:
         messages.error(request, "Lieferant konnte nicht gefunden werden!")
     return redirect(reverse("admin:kmuhelper_lieferant_change", args=[object_id]))
+
 
 @login_required(login_url=reverse_lazy("admin:login"))
 @confirm_action("Lieferung einlagern")
@@ -51,6 +52,7 @@ def kunde_email_registriert(request, object_id):
     else:
         messages.error(request, "Kunde konnte nicht gefunden werden!")
     return redirect(reverse("admin:kmuhelper_kunde_change", args=[object_id]))
+
 
 @login_required(login_url=reverse_lazy("admin:login"))
 def bestellung_pdf_ansehen(request, object_id):
@@ -84,7 +86,8 @@ def bestellung_pdf_an_kunden_senden(request, object_id):
 def bestellung_duplizieren(request, object_id):
     if Bestellung.objects.filter(id=int(object_id)).exists():
         new = Bestellung.objects.get(id=int(object_id)).duplicate()
-        messages.success(request, "Bestellung wurde dupliziert! HINWEIS: Dies ist die neu erstellte Bestellung!")
+        messages.success(
+            request, "Bestellung wurde dupliziert! HINWEIS: Dies ist die neu erstellte Bestellung!")
         return redirect(reverse("admin:kmuhelper_bestellung_change", args=[new.pk]))
     else:
         messages.error(request, "Bestellung konnte nicht gefunden werden!")
@@ -96,7 +99,8 @@ def bestellung_duplizieren(request, object_id):
 def bestellung_zu_lieferung(request, object_id):
     if Bestellung.objects.filter(id=int(object_id)).exists():
         new = Bestellung.objects.get(id=int(object_id)).zu_lieferung()
-        messages.success(request, "Bestellung wurde zu einer Lieferung kopiert!")
+        messages.success(
+            request, "Bestellung wurde zu einer Lieferung kopiert!")
         return redirect(reverse("admin:kmuhelper_lieferung_change", args=[new.pk]))
     else:
         messages.error(request, "Bestellung konnte nicht gefunden werden!")

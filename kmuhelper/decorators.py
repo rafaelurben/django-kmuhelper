@@ -11,7 +11,6 @@ def confirm_action(action_message):
         def wrap(request, *args, **kwargs):
             if request.method == "POST":
                 return function(request, *args, **kwargs)
-            else:
-                return render(request, "admin/kmuhelper/_confirm.html", {"action": action_message})
+            return render(request, "admin/kmuhelper/_confirm.html", {"action": action_message})
         return wrap
     return decorator

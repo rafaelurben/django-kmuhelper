@@ -6,6 +6,7 @@ from kmuhelper.emails.models import EMail
 
 #######
 
+
 @admin.register(EMail)
 class EMailAdmin(admin.ModelAdmin):
     fieldsets = [
@@ -19,13 +20,15 @@ class EMailAdmin(admin.ModelAdmin):
 
     ordering = ('time_sent', 'time_created',)
 
-    list_display = ('subject', 'to', 'typ', 'time_created', 'time_sent', 'is_sent')
+    list_display = ('subject', 'to', 'typ',
+                    'time_created', 'time_sent', 'is_sent')
     search_fields = ['subject', 'to']
 
     def has_module_permission(self, request):
         return {}
-    
-# 
+
+#
+
 
 modeladmins = [
     (EMail, EMailAdmin),

@@ -213,7 +213,8 @@ class ToDoLieferungenAdmin(LieferungenAdmin):
                  name='%s_%s_change' % info),
         ]
 
-# 
+#
+
 
 modeladmins = [
     (ToDoNotiz, ToDoNotizenAdmin),
@@ -222,4 +223,3 @@ modeladmins = [
     (ToDoLagerbestand, ToDoLagerbestandAdmin),
     (ToDoLieferung, ToDoLieferungenAdmin),
 ]
-

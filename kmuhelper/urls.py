@@ -15,7 +15,8 @@ urlpatterns = [
     path('admin/',  views.admin, name="admin"),
 
     # Developing tools
-    path('_templatetest/<path:templatename>', views._templatetest, name="_templatetest"),
+    path('_templatetest/<path:templatename>',
+         views._templatetest, name="_templatetest"),
 
     # Main modules
     path('',        include('kmuhelper.main')),
@@ -28,5 +29,6 @@ urlpatterns = [
     path('wc/',     include('kmuhelper.integrations.woocommerce')),
 
     # Integrations
-    path('integrations/woocommerce/',   include('kmuhelper.integrations.woocommerce')),
+    path('integrations/woocommerce/',
+         include('kmuhelper.integrations.woocommerce')),
 ]
