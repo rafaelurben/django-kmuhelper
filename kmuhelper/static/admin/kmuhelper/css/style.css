@@ -1,28 +1,8 @@
 @import "colors-kmuhelper.css";
 
-#branding h1,
-#branding h1 a:link,
-#branding h1 a:visited {
-    color: var(--kmuhelper-lightest);
-}
-
-#header {
-    color: var(--kmuhelper-light);
-
-    background-color: var(--kmuhelper-dark);
-}
-
-div.breadcrumbs,
-.module h2,
-.module caption,
-.inline-group h2 {
-    background-color: var(--kmuhelper-default);
-}
-
-a:link, a:visited {
-    color: var(--kmuhelper-dark);
-}
-
-a:focus, a:hover {
-    color: var(--kmuhelper-darkest);
+:root {
+    --primary: var(--kmuhelper-default);
+    --secondary: var(--kmuhelper-darkest);
+    --link-fg: var(--kmuhelper-dark);
+    --link-selected-fg: var(--kmuhelper-light);
 }
