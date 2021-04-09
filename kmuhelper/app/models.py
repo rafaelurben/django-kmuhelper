@@ -1,3 +1,4 @@
+from django.contrib import admin
 from django.db import models
 from django.utils.html import mark_safe
 
@@ -52,13 +53,13 @@ class ToDoZahlungseingang(Bestellung):
 
 
 class ToDoLagerbestand(Produkt):
+    @admin.display(description="Preis")
     def preis(self, *args, **kwargs):
         return super().preis(*args, **kwargs)
-    preis.short_description = "Preis"
 
+    @admin.display(description="Nr.", ordering="artikelnummer")
     def nr(self):
         return self.artikelnummer
-    nr.short_description = "Nr."
 
     class Meta:
         proxy = True

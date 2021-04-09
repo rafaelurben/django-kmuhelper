@@ -3,10 +3,11 @@
 from django.db import models
 from django.core import mail
 from django.conf import settings
+from django.contrib import admin
 from django.core.validators import RegexValidator, MinValueValidator, MaxValueValidator
 from django.http import FileResponse
 from django.template.loader import get_template
-from django.utils.html import mark_safe
+from django.utils.html import mark_safe, format_html
 from django.urls import reverse
 
 from datetime import datetime
@@ -103,10 +104,9 @@ class Ansprechpartner(models.Model):
         'Telefon', max_length=50, help_text="Auf Rechnung ersichtlich!")
     email = models.EmailField('E-Mail', help_text="Auf Rechnung ersichtlich!")
 
+    @admin.display(description="Ansprechpartner")
     def __str__(self):
         return self.name
-
-    __str__.short_description = 'Ansprechpartner'
 
     class Meta:
         verbose_name = "Ansprechpartner"
@@ -126,9 +126,9 @@ class Bestellungskosten(models.Model):
 
     kostenpreis = models.FloatField("Preis (exkl. MwSt)", default=0.0)
 
+    @admin.display(description="Zwischensumme (exkl. MwSt)")
     def zwischensumme(self):
         return runden(self.kostenpreis*((100-self.rabatt)/100))
-    zwischensumme.short_description = "Zwischensumme (exkl. MwSt)"
 
     def zwischensumme_ohne_rabatt(self):
         return runden(self.kostenpreis)
@@ -136,17 +136,17 @@ class Bestellungskosten(models.Model):
     def nur_rabatt(self):
         return runden(self.kostenpreis*(self.rabatt/100))*-1
 
+    @admin.display(description="MwSt-Satz", ordering="kosten__mwstsatz")
     def mwstsatz(self):
-        return formatprice(self.kosten.mwstsatz)
-    mwstsatz.short_description = "MwSt-Satz"
+        return self.kosten.mwstsatz
 
+    @admin.display(description="Name", ordering="kosten__name")
     def kosten_name(self):
         return self.kosten.clean_name()
-    kosten_name.short_description = "Name"
 
+    @admin.display(description="Bestellungskosten")
     def __str__(self):
         return "1x "+str(self.kosten)
-    __str__.short_description = "Bestellungskosten"
 
     def save(self, *args, **kwargs):
         if not self.kostenpreis:
@@ -178,9 +178,9 @@ class Bestellungsposten(models.Model):
 
     produktpreis = models.FloatField("Produktpreis (exkl. MwSt)", default=0.0)
 
+    @admin.display(description="Zwischensumme (exkl. MwSt)")
     def zwischensumme(self):
         return runden(self.produktpreis*self.menge*((100-self.rabatt)/100))
-    zwischensumme.short_description = "Zwischensumme (exkl. MwSt)"
 
     def zwischensumme_ohne_rabatt(self):
         return runden(self.produktpreis*self.menge)
@@ -188,13 +188,13 @@ class Bestellungsposten(models.Model):
     def nur_rabatt(self):
         return runden(self.produktpreis*self.menge*(self.rabatt/100))*-1
 
+    @admin.display(description="MwSt-Satz")
     def mwstsatz(self):
         return formatprice(self.produkt.mwstsatz)
-    mwstsatz.short_description = "MwSt-Satz"
 
+    @admin.display(description="Bestellungsposten")
     def __str__(self):
         return str(self.menge)+"x "+self.produkt.clean_name()
-    __str__.short_description = "Bestellungsposten"
 
     def save(self, *args, **kwargs):
         if not self.produktpreis:
@@ -354,9 +354,9 @@ class Bestellung(models.Model):
         if double_save:
             self.save()
 
+    @admin.display(description="Trackinglink", ordering="trackingnummer")
     def trackinglink(self):
         return "https://www.post.ch/swisspost-tracking?formattedParcelCodes="+self.trackingnummer if self.trackingnummer else None
-    trackinglink.short_description = "Trackinglink"
 
     def referenznummer(self):
         a = str(self.pk).zfill(22)+"0000"
@@ -388,6 +388,7 @@ class Bestellung(models.Model):
                 mwst[str(k.kosten.mwstsatz)] = k.zwischensumme()
         return mwst
 
+    @admin.display(description="Summe (exkl. MwSt) in CHF")
     def summe(self):
         summe = 0
         for i in self.produkte.through.objects.filter(bestellung=self):
@@ -395,8 +396,8 @@ class Bestellung(models.Model):
         for i in self.kosten.through.objects.filter(bestellung=self):
             summe += i.zwischensumme()
         return runden(summe)
-    summe.short_description = "Summe (exkl. MwSt) in CHF"
 
+    @admin.display(description="Summe (nur MwSt) in CHF")
     def summe_mwst(self):
         summe_mwst = 0
         mwstdict = self.mwstdict()
@@ -404,23 +405,22 @@ class Bestellung(models.Model):
             summe_mwst += runden(float(mwstdict[mwstsatz]
                                        * (float(mwstsatz)/100)))
         return runden(summe_mwst)
-    summe_mwst.short_description = "Summe (nur MwSt) in CHF"
 
+    @admin.display(description="Summe in CHF")
     def summe_gesamt(self):
         return runden(self.summe()+self.summe_mwst())
-    summe_gesamt.short_description = "Summe in CHF"
 
+    @admin.display(description="Name")
     def name(self):
         return (self.datum.strftime("%Y")+"-" if self.datum and not isinstance(self.datum, str) else "")+str(self.pk).zfill(6)+(" (WC#"+str(self.woocommerceid)+")" if self.woocommerceid else "")+" - "+(str(self.kunde) if self.kunde is not None else "Gast")
-    name.short_description = "Name"
 
+    @admin.display(description="Info")
     def info(self):
         return self.datum.strftime("%d.%m.%Y")+" - "+((self.kunde.firma if self.kunde.firma else (self.kunde.vorname+" "+self.kunde.nachname)) if self.kunde else "Gast")
-    info.short_description = "Info"
 
+    @admin.display(description="Bestellung")
     def __str__(self):
         return self.name()
-    __str__.short_description = "Bestellung"
 
     def get_pdf(self, lieferschein: bool = False, digital: bool = True):
         return PDFOrder(self, lieferschein=lieferschein, digital=digital).get_response(as_attachment=False, filename=('Lieferschein' if lieferschein else 'Rechnung')+' zu Bestellung '+str(self)+'.pdf')
@@ -465,27 +465,29 @@ class Bestellung(models.Model):
         self.save()
         return success
 
+    @admin.display(description="ToDo Notiz")
     def html_todo_notiz(self):
         if hasattr(self, "notiz"):
             link = reverse("admin:kmuhelper_todonotiz_change",
                            kwargs={"object_id": self.notiz.pk})
-            return mark_safe('<a target="_blank" href="'+link+'">Notiz ansehen</a>')
+            text = "Notiz ansehen"
         else:
             link = reverse("admin:kmuhelper_todonotiz_add") + \
                 '?from_bestellung='+str(self.pk)
-            return mark_safe('<a target="_blank" href="'+link+'">Notiz hinzufügen</a>')
-    html_todo_notiz.short_description = "ToDo Notiz"
+            text = "Notiz hinzufügen"
+        return format_html('<a target="_blank" href="{}">{}</a>', link, text)
 
+    @admin.display(description="Notiz")
     def html_notiz(self):
         if hasattr(self, "notiz"):
             link = reverse("admin:kmuhelper_notiz_change",
                            kwargs={"object_id": self.notiz.pk})
-            return mark_safe('<a target="_blank" href="'+link+'">Notiz ansehen</a>')
+            text = "Notiz ansehen"
         else:
             link = reverse("admin:kmuhelper_notiz_add") + \
                 '?from_bestellung='+str(self.pk)
-            return mark_safe('<a target="_blank" href="'+link+'">Notiz hinzufügen</a>')
-    html_notiz.short_description = "Notiz"
+            text = "Notiz hinzufügen"
+        return format_html('<a target="_blank" href="{}">{}</a>', link, text)
 
     def get_future_stock(self):
         data = {}
@@ -671,27 +673,27 @@ class Kategorie(models.Model):
     uebergeordnete_kategorie = models.ForeignKey(
         "self", on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Übergeordnete Kategorie")
 
+    @admin.display(description="Bild", ordering="bildlink")
     def bild(self):
         if self.bildlink:
-            return mark_safe('<img src="'+self.bildlink+'" width="100px">')
+            return format_html('<img src="{}" width="100px">', self.bildlink)
         return ""
-    bild.short_description = "Bild"
 
+    @admin.display(description="Anzahl Produkte")
     def anzahl_produkte(self):
         return self.produkte.count()
-    anzahl_produkte.short_description = "Anzahl Produkte"
 
+    @admin.display(description="Name", ordering="name")
     def clean_name(self):
         return clean(self.name)
-    clean_name.short_description = "Name"
 
+    @admin.display(description="Beschrieb", ordering="beschrieb")
     def clean_beschrieb(self):
         return clean(self.beschrieb)
-    clean_beschrieb.short_description = "Beschrieb"
 
+    @admin.display(description="Kategorie")
     def __str__(self):
         return self.clean_name()
-    __str__.short_description = "Kategorie"
 
     class Meta:
         verbose_name = "Kategorie"
@@ -710,12 +712,13 @@ class Kosten(models.Model):
     def mengenbezeichnung(self):
         return clean("[:de]Stück[:fr]Pièce[:it]Pezzo[:en]Piece[:]")
 
+    @admin.display(description="Name", ordering="name")
     def clean_name(self):
         return clean(self.name)
 
+    @admin.display(description="Kosten")
     def __str__(self):
         return f"{ self.clean_name() } ({ self.preis } CHF " + ("+ "+str(self.mwstsatz)+"% MwSt" if self.mwstsatz else "") + ")"
-    __str__.short_description = "Kosten"
 
     class Meta:
         verbose_name = "Kosten"
@@ -788,12 +791,13 @@ class Kunde(models.Model):
     registrierungsemail = models.ForeignKey(
         "EMail", on_delete=models.SET_NULL, blank=True, null=True)
 
+    @admin.display(description="Avatar", ordering="avatar_url")
     def avatar(self):
         if self.avatar_url:
             return mark_safe('<img src="'+self.avatar_url+'" width="50px">')
         return ""
-    avatar.short_description = "Avatar"
 
+    @admin.display(description="Kunde")
     def __str__(self):
         return (
             str(self.pk).zfill(8)+" " +
@@ -803,7 +807,6 @@ class Kunde(models.Model):
             ((self.firma + " ") if self.firma else "") +
             (("(" + str(self.rechnungsadresse_plz) + " " + self.rechnungsadresse_ort + ")"))
         )
-    __str__.short_description = "Kunde"
 
     class Meta:
         verbose_name = "Kunde"
@@ -884,27 +887,29 @@ class Kunde(models.Model):
         self.save()
         return success
 
+    @admin.display(description="ToDo Notiz")
     def html_todo_notiz(self):
         if hasattr(self, "notiz"):
             link = reverse("admin:kmuhelper_todonotiz_change",
                            kwargs={"object_id": self.notiz.pk})
-            return mark_safe('<a target="_blank" href="'+link+'">Notiz ansehen</a>')
+            text = "Notiz ansehen"
         else:
             link = reverse("admin:kmuhelper_todonotiz_add") + \
                 '?from_kunde='+str(self.pk)
-            return mark_safe('<a target="_blank" href="'+link+'">Notiz hinzufügen</a>')
-    html_todo_notiz.short_description = "ToDo Notiz"
+            text = "Notiz hinzufügen"
+        return format_html('<a target="_blank" href="{}">{}</a>', link, text)
 
+    @admin.display(description="Notiz")
     def html_notiz(self):
         if hasattr(self, "notiz"):
             link = reverse("admin:kmuhelper_notiz_change",
                            kwargs={"object_id": self.notiz.pk})
-            return mark_safe('<a target="_blank" href="'+link+'">Notiz ansehen</a>')
+            text = "Notiz ansehen"
         else:
             link = reverse("admin:kmuhelper_notiz_add") + \
                 '?from_kunde='+str(self.pk)
-            return mark_safe('<a target="_blank" href="'+link+'">Notiz hinzufügen</a>')
-    html_notiz.short_description = "Notiz"
+            text = "Notiz hinzufügen"
+        return format_html('<a target="_blank" href="{}">{}</a>', link, text)
 
     objects = models.Manager()
 
@@ -928,9 +933,9 @@ class Lieferant(models.Model):
     ansprechpartnermail = models.EmailField(
         'Ansprechpartner E-Mail', null=True, default="", blank=True)
 
+    @admin.display(description="Lieferant")
     def __str__(self):
         return self.name
-    __str__.short_description = "Lieferant"
 
     def zuordnen(self):
         produkte = Produkt.objects.filter(lieferant=None)
@@ -951,9 +956,9 @@ class Lieferungsposten(models.Model):
     produkt = models.ForeignKey("Produkt", on_delete=models.PROTECT)
     menge = models.IntegerField("Menge", default=1)
 
+    @admin.display(description="Lieferungsposten")
     def __str__(self):
         return str(self.menge)+"x "+self.produkt.clean_name()
-    __str__.short_description = "Lieferungsposten"
 
     class Meta:
         verbose_name = "Lieferungsposten"
@@ -974,9 +979,9 @@ class Lieferung(models.Model):
 
     eingelagert = models.BooleanField("Eingelagert", default=False)
 
+    @admin.display(description="Anzahl Produklte")
     def anzahlprodukte(self):
         return self.produkte.through.objects.filter(lieferung=self).aggregate(models.Sum('menge'))["menge__sum"]
-    anzahlprodukte.short_description = "Produkte"
 
     def einlagern(self):
         if not self.eingelagert:
@@ -989,31 +994,33 @@ class Lieferung(models.Model):
         else:
             return False
 
+    @admin.display(description="ToDo Notiz")
     def html_todo_notiz(self):
         if hasattr(self, "notiz"):
             link = reverse("admin:kmuhelper_todonotiz_change",
                            kwargs={"object_id": self.notiz.pk})
-            return mark_safe('<a target="_blank" href="'+link+'">Notiz ansehen</a>')
+            text = "Notiz ansehen"
         else:
             link = reverse("admin:kmuhelper_todonotiz_add") + \
                 '?from_lieferung='+str(self.pk)
-            return mark_safe('<a target="_blank" href="'+link+'">Notiz hinzufügen</a>')
-    html_todo_notiz.short_description = "ToDo Notiz"
+            text = "Notiz hinzufügen"
+        return format_html('<a target="_blank" href="{}">{}</a>', link, text)
 
+    @admin.display(description="Notiz")
     def html_notiz(self):
         if hasattr(self, "notiz"):
             link = reverse("admin:kmuhelper_notiz_change",
                            kwargs={"object_id": self.notiz.pk})
-            return mark_safe('<a target="_blank" href="'+link+'">Notiz ansehen</a>')
+            text = "Notiz ansehen"
         else:
             link = reverse("admin:kmuhelper_notiz_add") + \
                 '?from_lieferung='+str(self.pk)
-            return mark_safe('<a target="_blank" href="'+link+'">Notiz hinzufügen</a>')
-    html_notiz.short_description = "Notiz"
+            text = "Notiz hinzufügen"
+        return format_html('<a target="_blank" href="{}">{}</a>', link, text)
 
+    @admin.display(description="Lieferung")
     def __str__(self):
         return self.name
-    __str__.short_description = "Lieferung"
 
     class Meta:
         verbose_name = "Lieferung"
@@ -1040,9 +1047,9 @@ class Notiz(models.Model):
     lieferung = models.OneToOneField(
         "Lieferung", blank=True, null=True, on_delete=models.CASCADE, related_name="notiz")
 
+    @admin.display(description="Notiz")
     def __str__(self):
         return self.name
-    __str__.short_description = "Notiz"
 
     def links(self):
         text = ""
@@ -1071,9 +1078,9 @@ class Produktkategorie(models.Model):
     produkt = models.ForeignKey("Produkt", on_delete=models.CASCADE)
     kategorie = models.ForeignKey("Kategorie", on_delete=models.CASCADE)
 
+    @admin.display(description="Produktkategorie")
     def __str__(self):
         return f"({self.pk}) {self.kategorie.clean_name()} <-> {self.produkt.clean_name()}"
-    __str__.short_description = "Produktkategorie"
 
     class Meta:
         verbose_name = "Produktkategorie"
@@ -1127,34 +1134,33 @@ class Produkt(models.Model):
     kategorien = models.ManyToManyField("Kategorie", through="Produktkategorie", through_fields=(
         "produkt", "kategorie"), verbose_name="Kategorie", related_name="produkte")
 
+    @admin.display(description="Name", ordering="name")
     def clean_name(self, lang="de"):
         return clean(self.name, lang)
-    clean_name.short_description = "Name"
 
+    @admin.display(description="Kurzbeschrieb", ordering="kurzbeschrieb")
     def clean_kurzbeschrieb(self, lang="de"):
         return clean(self.kurzbeschrieb, lang)
-    clean_kurzbeschrieb.short_description = "Kurzbeschrieb"
 
+    @admin.display(description="Beschrieb", ordering="beschrieb")
     def clean_beschrieb(self, lang="de"):
         return clean(self.beschrieb, lang)
-    clean_beschrieb.short_description = "Beschrieb"
 
+    @admin.display(description="In Aktion", boolean=True)
     def in_aktion(self, zeitpunkt: datetime = datetime.now(utc)):
         if self.aktion_von and self.aktion_bis and self.aktion_preis:
             return bool((self.aktion_von < zeitpunkt) and (zeitpunkt < self.aktion_bis))
         return False
-    in_aktion.short_description = "In Aktion"
-    in_aktion.boolean = True
 
+    @admin.display(description="Aktueller Preis in CHF (exkl. MwSt)")
     def preis(self, zeitpunkt: datetime = datetime.now(utc)):
         return self.aktion_preis if self.in_aktion(zeitpunkt) else self.verkaufspreis
-    preis.short_description = "Aktueller Preis in CHF (exkl. MwSt)"
 
+    @admin.display(description="Bild", ordering="bildlink")
     def bild(self):
         if self.bildlink:
-            return mark_safe('<img src="'+self.bildlink+'" width="100px">')
+            return format_html('<img src="{}" width="100px">', self.bildlink)
         return ""
-    bild.short_description = "Bild"
 
     def get_reserved_stock(self):
         n = 0
@@ -1177,31 +1183,33 @@ class Produkt(models.Model):
             self.mengenbezeichnung = "[:de]Tube[:fr]Tube[:it]Tubetto[:en]Tube[:]"
         super().save(*args, **kwargs)
 
+    @admin.display(description="ToDo Notiz")
     def html_todo_notiz(self):
         if hasattr(self, "notiz"):
             link = reverse("admin:kmuhelper_todonotiz_change",
                            kwargs={"object_id": self.notiz.pk})
-            return mark_safe('<a target="_blank" href="'+link+'">Notiz ansehen</a>')
+            text = "Notiz ansehen"
         else:
             link = reverse("admin:kmuhelper_todonotiz_add") + \
                 '?from_produkt='+str(self.pk)
-            return mark_safe('<a target="_blank" href="'+link+'">Notiz hinzufügen</a>')
-    html_todo_notiz.short_description = "ToDo Notiz"
+            text = "Notiz hinzufügen"
+        return format_html('<a target="_blank" href="{}">{}</a>', link, text)
 
+    @admin.display(description="Notiz")
     def html_notiz(self):
         if hasattr(self, "notiz"):
             link = reverse("admin:kmuhelper_notiz_change",
                            kwargs={"object_id": self.notiz.pk})
-            return mark_safe('<a target="_blank" href="'+link+'">Notiz ansehen</a>')
+            text = "Notiz ansehen"
         else:
             link = reverse("admin:kmuhelper_notiz_add") + \
                 '?from_produkt='+str(self.pk)
-            return mark_safe('<a target="_blank" href="'+link+'">Notiz hinzufügen</a>')
-    html_notiz.short_description = "Notiz"
+            text = "Notiz hinzufügen"
+        return format_html('<a target="_blank" href="{}">{}</a>', link, text)
 
+    @admin.display(description="Produkt")
     def __str__(self):
         return self.artikelnummer+" - "+self.clean_name()
-    __str__.short_description = "Produkt"
 
     class Meta:
         verbose_name = "Produkt"
@@ -1256,9 +1264,9 @@ class Zahlungsempfaenger(models.Model):
             log("Error while validating UID:", e)
             return False
 
+    @admin.display(description="Zahlungsempfänger")
     def __str__(self):
         return self.firmenname
-    __str__.short_description = "Zahlungsempfänger"
 
     class Meta:
         verbose_name = "Zahlungsempfänger"
@@ -1302,11 +1310,12 @@ class Einstellung(models.Model):
     email = models.EmailField("Inhalt (E-Mail)",
                               default="",    blank=True)
 
+    @admin.display(description="Einstellung")
     def __str__(self):
         return self.name
-    __str__.short_description = "Einstellung"
 
     @property
+    @admin.display(description="Inhalt")
     def inhalt(self):
         if self.typ == "char":
             return self.char
@@ -1340,9 +1349,6 @@ class Einstellung(models.Model):
         elif self.typ == "email":
             self.email = var
 
-    def get_inhalt(self):
-        return self.inhalt
-    get_inhalt.short_description = "Inhalt"
 
     class Meta:
         verbose_name = "Einstellung"
@@ -1371,11 +1377,12 @@ class Geheime_Einstellung(models.Model):
     email = models.EmailField("Inhalt (E-Mail)",
                               default="",    blank=True)
 
+    @admin.display(description="Geheime Einstellung")
     def __str__(self):
         return self.id
-    __str__.short_description = "Geheime Einstellung"
 
     @property
+    @admin.display(description="Inhalt")
     def inhalt(self):
         if self.typ == "char":
             return self.char
@@ -1408,10 +1415,6 @@ class Geheime_Einstellung(models.Model):
             self.url = var
         elif self.typ == "email":
             return self.email
-
-    def get_inhalt(self):
-        return self.inhalt
-    get_inhalt.short_description = "Inhalt"
 
     class Meta:
         verbose_name = "Geheime Einstellung"

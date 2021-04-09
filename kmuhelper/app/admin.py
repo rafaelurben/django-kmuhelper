@@ -140,6 +140,7 @@ class ToDoZahlungseingangAdmin(BestellungsAdmin):
 class ToDoLagerbestandAdmin(ProduktAdmin):
     list_display = ('nr', 'clean_name', 'lagerbestand',
                     'preis', 'bemerkung', 'html_todo_notiz')
+    list_display_links = ('nr',)
     list_editable = ["lagerbestand"]
 
     actions = ["lagerbestand_zuruecksetzen"]

@@ -207,6 +207,7 @@ class BestellungsAdmin(admin.ModelAdmin):
                 fields += ["kundennotiz"]
         return fields
 
+    @admin.action(description="Als bezahlt markieren")
     def als_bezahlt_markieren(self, request, queryset):
         successcount = 0
         errorcount = 0
@@ -224,8 +225,8 @@ class BestellungsAdmin(admin.ModelAdmin):
         if errorcount:
             messages.error(request, ('Beim als bezahlt markieren von ' + ('{} Bestellungen' if errorcount !=
                                                                           1 else 'einer Bestellung') + ' ist ein Fehler aufgetreten!').format(errorcount))
-    als_bezahlt_markieren.short_description = "Als bezahlt markieren"
 
+    @admin.action(description="Bestellungen von WooCommerce aktualisieren")
     def wc_update(self, request, queryset):
         result = WooCommerce.order_bulk_update(queryset.all())
         messages.success(request, ((
@@ -233,7 +234,6 @@ class BestellungsAdmin(admin.ModelAdmin):
         if result[1]:
             messages.error(request, ('Beim Import von ' + (
                 '{} Bestellungen' if result[1] != 1 else 'einer Bestellung') + ' von WooCommerce ist ein Fehler aufgetreten!').format(result[1]))
-    wc_update.short_description = "Bestellungen von WooCommerce aktualisieren"
 
     actions = [als_bezahlt_markieren, wc_update]
 
@@ -272,13 +272,11 @@ class BestellungsAdmin(admin.ModelAdmin):
                     messages.warning(request, msg)
 
 
-class KategorienInlineUntergeordneteKategorien(admin.TabularInline):
+class KategorienAdminProduktInline(admin.StackedInline):
     model = Produkt.kategorien.through
     verbose_name = "Produkt in dieser Kategorie"
     verbose_name_plural = "Produkte in dieser Kategorie"
     extra = 0
-
-    list_display = ('clean_name', )
 
     autocomplete_fields = ("produkt", )
 
@@ -299,12 +297,13 @@ class KategorienAdmin(admin.ModelAdmin):
 
     ordering = ("uebergeordnete_kategorie", "name")
 
-    inlines = [KategorienInlineUntergeordneteKategorien]
+    inlines = [KategorienAdminProduktInline]
 
     list_select_related = ("uebergeordnete_kategorie",)
 
     autocomplete_fields = ("uebergeordnete_kategorie", )
 
+    @admin.action(description="Kategorien von WooCommerce aktualisieren")
     def wc_update(self, request, queryset):
         result = WooCommerce.category_bulk_update(queryset.all())
         messages.success(request, ((
@@ -312,7 +311,6 @@ class KategorienAdmin(admin.ModelAdmin):
         if result[1]:
             messages.error(request, ('Beim Import von ' + (
                 '{} Kategorien' if result[1] != 1 else 'einer Kategorie') + ' von WooCommerce ist ein Fehler aufgetreten!').format(result[1]))
-    wc_update.short_description = "Kategorien von WooCommerce aktualisieren"
 
     actions = ["wc_update"]
 
@@ -394,6 +392,7 @@ class KundenAdmin(admin.ModelAdmin):
 
     save_on_top = True
 
+    @admin.action(description="Kunden von WooCommerce aktualisieren")
     def wc_update(self, request, queryset):
         result = WooCommerce.customer_bulk_update(queryset.all())
         messages.success(request, ((
@@ -401,7 +400,6 @@ class KundenAdmin(admin.ModelAdmin):
         if result[1]:
             messages.error(request, ('Beim Import von ' + (
                 '{} Kunden' if result[1] != 1 else 'einem Kunden') + ' von WooCommerce ist ein Fehler aufgetreten!').format(result[1]))
-    wc_update.short_description = "Kunden von WooCommerce aktualisieren"
 
 
 @admin.register(Lieferant)
@@ -489,6 +487,7 @@ class LieferungenAdmin(admin.ModelAdmin):
 
     actions = ["einlagern"]
 
+    @admin.action(description="Lieferungen einlagern")
     def einlagern(self, request, queryset):
         successcount = 0
         errorcount = 0
@@ -502,7 +501,6 @@ class LieferungenAdmin(admin.ModelAdmin):
         if errorcount:
             messages.error(request, ('Beim Einlagern von ' + ('{} Lieferungen' if errorcount !=
                                                               1 else 'einer Lieferung') + ' ist ein Fehler aufgetreten!').format(errorcount))
-    einlagern.short_description = "Lieferungen einlagern"
 
 
 @admin.register(Notiz)
@@ -603,7 +601,7 @@ class NotizenAdmin(admin.ModelAdmin):
                         request, "Lieferung #" + request.GET["from_lieferung"] + " konnte nicht gefunden werden. Die Notiz wurde trotzdem erstellt.")
 
 
-class ProduktInlineProduktkategorien(admin.TabularInline):
+class ProduktInlineKategorienInline(admin.TabularInline):
     model = Produkt.kategorien.through
     extra = 0
 
@@ -638,6 +636,7 @@ class ProduktAdmin(admin.ModelAdmin):
 
     list_display = ('artikelnummer', 'clean_name', 'clean_kurzbeschrieb',
                     'clean_beschrieb', 'preis', 'in_aktion', 'lagerbestand', 'bild', 'html_notiz')
+    list_display_links = ('artikelnummer', 'in_aktion',)
     list_filter = ('lieferant', 'kategorien', 'lagerbestand')
     search_fields = ['artikelnummer', 'name', 'kurzbeschrieb',
                      'beschrieb', 'bemerkung', 'notiz__name', 'notiz__beschrieb']
@@ -646,7 +645,7 @@ class ProduktAdmin(admin.ModelAdmin):
 
     autocomplete_fields = ("lieferant", )
 
-    inlines = (ProduktInlineProduktkategorien,)
+    inlines = (ProduktInlineKategorienInline,)
 
     save_on_top = True
 
@@ -654,6 +653,7 @@ class ProduktAdmin(admin.ModelAdmin):
 
     list_select_related = ["notiz"]
 
+    @admin.action(description="Produkte von WooCommerce aktualisieren")
     def wc_update(self, request, queryset):
         result = WooCommerce.product_bulk_update(queryset.all())
         messages.success(request, ((
@@ -661,23 +661,22 @@ class ProduktAdmin(admin.ModelAdmin):
         if result[1]:
             messages.error(request, ('Beim Import von ' + (
                 '{} Produkten' if result[1] != 1 else 'einem Produkt') + ' von WooCommerce ist ein Fehler aufgetreten!').format(result[1]))
-    wc_update.short_description = "Produkte von WooCommerce aktualisieren"
 
+    @admin.action(description="Lagerbestand zurücksetzen")
     def lagerbestand_zuruecksetzen(self, request, queryset):
         for produkt in queryset.all():
             produkt.lagerbestand = 0
             produkt.save()
         messages.success(request, (('Lagerbestand von {} Produkten' if queryset.count(
         ) != 1 else 'Lagerbestand von einem Produkt') + ' zurückgesetzt!').format(queryset.count()))
-    lagerbestand_zuruecksetzen.short_description = "Lagerbestand zurücksetzen"
 
+    @admin.action(description="Aktion beenden")
     def aktion_beenden(self, request, queryset):
         for produkt in queryset.all():
             produkt.aktion_bis = datetime.now(utc)
             produkt.save()
         messages.success(request, (('Aktion von {} Produkten' if queryset.count(
         ) != 1 else 'Aktion von einem Produkt') + ' beendet!').format(queryset.count()))
-    aktion_beenden.short_description = "Aktion beenden"
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
@@ -730,7 +729,7 @@ class EinstellungenAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
-    list_display = ('name', 'get_inhalt')
+    list_display = ('name', 'inhalt')
     ordering = ('name',)
 
     search_fields = ['name', 'char', 'text', 'inte', 'floa', 'url', 'email']

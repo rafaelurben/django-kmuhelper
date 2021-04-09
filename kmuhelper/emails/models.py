@@ -1,6 +1,7 @@
 # pylint: disable=unsupported-assignment-operation
 
 from django.db import models
+from django.contrib import admin
 from django.core import mail
 from django.urls import reverse
 from django.utils import timezone
@@ -49,7 +50,7 @@ class EMail(models.Model):
     to = models.EmailField("Empfänger")
 
     html_template = models.CharField("Dateiname der Vorlage", max_length=100)
-    html_context = models.JSONField("Daten", default=dict)
+    html_context = models.JSONField("Daten", default=dict, blank=True)
 
     token = models.UUIDField("Token", default=uuid.uuid4, editable=False)
 
@@ -57,18 +58,17 @@ class EMail(models.Model):
     time_sent = models.DateTimeField(
         "Gesendet um", blank=True, null=True, default=None)
 
-    data = models.JSONField("Extradaten", default=dict)
+    data = models.JSONField("Extradaten", default=dict, blank=True)
 
     notes = models.TextField("Notizen", blank=True, default="")
 
+    @admin.display(description="E-Mail")
     def __str__(self):
         return f"{self.subject} ({self.pk})"
-    __str__.short_description = "E-Mail"
 
+    @admin.display(description="Gesendet?", boolean=True, ordering="time_sent")
     def is_sent(self):
         return self.time_sent is not None
-    is_sent.short_description = "Gesendet?"
-    is_sent.boolean = True
 
     def render(self, online=False):
         context = dict(self.html_context)
