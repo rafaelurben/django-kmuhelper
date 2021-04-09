@@ -11,8 +11,11 @@ from rich import print
 from rich.progress import Progress
 
 
+prefix = "[deep_pink4][KMUHelper][/] -"
+
+
 def log(string, *args):
-    print("[deep_pink4][KMUHelper][/] -", string, *args)
+    print(prefix, string, *args)
 
 
 def preparestring(string):
