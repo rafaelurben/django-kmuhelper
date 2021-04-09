@@ -528,7 +528,7 @@ class Bestellung(models.Model):
 
             if warnings != []:
                 email = EMail.objects.create(
-                    typ="bestellung_warnung_lagerbestand",
+                    typ="bestellung_stock_warning",
                     subject="[KMUHelper] - Lagerbestand knapp!",
                     to=email_receiver,
                     html_template="bestellung_stock_warning.html",
