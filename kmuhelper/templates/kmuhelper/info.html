@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block branding %}
-    <h1 id="site-name">KMUHelper | Info</h1>
+    <h1 id="site-name"><a href="{% url 'kmuhelper:home' %}">KMUHelper</a> | Info</h1>
 {% endblock %}
 
 {% block extrastyle %}
@@ -20,4 +20,13 @@
     {{ block.super }}
     <link rel="shortcut icon" type="image/x-icon" href="{% static 'kmuhelper/favicon.ico' %}">
     <link rel="apple-touch-icon" href="{% static 'kmuhelper/favicon.ico' %}">
+
+    <meta name="robots" value="noindex">
+{% endblock %}
+
+{% block content %}
+    <h1>Informationen</h1>
+    <p>Vermutlich bist du auf dieser Seite aufgrund eines ungültigen Links gelandet. Bitte kontaktiere diejenige Person, welche dir diesen Link gesendet hat.</p>
+    <br>
+    <p>Diese Seite wurde mit der Open Source Software <a href="https://rafaelurben.github.io/kmuhelper">KMUHelper</a> erstellt.
 {% endblock %}
