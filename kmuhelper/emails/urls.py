@@ -6,5 +6,5 @@ from kmuhelper.emails import views
 #######################
 
 urlpatterns = [
-    path('<object_id>/view', views.email_view, name="email-view"),
+    path('<int:object_id>/view', views.email_view, name="email-view"),
 ]

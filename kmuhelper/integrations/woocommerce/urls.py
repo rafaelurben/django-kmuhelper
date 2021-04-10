@@ -24,13 +24,13 @@ urlpatterns = [
     path('import/orders',
          views.wc_import_orders, name="wc-import-orders"),
 
-    path('update/product/<object_id>',
+    path('update/product/<int:object_id>',
          views.wc_update_product, name="wc-update-product"),
-    path('update/customer/<object_id>',
+    path('update/customer/<int:object_id>',
          views.wc_update_customer, name="wc-update-customer"),
-    path('update/category/<object_id>',
+    path('update/category/<int:object_id>',
          views.wc_update_category, name="wc-update-category"),
-    path('update/order/<object_id>',
+    path('update/order/<int:object_id>',
          views.wc_update_order, name="wc-update-order"),
 
     path('webhooks', views.wc_webhooks, name="wc-webhooks"),

@@ -19,5 +19,9 @@ def admin(request):
     return redirect(reverse("admin:app_list", kwargs={"app_label": "kmuhelper"}))
 
 
+def info(request):
+    return render(request, "kmuhelper/info.html")
+
+
 def _templatetest(request, templatename):
     return render(request, templatename, {})

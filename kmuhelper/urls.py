@@ -13,6 +13,7 @@ app_name = 'kmuhelper'
 urlpatterns = [
     path('',        views.home, name="home"),
     path('admin/',  views.admin, name="admin"),
+    path('info',    views.info, name="info"),
 
     # Developing tools
     path('_templatetest/<path:templatename>',
