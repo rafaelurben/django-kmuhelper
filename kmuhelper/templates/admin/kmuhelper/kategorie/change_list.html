@@ -18,7 +18,7 @@
 
     {% load kmuhelper_tags %}
     {% kmuhelper_woocommerce_connected as woocommerce_is_connected %}
-    {% if woocommerce_is_connected %}
+    {% if woocommerce_is_connected and perms.kmuhelper.add_kategorie %}
         <li>
             <a onclick="laden();" href="{% url 'kmuhelper:wc-import-categories' %}" class="addlink">Kategorien von WooCommerce importieren</a>
         </li>

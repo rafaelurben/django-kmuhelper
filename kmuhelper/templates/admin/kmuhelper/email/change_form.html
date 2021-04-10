@@ -1,7 +1,7 @@
 {% extends 'admin/kmuhelper/change_form.html' %}
 
 {% block object-tools-items %}
-    {% if change %}
+    {% if change and perms.kmuhelper.view_email %}
         <li><a href="{% url 'kmuhelper:email-view' object_id %}">Ansehen</a></li>
     {% endif %}
     {{ block.super }}

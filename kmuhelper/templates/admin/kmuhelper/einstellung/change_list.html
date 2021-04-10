@@ -3,7 +3,9 @@
 {% load static %}
 
 {% block object-tools-items %}
-    <li><a href="{% url 'kmuhelper:wc-auth-start' %}">WooCommerce verbinden</a></li>
+    {% if perms.kmuhelper.change_einstellung %}
+        <li><a href="{% url 'kmuhelper:wc-auth-start' %}">WooCommerce verbinden</a></li>
+    {% endif %}
     {{ block.super }}
 {% endblock %}
 

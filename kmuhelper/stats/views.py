@@ -1,5 +1,5 @@
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
 from django.shortcuts import render, redirect
@@ -18,10 +18,13 @@ import pytz
 #####
 
 
+@login_required(login_url=reverse_lazy("admin:login"))
 def stats(request):
     return render(request, "kmuhelper/stats/index.html", {})
 
 
+@login_required(login_url=reverse_lazy("admin:login"))
+@permission_required("kmuhelper.view_produkt")
 def stats_products_price(request):
     try:
         from_date = pytz.utc.localize(datetime.datetime.strptime(
@@ -71,6 +74,8 @@ def stats_products_price(request):
     return render(request, "kmuhelper/stats/products_price.html", context)
 
 
+@login_required(login_url=reverse_lazy("admin:login"))
+@permission_required("kmuhelper.view_produkt")
 def best_products(request):
     try:
         if "max" in request.GET:

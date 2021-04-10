@@ -18,7 +18,7 @@
 
     {% load kmuhelper_tags %}
     {% kmuhelper_woocommerce_connected as woocommerce_is_connected %}
-    {% if woocommerce_is_connected %}
+    {% if woocommerce_is_connected and perms.kmuhelper.add_produkt %}
         <li>
             <a onclick="laden();" href="{% url 'kmuhelper:wc-import-products' %}" class="addlink">Produkte von WooCommerce importieren</a>
         </li>

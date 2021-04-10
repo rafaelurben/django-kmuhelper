@@ -1,5 +1,5 @@
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
@@ -15,6 +15,7 @@ from kmuhelper.decorators import confirm_action, require_object
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
+@permission_required("kmuhelper.change_produkt")
 @require_object(Lieferant)
 @confirm_action("Lieferant zuordnen")
 def lieferant_zuordnen(request, obj):
@@ -25,6 +26,7 @@ def lieferant_zuordnen(request, obj):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
+@permission_required("kmuhelper.change_produkt")
 @require_object(Lieferung)
 @confirm_action("Lieferung einlagern")
 def lieferung_einlagern(request, obj):
@@ -37,6 +39,7 @@ def lieferung_einlagern(request, obj):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
+@permission_required("kmuhelper.add_email")
 @require_object(Kunde)
 @confirm_action("Registrierungsmail versenden")
 def kunde_email_registriert(request, obj):
@@ -49,6 +52,7 @@ def kunde_email_registriert(request, obj):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
+@permission_required("kmuhelper.view_bestellung")
 @require_object(Bestellung)
 def bestellung_pdf_ansehen(request, obj):
     lieferschein = bool("lieferschein" in dict(request.GET))
@@ -58,6 +62,7 @@ def bestellung_pdf_ansehen(request, obj):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
+@permission_required("kmuhelper.add_email")
 @require_object(Bestellung)
 @confirm_action("Rechnung an Kunden per E-Mail senden")
 def bestellung_pdf_an_kunden_senden(request, obj):
@@ -70,6 +75,7 @@ def bestellung_pdf_an_kunden_senden(request, obj):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
+@permission_required("kmuhelper.add_bestellung")
 @require_object(Bestellung)
 @confirm_action("Bestellung duplizieren")
 def bestellung_duplizieren(request, obj):
@@ -80,6 +86,7 @@ def bestellung_duplizieren(request, obj):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
+@permission_required("kmuhelper.add_lieferung")
 @require_object(Bestellung)
 @confirm_action("Bestellung zu Lieferung kopieren")
 def bestellung_zu_lieferung(request, obj):
