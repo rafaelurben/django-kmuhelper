@@ -14,6 +14,7 @@ from kmuhelper.main.models import Ansprechpartner, Bestellung, Kategorie, Kosten
 from kmuhelper.utils import package_version, python_version
 from kmuhelper.integrations.woocommerce import WooCommerce
 
+
 #######
 
 

@@ -14,11 +14,14 @@ from kmuhelper.main.views import (
     lieferung_einlagern
 )
 
+from kmuhelper.overwrites import CustomModelAdmin
+
+
 #######
 
 
 @admin.register(Ansprechpartner)
-class AnsprechpartnerAdmin(admin.ModelAdmin):
+class AnsprechpartnerAdmin(CustomModelAdmin):
     fieldsets = [
         ("Name", {'fields': ['name']}),
         ('Daten', {'fields': ['telefon', 'email']})
@@ -143,7 +146,7 @@ class BestellungInlineBestellungskostenAdd(admin.TabularInline):
 
 
 @admin.register(Bestellung)
-class BestellungsAdmin(admin.ModelAdmin):
+class BestellungsAdmin(CustomModelAdmin):
     list_display = ('id', 'datum', 'kunde', 'status', 'zahlungsmethode',
                     'versendet', 'bezahlt', 'fix_summe', 'html_notiz')
     list_filter = ('status', 'bezahlt', 'versendet', 'zahlungsmethode')
@@ -323,7 +326,7 @@ class KategorienAdminProduktInline(admin.StackedInline):
 
 
 @admin.register(Kategorie)
-class KategorienAdmin(admin.ModelAdmin):
+class KategorienAdmin(CustomModelAdmin):
     fieldsets = [
         ('Infos', {'fields': ['name', 'beschrieb', 'bildlink']}),
         ('Übergeordnete Kategorie', {'fields': ['uebergeordnete_kategorie']})
@@ -356,7 +359,7 @@ class KategorienAdmin(admin.ModelAdmin):
 
 
 @admin.register(Kosten)
-class KostenAdmin(admin.ModelAdmin):
+class KostenAdmin(CustomModelAdmin):
     list_display = ["clean_name", "preis", "mwstsatz"]
 
     search_fields = ('name', 'preis')
@@ -391,7 +394,7 @@ class KundenAdminBestellungsInline(admin.TabularInline):
 
 
 @admin.register(Kunde)
-class KundenAdmin(admin.ModelAdmin):
+class KundenAdmin(CustomModelAdmin):
     def get_fieldsets(self, request, obj=None):
         if obj:
             return [
@@ -460,7 +463,7 @@ class KundenAdmin(admin.ModelAdmin):
 
 
 @admin.register(Lieferant)
-class LieferantenAdmin(admin.ModelAdmin):
+class LieferantenAdmin(CustomModelAdmin):
     fieldsets = [
         ('Infos', {'fields': ['kuerzel', 'name']}),
         ('Firma', {'fields': ['webseite', 'telefon', 'email']}),
@@ -536,7 +539,7 @@ class LieferungInlineProdukteAdd(admin.TabularInline):
 
 
 @admin.register(Lieferung)
-class LieferungenAdmin(admin.ModelAdmin):
+class LieferungenAdmin(CustomModelAdmin):
     list_display = ('name', 'datum', 'anzahlprodukte',
                     'lieferant', 'eingelagert', 'html_notiz')
     list_filter = ("eingelagert", "lieferant", )
@@ -593,7 +596,7 @@ class LieferungenAdmin(admin.ModelAdmin):
 
 
 @admin.register(Notiz)
-class NotizenAdmin(admin.ModelAdmin):
+class NotizenAdmin(CustomModelAdmin):
     list_display = ["name", "beschrieb", "priority", "erledigt", "erstellt_am"]
     list_filter = ["erledigt", "priority"]
 
@@ -705,7 +708,7 @@ class ProduktInlineKategorienInline(admin.TabularInline):
 
 
 @admin.register(Produkt)
-class ProduktAdmin(admin.ModelAdmin):
+class ProduktAdmin(CustomModelAdmin):
     def get_fieldsets(self, request, obj=None):
         return [
             ('Infos', {'fields': ['artikelnummer', 'name']}),
@@ -793,7 +796,7 @@ class ProduktAdmin(admin.ModelAdmin):
 
 
 @admin.register(Zahlungsempfaenger)
-class ZahlungsempfaengerAdmin(admin.ModelAdmin):
+class ZahlungsempfaengerAdmin(CustomModelAdmin):
     fieldsets = [
         ("Infos", {"fields": [
          "qriban", "logourl", "firmenname", "firmenuid"]}),
@@ -821,7 +824,7 @@ class ZahlungsempfaengerAdmin(admin.ModelAdmin):
 # Einstellungen
 
 @admin.register(Einstellung)
-class EinstellungenAdmin(admin.ModelAdmin):
+class EinstellungenAdmin(CustomModelAdmin):
     list_display = ('name', 'inhalt')
     ordering = ('name',)
 

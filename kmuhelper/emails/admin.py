@@ -4,11 +4,13 @@ from pytz import utc
 
 from kmuhelper.emails.models import EMail
 
+from kmuhelper.overwrites import CustomModelAdmin
+
 #######
 
 
 @admin.register(EMail)
-class EMailAdmin(admin.ModelAdmin):
+class EMailAdmin(CustomModelAdmin):
     def get_fieldsets(self, request, obj=None):
         if obj:
             return [
