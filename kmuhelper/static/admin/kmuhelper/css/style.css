@@ -6,3 +6,19 @@
     --link-fg: var(--kmuhelper-dark);
     --link-selected-fg: var(--kmuhelper-light);
 }
+
+/* Fix overlapping buttons */
+
+@media (min-width: 768px) {
+    .change-form #content-main {
+        margin-top: 50px;
+    }
+
+    .change-form .object-tools li {
+        margin-bottom: 10px;
+    }
+}
+
+.change-form .object-tools li {
+    margin-left: 5px;
+}
