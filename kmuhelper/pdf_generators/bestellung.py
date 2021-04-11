@@ -263,7 +263,7 @@ class _PDFOrderQrInvoice(Flowable):
 
         # - CcyAmt
         # - - Amt
-        ln("{:.2f}".format(bestellung.summe_gesamt()))
+        ln(formatprice(bestellung.summe_gesamt()))
         # - - Ccy
         ln("CHF")
 

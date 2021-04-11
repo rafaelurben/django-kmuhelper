@@ -417,25 +417,28 @@ class KundenAdminBestellungsInline(admin.TabularInline):
 @admin.register(Kunde)
 class KundenAdmin(CustomModelAdmin):
     def get_fieldsets(self, request, obj=None):
+        default = [
+            ('Infos', {'fields': [
+                'vorname', 'nachname', 'firma', 'email', 'sprache']}),
+            ('Rechnungsadresse', {'fields': [
+                ('rechnungsadresse_vorname', 'rechnungsadresse_nachname'),
+                'rechnungsadresse_firma',
+                ('rechnungsadresse_adresszeile1', 'rechnungsadresse_adresszeile2'),
+                ('rechnungsadresse_plz', 'rechnungsadresse_ort'),
+                ('rechnungsadresse_kanton', 'rechnungsadresse_land'),
+                ('rechnungsadresse_email', 'rechnungsadresse_telefon')]}),
+            ('Lieferadresse', {
+                'fields': [
+                    ('lieferadresse_vorname', 'lieferadresse_nachname'),
+                    'lieferadresse_firma',
+                    ('lieferadresse_adresszeile1', 'lieferadresse_adresszeile2'),
+                    ('lieferadresse_plz', 'lieferadresse_ort'),
+                    ('lieferadresse_kanton', 'lieferadresse_land')
+                ], 'classes': ["collapse start-open"]}),
+        ]
+
         if obj:
-            return [
-                ('Infos', {'fields': [
-                    'vorname', 'nachname', 'firma', 'email', 'sprache']}),
-                ('Rechnungsadresse', {'fields': [
-                    ('rechnungsadresse_vorname', 'rechnungsadresse_nachname'), 
-                    'rechnungsadresse_firma', 
-                    ('rechnungsadresse_adresszeile1', 'rechnungsadresse_adresszeile2'), 
-                    ('rechnungsadresse_plz', 'rechnungsadresse_ort'), 
-                    ('rechnungsadresse_kanton', 'rechnungsadresse_land'), 
-                    ('rechnungsadresse_email', 'rechnungsadresse_telefon')]}),
-                ('Lieferadresse', {
-                    'fields': [
-                        ('lieferadresse_vorname', 'lieferadresse_nachname'), 
-                        'lieferadresse_firma', 
-                        ('lieferadresse_adresszeile1', 'lieferadresse_adresszeile2'), 
-                        ('lieferadresse_plz', 'lieferadresse_ort'), 
-                        ('lieferadresse_kanton', 'lieferadresse_land')
-                    ], 'classes': ["collapse start-open"]}),
+            return default + [
                 ('Diverses', {
                     'fields': [
                         'webseite', 'bemerkung', 'html_notiz'
@@ -446,24 +449,7 @@ class KundenAdmin(CustomModelAdmin):
                     ], 'classes': ["collapse"]})
             ]
 
-        return [
-            ('Infos', {'fields': [
-                'vorname', 'nachname', 'firma', 'email', 'sprache']}),
-            ('Rechnungsadresse', {'fields': [
-                ('rechnungsadresse_vorname', 'rechnungsadresse_nachname'), 
-                'rechnungsadresse_firma', 
-                ('rechnungsadresse_adresszeile1', 'rechnungsadresse_adresszeile2'), 
-                ('rechnungsadresse_plz', 'rechnungsadresse_ort'), 
-                ('rechnungsadresse_kanton', 'rechnungsadresse_land'), 
-                ('rechnungsadresse_email', 'rechnungsadresse_telefon')]}),
-            ('Lieferadresse', {
-                'fields': [
-                    ('lieferadresse_vorname', 'lieferadresse_nachname'), 
-                    'lieferadresse_firma', 
-                    ('lieferadresse_adresszeile1', 'lieferadresse_adresszeile2'), 
-                    ('lieferadresse_plz', 'lieferadresse_ort'), 
-                    ('lieferadresse_kanton', 'lieferadresse_land')
-                ], 'classes': ["collapse start-open"]}),
+        return default + [
             ('Diverses', {'fields': ['webseite', 'bemerkung']})
         ]
 
@@ -670,8 +656,8 @@ class NotizenAdmin(CustomModelAdmin):
             ("Daten", {"fields": ["erledigt", "priority"]}),
         ]
 
-    def get_form(self, request, obj=None, **kwargs):
-        form = super().get_form(request, obj, **kwargs)
+    def get_form(self, request, obj=None, change=False, **kwargs):
+        form = super().get_form(request, obj, change, **kwargs)
         if obj is None:
             form.base_fields['beschrieb'].initial = ""
             if "from_bestellung" in request.GET:
@@ -848,9 +834,9 @@ class ProduktAdmin(CustomModelAdmin):
                 f" | Kommende Lieferungen: { n_coming }" if n_coming else "")
 
             if n_current-n_going < 0:
-                messages.error(request, f"Zu wenig Lagerbestand! "+stockdata)
+                messages.error(request, f"Zu wenig Lagerbestand! {stockdata}")
             elif n_current-n_going < n_min:
-                messages.warning(request, f"Knapper Lagerbestand! "+stockdata)
+                messages.warning(request, f"Knapper Lagerbestand! {stockdata}")
 
 
 @admin.register(Zahlungsempfaenger)
@@ -909,7 +895,7 @@ class EinstellungenAdmin(CustomModelAdmin):
 
     # Permissions
 
-    def has_add_permission(self, request, obj=None):
+    def has_add_permission(self, request):
         return False
 
     def has_delete_permission(self, request, obj=None):

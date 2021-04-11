@@ -9,18 +9,18 @@ from kmuhelper.overwrites import CustomModelAdmin
 @admin.register(EMail)
 class EMailAdmin(CustomModelAdmin):
     def get_fieldsets(self, request, obj=None):
+        default = [
+            ("Infos", {'fields': ['subject', 'to', 'typ']}),
+            ('Inhalt', {'fields': ['html_template', 'html_context']}),
+        ]
+
         if obj:
-            return [
-                ("Infos", {'fields': ['subject', 'to', 'typ']}),
-                ('Inhalt', {'fields': ['html_template', 'html_context']}),
+            return default + [
                 ('Zeiten', {'fields': ['time_created', 'time_sent']}),
                 ('Extra', {'fields': ['data']}),
             ]
-        else:
-            return [
-                ("Infos", {'fields': ['subject', 'to', 'typ']}),
-                ('Inhalt', {'fields': ['html_template', 'html_context']}),
-            ]
+
+        return default
 
     readonly_fields = ('time_created', 'time_sent')
 

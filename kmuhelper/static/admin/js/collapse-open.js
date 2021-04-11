@@ -1,4 +1,4 @@
-/*global gettext*/
+/* Script to automatically toggle all fieldsets with class .collapse.start-open */
 'use strict';
 {
     window.addEventListener('load', function() {

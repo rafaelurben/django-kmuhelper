@@ -62,27 +62,30 @@ def package_version(package, testpypi=False):
 
 
 def getfirstindex(data: list, search: list):
+    """Get the index of the first occurence of any string from search in data"""
     for s in search:
         if s in data:
             return data.index(s)
     return None
 
 
-def runden(preis):
-    return float("{:.2f}".format(float(round(round(preis / 0.05) * 0.05, 2))))
-
-
 def formatprice(preis):
+    """Format a float to exactly 2 decimal places"""
     return "{:.2f}".format(float(preis))
+
+
+def runden(preis, to=0.05):
+    """Round a float to .05 or any other value"""
+    # Note: formatprice is used because of floating point approximation
+    return float(formatprice(float(round(round(preis / to) * to, 2))))
 
 
 def clean(string, lang="de"):
     if "[:"+lang+"]" in string:
         return string.split("[:"+lang+"]")[1].split("[:")[0]
-    elif "[:de]" in string:
+    if "[:de]" in string:
         return string.split("[:de]")[1].split("[:")[0]
-    else:
-        return string
+    return string
 
 ###############
 

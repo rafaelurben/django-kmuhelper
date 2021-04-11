@@ -1243,11 +1243,10 @@ class Zahlungsempfaenger(models.Model):
                 a = str(self.qriban)[i].upper()
                 if a not in string.ascii_uppercase:
                     return False
-                else:
-                    b += str(ord(a)-55)
+                b += str(ord(a)-55)
             Nr = ''.join([z for z in str(self.qriban)
                           [2:] if z in string.digits])
-            return (int(int(Nr[2:] + b + Nr[:2]) % 97) == 1)
+            return int(int(Nr[2:] + b + Nr[:2]) % 97) == 1
         except IndexError:
             return False
 
@@ -1316,17 +1315,17 @@ class Einstellung(models.Model):
     def inhalt(self):
         if self.typ == "char":
             return self.char
-        elif self.typ == "text":
+        if self.typ == "text":
             return self.text
-        elif self.typ == "bool":
+        if self.typ == "bool":
             return self.boo
-        elif self.typ == "int":
+        if self.typ == "int":
             return self.inte
-        elif self.typ == "float":
+        if self.typ == "float":
             return self.floa
-        elif self.typ == "url":
+        if self.typ == "url":
             return self.url
-        elif self.typ == "email":
+        if self.typ == "email":
             return self.email
 
     @inhalt.setter
@@ -1383,17 +1382,17 @@ class Geheime_Einstellung(models.Model):
     def inhalt(self):
         if self.typ == "char":
             return self.char
-        elif self.typ == "text":
+        if self.typ == "text":
             return self.text
-        elif self.typ == "bool":
+        if self.typ == "bool":
             return self.boo
-        elif self.typ == "int":
+        if self.typ == "int":
             return self.inte
-        elif self.typ == "float":
+        if self.typ == "float":
             return self.floa
-        elif self.typ == "url":
+        if self.typ == "url":
             return self.url
-        elif self.typ == "email":
+        if self.typ == "email":
             return self.email
 
     @inhalt.setter

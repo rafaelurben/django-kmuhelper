@@ -35,6 +35,6 @@ try:
         id="wc-url", defaults={
             "typ": "url"})
 except Exception as error:
-    log("startup.py failed: Error while adding settings:", error)
+    log("startup.py failed: Error while adding settings:", type(error), error)
 
 log("startup.py ended")
