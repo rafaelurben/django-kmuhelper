@@ -2,7 +2,7 @@
 
 {% block object-tools-items %}
     {% if change and perms.kmuhelper.change_produkt %}
-        <li><a href="{% url 'kmuhelper:lieferant-zuordnen' object_id %}">Zuordnen</a></li>
+        <li><a href="{% url 'admin:kmuhelper_lieferant_zuordnen' object_id %}">Zuordnen</a></li>
     {% endif %}
     {{ block.super }}
 {% endblock %}

@@ -31,7 +31,10 @@ class EMailAdmin(admin.ModelAdmin):
                     'time_created', 'time_sent', 'is_sent')
     search_fields = ['subject', 'to']
 
+    # Permissions
+
     def has_module_permission(self, request):
+        """Hide model in default admin"""
         return {}
 
 #

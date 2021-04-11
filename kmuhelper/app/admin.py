@@ -24,11 +24,16 @@ class ToDoNotizenAdmin(NotizenAdmin):
 
     ordering = ["-priority", "erstellt_am"]
 
+    # Permissions
+
     def has_module_permission(self, request):
+        """Hide model in default admin"""
         return {}
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+    # Views
 
     def get_urls(self):
         def wrap(view):
@@ -65,11 +70,16 @@ class ToDoVersandAdmin(BestellungsAdmin):
 
     actions = ()
 
+    # Permissions
+
     def has_module_permission(self, request):
+        """Hide model in default admin"""
         return {}
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+    # Views
 
     def get_urls(self):
         def wrap(view):
@@ -106,11 +116,16 @@ class ToDoZahlungseingangAdmin(BestellungsAdmin):
 
     actions = ()
 
+    # Permissions
+
     def has_module_permission(self, request):
+        """Hide model in default admin"""
         return {}
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+    # Views
 
     def get_urls(self):
         def wrap(view):
@@ -145,11 +160,16 @@ class ToDoLagerbestandAdmin(ProduktAdmin):
 
     actions = ["lagerbestand_zuruecksetzen"]
 
+    # Permissions
+
     def has_module_permission(self, request):
+        """Hide model in default admin"""
         return {}
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+    # Views
 
     def get_urls(self):
         def wrap(view):
@@ -180,11 +200,16 @@ class ToDoLieferungenAdmin(LieferungenAdmin):
     list_display = ('name', 'datum', 'anzahlprodukte', 'html_todo_notiz')
     list_filter = ()
 
+    # Permissions
+
     def has_module_permission(self, request):
+        """Hide model in default admin"""
         return {}
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+    # Views
 
     def get_urls(self):
         def wrap(view):

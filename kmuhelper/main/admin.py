@@ -1,13 +1,18 @@
 from django.contrib import admin, messages
+from django.urls import path
 from django.utils.html import format_html, mark_safe
+
 from datetime import datetime
 from pytz import utc
 
-from kmuhelper.app.models import ToDoNotiz, ToDoVersand, ToDoZahlungseingang, ToDoLagerbestand, ToDoLieferung
 from kmuhelper.main.models import Ansprechpartner, Bestellung, Kategorie, Kosten, Kunde, Lieferant, Lieferung, Notiz, Produkt, Zahlungsempfaenger, Einstellung
-
-from kmuhelper.utils import package_version, python_version
 from kmuhelper.integrations.woocommerce import WooCommerce
+from kmuhelper.main.views import (
+    bestellung_pdf_ansehen, bestellung_pdf_an_kunden_senden, bestellung_duplizieren, bestellung_zu_lieferung,
+    kunde_email_registriert,
+    lieferant_zuordnen,
+    lieferung_einlagern
+)
 
 #######
 
@@ -44,14 +49,16 @@ class BestellungInlineBestellungsposten(admin.TabularInline):
             fields += ["rabatt"]
         return fields
 
+    # Permissions
+
     def has_change_permission(self, request, obj=None):
-        return False if (obj and (obj.versendet and obj.bezahlt)) else True
+        return False if (obj and (obj.versendet and obj.bezahlt)) else super().has_change_permission(request, obj)
 
     def has_add_permission(self, request, obj=None):
         return False
 
     def has_delete_permission(self, request, obj=None):
-        return False if (obj and (obj.versendet or obj.bezahlt)) else True
+        return False if (obj and (obj.versendet or obj.bezahlt)) else super().has_delete_permission(request, obj)
 
 
 class BestellungInlineBestellungspostenAdd(admin.TabularInline):
@@ -66,11 +73,13 @@ class BestellungInlineBestellungspostenAdd(admin.TabularInline):
         (None, {'fields': ['produkt', 'bemerkung', 'menge', 'rabatt']})
     ]
 
+    # Permissions
+
     def has_change_permission(self, request, obj=None):
         return False
 
     def has_add_permission(self, request, obj=None):
-        return False if (obj and (obj.versendet or obj.bezahlt)) else True
+        return False if (obj and (obj.versendet or obj.bezahlt)) else super().has_add_permission(request, obj)
 
     def has_delete_permission(self, request, obj=None):
         return False
@@ -94,14 +103,16 @@ class BestellungInlineBestellungskosten(admin.TabularInline):
         fields = ["zwischensumme", "mwstsatz", "kostenpreis", "kosten_name"]
         return fields
 
+    # Permissions
+
     def has_change_permission(self, request, obj=None):
-        return False if (obj and obj.bezahlt) else True
+        return False if (obj and obj.bezahlt) else super().has_change_permission(request, obj)
 
     def has_add_permission(self, request, obj=None):
         return False
 
     def has_delete_permission(self, request, obj=None):
-        return False if (obj and obj.bezahlt) else True
+        return False if (obj and obj.bezahlt) else super().has_delete_permission(request, obj)
 
 
 class BestellungInlineBestellungskostenAdd(admin.TabularInline):
@@ -116,11 +127,13 @@ class BestellungInlineBestellungskostenAdd(admin.TabularInline):
         (None, {'fields': ['kosten', 'bemerkung', 'rabatt']})
     ]
 
+    # Permissions
+
     def has_change_permission(self, request, obj=None):
         return False
 
     def has_add_permission(self, request, obj=None):
-        return False if (obj and obj.bezahlt) else True
+        return False if (obj and obj.bezahlt) else super().has_add_permission(request, obj)
 
     def has_delete_permission(self, request, obj=None):
         return False
@@ -207,6 +220,8 @@ class BestellungsAdmin(admin.ModelAdmin):
                 fields += ["kundennotiz"]
         return fields
 
+    # Actions
+
     @admin.action(description="Als bezahlt markieren", permissions=["change"])
     def als_bezahlt_markieren(self, request, queryset):
         successcount = 0
@@ -236,6 +251,8 @@ class BestellungsAdmin(admin.ModelAdmin):
                 '{} Bestellungen' if result[1] != 1 else 'einer Bestellung') + ' von WooCommerce ist ein Fehler aufgetreten!').format(result[1]))
 
     actions = [als_bezahlt_markieren, wc_update]
+
+    # Save
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
@@ -271,6 +288,25 @@ class BestellungsAdmin(admin.ModelAdmin):
                         'Knapper Lagerbestand bei "{}" [{}]: {}', *formatdata)
                     messages.warning(request, msg)
 
+    # Views
+
+    def get_urls(self):
+        info = self.model._meta.app_label, self.model._meta.model_name
+
+        urls = super().get_urls()
+
+        my_urls = [
+            path('<path:object_id>/pdf', self.admin_site.admin_view(bestellung_pdf_ansehen),
+                 name='%s_%s_pdf' % info),
+            path('<path:object_id>/pdf/email', self.admin_site.admin_view(bestellung_pdf_an_kunden_senden),
+                 name='%s_%s_pdf_email' % info),
+            path('<path:object_id>/duplizieren', self.admin_site.admin_view(bestellung_duplizieren),
+                 name='%s_%s_duplizieren' % info),
+            path('<path:object_id>/zu-lieferung', self.admin_site.admin_view(bestellung_zu_lieferung),
+                 name='%s_%s_zu_lieferung' % info),
+        ]
+        return my_urls + urls
+
 
 class KategorienAdminProduktInline(admin.StackedInline):
     model = Produkt.kategorien.through
@@ -279,6 +315,8 @@ class KategorienAdminProduktInline(admin.StackedInline):
     extra = 0
 
     autocomplete_fields = ("produkt", )
+
+    # Permissions
 
     def has_change_permission(self, request, obj=None):
         return False
@@ -302,6 +340,8 @@ class KategorienAdmin(admin.ModelAdmin):
     list_select_related = ("uebergeordnete_kategorie",)
 
     autocomplete_fields = ("uebergeordnete_kategorie", )
+
+    # Actions
 
     @admin.action(description="Kategorien von WooCommerce aktualisieren", permissions=["change"])
     def wc_update(self, request, queryset):
@@ -337,6 +377,8 @@ class KundenAdminBestellungsInline(admin.TabularInline):
     ordering = ('-datum', )
 
     fields = ('id', 'datum', 'fix_summe', 'versendet', 'bezahlt')
+
+    # Permissions
 
     def has_change_permission(self, request, obj=None):
         return False
@@ -384,13 +426,13 @@ class KundenAdmin(admin.ModelAdmin):
 
     readonly_fields = ["html_notiz"]
 
-    actions = ["wc_update"]
-
     list_select_related = ["notiz"]
 
     inlines = [KundenAdminBestellungsInline]
 
     save_on_top = True
+
+    # Actions
 
     @admin.action(description="Kunden von WooCommerce aktualisieren", permissions=["change"])
     def wc_update(self, request, queryset):
@@ -400,6 +442,21 @@ class KundenAdmin(admin.ModelAdmin):
         if result[1]:
             messages.error(request, ('Beim Import von ' + (
                 '{} Kunden' if result[1] != 1 else 'einem Kunden') + ' von WooCommerce ist ein Fehler aufgetreten!').format(result[1]))
+
+    actions = ["wc_update"]
+
+    # Views
+
+    def get_urls(self):
+        info = self.model._meta.app_label, self.model._meta.model_name
+
+        urls = super().get_urls()
+
+        my_urls = [
+            path('<path:object_id>/email/registriert', self.admin_site.admin_view(kunde_email_registriert),
+                 name='%s_%s_email_registriert' % info),
+        ]
+        return my_urls + urls
 
 
 @admin.register(Lieferant)
@@ -417,6 +474,19 @@ class LieferantenAdmin(admin.ModelAdmin):
     list_display = ('kuerzel', 'name', 'notiz')
     search_fields = ['kuerzel', 'name', 'adresse', 'notiz']
 
+    # Views
+
+    def get_urls(self):
+        info = self.model._meta.app_label, self.model._meta.model_name
+
+        urls = super().get_urls()
+
+        my_urls = [
+            path('<path:object_id>/zuordnen', self.admin_site.admin_view(lieferant_zuordnen),
+                 name='%s_%s_zuordnen' % info),
+        ]
+        return my_urls + urls
+
 
 class LieferungInlineProdukte(admin.TabularInline):
     model = Lieferung.produkte.through
@@ -428,14 +498,16 @@ class LieferungInlineProdukte(admin.TabularInline):
 
     fields = ("produkt", "menge",)
 
+    # Permissions
+
     def has_change_permission(self, request, obj=None):
-        return not (obj and obj.eingelagert)
+        return False if obj and obj.eingelagert else super().has_change_permission(request, obj)
 
     def has_add_permission(self, request, obj=None):
         return False
 
     def has_delete_permission(self, request, obj=None):
-        return not (obj and obj.eingelagert)
+        return False if obj and obj.eingelagert else super().has_delete_permission(request, obj)
 
 
 class LieferungInlineProdukteAdd(admin.TabularInline):
@@ -448,6 +520,8 @@ class LieferungInlineProdukteAdd(admin.TabularInline):
 
     fields = ("produkt", "menge",)
 
+    # Permissions
+
     def has_view_permission(self, request, obj=None):
         return False
 
@@ -455,7 +529,7 @@ class LieferungInlineProdukteAdd(admin.TabularInline):
         return False
 
     def has_add_permission(self, request, obj=None):
-        return not (obj and obj.eingelagert)
+        return False if obj and obj.eingelagert else super().has_add_permission(request, obj)
 
     def has_delete_permission(self, request, obj=None):
         return False
@@ -485,7 +559,7 @@ class LieferungenAdmin(admin.ModelAdmin):
 
     save_on_top = True
 
-    actions = ["einlagern"]
+    # Actions
 
     @admin.action(description="Lieferungen einlagern", permissions=["change"])
     def einlagern(self, request, queryset):
@@ -501,6 +575,21 @@ class LieferungenAdmin(admin.ModelAdmin):
         if errorcount:
             messages.error(request, ('Beim Einlagern von ' + ('{} Lieferungen' if errorcount !=
                                                               1 else 'einer Lieferung') + ' ist ein Fehler aufgetreten!').format(errorcount))
+
+    actions = ["einlagern"]
+
+    # Views
+
+    def get_urls(self):
+        info = self.model._meta.app_label, self.model._meta.model_name
+
+        urls = super().get_urls()
+
+        my_urls = [
+            path('<path:object_id>/einlagern', self.admin_site.admin_view(lieferung_einlagern),
+                 name='%s_%s_einlagern' % info),
+        ]
+        return my_urls + urls
 
 
 @admin.register(Notiz)
@@ -552,6 +641,8 @@ class NotizenAdmin(admin.ModelAdmin):
                 form.base_fields['beschrieb'].initial += '\n\n[Lieferung #' + \
                     request.GET.get("from_lieferung") + "]"
         return form
+
+    # Save
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
@@ -607,6 +698,8 @@ class ProduktInlineKategorienInline(admin.TabularInline):
 
     autocomplete_fields = ("kategorie", )
 
+    # Permissions
+
     def has_change_permission(self, request, obj=None):
         return False
 
@@ -649,9 +742,9 @@ class ProduktAdmin(admin.ModelAdmin):
 
     save_on_top = True
 
-    actions = ["wc_update", "lagerbestand_zuruecksetzen", "aktion_beenden"]
-
     list_select_related = ["notiz"]
+
+    # Actions
 
     @admin.action(description="Produkte von WooCommerce aktualisieren", permissions=["change"])
     def wc_update(self, request, queryset):
@@ -677,6 +770,10 @@ class ProduktAdmin(admin.ModelAdmin):
             produkt.save()
         messages.success(request, (('Aktion von {} Produkten' if queryset.count(
         ) != 1 else 'Aktion von einem Produkt') + ' beendet!').format(queryset.count()))
+
+    actions = ["wc_update", "lagerbestand_zuruecksetzen", "aktion_beenden"]
+
+    # Save
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
@@ -711,6 +808,8 @@ class ZahlungsempfaengerAdmin(admin.ModelAdmin):
 
     save_on_top = True
 
+    # Save
+
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
         if obj and not obj.has_valid_qr_iban():
@@ -723,12 +822,6 @@ class ZahlungsempfaengerAdmin(admin.ModelAdmin):
 
 @admin.register(Einstellung)
 class EinstellungenAdmin(admin.ModelAdmin):
-    def has_add_permission(self, request, obj=None):
-        return False
-
-    def has_delete_permission(self, request, obj=None):
-        return False
-
     list_display = ('name', 'inhalt')
     ordering = ('name',)
 
@@ -739,17 +832,25 @@ class EinstellungenAdmin(admin.ModelAdmin):
     def get_fieldsets(self, request, obj=None):
         fieldsets = [
             ('Name', {'fields': ['name']}),
-            ('Inhalt', {'fields': [
-                'char' if obj.typ == 'char' else
-                'text' if obj.typ == 'text' else
-                'boo' if obj.typ == 'bool' else
-                'inte' if obj.typ == 'int' else
-                'floa' if obj.typ == 'float' else
-                'url' if obj.typ == 'url' else
-                'email' if obj.typ == 'email' else ''
-            ]}),
+            ('Inhalt', {'fields':
+                        ['char'] if obj.typ == 'char' else
+                        ['text'] if obj.typ == 'text' else
+                        ['boo'] if obj.typ == 'bool' else
+                        ['inte'] if obj.typ == 'int' else
+                        ['floa'] if obj.typ == 'float' else
+                        ['url'] if obj.typ == 'url' else
+                        ['email'] if obj.typ == 'email' else []
+                        }),
         ]
         return fieldsets
+
+    # Permissions
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 #

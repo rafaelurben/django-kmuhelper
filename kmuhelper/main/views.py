@@ -17,11 +17,11 @@ from kmuhelper.decorators import confirm_action, require_object
 @login_required(login_url=reverse_lazy("admin:login"))
 @permission_required("kmuhelper.change_produkt")
 @require_object(Lieferant)
-@confirm_action("Lieferant zuordnen")
+@confirm_action("Lieferant allen Produkten ohne Lieferant zuordnen")
 def lieferant_zuordnen(request, obj):
     count = obj.zuordnen()
-    messages.success(request, ('Lieferant wurde ' + (('{} neuen Produkten' if count > 1 else 'einem neuen Produkt')
-                                                        if count != 0 else "keinem neuen Produkt") + ' zugeordnet!').format(count))
+    messages.success(request, ('Lieferant wurde ' + ((f'{count} neuen Produkten' if count > 1 else 'einem neuen Produkt')
+                                                        if count != 0 else "keinem neuen Produkt") + ' zugeordnet!'))
     return redirect(reverse("admin:kmuhelper_lieferant_change", args=[obj.pk]))
 
 

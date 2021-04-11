@@ -5,19 +5,19 @@
         {% if original.woocommerceid %}
             <li><a href="{% url 'kmuhelper:wc-update-order' object_id %}">Von WooCommerce importieren und ersetzen</a></li>
         {% endif %}
-        <li><a href="{% url 'kmuhelper:bestellung-duplizieren' object_id %}" rel="noopener">Duplizieren</a></li>
+        <li><a href="{% url 'admin:kmuhelper_bestellung_duplizieren' object_id %}" rel="noopener">Duplizieren</a></li>
         {% if original.versendet %}
-            <li><attr title="Test"><a href="{% url 'kmuhelper:bestellung-zu-lieferung' object_id %}" rel="noopener">Rücksendung</a></attr></li>
+            <li><attr title="Test"><a href="{% url 'admin:kmuhelper_bestellung_zu_lieferung' object_id %}" rel="noopener">Rücksendung</a></attr></li>
         {% endif %}
-        <li><a href="{% url 'kmuhelper:bestellung-pdf-ansehen' object_id %}" target="_blank" rel="noopener">Rechnung (digital)</a></li>
-        <li><a href="{% url 'kmuhelper:bestellung-pdf-ansehen' object_id %}?druck" target="_blank" rel="noopener">Rechnung (druck)</a></li>
-        <li><a href="{% url 'kmuhelper:bestellung-pdf-ansehen' object_id %}?lieferschein" target="_blank" rel="noopener">Lieferschein</a></li>
+        <li><a href="{% url 'admin:kmuhelper_bestellung_pdf' object_id %}" target="_blank" rel="noopener">Rechnung (digital)</a></li>
+        <li><a href="{% url 'admin:kmuhelper_bestellung_pdf' object_id %}?druck" target="_blank" rel="noopener">Rechnung (druck)</a></li>
+        <li><a href="{% url 'admin:kmuhelper_bestellung_pdf' object_id %}?lieferschein" target="_blank" rel="noopener">Lieferschein</a></li>
 
         {% load kmuhelper_tags %}
         {% kmuhelper_email_show_buttons as show_email_buttons %}
         {% if show_email_buttons and original.versendet and original.rechnungsadresse_email %}
             {% if not original.rechnungsemail or not original.rechnungsemail.time_sent %}
-                <li><a href="{% url 'kmuhelper:bestellung-pdf-an-kunden-senden' object_id %}">Rechnung an Kunden senden</a></li>
+                <li><a href="{% url 'admin:kmuhelper_bestellung_pdf_email' object_id %}">Rechnung an Kunden senden</a></li>
             {% endif %}
         {% endif %}
         

@@ -2,7 +2,7 @@
 
 {% block object-tools-items %}
     {% if change and perms.kmuhelper.change_produkt and not original.eingelagert %}
-        <li><a href="{% url 'kmuhelper:lieferung-einlagern' object_id %}">Einlagern</a></li>
+        <li><a href="{% url 'admin:kmuhelper_lieferung_einlagern' object_id %}">Einlagern</a></li>
     {% endif %}
     {{ block.super }}
 {% endblock %}
