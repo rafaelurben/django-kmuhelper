@@ -2,31 +2,35 @@
 
 from django.utils.html import strip_tags
 
-from woocommerce import API as WCAPI
-
-from kmuhelper.main.models import Einstellung, Geheime_Einstellung, Produkt, Kunde, Kategorie, Bestellung, Bestellungsposten, Kosten
-from kmuhelper.utils import runden
-
 from rich import print
 from rich.progress import Progress
 
+from woocommerce import API as WCAPI
 
-prefix = "[deep_pink4][KMUHelper][/] -"
+from kmuhelper.main.models import Geheime_Einstellung, Produkt, Kunde, Kategorie, Bestellung, Kosten
+from kmuhelper.utils import runden
+
+
+PREFIX = "[deep_pink4][KMUHelper][/] -"
 
 
 def log(string, *args):
-    print(prefix, string, *args)
+    print(PREFIX, string, *args)
 
 
 def preparestring(string):
+    """Prepare a HTML string for import"""
     return strip_tags(string.replace("</p>", " ").replace("</strong>", " ")).replace("&#8211;", "-").replace("&#8211;", " ").replace("&#215;", "x").replace("&#8220;", '"').replace("&#8221;", '"').replace("&nbsp;", " ").replace("&lt;", "<").replace("&gt;", ">").replace("&amp;", "&").replace("&quot;", '"').replace("&#8222;", '"').replace("  ", " ")
 
 ###############
 
 
 class WooCommerce():
+    """Manage connection with WooCommerce"""
+
     @classmethod
     def get_api(self):
+        """Create a API object from data stored in settings"""
         return WCAPI(
             url=Geheime_Einstellung.objects.get(id="wc-url").inhalt,
             consumer_key=Geheime_Einstellung.objects.get(
@@ -35,8 +39,13 @@ class WooCommerce():
                 id="wc-consumer_secret").inhalt
         )
 
+    # General methods
+
     @classmethod
-    def product_create(self, product):
+    def product_create(self, product, api=None):
+        """Create a new product from WooCommerce data"""
+        wcapi = api or self.get_api()
+
         try:
             verkaufspreis = float(product["price"])
         except ValueError:
@@ -63,16 +72,19 @@ class WooCommerce():
         for category in product["categories"]:
             tup = Kategorie.objects.get_or_create(woocommerceid=category["id"])
             if tup[1]:
-                self.category_update(tup[0])
+                self.category_update(tup[0], api=wcapi)
             newproduct.kategorien.add(tup[0])
         newproduct.save()
         log("Produkt erstellt:", str(newproduct))
         return newproduct
 
     @classmethod
-    def product_update(self, product, newproduct=None):
+    def product_update(self, product, newproduct=None, api=None):
+        """Update a specific product from WooCommerce"""
+        wcapi = api or self.get_api()
+
         if not newproduct:
-            newproduct = self.get_api().get("products/" + str(product.woocommerceid)).json()
+            newproduct = wcapi.get("products/" + str(product.woocommerceid)).json()
 
         try:
             product.verkaufspreis = float(newproduct["price"])
@@ -80,7 +92,7 @@ class WooCommerce():
             pass
         except KeyError:
             if "code" in newproduct and newproduct["code"] == "woocommerce_rest_product_invalid_id":
-                log(prefix +
+                log(PREFIX +
                     " [red]Produkt existiert in WooCommerce nicht![/]")
                 product.woocommerceid = 0
                 product.save()
@@ -104,7 +116,7 @@ class WooCommerce():
         for category in newproduct["categories"]:
             tup = Kategorie.objects.get_or_create(woocommerceid=category["id"])
             if tup[1]:
-                self.category_update(tup[0])
+                self.category_update(tup[0], api=wcapi)
             newcategories.append(tup[0])
         product.kategorien.add(*newcategories)
 
@@ -113,21 +125,23 @@ class WooCommerce():
         return product
 
     @classmethod
-    def product_import(self):
+    def product_import(self, api=None):
+        """Import new products from WooCommerce"""
+        wcapi = api or self.get_api()
+
         with Progress() as progress:
             task_prepare = progress.add_task(
-                prefix + " [orange_red1]Produktdownload vorbereiten...", total=1)
+                PREFIX + " [orange_red1]Produktdownload vorbereiten...", total=1)
 
             excludeids = str([obj.woocommerceid for obj in Produkt.objects.all().exclude(
                 woocommerceid=0)])[1:-1]
-            wcapi = self.get_api()
             productlist = []
 
             progress.update(task_prepare, advance=1)
             progress.stop_task(task_prepare)
 
             task_download = progress.add_task(
-                prefix + " [green]Produkte herunterladen...")
+                PREFIX + " [green]Produkte herunterladen...")
 
             r = wcapi.get("products?exclude=" + excludeids)
             productlist += r.json()
@@ -144,23 +158,26 @@ class WooCommerce():
 
             if productlist:
                 task_process = progress.add_task(
-                    prefix + " [cyan]Produkte verarbeiten...", total=len(productlist))
+                    PREFIX + " [cyan]Produkte verarbeiten...", total=len(productlist))
                 for product in productlist:
-                    self.product_create(product)
+                    self.product_create(product, api=wcapi)
                     progress.update(task_process, advance=1)
                 progress.stop_task(task_process)
         return len(productlist)
 
     @classmethod
-    def product_bulk_update(self, products):
+    def product_bulk_update(self, products, api=None):
+        """Update every product in a queryset"""
+        wcapi = api or self.get_api()
+
         with Progress() as progress:
             task = progress.add_task(
-                prefix + " [orange_red1]Produkte aktualisieren...", total=products.count())
+                PREFIX + " [orange_red1]Produkte aktualisieren...", total=products.count())
             successcount = 0
             errorcount = 0
             for product in products:
                 if product.woocommerceid:
-                    self.product_update(product)
+                    self.product_update(product, api=wcapi)
                     successcount += 1
                 else:
                     errorcount += 1
@@ -170,6 +187,7 @@ class WooCommerce():
 
     @classmethod
     def customer_create(self, customer):
+        """Create a new customer from WooCommerce data"""
         newcustomer = Kunde.objects.create(
             woocommerceid=customer["id"],
 
@@ -206,9 +224,12 @@ class WooCommerce():
         return newcustomer
 
     @classmethod
-    def customer_update(self, customer, newcustomer=None):
+    def customer_update(self, customer, newcustomer=None, api=None):
+        """Update a specific customer from WooCommerce"""
+        wcapi = api or self.get_api()
+
         if not newcustomer:
-            newcustomer = self.get_api().get("customers/" + str(customer.woocommerceid)).json()
+            newcustomer = wcapi.get("customers/" + str(customer.woocommerceid)).json()
 
         if "code" in newcustomer and newcustomer["code"] == "woocommerce_rest_customer_invalid_id":
             log("[red]Kunde existiert in WooCommerce nicht![/]")
@@ -249,21 +270,23 @@ class WooCommerce():
         return customer
 
     @classmethod
-    def customer_import(self):
+    def customer_import(self, api=None):
+        """Import new customers from WooCommerce"""
+        wcapi = api or self.get_api()
+
         with Progress() as progress:
             task_prepare = progress.add_task(
-                prefix + " [orange_red1]Kundendownload vorbereiten...", total=1)
+                PREFIX + " [orange_red1]Kundendownload vorbereiten...", total=1)
 
             excludeids = str([obj.woocommerceid for obj in Kunde.objects.all().exclude(
                 woocommerceid=0)])[1:-1]
-            wcapi = self.get_api()
             customerlist = []
 
             progress.update(task_prepare, advance=1)
             progress.stop_task(task_prepare)
 
             task_download = progress.add_task(
-                prefix + " [green]Kunden herunterladen...")
+                PREFIX + " [green]Kunden herunterladen...")
 
             r = wcapi.get("customers?exclude=" + excludeids)
             customerlist += r.json()
@@ -279,7 +302,7 @@ class WooCommerce():
 
             if customerlist:
                 task_process = progress.add_task(
-                    prefix + " [cyan]Kunden verarbeiten...", total=len(customerlist))
+                    PREFIX + " [cyan]Kunden verarbeiten...", total=len(customerlist))
                 for customer in customerlist:
                     self.customer_create(customer)
                     progress.update(task_process, advance=1)
@@ -287,15 +310,18 @@ class WooCommerce():
         return len(customerlist)
 
     @classmethod
-    def customer_bulk_update(self, customers):
+    def customer_bulk_update(self, customers, api=None):
+        """Update every customer in a queryset"""
+        wcapi = api or self.get_api()
+
         with Progress() as progress:
             task = progress.add_task(
-                prefix + " [orange_red1]Kunden aktualisieren...", total=customers.count())
+                PREFIX + " [orange_red1]Kunden aktualisieren...", total=customers.count())
             successcount = 0
             errorcount = 0
             for customer in customers:
                 if customer.woocommerceid:
-                    self.customer_update(customer)
+                    self.customer_update(customer, api=wcapi)
                     successcount += 1
                 else:
                     errorcount += 1
@@ -304,9 +330,12 @@ class WooCommerce():
         return (successcount, errorcount)
 
     @classmethod
-    def category_update(self, category, newcategory=None):
+    def category_update(self, category, newcategory=None, api=None):
+        """Update a specific category from WooCommerce"""
+        wcapi = api or self.get_api()
+
         if not newcategory:
-            newcategory = self.get_api().get("products/categories/" +
+            newcategory = wcapi.get("products/categories/" +
                                              str(category.woocommerceid)).json()
 
         if "code" in newcategory and newcategory["code"] == "woocommerce_rest_category_invalid_id":
@@ -323,61 +352,30 @@ class WooCommerce():
             tup = Kategorie.objects.get_or_create(
                 woocommerceid=newcategory["parent"])
             if tup[1]:
-                self.category_update(tup[0])
+                self.category_update(tup[0], api=wcapi)
             category.uebergeordnete_kategorie = tup[0]
         category.save()
         log("Kategorie aktualisiert:", str(category))
         return category
 
     @classmethod
-    def category_import(self):
-        # excludeids = str([obj.woocommerceid for obj in Kategorie.objects.all().exclude(
-        #     woocommerceid=0)])[1:-1]
-        # wcapi = self.get_api()
-        # log("Kategorien von WooCommerce herunterladen...")
-        # categorylist = []
-        # r = wcapi.get("products/categories?exclude=" + excludeids)
-        # categorylist += r.json()
-        # for page in range(2, int(r.headers['X-WP-TotalPages']) + 1):
-        #     categorylist += wcapi.get("products/categories?exclude=" +
-        #                               excludeids + "&page=" + str(page)).json()
-        # log("Kategorien von WooCommerce heruntergeladen:",
-        #     len(categorylist))
-        # log("Kategorien von WooCommerce importieren...")
-        # categorieswithparents = []
-        # for category in categorylist:
-        #     newcategory = Kategorie.objects.create(
-        #         name=preparestring(category["name"]),
-        #         beschrieb=preparestring(category["description"]),
-        #         bildlink=(category["image"]["src"]
-        #                   ) if category["image"] else "",
-        #         woocommerceid=category["id"]
-        #     )
-        #     log("Kategorie erstellt:", category["name"])
-        #     if category["parent"]:
-        #         categorieswithparents.append((newcategory, category["parent"]))
-        # for tup in categorieswithparents:
-        #     tup[0].uebergeordnete_kategorie = Kategorie.objects.get(
-        #         woocommerceid=tup[1])
-        #     tup[0].save()
-        # log("Kategorien von WooCommerce importiert:",
-        #     len(categorylist))
-        # return len(categorylist)
+    def category_import(self, api=None):
+        """Import new categories from WooCommerce"""
+        wcapi = api or self.get_api()
 
         with Progress() as progress:
             task_prepare = progress.add_task(
-                prefix + " [orange_red1]Kategoriendownload vorbereiten...", total=1)
+                PREFIX + " [orange_red1]Kategoriendownload vorbereiten...", total=1)
 
             excludeids = str([obj.woocommerceid for obj in Kategorie.objects.all().exclude(
                 woocommerceid=0)])[1:-1]
-            wcapi = self.get_api()
             categorylist = []
 
             progress.update(task_prepare, advance=1)
             progress.stop_task(task_prepare)
 
             task_download = progress.add_task(
-                prefix + " [green]Kategorien herunterladen...")
+                PREFIX + " [green]Kategorien herunterladen...")
 
             r = wcapi.get("products/categories?exclude=" + excludeids)
             categorylist += r.json()
@@ -396,7 +394,7 @@ class WooCommerce():
 
             if categorylist:
                 task_process = progress.add_task(
-                    prefix + " [cyan]Kategorien verarbeiten...", total=len(categorylist))
+                    PREFIX + " [cyan]Kategorien verarbeiten...", total=len(categorylist))
                 for category in categorylist:
                     newcategory = Kategorie.objects.create(
                         name=preparestring(category["name"]),
@@ -414,7 +412,7 @@ class WooCommerce():
 
             if categorieswithparents:
                 task_process2 = progress.add_task(
-                    prefix + " [cyan]Kategorieabhängigkeiten verarbeiten...", total=len(categorieswithparents))
+                    PREFIX + " [cyan]Kategorieabhängigkeiten verarbeiten...", total=len(categorieswithparents))
                 for tup in categorieswithparents:
                     tup[0].uebergeordnete_kategorie = Kategorie.objects.get(
                         woocommerceid=tup[1])
@@ -424,15 +422,18 @@ class WooCommerce():
         return len(categorylist)
 
     @classmethod
-    def category_bulk_update(self, categories):
+    def category_bulk_update(self, categories, api=None):
+        """Update every category in a queryset"""
+        wcapi = api or self.get_api()
+
         with Progress() as progress:
             task = progress.add_task(
-                prefix + " [orange_red1]Kategorien aktualisieren...", total=categories.count())
+                PREFIX + " [orange_red1]Kategorien aktualisieren...", total=categories.count())
             successcount = 0
             errorcount = 0
             for category in categories:
                 if category.woocommerceid:
-                    self.category_update(category)
+                    self.category_update(category, api=wcapi)
                     successcount += 1
                 else:
                     errorcount += 1
@@ -441,7 +442,10 @@ class WooCommerce():
         return (successcount, errorcount)
 
     @classmethod
-    def order_create(self, order):
+    def order_create(self, order, api=None):
+        """Create a new order from WooCommerce data"""
+        wcapi = api or self.get_api()
+
         neworder = Bestellung.objects.create(
             woocommerceid=order["id"],
 
@@ -484,7 +488,7 @@ class WooCommerce():
             kunde = Kunde.objects.get_or_create(
                 woocommerceid=int(order["customer_id"]))
             if kunde[1]:
-                kunde = self.customer_update(kunde[0])
+                kunde = self.customer_update(kunde[0], api=wcapi)
             else:
                 kunde = kunde[0]
         else:
@@ -494,7 +498,7 @@ class WooCommerce():
             product = Produkt.objects.get_or_create(
                 woocommerceid=int(item["product_id"]))
             if product[1]:
-                product = self.product_update(product[0])
+                product = self.product_update(product[0], api=wcapi)
             else:
                 product = product[0]
             neworder.produkte.add(product, through_defaults={"menge": int(
@@ -509,9 +513,12 @@ class WooCommerce():
         return neworder
 
     @classmethod
-    def order_update(self, order, neworder=None):
+    def order_update(self, order, neworder=None, api=None):
+        """Update a specific order from WooCommerce"""
+        wcapi = api or self.get_api()
+
         if not neworder:
-            neworder = self.get_api().get("orders/" + str(order.woocommerceid)).json()
+            neworder = wcapi.get("orders/" + str(order.woocommerceid)).json()
 
         if "code" in neworder and neworder["code"] == "woocommerce_rest_order_invalid_id":
             log("[red]Bestellung existiert in WooCommerce nicht![/]")
@@ -550,21 +557,23 @@ class WooCommerce():
         return order
 
     @classmethod
-    def order_import(self):
+    def order_import(self, api=None):
+        """Import new orders from WooCommerce"""
+        wcapi = api or self.get_api()
+
         with Progress() as progress:
             task_prepare = progress.add_task(
-                prefix + " [orange_red1]Bestellungsdownload vorbereiten...", total=1)
+                PREFIX + " [orange_red1]Bestellungsdownload vorbereiten...", total=1)
 
             excludeids = str([obj.woocommerceid for obj in Bestellung.objects.all().exclude(
                 woocommerceid=0)])[1:-1]
-            wcapi = self.get_api()
             orderlist = []
 
             progress.update(task_prepare, advance=1)
             progress.stop_task(task_prepare)
 
             task_download = progress.add_task(
-                prefix + " [green]Bestellungen herunterladen...")
+                PREFIX + " [green]Bestellungen herunterladen...")
 
             r = wcapi.get("orders?exclude=" + excludeids)
             orderlist += r.json()
@@ -580,23 +589,26 @@ class WooCommerce():
 
             if orderlist:
                 task_process = progress.add_task(
-                    prefix + " [cyan]Bestellungen verarbeiten...", total=len(orderlist))
+                    PREFIX + " [cyan]Bestellungen verarbeiten...", total=len(orderlist))
                 for order in orderlist:
-                    self.order_create(order)
+                    self.order_create(order, api=wcapi)
                     progress.update(task_process, advance=1)
                 progress.stop_task(task_process)
         return len(orderlist)
 
     @classmethod
-    def order_bulk_update(self, orders):
+    def order_bulk_update(self, orders, api=None):
+        """Update every order in a queryset"""
+        wcapi = api or self.get_api()
+
         with Progress() as progress:
             task = progress.add_task(
-                prefix + " [orange_red1]Bestellungen aktualisieren...", total=orders.count())
+                PREFIX + " [orange_red1]Bestellungen aktualisieren...", total=orders.count())
             successcount = 0
             errorcount = 0
             for order in orders:
                 if order.woocommerceid:
-                    self.order_update(order)
+                    self.order_update(order, api=wcapi)
                     successcount += 1
                 else:
                     errorcount += 1

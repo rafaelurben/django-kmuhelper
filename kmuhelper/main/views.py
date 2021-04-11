@@ -1,12 +1,9 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
-from django.http import HttpResponse, HttpResponseBadRequest
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
-from django.views.decorators.cache import never_cache
-from django.views.decorators.csrf import csrf_exempt
 
-from kmuhelper.main.models import Einstellung, Geheime_Einstellung, Produkt, Kunde, Kategorie, Lieferant, Lieferung, Bestellung, Bestellungsposten
+from kmuhelper.main.models import Kunde, Lieferant, Lieferung, Bestellung
 from kmuhelper.decorators import confirm_action, require_object
 
 ###############
@@ -20,8 +17,15 @@ from kmuhelper.decorators import confirm_action, require_object
 @confirm_action("Lieferant allen Produkten ohne Lieferant zuordnen")
 def lieferant_zuordnen(request, obj):
     count = obj.zuordnen()
-    messages.success(request, ('Lieferant wurde ' + ((f'{count} neuen Produkten' if count > 1 else 'einem neuen Produkt')
-                                                        if count != 0 else "keinem neuen Produkt") + ' zugeordnet!'))
+    if count == 1:
+        messages.success(
+            request, 'Lieferant wurde einem neuen Produkt zugeordnet!')
+    elif count == 0:
+        messages.success(
+            request, 'Lieferant wurde keinem neuen Produkt zugeordnet!')
+    else:
+        messages.success(
+            request, f'Lieferant wurde {count} neuen Produkten einem neuen Produkt zugeordnet!')
     return redirect(reverse("admin:kmuhelper_lieferant_change", args=[obj.pk]))
 
 
@@ -106,5 +110,6 @@ def public_view_order(request, obj, order_key):
     if str(obj.order_key) == order_key:
         return obj.get_pdf(lieferschein=lieferschein, digital=digital)
 
-    messages.error(request, "Der Bestellungsschlüssel dieser Bestellung stimmt nicht überein.")
+    messages.error(
+        request, "Der Bestellungsschlüssel dieser Bestellung stimmt nicht überein.")
     return redirect(reverse("kmuhelper:info"))

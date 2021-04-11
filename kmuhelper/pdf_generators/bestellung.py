@@ -1,28 +1,24 @@
-from io import BytesIO
-
-from reportlab.graphics import renderPDF
-from reportlab.graphics.barcode import qr
-from reportlab.graphics.shapes import Drawing
-from reportlab.lib.colors import green, white, black
-from reportlab.lib.styles import ParagraphStyle
-from reportlab.lib.units import mm, cm
-from reportlab.lib.utils import ImageReader
 from reportlab.platypus import Table, TableStyle, Paragraph, Spacer, TopPadder, Flowable
-
-from kmuhelper.utils import clean, formatprice
-
-from kmuhelper.pdf_generators._base import PDFGenerator
+from reportlab.lib.utils import ImageReader
+from reportlab.lib.units import mm
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.lib.colors import black
+from reportlab.graphics.shapes import Drawing
+from reportlab.graphics.barcode import qr
+from reportlab.graphics import renderPDF
 
 from django.utils import translation
 _ = translation.gettext
 
+from kmuhelper.pdf_generators._base import PDFGenerator
+from kmuhelper.utils import clean, formatprice
 
 #####
 
 
 class _PDFOrderPriceTable(Table):
     def __init__(self, bestellung):
-        sprache = bestellung.kunde.sprache if bestellung.kunde and bestellung.kunde.sprache else "de"
+        sprache = bestellung.kunde.sprache if bestellung.kunde else "de"
 
         data = [(_("Art-Nr."), _("Bezeichnung"), _("Anzahl"),
                  _("Einheit"), _("Preis"), _("Total"))]
@@ -229,10 +225,10 @@ class _PDFOrderQrInvoice(Flowable):
         ln("0200")
         # - - Coding
         ln("1")
-        
+
         # - CdtrInf (Empfänger)
         # - - IBAN
-        ln(ze.qriban.replace(" ",""))
+        ln(ze.qriban.replace(" ", ""))
         # - - Cdtr
         # - - - AdrTp
         ln("K")
@@ -271,11 +267,12 @@ class _PDFOrderQrInvoice(Flowable):
         # - - Ccy
         ln("CHF")
 
-        #- UltmtDbtr (Entgültiger Zahlungspflichtiger)
+        # - UltmtDbtr (Entgültiger Zahlungspflichtiger)
         # - - AdrTp
         ln("K")
         # - - Name
-        ln((bestellung.rechnungsadresse_vorname+" "+bestellung.rechnungsadresse_nachname) if not bestellung.rechnungsadresse_firma else bestellung.rechnungsadresse_firma)
+        ln((bestellung.rechnungsadresse_vorname+" "+bestellung.rechnungsadresse_nachname)
+           if not bestellung.rechnungsadresse_firma else bestellung.rechnungsadresse_firma)
         # - - StrtNmOrAdrLine1
         ln(bestellung.rechnungsadresse_adresszeile1)
         # - - BldgNbOrAdrLine2
@@ -291,7 +288,7 @@ class _PDFOrderQrInvoice(Flowable):
         # - - TP
         ln("QRR")
         # - - Ref
-        ln(bestellung.referenznummer().replace(" ",""))
+        ln(bestellung.referenznummer().replace(" ", ""))
         # - - AddInf
         # - - - Ustrd
         ln(str(bestellung.datum.strftime("%d.%m.%Y")))
@@ -302,9 +299,9 @@ class _PDFOrderQrInvoice(Flowable):
 
         ## - AltPmtInf
         ## - - AltPmt
-        #ln()
+        # ln()
         ## - - AltPmt
-        #ln()
+        # ln()
 
         return "\n".join(qrpayload)
 
@@ -445,7 +442,7 @@ class _PDFOrderQrInvoice(Flowable):
 
 
 class _PDFOrderHeader(Flowable):
-    def __init__(self, bestellung, lieferschein=False, title=None):
+    def __init__(self, bestellung, lieferschein=False):
         super().__init__()
         self.width = 210
         self.height = 75
@@ -573,7 +570,7 @@ class _PDFOrderHeader(Flowable):
 
 
 class PDFOrder(PDFGenerator):
-    def get_elements(self, bestellung, lieferschein=False, digital: bool = True, title=None):
+    def get_elements(self, bestellung, lieferschein=False, digital: bool = True):
         # Header
         elements = [
             _PDFOrderHeader(bestellung, lieferschein=lieferschein),

@@ -1,17 +1,13 @@
-from django.http import HttpResponse, FileResponse
-from django.conf import settings
-from django.core import mail
-from django.template.loader import get_template
-from django.utils import translation
+import sys
+import subprocess
+import requests
 
+from io import BytesIO
 from packaging.version import Version, InvalidVersion, parse as parse_version
 
-from datetime import datetime
-from io import BytesIO
+from django.core import mail
+from django.template.loader import get_template
 
-import requests
-import subprocess
-import sys
 
 ################
 

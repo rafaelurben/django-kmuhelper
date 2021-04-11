@@ -1,13 +1,14 @@
 from functools import wraps
 
 from django.contrib import messages
-from django.http import JsonResponse, Http404
-from django.urls import reverse, reverse_lazy
+from django.http import Http404
+from django.urls import reverse
 from django.shortcuts import redirect, render
 
 
 def confirm_action(action_message):
-    """Decorator to show a confirm page where the user has to confirm an action before executing it."""
+    """Decorator to show a confirm page where the user has to 
+    confirm an action before executing it."""
 
     def decorator(function):
         @wraps(function)
@@ -20,7 +21,8 @@ def confirm_action(action_message):
 
 
 def require_object(model, redirect_url=None, raise_404=False):
-    """Decorator to only call the view if an object with the given id exists and automatically pass it instead of the id."""
+    """Decorator to only call the view if an object with the given id exists
+    and automatically pass it instead of the id."""
 
     def decorator(function):
         @wraps(function)

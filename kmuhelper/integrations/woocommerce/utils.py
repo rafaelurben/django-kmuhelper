@@ -1,4 +1,4 @@
-from kmuhelper.main.models import Geheime_Einstellung, Einstellung
+from kmuhelper.main.models import Geheime_Einstellung
 
 
 def is_connected(context=None):

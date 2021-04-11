@@ -1,26 +1,21 @@
 # pylint: disable=no-member
 
+from datetime import datetime
+from pytz import utc
+from random import randint
+from rich import print
+
 from django.db import models
-from django.core import mail
-from django.conf import settings
 from django.contrib import admin
+from django.core import mail
 from django.core.validators import RegexValidator, MinValueValidator, MaxValueValidator
-from django.http import FileResponse
-from django.template.loader import get_template
+from django.utils import timezone
 from django.utils.html import mark_safe, format_html
 from django.urls import reverse
 
-from datetime import datetime
-from random import randint
-from pytz import utc
-from django.utils import timezone
-
-from kmuhelper.utils import send_mail, runden, clean, formatprice, modulo10rekursiv, send_pdf
-from kmuhelper.pdf_generators import PDFOrder
-
 from kmuhelper.emails.models import EMail, EMailAttachment
-
-from rich import print
+from kmuhelper.pdf_generators import PDFOrder
+from kmuhelper.utils import runden, clean, formatprice, modulo10rekursiv, send_pdf
 
 
 def log(string, *args):
@@ -1054,17 +1049,17 @@ class Notiz(models.Model):
     def links(self):
         text = ""
         if self.bestellung:
-            text += "Bestellung <a href='"+reverse("admin:kmuhelper_bestellung_change", kwargs={
-                                                   "object_id": self.bestellung.pk})+"'>#"+str(self.bestellung.pk)+"</a><br>"
+            url = reverse("admin:kmuhelper_bestellung_change", kwargs={"object_id": self.bestellung.pk})
+            text += f"Bestellung <a href='{url}'>#{self.bestellung.pk}</a><br>"
         if self.produkt:
-            text += "Produkt <a href='"+reverse("admin:kmuhelper_produkt_change", kwargs={
-                                                "object_id": self.produkt.pk})+"'>#"+str(self.produkt.pk)+"</a><br>"
+            url = reverse("admin:kmuhelper_produkt_change", kwargs={"object_id": self.produkt.pk})
+            text += f"Produkt <a href='{url}'>#{self.produkt.pk}</a><br>"
         if self.kunde:
-            text += "Kunde <a href='"+reverse("admin:kmuhelper_kunde_change", kwargs={
-                                              "object_id": self.kunde.pk})+"'>#"+str(self.kunde.pk)+"</a><br>"
+            url = reverse("admin:kmuhelper_kunde_change", kwargs={"object_id": self.kunde.pk})
+            text += f"Kunde <a href='{url}'>#{self.kunde.pk}</a><br>"
         if self.lieferung:
-            text += "Lieferung <a href='"+reverse("admin:kmuhelper_lieferung_change", kwargs={
-                                                  "object_id": self.lieferung.pk})+"'>#"+str(self.lieferung.pk)+"</a><br>"
+            url = reverse("admin:kmuhelper_lieferung_change", kwargs={"object_id": self.lieferung.pk})
+            text += f"Lieferung <a href='{url}'>#{self.lieferung.pk}</a><br>"
         return mark_safe(text) or "Diese Notiz hat keine Verknüpfungen."
 
     class Meta:
@@ -1147,14 +1142,16 @@ class Produkt(models.Model):
         return clean(self.beschrieb, lang)
 
     @admin.display(description="In Aktion", boolean=True)
-    def in_aktion(self, zeitpunkt: datetime = datetime.now(utc)):
+    def in_aktion(self, zeitpunkt: datetime = None):
+        zp = zeitpunkt or datetime.now(utc)
         if self.aktion_von and self.aktion_bis and self.aktion_preis:
-            return bool((self.aktion_von < zeitpunkt) and (zeitpunkt < self.aktion_bis))
+            return bool((self.aktion_von < zp) and (zp < self.aktion_bis))
         return False
 
     @admin.display(description="Aktueller Preis in CHF (exkl. MwSt)")
-    def preis(self, zeitpunkt: datetime = datetime.now(utc)):
-        return self.aktion_preis if self.in_aktion(zeitpunkt) else self.verkaufspreis
+    def preis(self, zeitpunkt: datetime = None):
+        zp = zeitpunkt or datetime.now(utc)
+        return self.aktion_preis if self.in_aktion(zp) else self.verkaufspreis
 
     @admin.display(description="Bild", ordering="bildlink")
     def bild(self):

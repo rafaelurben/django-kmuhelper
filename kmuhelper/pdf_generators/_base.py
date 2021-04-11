@@ -1,7 +1,7 @@
 from io import BytesIO
 
-from reportlab.platypus import Table, TableStyle, Paragraph, Spacer, BaseDocTemplate, SimpleDocTemplate, Frame, PageTemplate, TopPadder, Flowable
-from reportlab.lib.units import mm, cm
+from reportlab.platypus import SimpleDocTemplate
+from reportlab.lib.units import mm
 from reportlab.lib.pagesizes import A4
 
 from django.http import FileResponse
@@ -15,7 +15,8 @@ class PDFGenerator():
 
         self.__buffer = BytesIO()
         self.__doc = SimpleDocTemplate(
-            self.__buffer, rightMargin=10*mm, leftMargin=10*mm, topMargin=10*mm, bottomMargin=10*mm)
+            self.__buffer, rightMargin=10*mm, leftMargin=10*mm, topMargin=10*mm, bottomMargin=10*mm,
+            pagesize=A4, creator=kwargs.get('author', "KMUHelper"))
 
         cur_language = translation.get_language()
         translation.activate(self.language)

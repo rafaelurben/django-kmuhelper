@@ -1,8 +1,9 @@
+import csv
+
 from django.core.management.base import BaseCommand, CommandError
+
 from kmuhelper.models import Kunde
 from kmuhelper.utils import getfirstindex
-
-import csv
 
 
 class Command(BaseCommand):
@@ -57,16 +58,16 @@ class Command(BaseCommand):
             ###
 
             for row in rows:
-                id = row[index_id] if index_id is not None else None
+                objid = row[index_id] if index_id is not None else None
 
                 email = row[index_email] if index_email is not None else ""
                 vorname = row[index_vorname] if index_vorname is not None else ""
                 nachname = row[index_nachname] if index_nachname is not None else ""
                 sprache = ("de" if row[index_sprache].upper() in ["D", "DE", "DEUTSCH"] else
-                          ("fr" if row[index_sprache].upper() in ["F", "FR", "FRANZÖSISCH"] else
-                          ("it" if row[index_sprache].upper() in ["I", "IT", "ITALIENISCH"] else
-                          ("en" if row[index_sprache].upper() in ["E", "EN", "ENGLISCH"] else
-                           "de")))) if index_sprache is not None else "de"
+                           ("fr" if row[index_sprache].upper() in ["F", "FR", "FRANZÖSISCH"] else
+                            ("it" if row[index_sprache].upper() in ["I", "IT", "ITALIENISCH"] else
+                             ("en" if row[index_sprache].upper() in ["E", "EN", "ENGLISCH"] else
+                              "de")))) if index_sprache is not None else "de"
 
                 firma = row[index_firma] if index_firma is not None else ""
                 adresszeile1 = row[index_strasse] if index_strasse is not None else ""
@@ -79,24 +80,24 @@ class Command(BaseCommand):
                 notiz = row[index_notiz] if index_notiz is not None else ""
                 webseite = row[index_web] if index_web is not None else ""
 
-                oldwithid = Kunde.objects.filter(id=id).exists()
+                oldwithid = Kunde.objects.filter(pk=objid).exists()
                 oldwithemail = Kunde.objects.filter(
                     email=email).exists() if email else False
                 oldwithidandemail = Kunde.objects.filter(
-                    id=id, email=email).exists()
+                    pk=objid, email=email).exists()
 
                 self.stdout.write(self.style.SUCCESS(""))
 
                 if not oldwithid and not oldwithemail:
                     self.stdout.write(self.style.SUCCESS("Kunden erstellen:" +
-                                                         "\n  ID:         " + str(id) +
+                                                         "\n  ID:         " + str(objid) +
                                                          "\n  E-Mail:     " + email +
                                                          "\n  Vorname:    " + vorname +
                                                          "\n  Nachname:   " + nachname +
                                                          "\n  Firma:      " + firma
                                                          ))
                     Kunde.objects.create(
-                        id=id,
+                        pk=objid,
 
                         email=email,
                         vorname=vorname,
@@ -131,7 +132,7 @@ class Command(BaseCommand):
                     )
                 elif oldwithidandemail:
                     self.stdout.write(self.style.SUCCESS("Kunde existiert bereits!" +
-                                                         "\n  ID:         " + str(id) +
+                                                         "\n  ID:         " + str(objid) +
                                                          "\n  E-Mail:     " + email +
                                                          "\n  Vorname:    " + vorname +
                                                          "\n  Nachname:   " + nachname +
@@ -141,29 +142,29 @@ class Command(BaseCommand):
                     old = Kunde.objects.get(email=email)
                     self.stdout.write(self.style.SUCCESS("Kunde mit der E-Mail '"+email+"' existiert bereits, jedoch ist die ID unterschiedlich!" +
                                                          "\n  KMUHelper-Daten:" +
-                                                         "\n    ID:       " + str(old.id) +
+                                                         "\n    ID:       " + str(old.pk) +
                                                          "\n    Vorname:  " + old.vorname +
                                                          "\n    Nachname: " + old.nachname +
                                                          "\n    Firma:    " + old.rechnungsadresse_firma +
                                                          "\n  CSV Daten:" +
-                                                         "\n    ID:       " + str(id) +
+                                                         "\n    ID:       " + str(objid) +
                                                          "\n    Vorname:  " + vorname +
                                                          "\n    Nachname: " + nachname +
                                                          "\n    Firma:    " + firma
                                                          ))
                     if input("ID aus der CSV-Datei verwenden? [y/n] ").lower() in ["y", "yes", "j", "ja", "aktualisieren"]:
-                        oldid = old.id
-                        old.id = int(id)
+                        oldid = old.pk
+                        old.pk = int(objid)
                         old.save()
                         new = old
-                        old = Kunde.objects.get(id=oldid)
+                        old = Kunde.objects.get(objid=oldid)
                         new.zusammenfuegen = old
                         new.save()
                         self.stdout.write(
                             self.style.SUCCESS("ID aktualisiert!"))
                 elif not oldwithemail and oldwithid:
-                    old = Kunde.objects.get(id=id)
-                    self.stdout.write(self.style.SUCCESS("Kunde mit der ID '"+str(id)+"' existiert bereits, jedoch ist die E-Mail unterschiedlich!" +
+                    old = Kunde.objects.get(pk=objid)
+                    self.stdout.write(self.style.SUCCESS("Kunde mit der ID '"+str(objid)+"' existiert bereits, jedoch ist die E-Mail unterschiedlich!" +
                                                          "\n  KMUHelper-Daten:" +
                                                          "\n    E-Mail:   " + old.email +
                                                          "\n    Vorname:  " + old.vorname +
@@ -182,7 +183,7 @@ class Command(BaseCommand):
                             self.style.SUCCESS("E-Mail aktualisiert!"))
                 elif oldwithemail and oldwithid:
                     self.stdout.write(self.style.SUCCESS(
-                        "Irgendetwas stimmt nicht! Es besteht ein Kunde mit der E-Mail '"+email+"' aber ein Anderer mit der ID '"+str(id)+"'."))
+                        "Irgendetwas stimmt nicht! Es besteht ein Kunde mit der E-Mail '"+email+"' aber ein Anderer mit der ID '"+str(objid)+"'."))
 
         except FileNotFoundError:
             raise CommandError('Datei nicht gefunden!')

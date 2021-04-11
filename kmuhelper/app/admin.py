@@ -1,19 +1,12 @@
-from django.contrib import admin, messages
+from functools import update_wrapper
+
+from django.contrib import admin
 from django.urls import path
 from django.views.decorators.clickjacking import xframe_options_sameorigin as allow_iframe
 from django.views.generic import RedirectView
 
-from datetime import datetime
-from pytz import utc
-from functools import update_wrapper
-
 from kmuhelper.app.models import ToDoNotiz, ToDoVersand, ToDoZahlungseingang, ToDoLagerbestand, ToDoLieferung
 from kmuhelper.main.admin import NotizenAdmin, BestellungsAdmin, LieferungenAdmin, ProduktAdmin
-from kmuhelper.main.models import Ansprechpartner, Bestellung, Kategorie, Kosten, Kunde, Lieferant, Lieferung, Notiz, Produkt, Zahlungsempfaenger, Einstellung
-
-from kmuhelper.utils import package_version, python_version
-from kmuhelper.integrations.woocommerce import WooCommerce
-
 
 #######
 

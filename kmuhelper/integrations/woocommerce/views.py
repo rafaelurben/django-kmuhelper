@@ -1,23 +1,20 @@
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required, permission_required
-from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
-from django.shortcuts import render, redirect
-from django.urls import reverse, path, reverse_lazy
-from django.views.decorators.cache import never_cache
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.clickjacking import xframe_options_sameorigin as allow_iframe
+import json
 
 from urllib.parse import urlencode
 from random import randint
-
-from kmuhelper.decorators import require_object
-from kmuhelper.main.models import Einstellung, Geheime_Einstellung, Produkt, Kunde, Kategorie, Lieferant, Lieferung, Bestellung, Bestellungsposten
-from kmuhelper.integrations.woocommerce.api import WooCommerce
-from kmuhelper.integrations.woocommerce.utils import is_connected
-
 from rich import print
 
-import json
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required, permission_required
+from django.http import JsonResponse
+from django.shortcuts import redirect
+from django.urls import reverse, reverse_lazy
+from django.views.decorators.csrf import csrf_exempt
+
+from kmuhelper.decorators import require_object
+from kmuhelper.main.models import Einstellung, Geheime_Einstellung, Produkt, Kunde, Kategorie, Bestellung
+from kmuhelper.integrations.woocommerce.api import WooCommerce
+from kmuhelper.integrations.woocommerce.utils import is_connected
 
 
 def log(string, *args):
@@ -28,7 +25,9 @@ def log(string, *args):
 
 @csrf_exempt
 def wc_auth_key(request):
-    JSON = json.loads(request.body)
+    """Endpoint for receiving the keys from WooCommerce"""
+
+    data = json.loads(request.body)
     storeurl = request.headers.get("user-agent").split(";")[1].lstrip()
 
     savedurl = Einstellung.objects.get(id="wc-url")
@@ -38,17 +37,19 @@ def wc_auth_key(request):
         url.save()
 
         key = Geheime_Einstellung.objects.get(id="wc-consumer_key")
-        key.inhalt = JSON["consumer_key"]
+        key.inhalt = data["consumer_key"]
         key.save()
 
         secret = Geheime_Einstellung.objects.get(id="wc-consumer_secret")
-        secret.inhalt = JSON["consumer_secret"]
+        secret.inhalt = data["consumer_secret"]
         secret.save()
 
         savedurl.inhalt = "Bestätigt: " + storeurl + \
             " (Änderungen an diesem Eintrag werden nur nach erneutem Verbinden angewendet!)"
         savedurl.save()
-    return HttpResponse("success")
+        return JsonResponse({"success": True}, status_code=200)
+
+    return JsonResponse({"success": False}, status_code=403)
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
@@ -64,25 +65,27 @@ def wc_auth_end(request):
 @permission_required("kmuhelper.change_einstellung")
 def wc_auth_start(request):
     shopurl = Einstellung.objects.get(id="wc-url").inhalt
+
     if "Bestätigt" in shopurl:
         messages.error(
             request, "Bitte gib zuerst eine gültige Url ein, bevor du WooCommerce neu verbinden kannst!")
         return redirect(reverse('admin:kmuhelper_einstellung_changelist'))
-    else:
-        kmuhelperurl = request.get_host()
-        params = {
-            "app_name": "KMUHelper",
-            "scope": "read",
-            "user_id": randint(100000, 999999),
-            "return_url": kmuhelperurl + reverse("kmuhelper:wc-auth-end"),
-            "callback_url": kmuhelperurl + reverse("kmuhelper:wc-auth-key")
-        }
-        query_string = urlencode(params)
-        if not "https://" in shopurl and not "http://" in shopurl:
-            shopurl = "https://" + shopurl
 
-        url = "%s%s?%s" % (shopurl, '/wc-auth/v1/authorize', query_string)
-        return redirect(url)
+    kmuhelperurl = request.get_host()
+    params = {
+        "app_name": "KMUHelper",
+        "scope": "read",
+        "user_id": randint(100000, 999999),
+        "return_url": kmuhelperurl + reverse("kmuhelper:wc-auth-end"),
+        "callback_url": kmuhelperurl + reverse("kmuhelper:wc-auth-key")
+    }
+    query_string = urlencode(params)
+
+    if not "https://" in shopurl and not "http://" in shopurl:
+        shopurl = "https://" + shopurl
+
+    url = "%s%s?%s" % (shopurl, '/wc-auth/v1/authorize', query_string)
+    return redirect(url)
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
@@ -191,50 +194,57 @@ def wc_update_order(request, obj):
 
 @csrf_exempt
 def wc_webhooks(request):
-    if "x-wc-webhook-topic" in request.headers and "x-wc-webhook-source" in request.headers:
-        erwartete_url = Geheime_Einstellung.objects.get(
-            id="wc-url").inhalt.lstrip("https://").lstrip("http://").split("/")[0]
-        erhaltene_url = request.headers["x-wc-webhook-source"].lstrip(
-            "https://").lstrip("http://").split("/")[0]
-        if erhaltene_url == erwartete_url:
-            log("WooCommerce Webhook erhalten...")
-            topic = request.headers["x-wc-webhook-topic"]
-            obj = json.loads(request.body)
-            if topic == "product.updated" or topic == "product.created":
-                if Produkt.objects.filter(woocommerceid=obj["id"]).exists():
-                    WooCommerce.product_update(
-                        Produkt.objects.get(woocommerceid=obj["id"]), obj)
-                else:
-                    WooCommerce.product_create(obj)
-            elif topic == "product.deleted":
-                if Produkt.objects.filter(woocommerceid=obj["id"]).exists():
-                    product = Produkt.objects.get(woocommerceid=obj["id"])
-                    product.woocommerceid = 0
-                    product.save()
-            elif topic == "customer.updated" or topic == "customer.created":
-                if Kunde.objects.filter(woocommerceid=obj["id"]).exists():
-                    WooCommerce.customer_update(
-                        Kunde.objects.get(woocommerceid=obj["id"]), obj)
-                else:
-                    WooCommerce.customer_create(obj)
-            elif topic == "customer.deleted":
-                if Kunde.objects.filter(woocommerceid=obj["id"]).exists():
-                    customer = Kunde.objects.get(woocommerceid=obj["id"])
-                    customer.woocommerceid = 0
-                    customer.save()
-            elif topic == "order.updated" or topic == "order.created":
-                if Bestellung.objects.filter(woocommerceid=obj["id"]).exists():
-                    WooCommerce.order_update(
-                        Bestellung.objects.get(woocommerceid=obj["id"]), obj)
-                else:
-                    WooCommerce.order_create(obj)
-            elif topic == "order.deleted":
-                if Bestellung.objects.filter(woocommerceid=obj["id"]).exists():
-                    order = Bestellung.objects.get(woocommerceid=obj["id"])
-                    order.woocommerceid = 0
-                    order.save()
+    if not "x-wc-webhook-topic" in request.headers and "x-wc-webhook-source" in request.headers:
+        return JsonResponse({"accepted": False, "reason": "Doesn't have required headers"}, status_code=403)
+
+    erwartete_url = Geheime_Einstellung.objects.get(
+        id="wc-url").inhalt.lstrip("https://").lstrip("http://").split("/")[0]
+    erhaltene_url = request.headers["x-wc-webhook-source"].lstrip(
+        "https://").lstrip("http://").split("/")[0]
+
+    if not erhaltene_url == erwartete_url:
+        log("[orange_red1]WooCommerce Webhook von einer falschen Webseite ignoriert![/] - Erwartet:",
+            erwartete_url, "- Erhalten:", erhaltene_url)
+        return JsonResponse({"accepted": False, "reason": "Does not match stored domain"})
+
+    log("WooCommerce Webhook erhalten...")
+
+    topic = request.headers["x-wc-webhook-topic"]
+    obj = json.loads(request.body)
+    if topic in ("product.updated", "product.created"):
+        if Produkt.objects.filter(woocommerceid=obj["id"]).exists():
+            WooCommerce.product_update(
+                Produkt.objects.get(woocommerceid=obj["id"]), obj)
         else:
-            log("[orange_red1]WooCommerce Webhook von einer falschen Webseite ignoriert![/] - Erwartet:",
-                erwartete_url, "- Erhalten:", erhaltene_url)
-            return HttpResponseBadRequest("Zugriff nicht gestattet!")
-    return HttpResponse("Erfolgreich erhalten!")
+            WooCommerce.product_create(obj)
+    elif topic == "product.deleted":
+        if Produkt.objects.filter(woocommerceid=obj["id"]).exists():
+            product = Produkt.objects.get(woocommerceid=obj["id"])
+            product.woocommerceid = 0
+            product.save()
+    elif topic in ("customer.updated", "customer.created"):
+        if Kunde.objects.filter(woocommerceid=obj["id"]).exists():
+            WooCommerce.customer_update(
+                Kunde.objects.get(woocommerceid=obj["id"]), obj)
+        else:
+            WooCommerce.customer_create(obj)
+    elif topic == "customer.deleted":
+        if Kunde.objects.filter(woocommerceid=obj["id"]).exists():
+            customer = Kunde.objects.get(woocommerceid=obj["id"])
+            customer.woocommerceid = 0
+            customer.save()
+    elif topic in ("order.updated", "order.created"):
+        if Bestellung.objects.filter(woocommerceid=obj["id"]).exists():
+            WooCommerce.order_update(
+                Bestellung.objects.get(woocommerceid=obj["id"]), obj)
+        else:
+            WooCommerce.order_create(obj)
+    elif topic == "order.deleted":
+        if Bestellung.objects.filter(woocommerceid=obj["id"]).exists():
+            order = Bestellung.objects.get(woocommerceid=obj["id"])
+            order.woocommerceid = 0
+            order.save()
+    else:
+        log(f"[orange_red1]Unbekanntes Thema: '{topic}'")
+
+    return JsonResponse({"accepted": True})

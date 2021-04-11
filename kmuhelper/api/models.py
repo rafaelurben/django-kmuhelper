@@ -1,7 +1,8 @@
+import uuid
+
 from django.db import models
 from django.conf import settings
 from django.contrib import admin
-import uuid
 
 
 class ApiKey(models.Model):

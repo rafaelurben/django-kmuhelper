@@ -1,9 +1,5 @@
 from django.urls import path, include, re_path
-from django.contrib.admin import site
-from django.contrib.auth import views as auth_views
-from django.conf import settings
 
-from kmuhelper import admin
 from kmuhelper import views
 from kmuhelper import startup
 
@@ -17,7 +13,7 @@ urlpatterns = [
 
     # Developing tools
     path('_templatetest/<path:templatename>',
-         views._templatetest, name="_templatetest"),
+                    views._templatetest, name="_templatetest"),
 
     # Main modules
     path('',        include('kmuhelper.main')),
@@ -31,7 +27,7 @@ urlpatterns = [
 
     # Integrations
     path('integrations/woocommerce/',
-         include('kmuhelper.integrations.woocommerce')),
+                    include('kmuhelper.integrations.woocommerce')),
 
     # 404 Not found
     re_path('^.*$', views.error)

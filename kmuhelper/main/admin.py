@@ -1,19 +1,16 @@
+from datetime import datetime
+from pytz import utc
+
 from django.contrib import admin, messages
 from django.urls import path
 from django.utils.html import format_html, mark_safe
 
-from datetime import datetime
-from pytz import utc
-
-from kmuhelper.main.models import Ansprechpartner, Bestellung, Kategorie, Kosten, Kunde, Lieferant, Lieferung, Notiz, Produkt, Zahlungsempfaenger, Einstellung
 from kmuhelper.integrations.woocommerce import WooCommerce
-from kmuhelper.main.views import (
-    bestellung_pdf_ansehen, bestellung_pdf_an_kunden_senden, bestellung_duplizieren, bestellung_zu_lieferung,
-    kunde_email_registriert,
-    lieferant_zuordnen,
-    lieferung_einlagern
+from kmuhelper.main import views
+from kmuhelper.main.models import (
+    Ansprechpartner, Bestellung, Kategorie, Kosten, Kunde,
+    Lieferant, Lieferung, Notiz, Produkt, Zahlungsempfaenger, Einstellung
 )
-
 from kmuhelper.overwrites import CustomModelAdmin
 
 
@@ -168,43 +165,67 @@ class BestellungsAdmin(CustomModelAdmin):
         if obj:
             return [
                 ('Einstellungen', {'fields': [
-                 'zahlungsempfaenger', 'ansprechpartner']}),
+                    'zahlungsempfaenger', 'ansprechpartner']}),
                 ('Infos', {'fields': ['name', 'datum', 'status']}),
                 ('Rechnungsoptionen', {'fields': [
-                 'rechnungstitel', 'rechnungstext', 'rechnungsdatum', 'zahlungskonditionen']}),
+                    'rechnungstitel', 'rechnungstext', 'rechnungsdatum', 'zahlungskonditionen']}),
                 ('Lieferung', {'fields': ['versendet', 'trackingnummer']}),
                 ('Bezahlung', {'fields': [
-                 'bezahlt', 'zahlungsmethode', 'summe', 'summe_mwst', 'summe_gesamt']}),
+                    'bezahlt', 'zahlungsmethode', 'summe', 'summe_mwst', 'summe_gesamt']}),
                 ('Kunde', {'fields': ['kunde']}),
-                ('Notizen & Texte', {'fields': ['kundennotiz', 'html_notiz'], 'classes': [
-                 "collapse start-open"]}),
-                ('Rechnungsadresse', {'fields': [
-                 'rechnungsadresse_vorname', 'rechnungsadresse_nachname', 'rechnungsadresse_firma', 'rechnungsadresse_adresszeile1', 'rechnungsadresse_adresszeile2',
-                 'rechnungsadresse_plz', 'rechnungsadresse_ort', 'rechnungsadresse_kanton', 'rechnungsadresse_land', 'rechnungsadresse_email', 'rechnungsadresse_telefon'
-                 ] if obj.bezahlt else [
-                    ('rechnungsadresse_vorname', 'rechnungsadresse_nachname'), 'rechnungsadresse_firma', ('rechnungsadresse_adresszeile1', 'rechnungsadresse_adresszeile2'), (
-                        'rechnungsadresse_plz', 'rechnungsadresse_ort'), ('rechnungsadresse_kanton', 'rechnungsadresse_land'), ('rechnungsadresse_email', 'rechnungsadresse_telefon')], 'classes': ["collapse default-open"]}),
-                ('Lieferadresse', {'fields': [
-                    'lieferadresse_vorname', 'lieferadresse_nachname', 'lieferadresse_firma', 'lieferadresse_adresszeile1',
-                    'lieferadresse_adresszeile2', 'lieferadresse_plz', 'lieferadresse_ort', 'lieferadresse_kanton', 'lieferadresse_land'
-                ] if obj.versendet else [
-                    ('lieferadresse_vorname', 'lieferadresse_nachname'), 'lieferadresse_firma', ('lieferadresse_adresszeile1', 'lieferadresse_adresszeile2'), (
-                        'lieferadresse_plz', 'lieferadresse_ort'), ('lieferadresse_kanton', 'lieferadresse_land')], 'classes': ["collapse start-open"]})
+                ('Notizen & Texte', {
+                    'fields': ['kundennotiz', 'html_notiz'], 
+                    'classes': ["collapse start-open"]}),
+                ('Rechnungsadresse', {
+                    'fields': [
+                        'rechnungsadresse_vorname', 'rechnungsadresse_nachname',
+                        'rechnungsadresse_firma',
+                        'rechnungsadresse_adresszeile1', 'rechnungsadresse_adresszeile2',
+                        'rechnungsadresse_plz', 'rechnungsadresse_ort',
+                        'rechnungsadresse_kanton', 'rechnungsadresse_land',
+                        'rechnungsadresse_email', 'rechnungsadresse_telefon'
+                    ] if obj.bezahlt else [
+                        ('rechnungsadresse_vorname', 'rechnungsadresse_nachname'),
+                        'rechnungsadresse_firma',
+                        ('rechnungsadresse_adresszeile1',
+                         'rechnungsadresse_adresszeile2'),
+                        ('rechnungsadresse_plz', 'rechnungsadresse_ort'),
+                        ('rechnungsadresse_kanton', 'rechnungsadresse_land'),
+                        ('rechnungsadresse_email', 'rechnungsadresse_telefon')
+                    ], 'classes': ["collapse default-open"]}),
+                ('Lieferadresse', {
+                    'fields': [
+                        'lieferadresse_vorname', 'lieferadresse_nachname',
+                        'lieferadresse_firma',
+                        'lieferadresse_adresszeile1', 'lieferadresse_adresszeile2',
+                        'lieferadresse_plz', 'lieferadresse_ort',
+                        'lieferadresse_kanton', 'lieferadresse_land'
+                    ] if obj.versendet else [
+                        ('lieferadresse_vorname', 'lieferadresse_nachname'),
+                        'lieferadresse_firma',
+                        ('lieferadresse_adresszeile1',
+                         'lieferadresse_adresszeile2'),
+                        ('lieferadresse_plz', 'lieferadresse_ort'),
+                        ('lieferadresse_kanton', 'lieferadresse_land')
+                    ], 'classes': ["collapse start-open"]})
             ]
-        else:
-            return [
-                ('Einstellungen', {'fields': [
-                 'zahlungsempfaenger', 'ansprechpartner']}),
-                ('Rechnungsoptionen', {'fields': [
-                 'rechnungstitel', 'rechnungstext', 'rechnungsdatum', 'zahlungskonditionen']}),
-                ('Lieferung', {'fields': ['trackingnummer'], 'classes': [
-                 "collapse"]}),
-                ('Bezahlung', {'fields': ['zahlungsmethode'], 'classes': [
-                 "collapse start-open"]}),
-                ('Kunde', {'fields': ['kunde']}),
-                ('Notizen & Texte', {'fields': ['kundennotiz'],
-                                     'classes': ["collapse start-open"]}),
-            ]
+
+        return [
+            ('Einstellungen', {'fields': [
+                'zahlungsempfaenger', 'ansprechpartner']}),
+            ('Rechnungsoptionen', {'fields': [
+                'rechnungstitel', 'rechnungstext', 'rechnungsdatum', 'zahlungskonditionen']}),
+            ('Lieferung', {
+                'fields': ['trackingnummer'], 
+                'classes': ["collapse"]}),
+            ('Bezahlung', {
+                'fields': ['zahlungsmethode'], 
+                'classes': ["collapse start-open"]}),
+            ('Kunde', {'fields': ['kunde']}),
+            ('Notizen & Texte', {
+                'fields': ['kundennotiz'],
+                'classes': ["collapse start-open"]}),
+        ]
 
     def get_readonly_fields(self, request, obj=None):
         rechnungsadresse = ['rechnungsadresse_vorname', 'rechnungsadresse_nachname', 'rechnungsadresse_firma', 'rechnungsadresse_adresszeile1', 'rechnungsadresse_adresszeile2',
@@ -299,13 +320,13 @@ class BestellungsAdmin(CustomModelAdmin):
         urls = super().get_urls()
 
         my_urls = [
-            path('<path:object_id>/pdf', self.admin_site.admin_view(bestellung_pdf_ansehen),
+            path('<path:object_id>/pdf', self.admin_site.admin_view(views.bestellung_pdf_ansehen),
                  name='%s_%s_pdf' % info),
-            path('<path:object_id>/pdf/email', self.admin_site.admin_view(bestellung_pdf_an_kunden_senden),
+            path('<path:object_id>/pdf/email', self.admin_site.admin_view(views.bestellung_pdf_an_kunden_senden),
                  name='%s_%s_pdf_email' % info),
-            path('<path:object_id>/duplizieren', self.admin_site.admin_view(bestellung_duplizieren),
+            path('<path:object_id>/duplizieren', self.admin_site.admin_view(views.bestellung_duplizieren),
                  name='%s_%s_duplizieren' % info),
-            path('<path:object_id>/zu-lieferung', self.admin_site.admin_view(bestellung_zu_lieferung),
+            path('<path:object_id>/zu-lieferung', self.admin_site.admin_view(views.bestellung_zu_lieferung),
                  name='%s_%s_zu_lieferung' % info),
         ]
         return my_urls + urls
@@ -398,27 +419,53 @@ class KundenAdmin(CustomModelAdmin):
     def get_fieldsets(self, request, obj=None):
         if obj:
             return [
-                ('Infos', {'fields': ['vorname', 'nachname',
-                                      'firma', 'email', 'sprache']}),
-                ('Rechnungsadresse', {'fields': [('rechnungsadresse_vorname', 'rechnungsadresse_nachname'), 'rechnungsadresse_firma', ('rechnungsadresse_adresszeile1', 'rechnungsadresse_adresszeile2'), (
-                    'rechnungsadresse_plz', 'rechnungsadresse_ort'), ('rechnungsadresse_kanton', 'rechnungsadresse_land'), ('rechnungsadresse_email', 'rechnungsadresse_telefon')]}),
-                ('Lieferadresse', {'fields': [('lieferadresse_vorname', 'lieferadresse_nachname'), 'lieferadresse_firma', ('lieferadresse_adresszeile1', 'lieferadresse_adresszeile2'), (
-                    'lieferadresse_plz', 'lieferadresse_ort'), ('lieferadresse_kanton', 'lieferadresse_land')], 'classes': ["collapse start-open"]}),
-                ('Diverses', {'fields': [
-                 'webseite', 'bemerkung', 'html_notiz']}),
-                ('Erweitert', {'fields': [
-                 'zusammenfuegen'], 'classes': ["collapse"]})
+                ('Infos', {'fields': [
+                    'vorname', 'nachname', 'firma', 'email', 'sprache']}),
+                ('Rechnungsadresse', {'fields': [
+                    ('rechnungsadresse_vorname', 'rechnungsadresse_nachname'), 
+                    'rechnungsadresse_firma', 
+                    ('rechnungsadresse_adresszeile1', 'rechnungsadresse_adresszeile2'), 
+                    ('rechnungsadresse_plz', 'rechnungsadresse_ort'), 
+                    ('rechnungsadresse_kanton', 'rechnungsadresse_land'), 
+                    ('rechnungsadresse_email', 'rechnungsadresse_telefon')]}),
+                ('Lieferadresse', {
+                    'fields': [
+                        ('lieferadresse_vorname', 'lieferadresse_nachname'), 
+                        'lieferadresse_firma', 
+                        ('lieferadresse_adresszeile1', 'lieferadresse_adresszeile2'), 
+                        ('lieferadresse_plz', 'lieferadresse_ort'), 
+                        ('lieferadresse_kanton', 'lieferadresse_land')
+                    ], 'classes': ["collapse start-open"]}),
+                ('Diverses', {
+                    'fields': [
+                        'webseite', 'bemerkung', 'html_notiz'
+                    ]}),
+                ('Erweitert', {
+                    'fields': [
+                        'zusammenfuegen'
+                    ], 'classes': ["collapse"]})
             ]
-        else:
-            return [
-                ('Infos', {'fields': ['vorname', 'nachname',
-                                      'firma', 'email', 'sprache']}),
-                ('Rechnungsadresse', {'fields': [('rechnungsadresse_vorname', 'rechnungsadresse_nachname'), 'rechnungsadresse_firma', ('rechnungsadresse_adresszeile1', 'rechnungsadresse_adresszeile2'), (
-                    'rechnungsadresse_plz', 'rechnungsadresse_ort'), ('rechnungsadresse_kanton', 'rechnungsadresse_land'), ('rechnungsadresse_email', 'rechnungsadresse_telefon')]}),
-                ('Lieferadresse', {'fields': [('lieferadresse_vorname', 'lieferadresse_nachname'), 'lieferadresse_firma', ('lieferadresse_adresszeile1', 'lieferadresse_adresszeile2'), (
-                    'lieferadresse_plz', 'lieferadresse_ort'), ('lieferadresse_kanton', 'lieferadresse_land')], 'classes': ["collapse start-open"]}),
-                ('Diverses', {'fields': ['webseite', 'bemerkung']})
-            ]
+
+        return [
+            ('Infos', {'fields': [
+                'vorname', 'nachname', 'firma', 'email', 'sprache']}),
+            ('Rechnungsadresse', {'fields': [
+                ('rechnungsadresse_vorname', 'rechnungsadresse_nachname'), 
+                'rechnungsadresse_firma', 
+                ('rechnungsadresse_adresszeile1', 'rechnungsadresse_adresszeile2'), 
+                ('rechnungsadresse_plz', 'rechnungsadresse_ort'), 
+                ('rechnungsadresse_kanton', 'rechnungsadresse_land'), 
+                ('rechnungsadresse_email', 'rechnungsadresse_telefon')]}),
+            ('Lieferadresse', {
+                'fields': [
+                    ('lieferadresse_vorname', 'lieferadresse_nachname'), 
+                    'lieferadresse_firma', 
+                    ('lieferadresse_adresszeile1', 'lieferadresse_adresszeile2'), 
+                    ('lieferadresse_plz', 'lieferadresse_ort'), 
+                    ('lieferadresse_kanton', 'lieferadresse_land')
+                ], 'classes': ["collapse start-open"]}),
+            ('Diverses', {'fields': ['webseite', 'bemerkung']})
+        ]
 
     ordering = ('rechnungsadresse_plz', 'firma', 'nachname', 'vorname')
 
@@ -456,7 +503,7 @@ class KundenAdmin(CustomModelAdmin):
         urls = super().get_urls()
 
         my_urls = [
-            path('<path:object_id>/email/registriert', self.admin_site.admin_view(kunde_email_registriert),
+            path('<path:object_id>/email/registriert', self.admin_site.admin_view(views.kunde_email_registriert),
                  name='%s_%s_email_registriert' % info),
         ]
         return my_urls + urls
@@ -467,9 +514,13 @@ class LieferantenAdmin(CustomModelAdmin):
     fieldsets = [
         ('Infos', {'fields': ['kuerzel', 'name']}),
         ('Firma', {'fields': ['webseite', 'telefon', 'email']}),
-        ('Texte', {'fields': ['adresse', 'notiz'], 'classes': ["collapse"]}),
-        ('Ansprechpartner', {'fields': [
-         'ansprechpartner', 'ansprechpartnertel', 'ansprechpartnermail'], 'classes': ["collapse"]})
+        ('Texte', {
+            'fields': ['adresse', 'notiz'], 
+            'classes': ["collapse"]}),
+        ('Ansprechpartner', {
+            'fields': [
+                'ansprechpartner', 'ansprechpartnertel', 'ansprechpartnermail'
+            ], 'classes': ["collapse"]})
     ]
 
     ordering = ('kuerzel',)
@@ -485,7 +536,7 @@ class LieferantenAdmin(CustomModelAdmin):
         urls = super().get_urls()
 
         my_urls = [
-            path('<path:object_id>/zuordnen', self.admin_site.admin_view(lieferant_zuordnen),
+            path('<path:object_id>/zuordnen', self.admin_site.admin_view(views.lieferant_zuordnen),
                  name='%s_%s_zuordnen' % info),
         ]
         return my_urls + urls
@@ -589,7 +640,7 @@ class LieferungenAdmin(CustomModelAdmin):
         urls = super().get_urls()
 
         my_urls = [
-            path('<path:object_id>/einlagern', self.admin_site.admin_view(lieferung_einlagern),
+            path('<path:object_id>/einlagern', self.admin_site.admin_view(views.lieferung_einlagern),
                  name='%s_%s_einlagern' % info),
         ]
         return my_urls + urls
@@ -613,11 +664,11 @@ class NotizenAdmin(CustomModelAdmin):
                 ("Daten", {"fields": ["erledigt", "priority"]}),
                 ("Verknüpfungen", {"fields": ["links"]}),
             ]
-        else:
-            return [
-                ("Infos", {"fields": ["name", "beschrieb"]}),
-                ("Daten", {"fields": ["erledigt", "priority"]}),
-            ]
+
+        return [
+            ("Infos", {"fields": ["name", "beschrieb"]}),
+            ("Daten", {"fields": ["erledigt", "priority"]}),
+        ]
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
@@ -713,19 +764,26 @@ class ProduktAdmin(CustomModelAdmin):
         return [
             ('Infos', {'fields': ['artikelnummer', 'name']}),
             ('Beschrieb', {'fields': [
-                'kurzbeschrieb', 'beschrieb'], 'classes': ["collapse start-open"]}),
+                    'kurzbeschrieb', 'beschrieb'
+                ], 'classes': ["collapse start-open"]}),
             ('Daten', {'fields': [
                 'mengenbezeichnung', 'verkaufspreis', 'mwstsatz', 'lagerbestand', 'soll_lagerbestand']}),
-            ('Lieferant', {'fields': [
-                'lieferant', 'lieferant_preis', 'lieferant_artikelnummer', 'lieferant_url'], 'classes': [
-                "collapse start-open"]}),
-            ('Aktion', {'fields': ['aktion_von', 'aktion_bis', 'aktion_preis'], 'classes': [
-                "collapse start-open"]}),
-            ('Links', {'fields': ['datenblattlink', 'bildlink'], 'classes': [
-                "collapse"]}),
-            # packlistenbemerkung
-            ('Bemerkung / Notiz',
-                {'fields': ['bemerkung', 'html_notiz'] if obj else ['bemerkung'], 'classes': ["collapse start-open"]})
+            ('Lieferant', {
+                'fields': [
+                    'lieferant', 'lieferant_preis', 'lieferant_artikelnummer', 'lieferant_url'
+                ], 'classes': ["collapse start-open"]}),
+            ('Aktion', {
+                'fields': [
+                    'aktion_von', 'aktion_bis', 'aktion_preis'
+                ], 'classes': ["collapse start-open"]}),
+            ('Links', {
+                'fields': [
+                    'datenblattlink', 'bildlink'
+                ], 'classes': ["collapse"]}),
+            ('Bemerkung / Notiz', {
+                'fields': [
+                    'bemerkung', 'html_notiz'] if obj else ['bemerkung'], 
+                'classes': ["collapse start-open"]})
         ]
 
     ordering = ('artikelnummer', 'name')
@@ -799,9 +857,11 @@ class ProduktAdmin(CustomModelAdmin):
 class ZahlungsempfaengerAdmin(CustomModelAdmin):
     fieldsets = [
         ("Infos", {"fields": [
-         "qriban", "logourl", "firmenname", "firmenuid"]}),
-        ("Adresse", {"fields": ["adresszeile1", "adresszeile2", "land"]}),
-        ("Daten", {"fields": ["email", "telefon", "webseite"]})
+            "qriban", "logourl", "firmenname", "firmenuid"]}),
+        ("Adresse", {"fields": [
+            "adresszeile1", "adresszeile2", "land"]}),
+        ("Daten", {"fields": [
+            "email", "telefon", "webseite"]})
     ]
 
     list_display = ('firmenname', 'firmenuid', 'qriban')

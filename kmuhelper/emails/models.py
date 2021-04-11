@@ -1,18 +1,17 @@
 # pylint: disable=unsupported-assignment-operation
 
+import uuid
+
+from io import BytesIO
+from rich import print
+
 from django.db import models
 from django.contrib import admin
 from django.core import mail
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.html import mark_safe
 from django.template.loader import get_template
 from django.conf import settings
-
-from io import BytesIO
-from rich import print
-
-import uuid
 
 
 def log(string, *args):
@@ -77,7 +76,9 @@ class EMail(models.Model):
         context["data"] = self.data if online else None
         return get_template("kmuhelper/emails/"+str(self.html_template)).render(context)
 
-    def send(self, attachments=[], **options):
+    def send(self, attachments=(), **options):
+        """Send the mail with given attachments - options are passed to django.core.mail.EmailMessage"""
+
         msg = mail.EmailMessage(
             subject=self.subject,
             body=self.render(),
@@ -104,11 +105,12 @@ class EMail(models.Model):
 
     def get_url(self):
         domain = getattr(settings, "KMUHELPER_DOMAIN", None)
+
         if domain:
             return domain+reverse("kmuhelper:email-view", kwargs={"object_id": self.pk})+f"?token={self.token}"
-        else:
-            log("Einstellung KMUHELPER_DOMAIN ist nicht gesetzt! E-Mails werden ohne 'online ansehen' Links versendet!")
-            return None
+        
+        log("[orange_red1]Einstellung KMUHELPER_DOMAIN ist nicht gesetzt! E-Mails werden ohne 'online ansehen' Links versendet!")
+        return None
 
     class Meta:
         verbose_name = "E-Mail"

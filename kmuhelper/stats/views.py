@@ -1,19 +1,15 @@
-from django.contrib import messages
+import datetime
+import json
+import pytz
+
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.serializers.json import DjangoJSONEncoder
-from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
-from django.shortcuts import render, redirect
-from django.urls import reverse, path, reverse_lazy
-from django.views.decorators.cache import never_cache
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.clickjacking import xframe_options_sameorigin as allow_iframe
+from django.shortcuts import render
+from django.urls import reverse_lazy
 
 from kmuhelper.utils import clean
 from kmuhelper.main.models import Bestellungsposten, Bestellung
 
-import datetime
-import json
-import pytz
 
 #####
 

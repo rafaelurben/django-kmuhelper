@@ -1,25 +1,23 @@
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
-from django.shortcuts import render, redirect
-from django.urls import reverse, path, reverse_lazy
-from django.views.decorators.cache import never_cache
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.clickjacking import xframe_options_sameorigin as allow_iframe
+from django.http import HttpResponse
+from django.shortcuts import redirect
+from django.urls import reverse, reverse_lazy
 
 from kmuhelper.decorators import require_object
 from kmuhelper.emails.models import EMail
-from kmuhelper.utils import package_version, python_version
 
 #####
 
+
 @require_object(EMail, reverse_lazy("kmuhelper:error"))
 def email_view(request, obj):
-    t1 = request.GET.get("token", None)
-    t2 = str(obj.token)
+    """Render an email for online viewing"""
 
-    if request.user.has_perm("kmuhelper.view_email") or (t1 == t2):
+    token_received = request.GET.get("token", None)
+    token_stored = str(obj.token)
+
+    if request.user.has_perm("kmuhelper.view_email") or (token_received == token_stored):
         return HttpResponse(obj.render(online=True))
-    
+
     messages.error(request, "Du hast keinen Zugriff auf diese E-Mail!")
     return redirect(reverse("kmuhelper:error"))

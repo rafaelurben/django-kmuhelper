@@ -1,9 +1,6 @@
-from django.contrib import admin, messages
-from datetime import datetime
-from pytz import utc
+from django.contrib import admin
 
 from kmuhelper.emails.models import EMail
-
 from kmuhelper.overwrites import CustomModelAdmin
 
 #######
