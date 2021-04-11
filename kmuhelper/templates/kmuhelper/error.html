@@ -1,0 +1,45 @@
+{% extends "admin/base.html" %}
+
+{% load static %}
+
+{% block title %}Info | KMUHelper{% endblock %}
+
+{% block breadcrumbs %}
+{% endblock %}
+
+{% block branding %}
+    <h1 id="site-name"><a href="{% url 'kmuhelper:home' %}">KMUHelper</a> | Fehler</h1>
+{% endblock %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/kmuhelper/css/style.css' %}">
+{% endblock %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'kmuhelper/favicon.ico' %}">
+    <link rel="apple-touch-icon" href="{% static 'kmuhelper/favicon.ico' %}">
+
+    <meta name="robots" value="noindex">
+{% endblock %}
+
+{% block content %}
+    <h1>{% block maintitle %}Fehler{% endblock %}</h1>
+    
+    <div>
+        {% block maincontent %}
+            <p>Die angegebene Seite wurde leider nicht gefunden oder es ist ein Fehler aufgetreten.</p>
+            <p>Möglicherweise sind Sie auf dieser Seite aufgrund eines ungültigen oder abgelaufenen Links gelandet. Bitte kontaktieren Sie diejenige Person, welche Ihnen diesen Link gesendet hat.</p>
+        {% endblock %}
+    </div>
+
+    <br>
+
+    <div style="position: absolute; bottom: 5px;">
+        {% block footercontent %}
+            <hr><br>
+            <p>Diese Seite wurde mit der Open Source Software <a href="https://rafaelurben.github.io/kmuhelper">KMUHelper</a> erstellt.
+        {% endblock %}
+    </div>
+{% endblock %}

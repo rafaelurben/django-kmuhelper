@@ -1,7 +1,7 @@
 from functools import wraps
 
 from django.contrib import messages
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.urls import reverse, reverse_lazy
 from django.shortcuts import redirect, render
 
@@ -19,7 +19,7 @@ def confirm_action(action_message):
     return decorator
 
 
-def require_object(model, redirect_url=None):
+def require_object(model, redirect_url=None, raise_404=False):
     """Decorator to only call the view if an object with the given id exists and automatically pass it instead of the id."""
 
     def decorator(function):
@@ -31,6 +31,10 @@ def require_object(model, redirect_url=None):
 
             messages.warning(
                 request, f'{model._meta.verbose_name} mit ID "{object_id}" wurde nicht gefunden!')
+
+            if raise_404:
+                raise Http404
+
             return redirect(redirect_url or reverse(f"admin:{model._meta.app_label}_{model._meta.model_name}_changelist"))
         return wrap
     return decorator

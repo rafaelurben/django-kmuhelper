@@ -13,7 +13,7 @@ from kmuhelper.utils import package_version, python_version
 
 #####
 
-@require_object(EMail, reverse_lazy("kmuhelper:info"))
+@require_object(EMail, reverse_lazy("kmuhelper:error"))
 def email_view(request, obj):
     t1 = request.GET.get("token", None)
     t2 = str(obj.token)
@@ -22,4 +22,4 @@ def email_view(request, obj):
         return HttpResponse(obj.render(online=True))
     
     messages.error(request, "Du hast keinen Zugriff auf diese E-Mail!")
-    return redirect(reverse("kmuhelper:info"))
+    return redirect(reverse("kmuhelper:error"))
