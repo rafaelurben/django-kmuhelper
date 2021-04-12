@@ -1,0 +1,11 @@
+{% extends 'admin/kmuhelper/change_form.html' %}
+
+{% block object-tools-items %}
+    {% if change %}
+        {% if perms.kmuhelper.download_emailattachment %}
+            <li><a target="_blank" href="{% url 'admin:kmuhelper_emailattachment_download' object_id %}?preview">Datei ansehen</a></li>
+            <li><a href="{% url 'admin:kmuhelper_emailattachment_download' object_id %}">Datei Herunterladen</a></li>
+        {% endif %}
+    {% endif %}
+    {{ block.super }}
+{% endblock %}

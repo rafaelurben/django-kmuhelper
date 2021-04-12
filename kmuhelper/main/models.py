@@ -13,7 +13,7 @@ from django.utils import timezone
 from django.utils.html import mark_safe, format_html
 from django.urls import reverse
 
-from kmuhelper.emails.models import EMail, EMailAttachment
+from kmuhelper.emails.models import EMail, EMailAttachmentOld
 from kmuhelper.pdf_generators import PDFOrder
 from kmuhelper.utils import runden, clean, formatprice, modulo10rekursiv, send_pdf
 
@@ -447,7 +447,7 @@ class Bestellung(models.Model):
                 "Rechnungs-ID": str(self.id)
             },
             attachments=[
-                EMailAttachment(
+                EMailAttachmentOld(
                     filename=f"Rechnung Nr. { self.id }"+(
                         " (Online #"+str(self.woocommerceid)+")" if self.woocommerceid else "")+".pdf",
                     content=PDFOrder(self, lieferschein=False,

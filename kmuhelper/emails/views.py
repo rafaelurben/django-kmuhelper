@@ -5,9 +5,11 @@ from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 
 from kmuhelper.decorators import require_object, confirm_action
-from kmuhelper.emails.models import EMail
+from kmuhelper.emails.models import EMail, EMailAttachment
 
 #####
+
+# EMail views
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
@@ -58,3 +60,14 @@ def email_view(request, obj):
 
     messages.error(request, "Du hast keinen Zugriff auf diese E-Mail!")
     return redirect(reverse("kmuhelper:error"))
+
+
+# EMailAttachment views
+
+
+@login_required(login_url=reverse_lazy("admin:login"))
+@permission_required("kmuhelper.download_emailattachment")
+@require_object(EMailAttachment)
+def emailattachment_download(request, obj):
+    download = not "preview" in request.GET
+    return obj.get_file_response(download=download)
