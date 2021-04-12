@@ -57,6 +57,8 @@ class EMail(models.Model):
     time_sent = models.DateTimeField(
         "Gesendet um", blank=True, null=True, default=None)
 
+    sent = models.BooleanField("Gesendet?", default=False)
+
     data = models.JSONField("Extradaten", default=dict, blank=True)
 
     notes = models.TextField("Notizen", blank=True, default="")
@@ -64,10 +66,6 @@ class EMail(models.Model):
     @admin.display(description="E-Mail")
     def __str__(self):
         return f"{self.subject} ({self.pk})"
-
-    @admin.display(description="Gesendet?", boolean=True, ordering="time_sent")
-    def is_sent(self):
-        return self.time_sent is not None
 
     def render(self, online=False):
         context = dict(self.html_context)
@@ -98,6 +96,7 @@ class EMail(models.Model):
 
         if success:
             self.time_sent = timezone.now()
+            self.sent = True
             self.data["attachments"] = [
                 {"filename": a.filename, "url": a.url} for a in attachments]
             self.save()
@@ -120,5 +119,6 @@ class EMail(models.Model):
     class Meta:
         verbose_name = "E-Mail"
         verbose_name_plural = "E-Mails"
+        default_permissions = ('add', 'change', 'view', 'delete', 'send')
 
     objects = models.Manager()

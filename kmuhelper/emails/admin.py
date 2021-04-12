@@ -26,10 +26,10 @@ class EMailAdmin(CustomModelAdmin):
 
     readonly_fields = ('time_created', 'time_sent')
 
-    ordering = ('time_sent',)
+    ordering = ('sent', '-time_sent', '-time_created')
 
     list_display = ('subject', 'to', 'typ',
-                    'time_created', 'time_sent', 'is_sent')
+                    'time_created', 'sent', 'time_sent')
     search_fields = ['subject', 'to']
 
     # Permissions

@@ -4,7 +4,7 @@
     {% if change %}
         <li><a href="{% url 'admin:kmuhelper_email_preview' object_id %}">Vorschau</a></li>
         {% if perms.kmuhelper.send_email %}
-            {% if not original.is_sent %}
+            {% if not original.sent %}
                 <li><a href="{% url 'admin:kmuhelper_email_send' object_id %}">Senden</a></li>
             {% else %}
                 <li><a href="{% url 'admin:kmuhelper_email_resend' object_id %}">Erneut senden</a></li>
