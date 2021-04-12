@@ -104,12 +104,17 @@ class EMail(models.Model):
         return success
 
     def get_url(self):
+        """Get the public view online URL"""
+
         domain = getattr(settings, "KMUHELPER_DOMAIN", None)
 
         if domain:
-            return domain+reverse("kmuhelper:email-view", kwargs={"object_id": self.pk})+f"?token={self.token}"
-        
-        log("[orange_red1]Einstellung KMUHELPER_DOMAIN ist nicht gesetzt! E-Mails werden ohne 'online ansehen' Links versendet!")
+            path = reverse("kmuhelper:email-view", kwargs={"object_id": self.pk})
+            params = f"?token={self.token}"
+            return domain+path+params
+
+        log("[orange_red1]Einstellung KMUHELPER_DOMAIN ist nicht gesetzt! " + \
+            "E-Mails werden ohne 'online ansehen' Links versendet!")
         return None
 
     class Meta:
