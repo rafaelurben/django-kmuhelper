@@ -2,15 +2,17 @@ from django.contrib import admin
 from django.urls import path
 
 from kmuhelper.emails import views
-from kmuhelper.emails.models import EMail, EMailAttachment
+from kmuhelper.emails.models import EMail, EMailAttachment, Attachment
 from kmuhelper.overwrites import CustomModelAdmin
 
 #######
 
 
-@admin.register(EMailAttachment)
-class EMailAttachmentAdmin(CustomModelAdmin):
+@admin.register(Attachment)
+class AttachmentAdmin(CustomModelAdmin):
     list_display = ['filename', 'description', 'time_created', 'autocreated']
+
+    search_fields = ('filename', 'description', )
 
     ordering = ['-time_created']
 
@@ -47,24 +49,44 @@ class EMailAttachmentAdmin(CustomModelAdmin):
         urls = super().get_urls()
 
         my_urls = [
-            path('<path:object_id>/download', self.admin_site.admin_view(views.emailattachment_download),
+            path('<path:object_id>/download', self.admin_site.admin_view(views.attachment_download),
                  name='%s_%s_download' % info),
         ]
         return my_urls + urls
+
+
+class EMailAdminAttachmentInline(admin.TabularInline):
+    model = EMailAttachment
+    verbose_name = "Anhang"
+    verbose_name_plural = "Anhänge"
+    extra = 0
+
+    show_change_link = True
+
+    autocomplete_fields = ('attachment', )
+
+    # Permissions
+
+    def has_change_permission(self, request, obj=None):
+        return False
 
 
 @admin.register(EMail)
 class EMailAdmin(CustomModelAdmin):
     def get_fieldsets(self, request, obj=None):
         default = [
-            ("Infos", {'fields': ['subject', 'to', 'typ']}),
-            ('Inhalt', {'fields': ['html_template', 'html_context']}),
+            ('Infos', {
+                'fields': ['subject', 'typ']}),
+            ('Empfänger', {
+                'fields': ['to', 'cc', 'bcc'],
+                'classes': ['collapse']}),
+            ('Inhalt', {
+                'fields': ['html_template', 'html_context']}),
         ]
 
         if obj:
             return default + [
                 ('Zeiten', {'fields': ['time_created', 'time_sent']}),
-                ('Extra', {'fields': ['data']}),
             ]
 
         return default
@@ -73,9 +95,13 @@ class EMailAdmin(CustomModelAdmin):
 
     ordering = ('sent', '-time_sent', '-time_created')
 
-    list_display = ('subject', 'to', 'typ',
+    list_display = ('subject', 'to', 'cc', 'bcc', 'typ',
                     'time_created', 'sent', 'time_sent')
-    search_fields = ['subject', 'to']
+    list_filter = ('typ', 'sent')
+
+    search_fields = ['subject', 'to', 'cc', 'bcc', 'html_context']
+
+    inlines = (EMailAdminAttachmentInline, )
 
     # Permissions
 
@@ -105,4 +131,5 @@ class EMailAdmin(CustomModelAdmin):
 
 modeladmins = [
     (EMail, EMailAdmin),
+    (Attachment, AttachmentAdmin),
 ]

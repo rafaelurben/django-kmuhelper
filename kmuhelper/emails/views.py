@@ -5,7 +5,7 @@ from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 
 from kmuhelper.decorators import require_object, confirm_action
-from kmuhelper.emails.models import EMail, EMailAttachment
+from kmuhelper.emails.models import EMail, Attachment
 
 #####
 
@@ -66,9 +66,9 @@ def email_view(request, obj):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.download_emailattachment")
-@require_object(EMailAttachment)
-def emailattachment_download(request, obj):
+@permission_required("kmuhelper.download_attachment")
+@require_object(Attachment)
+def attachment_download(request, obj):
     download = not "preview" in request.GET
     return obj.get_file_response(download=download)
 
@@ -76,14 +76,14 @@ def emailattachment_download(request, obj):
 # Public views
 
 
-@require_object(EMailAttachment, reverse_lazy("kmuhelper:error"))
-def emailattachment_view(request, obj):
-    """Render an email attachment for online viewing"""
+@require_object(Attachment, reverse_lazy("kmuhelper:error"))
+def attachment_view(request, obj):
+    """Render an attachment for online viewing"""
 
     token_received = request.GET.get("token", None)
     token_stored = str(obj.token)
 
-    if request.user.has_perm("kmuhelper.view_email") or (token_received == token_stored):
+    if request.user.has_perm("kmuhelper.download_attachment") or (token_received == token_stored):
         download = "download" in request.GET
         return obj.get_file_response(download=download)
 

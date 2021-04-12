@@ -1,6 +1,9 @@
 <html lang="de" style="height: 100%;">
     <head>
-        <title>E-Mail Viewer</title>
+        {% if isonline %}
+            <title>E-Mail Viewer | KMUHelper</title>
+        {% endif %}
+
         {% block extrahead %}
           
         {% endblock extrahead %}
@@ -31,13 +34,13 @@
         </div>
 
         {% if isonline %}
-            {% if "attachments" in data and data.attachments %}
+            {% if attachments %}
                 <hr>
                 <h3 style="margin-left: 20px;">Anhänge</h3>
-                <p style="margin-left: 20px;">Achtung: Angänge werden unter Umständen beim Abrufen neu generiert und entsprechen nicht zwingend dem exakten Anhang der E-Mail</p>
+                <p style="margin-left: 20px;">Achtung: Es kann unter Umständen vorkommen, dass nicht mehr alle Anhänge verfügbar sind.</p>
                 <ul>
-                {% for at in data.attachments %}
-                    <li><a href="{{ at.url }}">{{ at.filename }}</a></li>
+                {% for attachment in attachments %}
+                    <li><a href="{{ attachment.get_url }}">{{ attachment.filename }}</a></li>
                 {% endfor %}
                 </ul>
             {% endif %}

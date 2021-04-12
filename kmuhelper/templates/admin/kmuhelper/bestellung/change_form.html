@@ -16,7 +16,9 @@
         {% load kmuhelper_tags %}
         {% kmuhelper_email_show_buttons as show_email_buttons %}
         {% if show_email_buttons and original.versendet and original.rechnungsadresse_email %}
-            {% if not original.rechnungsemail or not original.rechnungsemail.sent %}
+            {% if original.rechnungsemail %}
+                <li><a href="{% url 'admin:kmuhelper_email_change' original.rechnungsemail.pk %}">E-Mail ansehen</a></li>
+            {% else %}
                 <li><a href="{% url 'admin:kmuhelper_bestellung_pdf_email' object_id %}">Rechnung an Kunden senden</a></li>
             {% endif %}
         {% endif %}

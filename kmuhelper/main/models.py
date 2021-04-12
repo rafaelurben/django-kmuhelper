@@ -13,7 +13,7 @@ from django.utils import timezone
 from django.utils.html import mark_safe, format_html
 from django.urls import reverse
 
-from kmuhelper.emails.models import EMail, EMailAttachmentOld
+from kmuhelper.emails.models import EMail, Attachment
 from kmuhelper.pdf_generators import PDFOrder
 from kmuhelper.utils import runden, clean, formatprice, modulo10rekursiv, send_pdf
 
@@ -101,7 +101,7 @@ class Ansprechpartner(models.Model):
 
     @admin.display(description="Ansprechpartner")
     def __str__(self):
-        return self.name
+        return str(self.name)
 
     class Meta:
         verbose_name = "Ansprechpartner"
@@ -442,20 +442,21 @@ class Bestellung(models.Model):
             self.rechnungsemail.to = self.rechnungsadresse_email
             self.rechnungsemail.html_context = context
 
+        filename = f"Rechnung Nr. { self.id }"+(
+            " (Online #"+str(self.woocommerceid)+")" if self.woocommerceid else "")+".pdf"
+
+        self.rechnungsemail.add_attachments(
+            Attachment.objects.create_from_binary(
+                filename=filename,
+                content=PDFOrder(self, lieferschein=False,
+                                 digital=True).get_pdf()
+            )
+        )
+
         success = self.rechnungsemail.send(
             headers={
                 "Rechnungs-ID": str(self.id)
             },
-            attachments=[
-                EMailAttachmentOld(
-                    filename=f"Rechnung Nr. { self.id }"+(
-                        " (Online #"+str(self.woocommerceid)+")" if self.woocommerceid else "")+".pdf",
-                    content=PDFOrder(self, lieferschein=False,
-                                     digital=True).get_pdf(),
-                    url=self.get_public_pdf_url(),
-                )
-            ],
-            bcc=[self.zahlungsempfaenger.email],
         )
         self.save()
         return success
@@ -1049,16 +1050,20 @@ class Notiz(models.Model):
     def links(self):
         text = ""
         if self.bestellung:
-            url = reverse("admin:kmuhelper_bestellung_change", kwargs={"object_id": self.bestellung.pk})
+            url = reverse("admin:kmuhelper_bestellung_change",
+                          kwargs={"object_id": self.bestellung.pk})
             text += f"Bestellung <a href='{url}'>#{self.bestellung.pk}</a><br>"
         if self.produkt:
-            url = reverse("admin:kmuhelper_produkt_change", kwargs={"object_id": self.produkt.pk})
+            url = reverse("admin:kmuhelper_produkt_change",
+                          kwargs={"object_id": self.produkt.pk})
             text += f"Produkt <a href='{url}'>#{self.produkt.pk}</a><br>"
         if self.kunde:
-            url = reverse("admin:kmuhelper_kunde_change", kwargs={"object_id": self.kunde.pk})
+            url = reverse("admin:kmuhelper_kunde_change",
+                          kwargs={"object_id": self.kunde.pk})
             text += f"Kunde <a href='{url}'>#{self.kunde.pk}</a><br>"
         if self.lieferung:
-            url = reverse("admin:kmuhelper_lieferung_change", kwargs={"object_id": self.lieferung.pk})
+            url = reverse("admin:kmuhelper_lieferung_change",
+                          kwargs={"object_id": self.lieferung.pk})
             text += f"Lieferung <a href='{url}'>#{self.lieferung.pk}</a><br>"
         return mark_safe(text) or "Diese Notiz hat keine Verknüpfungen."
 
@@ -1344,7 +1349,6 @@ class Einstellung(models.Model):
             self.url = var
         elif self.typ == "email":
             self.email = var
-
 
     class Meta:
         verbose_name = "Einstellung"

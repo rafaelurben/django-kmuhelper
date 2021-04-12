@@ -6,3 +6,4 @@ reportlab==3.5.66
 rich==10.1.0
 pytz==2021.1
 packaging==20.9
+django-multi-email-field==0.6.2

@@ -5,6 +5,8 @@ import uuid
 from io import BytesIO
 from rich import print
 
+from multi_email_field.fields import MultiEmailField
+
 from django.db import models
 from django.contrib import admin
 from django.core import mail
@@ -32,30 +34,24 @@ EMAILTYPEN = [
 #####
 
 
-class EMailAttachmentOld():
-    def __init__(self, filename, content, url=None, mimetype="application/pdf"):
-        self.filename = filename
-        self.content = content
-        self.url = url
-        self.mimetype = mimetype
-
-        if isinstance(content, BytesIO):
-            self.content = content.read()
-
-
 def getfilepath(instance, filename):
     return 'attachments/' + \
         timezone.now().strftime('%Y-%m-%d_%H-%M-%S_') + filename
 
 
-class EMailAttachmentManager(models.Manager):
+class AttachmentManager(models.Manager):
     def create_from_binary(self, filename, content):
-        pass
-        # f = File(content)
-        # storage.default_storage
+        """Create an Attachment object from binary data"""
+
+        file = storage.default_storage.save(filename, content)
+        return self.create(
+            filename=filename,
+            file=file,
+            autocreated=True,
+        )
 
 
-class EMailAttachment(models.Model):
+class Attachment(models.Model):
     filename = models.CharField("Dateiname", max_length=50)
     file = models.FileField("Datei", upload_to=getfilepath,
                             storage=storage.default_storage)
@@ -67,27 +63,27 @@ class EMailAttachment(models.Model):
 
     time_created = models.DateTimeField("Erstellt um", auto_now_add=True)
 
-    @admin.display(description="E-Mail Anhang")
+    @admin.display(description="Anhang")
     def __str__(self):
         return str(self.filename)
 
     def get_file_response(self, download=False):
-        return FileResponse(storage.default_storage.open(self.file.path, 'rb'), 
-            as_attachment=download, filename=self.filename)
+        return FileResponse(storage.default_storage.open(self.file.path, 'rb'),
+                            as_attachment=download, filename=self.filename)
 
     def get_url(self):
         """Get the public view online URL"""
 
-        path = reverse("kmuhelper:emailattachment-view",
+        path = reverse("kmuhelper:attachment-view",
                        kwargs={"object_id": self.pk})
         return path+f"?token={self.token}"
 
     class Meta:
-        verbose_name = "E-Mail Anhang"
-        verbose_name_plural = "E-Mail Anhänge"
+        verbose_name = "Anhang"
+        verbose_name_plural = "Anhänge"
         default_permissions = ('add', 'change', 'view', 'delete', 'download')
 
-    objects = EMailAttachmentManager()
+    objects = AttachmentManager()
 
     # Custom delete
 
@@ -97,13 +93,32 @@ class EMailAttachment(models.Model):
         super().delete(*args, **kwargs)
 
 
+class EMailAttachment(models.Model):
+    attachment = models.ForeignKey(
+        "Attachment", on_delete=models.PROTECT, related_name="emails")
+    email = models.ForeignKey(
+        "EMail", on_delete=models.CASCADE)
+
+    @admin.display(description="E-Mail Anhang")
+    def __str__(self):
+        return "EMail-Anhang Verknüpfung"
+
+    class Meta:
+        verbose_name = "E-Mail Anhang"
+        verbose_name_plural = "E-Mail Anhänge"
+
+    objects = models.Manager()
+
 
 class EMail(models.Model):
     typ = models.CharField("Typ", choices=EMAILTYPEN,
                            max_length=50, default="", blank=True)
 
     subject = models.CharField("Betreff", max_length=50)
-    to = models.EmailField("Empfänger")
+
+    to = MultiEmailField("Empfänger")
+    cc = MultiEmailField("CC", default="", blank=True)
+    bcc = MultiEmailField("BCC", default="", blank=True)
 
     html_template = models.CharField("Dateiname der Vorlage", max_length=100)
     html_context = models.JSONField("Daten", default=dict, blank=True)
@@ -116,37 +131,50 @@ class EMail(models.Model):
 
     sent = models.BooleanField("Gesendet?", default=False)
 
-    data = models.JSONField("Extradaten", default=dict, blank=True)
-
     notes = models.TextField("Notizen", blank=True, default="")
+
+    attachments = models.ManyToManyField(
+        "Attachment", through="EMailAttachment")
 
     @admin.display(description="E-Mail")
     def __str__(self):
         return f"{self.subject} ({self.pk})"
 
     def render(self, online=False):
+        """Render the email and return the rendered string"""
+
         context = dict(self.html_context)
         context["isonline"] = online
-        context["view_online_url"] = None if online else self.get_absolute_url()
-        context["data"] = self.data if online else None
+        if online:
+            context["attachments"] = list(self.attachments.all())
+        else:
+            context["view_online_url"] = self.get_url_with_domain()
         return get_template("kmuhelper/emails/"+str(self.html_template)).render(context)
 
-    def send(self, attachments=(), **options):
+    def add_attachments(self, *attachments):
+        """Add one or more Attachment objects to this EMail"""
+
+        self.attachments.add(*attachments)
+        self.save()
+
+    def send(self, **options):
         """Send the mail with given attachments.
         Options are passed to django.core.mail.EmailMessage"""
 
         msg = mail.EmailMessage(
             subject=self.subject,
             body=self.render(),
-            to=[self.to],
+            to=self.to.splitlines() if isinstance(self.to, str) else self.to,
+            cc=self.cc.splitlines() if isinstance(self.cc, str) else self.cc,
+            bcc=self.bcc.splitlines() if isinstance(self.bcc, str) else self.bcc,
             **options
         )
 
         msg.content_subtype = "html"
 
-        for attachment in attachments:
+        for attachment in self.attachments.all():
             msg.attach(filename=attachment.filename,
-                       content=attachment.content, mimetype=attachment.mimetype)
+                       content=attachment.file.read())
 
         success = msg.send()
 
@@ -155,8 +183,6 @@ class EMail(models.Model):
         if success:
             self.time_sent = timezone.now()
             self.sent = True
-            self.data["attachments"] = [
-                {"filename": a.filename, "url": a.url} for a in attachments]
             self.save()
         return success
 
@@ -164,11 +190,10 @@ class EMail(models.Model):
         """Get the public view online URL"""
 
         path = reverse("kmuhelper:email-view",
-                        kwargs={"object_id": self.pk})
+                       kwargs={"object_id": self.pk})
         return path+f"?token={self.token}"
 
-
-    def get_absolute_url(self):
+    def get_url_with_domain(self):
         """Get the public view online URL with domain prefix"""
 
         domain = getattr(settings, "KMUHELPER_DOMAIN", None)
