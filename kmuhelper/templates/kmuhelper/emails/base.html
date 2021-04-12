@@ -34,6 +34,7 @@
             {% if "attachments" in data and data.attachments %}
                 <hr>
                 <h3 style="margin-left: 20px;">Anhänge</h3>
+                <p style="margin-left: 20px;">Achtung: Angänge werden unter Umständen beim Abrufen neu generiert und entsprechen nicht zwingend dem exakten Anhang der E-Mail</p>
                 <ul>
                 {% for at in data.attachments %}
                     <li><a href="{{ at.url }}">{{ at.filename }}</a></li>
