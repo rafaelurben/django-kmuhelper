@@ -71,3 +71,21 @@ def email_view(request, obj):
 def emailattachment_download(request, obj):
     download = not "preview" in request.GET
     return obj.get_file_response(download=download)
+
+
+# Public views
+
+
+@require_object(EMailAttachment, reverse_lazy("kmuhelper:error"))
+def emailattachment_view(request, obj):
+    """Render an email attachment for online viewing"""
+
+    token_received = request.GET.get("token", None)
+    token_stored = str(obj.token)
+
+    if request.user.has_perm("kmuhelper.view_email") or (token_received == token_stored):
+        download = "download" in request.GET
+        return obj.get_file_response(download=download)
+
+    messages.error(request, "Du hast keinen Zugriff auf diesen E-Mail Anhang!")
+    return redirect(reverse("kmuhelper:error"))

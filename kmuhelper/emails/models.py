@@ -63,6 +63,8 @@ class EMailAttachment(models.Model):
     description = models.TextField("Beschreibung", default="", blank=True)
     autocreated = models.BooleanField("Automatisch generiert", default=False)
 
+    token = models.UUIDField("Token", default=uuid.uuid4, editable=False)
+
     time_created = models.DateTimeField("Erstellt um", auto_now_add=True)
 
     @admin.display(description="E-Mail Anhang")
@@ -72,6 +74,13 @@ class EMailAttachment(models.Model):
     def get_file_response(self, download=False):
         return FileResponse(storage.default_storage.open(self.file.path, 'rb'), 
             as_attachment=download, filename=self.filename)
+
+    def get_url(self):
+        """Get the public view online URL"""
+
+        path = reverse("kmuhelper:emailattachment-view",
+                       kwargs={"object_id": self.pk})
+        return path+f"?token={self.token}"
 
     class Meta:
         verbose_name = "E-Mail Anhang"
@@ -118,7 +127,7 @@ class EMail(models.Model):
     def render(self, online=False):
         context = dict(self.html_context)
         context["isonline"] = online
-        context["view_online_url"] = None if online else self.get_url()
+        context["view_online_url"] = None if online else self.get_absolute_url()
         context["data"] = self.data if online else None
         return get_template("kmuhelper/emails/"+str(self.html_template)).render(context)
 
@@ -154,13 +163,19 @@ class EMail(models.Model):
     def get_url(self):
         """Get the public view online URL"""
 
+        path = reverse("kmuhelper:email-view",
+                        kwargs={"object_id": self.pk})
+        return path+f"?token={self.token}"
+
+
+    def get_absolute_url(self):
+        """Get the public view online URL with domain prefix"""
+
         domain = getattr(settings, "KMUHELPER_DOMAIN", None)
 
         if domain:
-            path = reverse("kmuhelper:email-view",
-                           kwargs={"object_id": self.pk})
-            params = f"?token={self.token}"
-            return domain+path+params
+            url = self.get_url()
+            return domain+url
 
         log("[orange_red1]Einstellung KMUHELPER_DOMAIN ist nicht gesetzt! " +
             "E-Mails werden ohne 'online ansehen' Links versendet!")

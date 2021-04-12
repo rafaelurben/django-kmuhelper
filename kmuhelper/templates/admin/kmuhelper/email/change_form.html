@@ -2,6 +2,7 @@
 
 {% block object-tools-items %}
     {% if change %}
+        <li><a href="{{ original.get_url }}">Öffentliche URL</a></li>
         <li><a href="{% url 'admin:kmuhelper_email_preview' object_id %}">Vorschau</a></li>
         {% if perms.kmuhelper.send_email %}
             {% if not original.sent %}

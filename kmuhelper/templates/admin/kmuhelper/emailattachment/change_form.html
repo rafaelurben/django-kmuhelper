@@ -2,6 +2,7 @@
 
 {% block object-tools-items %}
     {% if change %}
+        <li><a href="{{ original.get_url }}">Öffentliche URL</a></li>
         {% if perms.kmuhelper.download_emailattachment %}
             <li><a target="_blank" href="{% url 'admin:kmuhelper_emailattachment_download' object_id %}?preview">Datei ansehen</a></li>
             <li><a href="{% url 'admin:kmuhelper_emailattachment_download' object_id %}">Datei Herunterladen</a></li>
