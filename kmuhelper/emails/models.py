@@ -43,7 +43,9 @@ class AttachmentManager(models.Manager):
     def create_from_binary(self, filename, content):
         """Create an Attachment object from binary data"""
 
-        file = storage.default_storage.save(filename, content)
+        filepath = getfilepath(None, filename)
+
+        file = storage.default_storage.save(filepath, content)
         return self.create(
             filename=filename,
             file=file,
@@ -68,6 +70,8 @@ class Attachment(models.Model):
         return str(self.filename)
 
     def get_file_response(self, download=False):
+        """Get this attachment as a file response"""
+
         return FileResponse(storage.default_storage.open(self.file.path, 'rb'),
                             as_attachment=download, filename=self.filename)
 
@@ -89,6 +93,7 @@ class Attachment(models.Model):
 
     def delete(self, *args, **kwargs):
         """Delete the associated file before deleting the model object"""
+
         self.file.delete()
         super().delete(*args, **kwargs)
 
@@ -121,7 +126,7 @@ class EMail(models.Model):
     bcc = MultiEmailField("BCC", default="", blank=True)
 
     html_template = models.CharField("Dateiname der Vorlage", max_length=100)
-    html_context = models.JSONField("Daten", default=dict, blank=True)
+    html_context = models.JSONField("Daten", default=dict, blank=True, null=True)
 
     token = models.UUIDField("Token", default=uuid.uuid4, editable=False)
 
@@ -189,7 +194,7 @@ class EMail(models.Model):
     def render(self, online=False):
         """Render the email and return the rendered string"""
 
-        context = dict(self.html_context)
+        context = dict(self.html_context) if self.html_context is not None else {}
         context["isonline"] = online
         if online:
             context["attachments"] = list(self.attachments.all())

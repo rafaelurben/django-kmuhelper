@@ -126,6 +126,13 @@ class EMailAdmin(CustomModelAdmin):
         ]
         return my_urls + urls
 
+    # Custom save
+
+    def save_model(self, request, obj, form, change):
+        if obj:
+            obj.is_valid(request)
+        super().save_model(request, obj, form, change)
+
 #
 
 

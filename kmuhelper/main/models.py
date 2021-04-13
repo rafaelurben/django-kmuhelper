@@ -429,18 +429,14 @@ class Bestellung(models.Model):
             "woocommercedata": bool(self.woocommerceid),
         }
 
-        if self.rechnungsemail is None:
-            self.rechnungsemail = EMail.objects.create(
-                typ="bestellung_rechnung",
-                subject=f"Ihre Rechnung Nr. { self.id }"+(
-                    " (Online #"+str(self.woocommerceid) + ")" if self.woocommerceid else ""),
-                to=self.rechnungsadresse_email,
-                html_template="bestellung_rechnung.html",
-                html_context=context,
-            )
-        else:
-            self.rechnungsemail.to = self.rechnungsadresse_email
-            self.rechnungsemail.html_context = context
+        self.rechnungsemail = EMail.objects.create(
+            typ="bestellung_rechnung",
+            subject=f"Ihre Rechnung Nr. { self.id }"+(
+                " (Online #"+str(self.woocommerceid) + ")" if self.woocommerceid else ""),
+            to=self.rechnungsadresse_email,
+            html_template="bestellung_rechnung.html",
+            html_context=context,
+        )
 
         filename = f"Rechnung Nr. { self.id }"+(
             " (Online #"+str(self.woocommerceid)+")" if self.woocommerceid else "")+".pdf"
