@@ -18,11 +18,12 @@ from kmuhelper.utils import render_error
 @require_object(EMail)
 @confirm_action("E-Mail Nachricht senden")
 def email_send(request, obj):
-    success = obj.send()
-    if success:
-        messages.success(request, "E-Mail wurde versendet!")
-    else:
-        messages.error(request, "E-Mail konnte nicht gesendet werden!")
+    if obj.is_valid():
+        success = obj.send()
+        if success:
+            messages.success(request, "E-Mail wurde versendet!")
+        else:
+            messages.error(request, "E-Mail konnte nicht gesendet werden!")
     return redirect(reverse("admin:kmuhelper_email_change", args=[obj.pk]))
 
 
@@ -31,11 +32,12 @@ def email_send(request, obj):
 @require_object(EMail)
 @confirm_action("E-Mail Nachricht ERNEUT senden")
 def email_resend(request, obj):
-    success = obj.send()
-    if success:
-        messages.success(request, "E-Mail wurde erneut versendet!")
-    else:
-        messages.error(request, "E-Mail konnte nicht gesendet werden!")
+    if obj.is_valid(request):
+        success = obj.send()
+        if success:
+            messages.success(request, "E-Mail wurde erneut versendet!")
+        else:
+            messages.error(request, "E-Mail konnte nicht gesendet werden!")
     return redirect(reverse("admin:kmuhelper_email_change", args=[obj.pk]))
 
 
@@ -43,7 +45,9 @@ def email_resend(request, obj):
 @permission_required("kmuhelper.view_email")
 @require_object(EMail)
 def email_preview(request, obj):
-    return HttpResponse(obj.render(online=True))
+    if obj.is_valid(request):
+        return HttpResponse(obj.render(online=True))
+    return redirect(reverse("admin:kmuhelper_email_change", args=[obj.pk]))
 
 
 # Public views
@@ -57,9 +61,12 @@ def email_view(request, obj):
     token_stored = str(obj.token)
 
     if request.user.has_perm("kmuhelper.view_email") or (token_received == token_stored):
-        return HttpResponse(obj.render(online=True))
+        if obj.is_valid():
+            return HttpResponse(obj.render(online=True))
 
-    messages.error(request, "Du hast keinen Zugriff auf diese E-Mail!")
+        messages.warning(request, "Diese E-Mail kann zurzeit leider nicht angezeigt werden.")
+    else:
+        messages.error(request, "Du hast keinen Zugriff auf diese E-Mail!")
 
     return render_error(request)
 

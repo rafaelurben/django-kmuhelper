@@ -2,19 +2,19 @@
 
 import uuid
 
-from io import BytesIO
 from rich import print
 
 from multi_email_field.fields import MultiEmailField
 
 from django.db import models
 from django.conf import settings
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.core import mail
 from django.core.files import storage
 from django.http import FileResponse
 from django.urls import reverse
 from django.utils import timezone
+from django.template import TemplateDoesNotExist, TemplateSyntaxError
 from django.template.loader import get_template
 
 
@@ -139,6 +139,52 @@ class EMail(models.Model):
     @admin.display(description="E-Mail")
     def __str__(self):
         return f"{self.subject} ({self.pk})"
+
+    def is_valid(self, request=None):
+        """Check if the email is valid.
+        If not, add messages to request.
+
+        Returns:
+            0: Has errors
+            1: Has warnings
+            2: No warnings or errors
+        """
+
+        template = f"kmuhelper/emails/{self.html_template}"
+        errors = []
+        warnings = []
+
+        # Check 1: Template
+
+        try:
+            get_template(template)
+        except TemplateDoesNotExist:
+            errors.append(
+                f"Vorlage '{template}' wurde nicht gefunden."
+            )
+        except TemplateSyntaxError as error:
+            error.append(
+                f"Vorlage '{template}' enthält ungültige Syntax: {error.msg}"
+            )
+
+        # Check 2: Receiver
+
+        if not self.to:
+            warnings.append(
+                "Nachricht hat keine(n) Empfänger!"
+            )
+
+        # Add messages and return
+
+        if request:
+            for msg in errors:
+                messages.error(request, msg)
+            for msg in warnings:
+                messages.warning(request, msg)
+
+        haserrors = len(errors) > 0
+        haswarnings = len(warnings) > 0
+        return 0 if haserrors else 1 if haswarnings else 2
 
     def render(self, online=False):
         """Render the email and return the rendered string"""
