@@ -100,7 +100,7 @@ class EMailAdmin(CustomModelAdmin):
                     'time_created', 'sent', 'time_sent')
     list_filter = ('html_template', 'sent')
 
-    search_fields = ['subject', 'to', 'cc', 'bcc', 'html_context']
+    search_fields = ['subject', 'to', 'cc', 'bcc', 'html_context', 'notes']
 
     inlines = (EMailAdminAttachmentInline, )
 

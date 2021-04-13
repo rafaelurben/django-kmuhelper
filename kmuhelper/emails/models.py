@@ -113,8 +113,12 @@ class EMail(models.Model):
     cc = MultiEmailField("CC", default="", blank=True)
     bcc = MultiEmailField("BCC", default="", blank=True)
 
-    html_template = models.CharField("Dateiname der Vorlage", max_length=100)
-    html_context = models.JSONField("Daten", default=dict, blank=True, null=True)
+    html_template = models.CharField(
+        "Dateiname der Vorlage", default="default.html", max_length=50, 
+        help_text="Der Dateiname der Vorlage unter 'kmuhelper/emails/'.")
+    html_context = models.JSONField(
+        "Daten", default=dict, blank=True, null=True,
+        help_text="Daten im JSON-Format, mit welchen die Vorlage befüllt wird.")
 
     token = models.UUIDField("Token", default=uuid.uuid4, editable=False)
 
@@ -156,8 +160,8 @@ class EMail(models.Model):
                 f"Vorlage '{template}' wurde nicht gefunden."
             )
         except TemplateSyntaxError as error:
-            error.append(
-                f"Vorlage '{template}' enthält ungültige Syntax: {error.msg}"
+            errors.append(
+                f"Vorlage '{template}' enthält ungültige Syntax: {error}"
             )
 
         # Check 2: Receiver
