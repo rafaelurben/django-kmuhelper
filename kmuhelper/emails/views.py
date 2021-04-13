@@ -5,7 +5,7 @@ from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 
 from kmuhelper.decorators import require_object, confirm_action
-from kmuhelper.emails.models import EMail, Attachment
+from kmuhelper.emails.models import EMail, Attachment, EMailTemplate
 from kmuhelper.utils import render_error
 
 #####
@@ -98,3 +98,13 @@ def attachment_view(request, obj):
 
     messages.error(request, "Du hast keinen Zugriff auf diesen E-Mail Anhang!")
     return render_error(request)
+
+
+# EMailTemplate Views
+
+
+@login_required(login_url=reverse_lazy("admin:login"))
+@permission_required(["kmuhelper.view_emailtemplate", "kmuhelper.add_email"])
+@require_object(EMailTemplate)
+def emailtemplate_use(request, obj):
+    return HttpResponse("soon")

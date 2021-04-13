@@ -1,0 +1,10 @@
+{% extends 'admin/kmuhelper/change_list.html' %}
+
+{% block object-tools-items %}
+    {% if perms.kmuhelper.view_email %}
+        <li>
+            <a href="{% url 'admin:kmuhelper_email_changelist' %}">Zu E-Mails wechseln</a>
+        </li>
+    {% endif %}
+    {{ block.super }}
+{% endblock %}

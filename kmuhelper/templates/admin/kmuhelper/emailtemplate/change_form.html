@@ -1,0 +1,8 @@
+{% extends 'admin/kmuhelper/change_form.html' %}
+
+{% block object-tools-items %}
+    {% if change %}
+        <li><a href="{% url 'admin:kmuhelper_emailtemplate_use' object_id %}">Vorlage benutzen</a></li>
+    {% endif %}
+    {{ block.super }}
+{% endblock %}

@@ -14,6 +14,7 @@ from django.core.files import storage
 from django.http import FileResponse
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.html import format_html
 from django.template import TemplateDoesNotExist, TemplateSyntaxError
 from django.template.loader import get_template
 
@@ -108,17 +109,17 @@ class EMailAttachment(models.Model):
 
 class EMail(models.Model):
     subject = models.CharField(
-        "Betreff", max_length=50, 
+        "Betreff", max_length=50,
         help_text="Wird Standardmässig auch als Untertitel verwendet.")
 
     to = MultiEmailField(
-        "Empfänger", 
+        "Empfänger",
         help_text="Direkte Empfänger")
     cc = MultiEmailField(
-        "CC", default="", blank=True, 
+        "CC", default="", blank=True,
         help_text="Kopie")
     bcc = MultiEmailField(
-        "BCC", default="", blank=True, 
+        "BCC", default="", blank=True,
         help_text="Blindkopie")
 
     html_template = models.CharField(
@@ -126,7 +127,7 @@ class EMail(models.Model):
         help_text="Dateiname der Designvorlage unter 'kmuhelper/emails/'.")
     text = models.TextField(
         "Text", default="", blank=True,
-        help_text="Hauptinhalt - wird nicht von allen Designvorlagen verwendet. " + \
+        help_text="Hauptinhalt - wird nicht von allen Designvorlagen verwendet. " +
                   "Links und E-Mail Adressen werden automatisch verlinkt.")
     html_context = models.JSONField(
         "Daten", default=dict, blank=True, null=True,
@@ -207,7 +208,8 @@ class EMail(models.Model):
 
         ctx = dict(self.html_context) if self.html_context is not None else {}
 
-        defaultcontext = dict(getattr(settings, "KMUHELPER_EMAILS_DEFAULT_CONTEXT", dict()))
+        defaultcontext = dict(
+            getattr(settings, "KMUHELPER_EMAILS_DEFAULT_CONTEXT", dict()))
 
         return {
             **defaultcontext,
@@ -290,5 +292,37 @@ class EMail(models.Model):
         verbose_name = "E-Mail"
         verbose_name_plural = "E-Mails"
         default_permissions = ('add', 'change', 'view', 'delete', 'send')
+
+    objects = models.Manager()
+
+
+class EMailTemplate(models.Model):
+    title = models.CharField(
+        "Titel", max_length=50)
+    description = models.TextField(
+        "Beschreibung", default="", blank=True)
+
+    mail_subject = models.CharField(
+        "Betreff", max_length=50)
+    mail_text = models.TextField(
+        "Text")
+    mail_template = models.CharField(
+        "Designvorlage", default="default.html", max_length=50)
+    mail_context = models.JSONField(
+        "Daten", default=dict, blank=True, null=True)
+
+    @admin.display(description="E-Mail Vorlage")
+    def __str__(self):
+        return f"{self.title} ({self.pk})"
+
+    @admin.display(description="Vorlage benutzen")
+    def get_use_link(self):
+        link = reverse("admin:kmuhelper_emailtemplate_use", args=[self.pk])
+        text = "Vorlage benutzen"
+        return format_html('<a href="{}">{}</a>', link, text)
+
+    class Meta:
+        verbose_name = "E-Mail Vorlage"
+        verbose_name_plural = "E-Mail Vorlagen"
 
     objects = models.Manager()

@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import path
 
 from kmuhelper.emails import views
-from kmuhelper.emails.models import EMail, EMailAttachment, Attachment
+from kmuhelper.emails.models import EMail, EMailAttachment, Attachment, EMailTemplate
 from kmuhelper.overwrites import CustomModelAdmin
 
 #######
@@ -134,10 +134,47 @@ class EMailAdmin(CustomModelAdmin):
             obj.is_valid(request)
         super().save_model(request, obj, form, change)
 
+
+@admin.register(EMailTemplate)
+class EMailTemplateAdmin(CustomModelAdmin):
+    list_display = ['title', 'description', 'get_use_link']
+
+    search_fields = ('title', 'description', )
+
+    ordering = ['title']
+
+    fieldsets = [
+        ('Infos', {
+            'fields': ['title', 'description']}),
+        ('E-Mail', {
+            'fields': [('mail_subject', 'mail_text'), ('mail_template', 'mail_context')]})
+    ]
+
+
+    # Permissions
+
+    def has_module_permission(self, request):
+        """Hide model in default admin"""
+        return {}
+
+    # Views
+
+    def get_urls(self):
+        info = self.model._meta.app_label, self.model._meta.model_name
+
+        urls = super().get_urls()
+
+        my_urls = [
+            path('<path:object_id>/use', self.admin_site.admin_view(views.emailtemplate_use),
+                 name='%s_%s_use' % info),
+        ]
+        return my_urls + urls
+
 #
 
 
 modeladmins = [
     (EMail, EMailAdmin),
     (Attachment, AttachmentAdmin),
+    (EMailTemplate, EMailTemplateAdmin),
 ]
