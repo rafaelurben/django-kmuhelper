@@ -8,6 +8,7 @@ from rich import print
 from multi_email_field.fields import MultiEmailField
 
 from django.db import models
+from django.conf import settings
 from django.contrib import admin
 from django.core import mail
 from django.core.files import storage
@@ -15,7 +16,6 @@ from django.http import FileResponse
 from django.urls import reverse
 from django.utils import timezone
 from django.template.loader import get_template
-from django.conf import settings
 
 
 def log(string, *args):
@@ -169,6 +169,9 @@ class EMail(models.Model):
             bcc=self.bcc.splitlines() if isinstance(self.bcc, str) else self.bcc,
             **options
         )
+
+        if hasattr(settings, "KMUHELPER_LOG_EMAIL"):
+            msg.bcc.append(settings.KMUHELPER_LOG_EMAIL)
 
         msg.content_subtype = "html"
 
