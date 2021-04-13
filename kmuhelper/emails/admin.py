@@ -82,7 +82,7 @@ class EMailAdmin(CustomModelAdmin):
                 'fields': ['cc', 'bcc'],
                 'classes': ['collapse']}),
             ('Inhalt', {
-                'fields': ['html_template', 'html_context']}),
+                'fields': ['html_template', 'text', 'html_context']}),
         ]
 
         if obj:
@@ -100,7 +100,7 @@ class EMailAdmin(CustomModelAdmin):
                     'time_created', 'sent', 'time_sent')
     list_filter = ('html_template', 'sent')
 
-    search_fields = ['subject', 'to', 'cc', 'bcc', 'html_context', 'notes']
+    search_fields = ['subject', 'to', 'cc', 'bcc', 'html_context', 'text', 'notes']
 
     inlines = (EMailAdminAttachmentInline, )
 

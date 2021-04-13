@@ -11,7 +11,9 @@
                 {% load kmuhelper_tags %}
                 {% kmuhelper_email_show_buttons as show_email_buttons %}
                 {% if show_email_buttons and original.email %}
-                    {% if not original.registrierungsemail or not original.registrierungsemail.sent %}
+                    {% if original.registrierungsemail %}
+                        <li><a href="{% url 'admin:kmuhelper_email_change' original.registrierungsemail.pk %}">E-Mail ansehen</a></li>
+                    {% else %}
                         <li><a href="{% url 'admin:kmuhelper_kunde_email_registriert' object_id %}">Registrierungsemail senden</a></li>
                     {% endif %}
                 {% endif %}

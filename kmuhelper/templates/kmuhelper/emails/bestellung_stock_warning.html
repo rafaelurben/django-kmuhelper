@@ -8,12 +8,18 @@
     </style>
 {% endblock %}
 
-{% block title %}Lagerbestand ist knapp!{% endblock %}
+{% block title %}KMUHelper | E-Mails{% endblock %}
 
-{% block content %}
+{% block subtitle %}Warnung zum Lagerbestand{% endblock %}
 
-    <p>Seit einer kürzlich importierten Bestellung herrscht Knappheit beim Lagerbestand folgender Produkte:</p>
+{% block maincontent %}
 
+    <p>
+        Seit einer kürzlich importierten Bestellung
+        {% if orderinfo %}
+            ({{ orderinfo }})
+        {% endif %}
+        herrscht Knappheit beim Lagerbestand folgender Produkte:</p>
     <br>
 
     <table style="border-collapse: collapse; width: 100%;">

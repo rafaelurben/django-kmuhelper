@@ -435,6 +435,7 @@ class Bestellung(models.Model):
             to=self.rechnungsadresse_email,
             html_template="bestellung_rechnung.html",
             html_context=context,
+            notes=f"Diese E-Mail wurde automatisch aus Bestellung #{self.pk} generiert.",
         )
 
         filename = f"Rechnung Nr. { self.id }"+(
@@ -527,6 +528,7 @@ class Bestellung(models.Model):
                     html_context={
                         "warnings": warnings,
                     },
+                    notes=f"Diese E-Mail wurde automatisch aus Bestellung #{self.pk} generiert.",
                 )
 
                 success = email.send(
@@ -855,21 +857,21 @@ class Kunde(models.Model):
     def send_register_mail(self):
         context = {
             "kunde": {
+                "id": self.pk,
                 "vorname": self.vorname,
                 "nachname": self.nachname,
+                "firma": self.firma,
+                "email": self.email,
             }
         }
 
-        if self.registrierungsemail is None:
-            self.registrierungsemail = EMail.objects.create(
-                subject="Registrierung erfolgreich!",
-                to=self.email,
-                html_template="kunde_registriert.html",
-                html_context=context,
-            )
-        else:
-            self.registrierungsemail.to = self.email
-            self.registrierungsemail.html_context = context
+        self.registrierungsemail = EMail.objects.create(
+            subject="Registrierung erfolgreich!",
+            to=self.email,
+            html_template="kunde_registriert.html",
+            html_context=context,
+            notes=f"Diese E-Mail wurde automatisch aus Kunde #{self.pk} generiert.",
+        )
 
         success = self.registrierungsemail.send(
             headers={"Kunden-ID": str(self.pk)})

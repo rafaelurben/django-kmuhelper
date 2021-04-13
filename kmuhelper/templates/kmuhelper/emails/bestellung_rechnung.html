@@ -1,11 +1,8 @@
 {% extends 'kmuhelper/emails/base.html' %}
 
-{% block title %}Ihre Rechnung #{{ id }}{% endblock %}
+{% block maincontent %}
 
-{% block header %}{% endblock %}
-
-{% block content %}
-
+    <p>Sehr geehrter Kunde</p>
     <p>Im Anhang finden Sie Ihre Rechnung zur Bestellung Nr. {{ id }}{% if woocommercedata %} (Online #{{ woocommerceid }}){% endif %}</p>
 
     {% if trackingdata %}

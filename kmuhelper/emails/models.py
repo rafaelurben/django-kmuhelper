@@ -107,28 +107,47 @@ class EMailAttachment(models.Model):
 
 
 class EMail(models.Model):
-    subject = models.CharField("Betreff", max_length=50)
+    subject = models.CharField(
+        "Betreff", max_length=50, 
+        help_text="Wird Standardmässig auch als Untertitel verwendet.")
 
-    to = MultiEmailField("Empfänger")
-    cc = MultiEmailField("CC", default="", blank=True)
-    bcc = MultiEmailField("BCC", default="", blank=True)
+    to = MultiEmailField(
+        "Empfänger", 
+        help_text="Direkte Empfänger")
+    cc = MultiEmailField(
+        "CC", default="", blank=True, 
+        help_text="Kopie")
+    bcc = MultiEmailField(
+        "BCC", default="", blank=True, 
+        help_text="Blindkopie")
 
     html_template = models.CharField(
-        "Dateiname der Vorlage", default="default.html", max_length=50, 
-        help_text="Der Dateiname der Vorlage unter 'kmuhelper/emails/'.")
+        "Designvorlage", default="default.html", max_length=50,
+        help_text="Dateiname der Designvorlage unter 'kmuhelper/emails/'.")
+    text = models.TextField(
+        "Text", default="", blank=True,
+        help_text="Hauptinhalt - wird nicht von allen Designvorlagen verwendet. " + \
+                  "Links und E-Mail Adressen werden automatisch verlinkt.")
     html_context = models.JSONField(
         "Daten", default=dict, blank=True, null=True,
-        help_text="Daten im JSON-Format, mit welchen die Vorlage befüllt wird.")
+        help_text="Daten im JSON-Format, mit welchen die Designvorlage befüllt wird.")
 
-    token = models.UUIDField("Token", default=uuid.uuid4, editable=False)
+    token = models.UUIDField(
+        "Token", default=uuid.uuid4, editable=False)
 
-    time_created = models.DateTimeField("Erstellt am", auto_now_add=True)
+    time_created = models.DateTimeField(
+        "Erstellt am", auto_now_add=True,
+        help_text="Datum und Zeit der Erstellung dieser E-Mail.")
     time_sent = models.DateTimeField(
-        "Gesendet um", blank=True, null=True, default=None)
+        "Gesendet um", blank=True, null=True, default=None,
+        help_text="Datum und Zeit des letzten erfolgreichen Sendeversuches.")
 
-    sent = models.BooleanField("Gesendet?", default=False)
+    sent = models.BooleanField(
+        "Gesendet?", default=False)
 
-    notes = models.TextField("Notizen", blank=True, default="")
+    notes = models.TextField(
+        "Notizen", blank=True, default="",
+        help_text="Diese Notizen haben keine Einwirkung auf die E-Mail selbst.")
 
     attachments = models.ManyToManyField(
         "Attachment", through="EMailAttachment")
@@ -183,12 +202,27 @@ class EMail(models.Model):
         haswarnings = len(warnings) > 0
         return 0 if haserrors else 1 if haswarnings else 2
 
+    def get_context(self):
+        """Get the context for rendering"""
+
+        ctx = dict(self.html_context) if self.html_context is not None else {}
+
+        defaultcontext = dict(getattr(settings, "KMUHELPER_EMAILS_DEFAULT_CONTEXT", dict()))
+
+        return {
+            **defaultcontext,
+            "subtitle": self.subject,
+            **ctx,
+            "text": self.text,
+        }
+
     def render(self, online=False):
         """Render the email and return the rendered string"""
 
-        context = dict(self.html_context) if self.html_context is not None else {}
-        context["isonline"] = online
+        context = self.get_context()
+
         if online:
+            context["isonline"] = True
             context["attachments"] = list(self.attachments.all())
         else:
             context["view_online_url"] = self.get_url_with_domain()
