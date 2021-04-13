@@ -77,9 +77,9 @@ class EMailAdmin(CustomModelAdmin):
     def get_fieldsets(self, request, obj=None):
         default = [
             ('Infos', {
-                'fields': ['subject', 'typ']}),
-            ('Empfänger', {
-                'fields': ['to', 'cc', 'bcc'],
+                'fields': ['subject', 'to']}),
+            ('Zusätzliche Empfänger', {
+                'fields': ['cc', 'bcc'],
                 'classes': ['collapse']}),
             ('Inhalt', {
                 'fields': ['html_template', 'html_context']}),
@@ -96,9 +96,9 @@ class EMailAdmin(CustomModelAdmin):
 
     ordering = ('sent', '-time_sent', '-time_created')
 
-    list_display = ('subject', 'to', 'cc', 'bcc', 'typ',
+    list_display = ('subject', 'to', 'html_template',
                     'time_created', 'sent', 'time_sent')
-    list_filter = ('typ', 'sent')
+    list_filter = ('html_template', 'sent')
 
     search_fields = ['subject', 'to', 'cc', 'bcc', 'html_context']
 

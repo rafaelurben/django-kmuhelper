@@ -430,7 +430,6 @@ class Bestellung(models.Model):
         }
 
         self.rechnungsemail = EMail.objects.create(
-            typ="bestellung_rechnung",
             subject=f"Ihre Rechnung Nr. { self.id }"+(
                 " (Online #"+str(self.woocommerceid) + ")" if self.woocommerceid else ""),
             to=self.rechnungsadresse_email,
@@ -522,7 +521,6 @@ class Bestellung(models.Model):
 
             if warnings != []:
                 email = EMail.objects.create(
-                    typ="bestellung_stock_warning",
                     subject="[KMUHelper] - Lagerbestand knapp!",
                     to=email_receiver,
                     html_template="bestellung_stock_warning.html",
@@ -864,7 +862,6 @@ class Kunde(models.Model):
 
         if self.registrierungsemail is None:
             self.registrierungsemail = EMail.objects.create(
-                typ="kunde_registriert",
                 subject="Registrierung erfolgreich!",
                 to=self.email,
                 html_template="kunde_registriert.html",

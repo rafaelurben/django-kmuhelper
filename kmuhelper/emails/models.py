@@ -21,15 +21,6 @@ from django.template.loader import get_template
 def log(string, *args):
     print("[deep_pink4][KMUHelper E-Mails][/] -", string, *args)
 
-#####
-
-
-EMAILTYPEN = [
-    ("", "-"),
-    ("kunde_registriert", "Registrierungsmail Kunde"),
-    ("bestellung_rechnung", "Rechnung"),
-    ("bestellung_stock_warning", "Warnung zum Lagerbestand"),
-]
 
 #####
 
@@ -116,9 +107,6 @@ class EMailAttachment(models.Model):
 
 
 class EMail(models.Model):
-    typ = models.CharField("Typ", choices=EMAILTYPEN,
-                           max_length=50, default="", blank=True)
-
     subject = models.CharField("Betreff", max_length=50)
 
     to = MultiEmailField("Empfänger")
