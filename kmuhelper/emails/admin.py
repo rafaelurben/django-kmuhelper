@@ -10,7 +10,8 @@ from kmuhelper.overwrites import CustomModelAdmin
 
 @admin.register(Attachment)
 class AttachmentAdmin(CustomModelAdmin):
-    list_display = ['filename', 'description', 'time_created', 'autocreated']
+    list_display = ['filename', 'description', 'time_created', 'autocreated', 'id']
+    list_display_links = ['filename']
 
     search_fields = ('filename', 'description', )
 

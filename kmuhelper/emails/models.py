@@ -67,7 +67,7 @@ class Attachment(models.Model):
 
     @admin.display(description="Anhang")
     def __str__(self):
-        return str(self.filename)
+        return f"{self.filename} ({self.pk})"
 
     def get_file_response(self, download=False):
         """Get this attachment as a file response"""
