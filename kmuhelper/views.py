@@ -2,6 +2,8 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.urls import reverse_lazy
 
+from kmuhelper.utils import render_error
+
 # Create your views here.
 
 
@@ -11,7 +13,7 @@ def home(request):
 
 
 def error(request):
-    return render(request, "kmuhelper/error.html")
+    return render_error(request)
 
 
 def _templatetest(request, templatename):

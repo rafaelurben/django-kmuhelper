@@ -6,6 +6,7 @@ from django.urls import reverse, reverse_lazy
 
 from kmuhelper.decorators import require_object, confirm_action
 from kmuhelper.emails.models import EMail, Attachment
+from kmuhelper.utils import render_error
 
 #####
 
@@ -48,7 +49,7 @@ def email_preview(request, obj):
 # Public views
 
 
-@require_object(EMail, reverse_lazy("kmuhelper:error"))
+@require_object(EMail, show_errorpage=True)
 def email_view(request, obj):
     """Render an email for online viewing"""
 
@@ -59,7 +60,8 @@ def email_view(request, obj):
         return HttpResponse(obj.render(online=True))
 
     messages.error(request, "Du hast keinen Zugriff auf diese E-Mail!")
-    return redirect(reverse("kmuhelper:error"))
+
+    return render_error(request)
 
 
 # EMailAttachment views
@@ -76,7 +78,7 @@ def attachment_download(request, obj):
 # Public views
 
 
-@require_object(Attachment, reverse_lazy("kmuhelper:error"))
+@require_object(Attachment, show_errorpage=True)
 def attachment_view(request, obj):
     """Render an attachment for online viewing"""
 
@@ -88,4 +90,4 @@ def attachment_view(request, obj):
         return obj.get_file_response(download=download)
 
     messages.error(request, "Du hast keinen Zugriff auf diesen E-Mail Anhang!")
-    return redirect(reverse("kmuhelper:error"))
+    return render_error(request)
