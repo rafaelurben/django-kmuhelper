@@ -2,10 +2,14 @@
 
 {% block maincontent %}
 
-    <p>Sehr geehrter Kunde</p>
-    <p>
-        Im Anhang finden Sie Ihre Rechnung zur Bestellung Nr. {{ id }}{% if woocommercedata %} (Online #{{ woocommerceid }}){% endif %}
-    </p>
+    {% if not text %}
+        <p>Sehr geehrter Kunde</p>
+        <p>
+            Im Anhang finden Sie Ihre Rechnung zur Bestellung Nr. {{ id }}{% if woocommercedata %} (Online #{{ woocommerceid }}){% endif %}
+        </p>
+    {% else %}
+        {{ text|urlize|linebreaks }}
+    {% endif %}
 
     {% if trackingdata %}
         <p>Sie können die Bestellung über <a href="{{ trackinglink }}">diesen Link</a> verfolgen, sobald Sie von der Post verarbeitet wurde.</p>
