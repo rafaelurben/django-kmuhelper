@@ -14,6 +14,7 @@ from django.utils.html import mark_safe, format_html
 from django.urls import reverse
 
 from kmuhelper.emails.models import EMail, Attachment
+from kmuhelper.overwrites import CustomModel
 from kmuhelper.pdf_generators import PDFOrder
 from kmuhelper.utils import runden, clean, formatprice, modulo10rekursiv, send_pdf
 
@@ -92,7 +93,7 @@ ORDER_FREQUENCY_TYPES = [
 #############
 
 
-class Ansprechpartner(models.Model):
+class Ansprechpartner(CustomModel):
     name = models.CharField('Name', max_length=50,
                             help_text="Auf Rechnung ersichtlich!")
     telefon = models.CharField(
@@ -110,7 +111,7 @@ class Ansprechpartner(models.Model):
     objects = models.Manager()
 
 
-class Bestellungskosten(models.Model):
+class Bestellungskosten(CustomModel):
     bestellung = models.ForeignKey("Bestellung", on_delete=models.CASCADE)
     kosten = models.ForeignKey("Kosten", on_delete=models.PROTECT)
     bemerkung = models.CharField("Bemerkung", default="", max_length=250,
@@ -161,7 +162,7 @@ class Bestellungskosten(models.Model):
         self.save()
 
 
-class Bestellungsposten(models.Model):
+class Bestellungsposten(CustomModel):
     bestellung = models.ForeignKey("Bestellung", on_delete=models.CASCADE)
     produkt = models.ForeignKey("Produkt", on_delete=models.PROTECT)
     bemerkung = models.CharField("Bemerkung", default="", max_length=250,
@@ -209,7 +210,7 @@ class Bestellungsposten(models.Model):
         self.save()
 
 
-class Bestellung(models.Model):
+class Bestellung(CustomModel):
     woocommerceid = models.IntegerField('WooCommerce ID', default=0)
 
     datum = models.DateTimeField("Datum", default=timezone.now)
@@ -601,8 +602,10 @@ class Bestellung(models.Model):
 
     objects = models.Manager()
 
+    DICT_EXCLUDE_FIELDS = ['produkte', 'kosten', 'rechnungsemail', 'kunde']
 
-# class Gutschein(models.Model):
+
+# class Gutschein(CustomModel):
 #     woocommerceid = models.IntegerField('WooCommerce ID', default=0)
 #
 #     code = models.CharField("Gutscheincode", max_length=25)
@@ -655,7 +658,7 @@ class Bestellung(models.Model):
 #     objects = models.Manager()
 
 
-class Kategorie(models.Model):
+class Kategorie(CustomModel):
     woocommerceid = models.IntegerField('WooCommerce ID', default=0)
 
     name = models.CharField('Name', max_length=250, default="")
@@ -694,7 +697,7 @@ class Kategorie(models.Model):
     objects = models.Manager()
 
 
-class Kosten(models.Model):
+class Kosten(CustomModel):
     name = models.CharField("Name", max_length=500,
                             default="Zusätzliche Kosten")
     preis = models.FloatField("Preis (exkl. MwSt)", default=0.0)
@@ -719,7 +722,7 @@ class Kosten(models.Model):
     objects = models.Manager()
 
 
-class Kunde(models.Model):
+class Kunde(CustomModel):
     woocommerceid = models.IntegerField('WooCommerce ID', default=0)
 
     email = models.EmailField("E-Mail Adresse", blank=True)
@@ -904,8 +907,10 @@ class Kunde(models.Model):
 
     objects = models.Manager()
 
+    DICT_EXCLUDE_FIELDS = ['registrierungsemail', 'zusammenfuegen']
 
-class Lieferant(models.Model):
+
+class Lieferant(CustomModel):
     kuerzel = models.CharField("Kürzel", max_length=5)
     name = models.CharField('Name', max_length=50)
 
@@ -942,7 +947,7 @@ class Lieferant(models.Model):
     objects = models.Manager()
 
 
-class Lieferungsposten(models.Model):
+class Lieferungsposten(CustomModel):
     lieferung = models.ForeignKey("Lieferung", on_delete=models.CASCADE)
     produkt = models.ForeignKey("Produkt", on_delete=models.PROTECT)
     menge = models.IntegerField("Menge", default=1)
@@ -958,7 +963,7 @@ class Lieferungsposten(models.Model):
     objects = models.Manager()
 
 
-class Lieferung(models.Model):
+class Lieferung(CustomModel):
     name = models.CharField("Name", max_length=50,
                             default=defaultlieferungsname)
     datum = models.DateField("Erfasst am", auto_now_add=True)
@@ -1020,7 +1025,7 @@ class Lieferung(models.Model):
     objects = models.Manager()
 
 
-class Notiz(models.Model):
+class Notiz(CustomModel):
     name = models.CharField("Name", max_length=50)
     beschrieb = models.TextField("Beschrieb", default="", blank=True)
 
@@ -1069,7 +1074,7 @@ class Notiz(models.Model):
     objects = models.Manager()
 
 
-class Produktkategorie(models.Model):
+class Produktkategorie(CustomModel):
     produkt = models.ForeignKey("Produkt", on_delete=models.CASCADE)
     kategorie = models.ForeignKey("Kategorie", on_delete=models.CASCADE)
 
@@ -1084,7 +1089,7 @@ class Produktkategorie(models.Model):
     objects = models.Manager()
 
 
-class Produkt(models.Model):
+class Produkt(CustomModel):
     artikelnummer = models.CharField("Artikelnummer", max_length=25)
 
     woocommerceid = models.IntegerField('WooCommerce ID', default=0)
@@ -1215,7 +1220,7 @@ class Produkt(models.Model):
     objects = models.Manager()
 
 
-class Zahlungsempfaenger(models.Model):
+class Zahlungsempfaenger(CustomModel):
     qriban = models.CharField("QR-IBAN", max_length=21+5, validators=[RegexValidator(
         r'^(CH|LI)[0-9]{2}\s3[0-9]{3}\s[0-9]{4}\s[0-9]{4}\s[0-9]{4}\s[0-9]{1}$', 'Bite benutze folgendes Format: (CH|LI)pp 3xxx xxxx xxxx xxxx x')], help_text="QR-IBAN mit Leerzeichen")
     logourl = models.URLField("Logo (URL)", validators=[RegexValidator(r'''^[0-9a-zA-Z\-\.\|\?\(\)\*\+&"'_:;/]+\.(png|jpg)$''',
@@ -1285,7 +1290,7 @@ EINSTELLUNGSTYPEN = [
 ]
 
 
-class Einstellung(models.Model):
+class Einstellung(CustomModel):
     id = models.CharField("ID", max_length=50, primary_key=True)
     name = models.CharField("Name", max_length=200)
     typ = models.CharField("Typ", max_length=5,
@@ -1352,7 +1357,7 @@ class Einstellung(models.Model):
     objects = models.Manager()
 
 
-class Geheime_Einstellung(models.Model):
+class Geheime_Einstellung(CustomModel):
     id = models.CharField("ID", max_length=50, primary_key=True)
     typ = models.CharField("Typ", max_length=5,
                            default="char", choices=EINSTELLUNGSTYPEN)

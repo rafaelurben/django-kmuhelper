@@ -18,6 +18,8 @@ from django.utils.html import format_html
 from django.template import TemplateDoesNotExist, TemplateSyntaxError
 from django.template.loader import get_template
 
+from kmuhelper.overwrites import CustomModel
+
 
 def log(string, *args):
     print("[deep_pink4][KMUHelper E-Mails][/] -", string, *args)
@@ -45,7 +47,7 @@ class AttachmentManager(models.Manager):
         )
 
 
-class Attachment(models.Model):
+class Attachment(CustomModel):
     filename = models.CharField("Dateiname", max_length=50)
     file = models.FileField("Datei", upload_to=getfilepath,
                             storage=storage.default_storage)
@@ -90,7 +92,7 @@ class Attachment(models.Model):
         super().delete(*args, **kwargs)
 
 
-class EMailAttachment(models.Model):
+class EMailAttachment(CustomModel):
     attachment = models.ForeignKey(
         "Attachment", on_delete=models.PROTECT, related_name="emails")
     email = models.ForeignKey(
@@ -107,7 +109,7 @@ class EMailAttachment(models.Model):
     objects = models.Manager()
 
 
-class EMail(models.Model):
+class EMail(CustomModel):
     subject = models.CharField(
         "Betreff", max_length=50,
         help_text="Wird Standardmässig auch als Untertitel verwendet.")
@@ -296,7 +298,7 @@ class EMail(models.Model):
     objects = models.Manager()
 
 
-class EMailTemplate(models.Model):
+class EMailTemplate(CustomModel):
     title = models.CharField(
         "Titel", max_length=50)
     description = models.TextField(
