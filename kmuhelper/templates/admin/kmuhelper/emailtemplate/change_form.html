@@ -1,0 +1,62 @@
+{% extends 'admin/kmuhelper/change_form.html' %}
+
+{% block object-tools-items %}
+    {% if change %}
+        <li><a href="{% url 'admin:kmuhelper_emailtemplate_use' object_id %}">Vorlage benutzen</a></li>
+    {% endif %}
+    {{ block.super }}
+{% endblock %}
+
+{% block content %}
+
+    <p>Springe zur <a href="#platzhalter-info">Erklärung von Platzhaltern</a></p>
+
+    {{ block.super }}
+
+    <h2>Platzhalter</h2>
+
+    <h3 id="platzhalter-info">Wozu Platzhalter</h3>
+    <blockquote>
+        Mit Platzhaltern können ganz einfach bestimmte Werte 
+        einer Bestellung oder eines Kunden direkt in einer Vorlage verwendet werden. Um diese Werte zu verwenden kann auf der
+        entsprechenden Seite der Bestellung oder des Kunden auf "Zu E-Mail Vorlage" geklickt werden. Die Werte werden dann 
+        zwischengespeichert und bei der nächsten Verwendung einer Vorlage automatisch eingesetzt.
+    </blockquote>
+    <h3>Verwendung von Platzhaltern</h3>
+    <blockquote>
+        Um einen Platzhalter zu verwenden, kann '@VARIABLENNAME@' in diese Vorlage eingesetzt werden. 
+        Platzhalter können in allen Feldern der Kategorie 'Inhalt' verwendet werden.
+        Der Variablenname muss in GROSSBUCHSTABEN geschrieben werden.
+    </blockquote>
+    <h3>Beispiele von Platzhaltern</h3>
+    <blockquote>
+        <p>Folgendes Beispiel ist für eine Bestellung:</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Feld</th>
+                    <th>Inhalt</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Empfänger</td>
+                    <td>@RECHNUNGSADRESSE_EMAIL@</td>
+                </tr>
+                <tr>
+                    <td>Betreff</td>
+                    <td>Ihre Bestellung #@ID@ wurde versendet</td>
+                </tr>
+                <tr>
+                    <td>Text</td>
+                    <td>
+                        Guten Tag<br><br>
+                        Ihre Bestellung mit der ID @ID@ wurde versendet und sollte in den nächsten Tagen eintreffen.<br>
+                        Sie können die Bestellung unter folgendem Link verfolgen: https://www.post.ch/swisspost-tracking?formattedParcelCodes=@TRACKINGNUMMER@
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </blockquote>
+
+{% endblock %}

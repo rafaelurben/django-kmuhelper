@@ -30,6 +30,9 @@ home:
                 customers:
                     title: Kundenmanagement
                     url: /manual/customers
+                emails:
+                    title: E-Mails
+                    url: /manual/emails
                 order-and-invoice:
                     title: Bestellung & Rechnung
                     url: /manual/order-and-invoice

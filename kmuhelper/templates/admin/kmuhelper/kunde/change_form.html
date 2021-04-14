@@ -10,9 +10,16 @@
 
                 {% load kmuhelper_tags %}
                 {% kmuhelper_email_show_buttons as show_email_buttons %}
-                {% if show_email_buttons and original.email %}
-                    {% if not original.registrierungsemail or not original.registrierungsemail.time_sent %}
-                        <li><a href="{% url 'admin:kmuhelper_kunde_email_registriert' object_id %}">Registrierungsemail senden</a></li>
+                {% if show_email_buttons %}
+                    {% if perms.kmuhelper.view_emailtemplate and perms.kmuhelper.add_email %}
+                        <li><a href="{% url 'admin:kmuhelper_emailtemplate_savevars' %}?{{ original.to_query_string }}">Zu E-Mail Vorlage</a></li>
+                    {% endif %}
+                    {% if original.email %}
+                        {% if original.registrierungsemail and perms.kmuhelper.view_email %}
+                            <li><a href="{% url 'admin:kmuhelper_email_change' original.registrierungsemail.pk %}">E-Mail ansehen</a></li>
+                        {% elif perms.kmuhelper.add_email %}
+                            <li><a href="{% url 'admin:kmuhelper_kunde_email_registriert' object_id %}">Registrierungsemail senden</a></li>
+                        {% endif %}
                     {% endif %}
                 {% endif %}
 

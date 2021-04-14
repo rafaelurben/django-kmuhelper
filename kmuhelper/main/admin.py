@@ -5,6 +5,12 @@ from django.contrib import admin, messages
 from django.urls import path
 from django.utils.html import format_html, mark_safe
 
+from kmuhelper.constants import (
+    RECHNUNGSADRESSE_FIELDS_WITHOUT_CONTACT,
+    RECHNUNGSADRESSE_FIELDS, RECHNUNGSADRESSE_FIELDS_CATEGORIZED,
+    LIEFERADRESSE_FIELDS_WITHOUT_CONTACT,
+    LIEFERADRESSE_FIELDS, LIEFERADRESSE_FIELDS_CATEGORIZED,
+)
 from kmuhelper.integrations.woocommerce import WooCommerce
 from kmuhelper.main import views
 from kmuhelper.main.models import (
@@ -147,8 +153,8 @@ class BestellungsAdmin(CustomModelAdmin):
     list_display = ('id', 'datum', 'kunde', 'status', 'zahlungsmethode',
                     'versendet', 'bezahlt', 'fix_summe', 'html_notiz')
     list_filter = ('status', 'bezahlt', 'versendet', 'zahlungsmethode')
-    search_fields = ['id', 'datum', 'notiz__name', 'notiz__beschrieb', 'kundennotiz', 'trackingnummer', 'rechnungsadresse_vorname',
-                     'rechnungsadresse_nachname', 'rechnungsadresse_firma', 'rechnungsadresse_plz', 'rechnungsadresse_ort']
+    search_fields = ['id', 'datum', 'notiz__name', 'notiz__beschrieb', 'kundennotiz', 
+                     'trackingnummer'] + RECHNUNGSADRESSE_FIELDS + LIEFERADRESSE_FIELDS
 
     ordering = ("versendet", "bezahlt", "-datum")
 
@@ -174,40 +180,14 @@ class BestellungsAdmin(CustomModelAdmin):
                     'bezahlt', 'zahlungsmethode', 'summe', 'summe_mwst', 'summe_gesamt']}),
                 ('Kunde', {'fields': ['kunde']}),
                 ('Notizen & Texte', {
-                    'fields': ['kundennotiz', 'html_notiz'], 
+                    'fields': ['kundennotiz', 'html_notiz'],
                     'classes': ["collapse start-open"]}),
                 ('Rechnungsadresse', {
-                    'fields': [
-                        'rechnungsadresse_vorname', 'rechnungsadresse_nachname',
-                        'rechnungsadresse_firma',
-                        'rechnungsadresse_adresszeile1', 'rechnungsadresse_adresszeile2',
-                        'rechnungsadresse_plz', 'rechnungsadresse_ort',
-                        'rechnungsadresse_kanton', 'rechnungsadresse_land',
-                        'rechnungsadresse_email', 'rechnungsadresse_telefon'
-                    ] if obj.bezahlt else [
-                        ('rechnungsadresse_vorname', 'rechnungsadresse_nachname'),
-                        'rechnungsadresse_firma',
-                        ('rechnungsadresse_adresszeile1',
-                         'rechnungsadresse_adresszeile2'),
-                        ('rechnungsadresse_plz', 'rechnungsadresse_ort'),
-                        ('rechnungsadresse_kanton', 'rechnungsadresse_land'),
-                        ('rechnungsadresse_email', 'rechnungsadresse_telefon')
-                    ], 'classes': ["collapse default-open"]}),
+                    'fields': RECHNUNGSADRESSE_FIELDS if obj.bezahlt else RECHNUNGSADRESSE_FIELDS_CATEGORIZED, 
+                    'classes': ["collapse default-open"]}),
                 ('Lieferadresse', {
-                    'fields': [
-                        'lieferadresse_vorname', 'lieferadresse_nachname',
-                        'lieferadresse_firma',
-                        'lieferadresse_adresszeile1', 'lieferadresse_adresszeile2',
-                        'lieferadresse_plz', 'lieferadresse_ort',
-                        'lieferadresse_kanton', 'lieferadresse_land'
-                    ] if obj.versendet else [
-                        ('lieferadresse_vorname', 'lieferadresse_nachname'),
-                        'lieferadresse_firma',
-                        ('lieferadresse_adresszeile1',
-                         'lieferadresse_adresszeile2'),
-                        ('lieferadresse_plz', 'lieferadresse_ort'),
-                        ('lieferadresse_kanton', 'lieferadresse_land')
-                    ], 'classes': ["collapse start-open"]})
+                    'fields': LIEFERADRESSE_FIELDS if obj.versendet else LIEFERADRESSE_FIELDS_CATEGORIZED, 
+                    'classes': ["collapse start-open"]})
             ]
 
         return [
@@ -216,10 +196,10 @@ class BestellungsAdmin(CustomModelAdmin):
             ('Rechnungsoptionen', {'fields': [
                 'rechnungstitel', 'rechnungstext', 'rechnungsdatum', 'zahlungskonditionen']}),
             ('Lieferung', {
-                'fields': ['trackingnummer'], 
+                'fields': ['trackingnummer'],
                 'classes': ["collapse"]}),
             ('Bezahlung', {
-                'fields': ['zahlungsmethode'], 
+                'fields': ['zahlungsmethode'],
                 'classes': ["collapse start-open"]}),
             ('Kunde', {'fields': ['kunde']}),
             ('Notizen & Texte', {
@@ -228,18 +208,14 @@ class BestellungsAdmin(CustomModelAdmin):
         ]
 
     def get_readonly_fields(self, request, obj=None):
-        rechnungsadresse = ['rechnungsadresse_vorname', 'rechnungsadresse_nachname', 'rechnungsadresse_firma', 'rechnungsadresse_adresszeile1', 'rechnungsadresse_adresszeile2',
-                            'rechnungsadresse_plz', 'rechnungsadresse_ort', 'rechnungsadresse_kanton', 'rechnungsadresse_land', 'rechnungsadresse_email', 'rechnungsadresse_telefon']
-        lieferadresse = ['lieferadresse_vorname', 'lieferadresse_nachname', 'lieferadresse_firma', 'lieferadresse_adresszeile1',
-                         'lieferadresse_adresszeile2', 'lieferadresse_plz', 'lieferadresse_ort', 'lieferadresse_kanton', 'lieferadresse_land']
         fields = ['html_notiz', 'name', 'trackinglink',
                   'summe', 'summe_mwst', 'summe_gesamt']
         if obj:
             if obj.versendet:
-                fields += ['versendet', 'trackingnummer'] + lieferadresse
+                fields += ['versendet'] + LIEFERADRESSE_FIELDS_WITHOUT_CONTACT
             if obj.bezahlt:
-                fields += ['bezahlt', 'zahlungsmethode', 'rechnungsdatum',
-                           'rechnungstitel', 'rechnungstext', 'zahlungskonditionen'] + rechnungsadresse
+                fields += ['bezahlt', 'zahlungsmethode', 'rechnungsdatum', 'rechnungstitel',
+                           'rechnungstext', 'zahlungskonditionen'] + RECHNUNGSADRESSE_FIELDS_WITHOUT_CONTACT
             if obj.woocommerceid:
                 fields += ["kundennotiz"]
         return fields
@@ -322,8 +298,10 @@ class BestellungsAdmin(CustomModelAdmin):
         my_urls = [
             path('<path:object_id>/pdf', self.admin_site.admin_view(views.bestellung_pdf_ansehen),
                  name='%s_%s_pdf' % info),
-            path('<path:object_id>/pdf/email', self.admin_site.admin_view(views.bestellung_pdf_an_kunden_senden),
-                 name='%s_%s_pdf_email' % info),
+            path('<path:object_id>/email/rechnung', self.admin_site.admin_view(views.bestellung_email_rechnung),
+                 name='%s_%s_email_rechnung' % info),
+            path('<path:object_id>/email/lieferung', self.admin_site.admin_view(views.bestellung_email_lieferung),
+                 name='%s_%s_email_lieferung' % info),
             path('<path:object_id>/duplizieren', self.admin_site.admin_view(views.bestellung_duplizieren),
                  name='%s_%s_duplizieren' % info),
             path('<path:object_id>/zu-lieferung', self.admin_site.admin_view(views.bestellung_zu_lieferung),
@@ -385,6 +363,8 @@ class KostenAdmin(CustomModelAdmin):
 
     search_fields = ('name', 'preis')
 
+    ordering = ('preis', 'mwstsatz',)
+
     fieldsets = [
         (None, {"fields": ("name", "preis", "mwstsatz")})
     ]
@@ -420,21 +400,11 @@ class KundenAdmin(CustomModelAdmin):
         default = [
             ('Infos', {'fields': [
                 'vorname', 'nachname', 'firma', 'email', 'sprache']}),
-            ('Rechnungsadresse', {'fields': [
-                ('rechnungsadresse_vorname', 'rechnungsadresse_nachname'),
-                'rechnungsadresse_firma',
-                ('rechnungsadresse_adresszeile1', 'rechnungsadresse_adresszeile2'),
-                ('rechnungsadresse_plz', 'rechnungsadresse_ort'),
-                ('rechnungsadresse_kanton', 'rechnungsadresse_land'),
-                ('rechnungsadresse_email', 'rechnungsadresse_telefon')]}),
+            ('Rechnungsadresse', {
+                'fields': RECHNUNGSADRESSE_FIELDS_CATEGORIZED}),
             ('Lieferadresse', {
-                'fields': [
-                    ('lieferadresse_vorname', 'lieferadresse_nachname'),
-                    'lieferadresse_firma',
-                    ('lieferadresse_adresszeile1', 'lieferadresse_adresszeile2'),
-                    ('lieferadresse_plz', 'lieferadresse_ort'),
-                    ('lieferadresse_kanton', 'lieferadresse_land')
-                ], 'classes': ["collapse start-open"]}),
+                'fields': LIEFERADRESSE_FIELDS_CATEGORIZED, 
+                'classes': ["collapse start-open"]}),
         ]
 
         if obj:
@@ -457,12 +427,14 @@ class KundenAdmin(CustomModelAdmin):
 
     list_display = ('id', 'firma', 'nachname', 'vorname', 'rechnungsadresse_plz',
                     'rechnungsadresse_ort', 'email', 'avatar', 'html_notiz')
-    search_fields = ['id', 'nachname', 'vorname', 'firma', 'email', 'benutzername', 'rechnungsadresse_vorname', 'rechnungsadresse_nachname', 'rechnungsadresse_firma', 'rechnungsadresse_adresszeile1', 'rechnungsadresse_adresszeile2', 'rechnungsadresse_ort', 'rechnungsadresse_kanton', 'rechnungsadresse_plz', 'rechnungsadresse_land',
-                     'rechnungsadresse_email', 'rechnungsadresse_telefon', 'lieferadresse_vorname', 'lieferadresse_nachname', 'lieferadresse_firma', 'lieferadresse_adresszeile1', 'lieferadresse_adresszeile2', 'lieferadresse_ort', 'lieferadresse_kanton', 'lieferadresse_kanton', 'lieferadresse_plz', 'lieferadresse_land', 'webseite', 'notiz__name', 'notiz__beschrieb']
+    search_fields = ['id', 'nachname', 'vorname', 'firma', 'email', 'benutzername', 'webseite',
+                     'notiz__name', 'notiz__beschrieb'] + RECHNUNGSADRESSE_FIELDS + LIEFERADRESSE_FIELDS
 
     readonly_fields = ["html_notiz"]
 
     list_select_related = ["notiz"]
+    
+    autocomplete_fields = ["zusammenfuegen"]
 
     inlines = [KundenAdminBestellungsInline]
 
@@ -501,7 +473,7 @@ class LieferantenAdmin(CustomModelAdmin):
         ('Infos', {'fields': ['kuerzel', 'name']}),
         ('Firma', {'fields': ['webseite', 'telefon', 'email']}),
         ('Texte', {
-            'fields': ['adresse', 'notiz'], 
+            'fields': ['adresse', 'notiz'],
             'classes': ["collapse"]}),
         ('Ansprechpartner', {
             'fields': [
@@ -749,9 +721,9 @@ class ProduktAdmin(CustomModelAdmin):
     def get_fieldsets(self, request, obj=None):
         return [
             ('Infos', {'fields': ['artikelnummer', 'name']}),
-            ('Beschrieb', {'fields': [
-                    'kurzbeschrieb', 'beschrieb'
-                ], 'classes': ["collapse start-open"]}),
+            ('Beschrieb', {
+                'fields': ['kurzbeschrieb', 'beschrieb'], 
+                'classes': ["collapse start-open"]}),
             ('Daten', {'fields': [
                 'mengenbezeichnung', 'verkaufspreis', 'mwstsatz', 'lagerbestand', 'soll_lagerbestand']}),
             ('Lieferant', {
@@ -768,7 +740,7 @@ class ProduktAdmin(CustomModelAdmin):
                 ], 'classes': ["collapse"]}),
             ('Bemerkung / Notiz', {
                 'fields': [
-                    'bemerkung', 'html_notiz'] if obj else ['bemerkung'], 
+                    'bemerkung', 'html_notiz'] if obj else ['bemerkung'],
                 'classes': ["collapse start-open"]})
         ]
 

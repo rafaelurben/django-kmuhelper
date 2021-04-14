@@ -219,6 +219,8 @@ class WooCommerce():
             lieferadresse_kanton=customer["shipping"]["state"],
             lieferadresse_plz=customer["shipping"]["postcode"],
             lieferadresse_land=customer["shipping"]["country"],
+            lieferadresse_email="",
+            lieferadresse_telefon="",
         )
         log("Kunde erstellt:", str(newcustomer))
         return newcustomer
@@ -491,9 +493,11 @@ class WooCommerce():
                 kunde = self.customer_update(kunde[0], api=wcapi)
             else:
                 kunde = kunde[0]
-        else:
-            kunde = None
-        neworder.kunde = kunde
+
+            neworder.kunde = kunde
+            neworder.lieferadresse_email = kunde.lieferadresse_email
+            neworder.lieferadresse_telefon = kunde.lieferadresse_telefon
+
         for item in order["line_items"]:
             product = Produkt.objects.get_or_create(
                 woocommerceid=int(item["product_id"]))

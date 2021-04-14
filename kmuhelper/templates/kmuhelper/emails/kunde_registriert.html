@@ -1,11 +1,29 @@
 {% extends 'kmuhelper/emails/base.html' %}
 
-{% block title %}Willkommen Herr/Frau <strong>{{ kunde.vorname }} {{ kunde.nachname }}</strong>!{% endblock %}
+{% block subtitle %}Registrierung erfolgreich{% endblock %}
 
-{% block header %}{% endblock %}
+{% block maincontent %}
 
-{% block content %}
+    <p>Sehr geehrter Kunde</p>
+    <p>Sie wurden erfolgreich in unserer Datenbank mit folgenden Daten registriert:</p>
 
-    <p>Sie wurden erfolgreich in unserer Datenbank registriert!</p>
+    <ul>
+        <li>ID: {{ kunde.id }}</li>
+        <li>Vorname: {{ kunde.vorname }}</li>
+        <li>Nachname: {{ kunde.nachname }}</li>
+        <li>Firma: {{ kunde.firma }}</li>
+        <li>E-Mail: {{ kunde.email }}</li>
+    </ul>
+
+    <p>
+        Zusätzlich dazu werden von uns auch Rechnungsadresse, Lieferadresse sowie vergangene Bestellungen
+        auf unbestimmte Zeit gespeichert. 
+        <br>
+        Wir können leider keinen 100%igen Datenschutz garantieren, 
+        behandeln jedoch Ihre Daten selbstverständlich mit Sorgfalt.
+    </p>
+    <p>
+        Bei Fragen können Sie uns sehr gerne kontaktieren.
+    </p>
 
 {% endblock %}

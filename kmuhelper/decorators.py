@@ -5,6 +5,7 @@ from django.http import Http404
 from django.urls import reverse
 from django.shortcuts import redirect, render
 
+from kmuhelper.utils import render_error
 
 def confirm_action(action_message):
     """Decorator to show a confirm page where the user has to 
@@ -20,7 +21,7 @@ def confirm_action(action_message):
     return decorator
 
 
-def require_object(model, redirect_url=None, raise_404=False):
+def require_object(model, redirect_url=None, raise_404=False, show_errorpage=False):
     """Decorator to only call the view if an object with the given id exists
     and automatically pass it instead of the id."""
 
@@ -36,6 +37,9 @@ def require_object(model, redirect_url=None, raise_404=False):
 
             if raise_404:
                 raise Http404
+
+            if show_errorpage:
+                return render_error(request)
 
             return redirect(redirect_url or reverse(f"admin:{model._meta.app_label}_{model._meta.model_name}_changelist"))
         return wrap

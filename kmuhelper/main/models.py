@@ -13,7 +13,8 @@ from django.utils import timezone
 from django.utils.html import mark_safe, format_html
 from django.urls import reverse
 
-from kmuhelper.emails.models import EMail, EMailAttachment
+from kmuhelper.emails.models import EMail, Attachment
+from kmuhelper.overwrites import CustomModel
 from kmuhelper.pdf_generators import PDFOrder
 from kmuhelper.utils import runden, clean, formatprice, modulo10rekursiv, send_pdf
 
@@ -92,7 +93,7 @@ ORDER_FREQUENCY_TYPES = [
 #############
 
 
-class Ansprechpartner(models.Model):
+class Ansprechpartner(CustomModel):
     name = models.CharField('Name', max_length=50,
                             help_text="Auf Rechnung ersichtlich!")
     telefon = models.CharField(
@@ -101,7 +102,7 @@ class Ansprechpartner(models.Model):
 
     @admin.display(description="Ansprechpartner")
     def __str__(self):
-        return self.name
+        return f"{self.name} ({self.pk})"
 
     class Meta:
         verbose_name = "Ansprechpartner"
@@ -110,7 +111,7 @@ class Ansprechpartner(models.Model):
     objects = models.Manager()
 
 
-class Bestellungskosten(models.Model):
+class Bestellungskosten(CustomModel):
     bestellung = models.ForeignKey("Bestellung", on_delete=models.CASCADE)
     kosten = models.ForeignKey("Kosten", on_delete=models.PROTECT)
     bemerkung = models.CharField("Bemerkung", default="", max_length=250,
@@ -161,7 +162,7 @@ class Bestellungskosten(models.Model):
         self.save()
 
 
-class Bestellungsposten(models.Model):
+class Bestellungsposten(CustomModel):
     bestellung = models.ForeignKey("Bestellung", on_delete=models.CASCADE)
     produkt = models.ForeignKey("Produkt", on_delete=models.PROTECT)
     bemerkung = models.CharField("Bemerkung", default="", max_length=250,
@@ -209,7 +210,7 @@ class Bestellungsposten(models.Model):
         self.save()
 
 
-class Bestellung(models.Model):
+class Bestellung(CustomModel):
     woocommerceid = models.IntegerField('WooCommerce ID', default=0)
 
     datum = models.DateTimeField("Datum", default=timezone.now)
@@ -291,6 +292,9 @@ class Bestellung(models.Model):
         "Postleitzahl", max_length=50, default="", blank=True)
     lieferadresse_land = models.CharField(
         "Land", max_length=2, default="CH", choices=LÄNDER)
+    lieferadresse_email = models.EmailField("E-Mail Adresse", blank=True)
+    lieferadresse_telefon = models.CharField(
+        "Telefon", max_length=50, default="", blank=True)
 
     produkte = models.ManyToManyField(
         "Produkt", through="Bestellungsposten", through_fields=("bestellung", "produkt"))
@@ -298,8 +302,12 @@ class Bestellung(models.Model):
     kosten = models.ManyToManyField(
         "Kosten", through="Bestellungskosten", through_fields=("bestellung", "kosten"))
 
-    rechnungsemail = models.ForeignKey(
-        "EMail", on_delete=models.SET_NULL, blank=True, null=True)
+    email_rechnung = models.ForeignKey(
+        "EMail", on_delete=models.SET_NULL, blank=True, null=True,
+        related_name="+")
+    email_lieferung = models.ForeignKey(
+        "EMail", on_delete=models.SET_NULL, blank=True, null=True,
+        related_name="+")
 
     fix_summe = models.FloatField("Summe in CHF", default=0.0)
 
@@ -337,6 +345,8 @@ class Bestellung(models.Model):
             self.lieferadresse_kanton = self.kunde.lieferadresse_kanton
             self.lieferadresse_plz = self.kunde.lieferadresse_plz
             self.lieferadresse_land = self.kunde.lieferadresse_land
+            self.lieferadresse_email = self.kunde.lieferadresse_email
+            self.lieferadresse_telefon = self.kunde.lieferadresse_telefon
 
         if self.rechnungsdatum is None:
             self.rechnungsdatum = timezone.now()
@@ -420,7 +430,7 @@ class Bestellung(models.Model):
     def get_pdf(self, lieferschein: bool = False, digital: bool = True):
         return PDFOrder(self, lieferschein=lieferschein, digital=digital).get_response(as_attachment=False, filename=('Lieferschein' if lieferschein else 'Rechnung')+' zu Bestellung '+str(self)+'.pdf')
 
-    def send_pdf_rechnung_to_customer(self):
+    def create_email_rechnung(self):
         context = {
             "trackinglink": str(self.trackinglink()),
             "trackingdata": bool(self.trackinglink() and self.versendet),
@@ -429,36 +439,58 @@ class Bestellung(models.Model):
             "woocommercedata": bool(self.woocommerceid),
         }
 
-        if self.rechnungsemail is None:
-            self.rechnungsemail = EMail.objects.create(
-                typ="bestellung_rechnung",
-                subject=f"Ihre Rechnung Nr. { self.id }"+(
-                    " (Online #"+str(self.woocommerceid) + ")" if self.woocommerceid else ""),
-                to=self.rechnungsadresse_email,
-                html_template="bestellung_rechnung.html",
-                html_context=context,
-            )
-        else:
-            self.rechnungsemail.to = self.rechnungsadresse_email
-            self.rechnungsemail.html_context = context
-
-        success = self.rechnungsemail.send(
-            headers={
-                "Rechnungs-ID": str(self.id)
-            },
-            attachments=[
-                EMailAttachment(
-                    filename=f"Rechnung Nr. { self.id }"+(
-                        " (Online #"+str(self.woocommerceid)+")" if self.woocommerceid else "")+".pdf",
-                    content=PDFOrder(self, lieferschein=False,
-                                     digital=True).get_pdf(),
-                    url=self.get_public_pdf_url(),
-                )
-            ],
-            bcc=[self.zahlungsempfaenger.email],
+        self.email_rechnung = EMail.objects.create(
+            subject=f"Ihre Rechnung Nr. { self.id }"+(
+                " (Online #"+str(self.woocommerceid) + ")" if self.woocommerceid else ""),
+            to=self.rechnungsadresse_email,
+            html_template="bestellung_rechnung.html",
+            html_context=context,
+            notes=f"Diese E-Mail wurde automatisch aus Bestellung #{self.pk} generiert.",
         )
+
+        filename = f"Rechnung Nr. { self.id }"+(
+            " (Online #"+str(self.woocommerceid)+")" if self.woocommerceid else "")+".pdf"
+
+        self.email_rechnung.add_attachments(
+            Attachment.objects.create_from_binary(
+                filename=filename,
+                content=PDFOrder(self, lieferschein=False,
+                                 digital=True).get_pdf()
+            )
+        )
+
         self.save()
-        return success
+        return self.email_rechnung
+    
+    def create_email_lieferung(self):
+        context = {
+            "trackinglink": str(self.trackinglink()),
+            "trackingdata": bool(self.trackinglink() and self.versendet),
+            "id": str(self.id),
+            "woocommerceid": str(self.woocommerceid),
+            "woocommercedata": bool(self.woocommerceid),
+        }
+
+        self.email_lieferung = EMail.objects.create(
+            subject=f"Ihre Lieferung Nr. { self.id }",
+            to=self.lieferadresse_email,
+            html_template="bestellung_lieferung.html",
+            html_context=context,
+            notes=f"Diese E-Mail wurde automatisch aus Bestellung #{self.pk} generiert.",
+        )
+
+        filename = f"Lieferschein Nr. { self.id }.pdf"
+
+        self.email_lieferung.add_attachments(
+            Attachment.objects.create_from_binary(
+                filename=filename,
+                content=PDFOrder(self, lieferschein=True,
+                                 digital=True).get_pdf()
+            )
+        )
+
+        self.save()
+        return self.email_lieferung
 
     @admin.display(description="ToDo Notiz")
     def html_todo_notiz(self):
@@ -525,13 +557,13 @@ class Bestellung(models.Model):
 
             if warnings != []:
                 email = EMail.objects.create(
-                    typ="bestellung_stock_warning",
                     subject="[KMUHelper] - Lagerbestand knapp!",
                     to=email_receiver,
                     html_template="bestellung_stock_warning.html",
                     html_context={
                         "warnings": warnings,
                     },
+                    notes=f"Diese E-Mail wurde automatisch aus Bestellung #{self.pk} generiert.",
                 )
 
                 success = email.send(
@@ -604,8 +636,12 @@ class Bestellung(models.Model):
 
     objects = models.Manager()
 
+    DICT_EXCLUDE_FIELDS = ['produkte', 'kosten', 'email_rechnung', 'email_lieferung', 'kunde',
+                           'ansprechpartner', 'zahlungsempfaenger', 'ausgelagert',
+                           'versendet', 'bezahlt', 'zahlungsmethode', 'order_key']
 
-# class Gutschein(models.Model):
+
+# class Gutschein(CustomModel):
 #     woocommerceid = models.IntegerField('WooCommerce ID', default=0)
 #
 #     code = models.CharField("Gutscheincode", max_length=25)
@@ -658,7 +694,7 @@ class Bestellung(models.Model):
 #     objects = models.Manager()
 
 
-class Kategorie(models.Model):
+class Kategorie(CustomModel):
     woocommerceid = models.IntegerField('WooCommerce ID', default=0)
 
     name = models.CharField('Name', max_length=250, default="")
@@ -697,7 +733,7 @@ class Kategorie(models.Model):
     objects = models.Manager()
 
 
-class Kosten(models.Model):
+class Kosten(CustomModel):
     name = models.CharField("Name", max_length=500,
                             default="Zusätzliche Kosten")
     preis = models.FloatField("Preis (exkl. MwSt)", default=0.0)
@@ -722,7 +758,7 @@ class Kosten(models.Model):
     objects = models.Manager()
 
 
-class Kunde(models.Model):
+class Kunde(CustomModel):
     woocommerceid = models.IntegerField('WooCommerce ID', default=0)
 
     email = models.EmailField("E-Mail Adresse", blank=True)
@@ -777,6 +813,9 @@ class Kunde(models.Model):
         "Postleitzahl", max_length=50, default="", blank=True)
     lieferadresse_land = models.CharField(
         "Land", max_length=2, default="CH", choices=LÄNDER)
+    lieferadresse_email = models.EmailField("E-Mail Adresse", blank=True)
+    lieferadresse_telefon = models.CharField(
+        "Telefon", max_length=50, default="", blank=True)
 
     zusammenfuegen = models.ForeignKey("self", on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Zusammenfügen mit",
                                        help_text="Dies kann nicht widerrufen werden! Werte im aktuellen Kunden werden bevorzugt.")
@@ -840,6 +879,8 @@ class Kunde(models.Model):
             self.lieferadresse_kanton = self.lieferadresse_kanton or self.zusammenfuegen.lieferadresse_kanton
             self.lieferadresse_plz = self.lieferadresse_plz or self.zusammenfuegen.lieferadresse_plz
             self.lieferadresse_land = self.lieferadresse_land or self.zusammenfuegen.lieferadresse_land
+            self.lieferadresse_email = self.lieferadresse_email or self.zusammenfuegen.lieferadresse_email
+            self.lieferadresse_telefon = self.lieferadresse_telefon or self.zusammenfuegen.lieferadresse_telefon
 
             self.webseite = self.webseite or self.zusammenfuegen.webseite
             self.bemerkung = self.bemerkung+"\n"+self.zusammenfuegen.bemerkung
@@ -860,22 +901,21 @@ class Kunde(models.Model):
     def send_register_mail(self):
         context = {
             "kunde": {
+                "id": self.pk,
                 "vorname": self.vorname,
                 "nachname": self.nachname,
+                "firma": self.firma,
+                "email": self.email,
             }
         }
 
-        if self.registrierungsemail is None:
-            self.registrierungsemail = EMail.objects.create(
-                typ="kunde_registriert",
-                subject="Registrierung erfolgreich!",
-                to=self.email,
-                html_template="kunde_registriert.html",
-                html_context=context,
-            )
-        else:
-            self.registrierungsemail.to = self.email
-            self.registrierungsemail.html_context = context
+        self.registrierungsemail = EMail.objects.create(
+            subject="Registrierung erfolgreich!",
+            to=self.email,
+            html_template="kunde_registriert.html",
+            html_context=context,
+            notes=f"Diese E-Mail wurde automatisch aus Kunde #{self.pk} generiert.",
+        )
 
         success = self.registrierungsemail.send(
             headers={"Kunden-ID": str(self.pk)})
@@ -908,8 +948,10 @@ class Kunde(models.Model):
 
     objects = models.Manager()
 
+    DICT_EXCLUDE_FIELDS = ['registrierungsemail', 'zusammenfuegen']
 
-class Lieferant(models.Model):
+
+class Lieferant(CustomModel):
     kuerzel = models.CharField("Kürzel", max_length=5)
     name = models.CharField('Name', max_length=50)
 
@@ -946,7 +988,7 @@ class Lieferant(models.Model):
     objects = models.Manager()
 
 
-class Lieferungsposten(models.Model):
+class Lieferungsposten(CustomModel):
     lieferung = models.ForeignKey("Lieferung", on_delete=models.CASCADE)
     produkt = models.ForeignKey("Produkt", on_delete=models.PROTECT)
     menge = models.IntegerField("Menge", default=1)
@@ -962,7 +1004,7 @@ class Lieferungsposten(models.Model):
     objects = models.Manager()
 
 
-class Lieferung(models.Model):
+class Lieferung(CustomModel):
     name = models.CharField("Name", max_length=50,
                             default=defaultlieferungsname)
     datum = models.DateField("Erfasst am", auto_now_add=True)
@@ -1024,7 +1066,7 @@ class Lieferung(models.Model):
     objects = models.Manager()
 
 
-class Notiz(models.Model):
+class Notiz(CustomModel):
     name = models.CharField("Name", max_length=50)
     beschrieb = models.TextField("Beschrieb", default="", blank=True)
 
@@ -1049,16 +1091,20 @@ class Notiz(models.Model):
     def links(self):
         text = ""
         if self.bestellung:
-            url = reverse("admin:kmuhelper_bestellung_change", kwargs={"object_id": self.bestellung.pk})
+            url = reverse("admin:kmuhelper_bestellung_change",
+                          kwargs={"object_id": self.bestellung.pk})
             text += f"Bestellung <a href='{url}'>#{self.bestellung.pk}</a><br>"
         if self.produkt:
-            url = reverse("admin:kmuhelper_produkt_change", kwargs={"object_id": self.produkt.pk})
+            url = reverse("admin:kmuhelper_produkt_change",
+                          kwargs={"object_id": self.produkt.pk})
             text += f"Produkt <a href='{url}'>#{self.produkt.pk}</a><br>"
         if self.kunde:
-            url = reverse("admin:kmuhelper_kunde_change", kwargs={"object_id": self.kunde.pk})
+            url = reverse("admin:kmuhelper_kunde_change",
+                          kwargs={"object_id": self.kunde.pk})
             text += f"Kunde <a href='{url}'>#{self.kunde.pk}</a><br>"
         if self.lieferung:
-            url = reverse("admin:kmuhelper_lieferung_change", kwargs={"object_id": self.lieferung.pk})
+            url = reverse("admin:kmuhelper_lieferung_change",
+                          kwargs={"object_id": self.lieferung.pk})
             text += f"Lieferung <a href='{url}'>#{self.lieferung.pk}</a><br>"
         return mark_safe(text) or "Diese Notiz hat keine Verknüpfungen."
 
@@ -1069,7 +1115,7 @@ class Notiz(models.Model):
     objects = models.Manager()
 
 
-class Produktkategorie(models.Model):
+class Produktkategorie(CustomModel):
     produkt = models.ForeignKey("Produkt", on_delete=models.CASCADE)
     kategorie = models.ForeignKey("Kategorie", on_delete=models.CASCADE)
 
@@ -1084,7 +1130,7 @@ class Produktkategorie(models.Model):
     objects = models.Manager()
 
 
-class Produkt(models.Model):
+class Produkt(CustomModel):
     artikelnummer = models.CharField("Artikelnummer", max_length=25)
 
     woocommerceid = models.IntegerField('WooCommerce ID', default=0)
@@ -1215,7 +1261,7 @@ class Produkt(models.Model):
     objects = models.Manager()
 
 
-class Zahlungsempfaenger(models.Model):
+class Zahlungsempfaenger(CustomModel):
     qriban = models.CharField("QR-IBAN", max_length=21+5, validators=[RegexValidator(
         r'^(CH|LI)[0-9]{2}\s3[0-9]{3}\s[0-9]{4}\s[0-9]{4}\s[0-9]{4}\s[0-9]{1}$', 'Bite benutze folgendes Format: (CH|LI)pp 3xxx xxxx xxxx xxxx x')], help_text="QR-IBAN mit Leerzeichen")
     logourl = models.URLField("Logo (URL)", validators=[RegexValidator(r'''^[0-9a-zA-Z\-\.\|\?\(\)\*\+&"'_:;/]+\.(png|jpg)$''',
@@ -1285,7 +1331,7 @@ EINSTELLUNGSTYPEN = [
 ]
 
 
-class Einstellung(models.Model):
+class Einstellung(CustomModel):
     id = models.CharField("ID", max_length=50, primary_key=True)
     name = models.CharField("Name", max_length=200)
     typ = models.CharField("Typ", max_length=5,
@@ -1345,7 +1391,6 @@ class Einstellung(models.Model):
         elif self.typ == "email":
             self.email = var
 
-
     class Meta:
         verbose_name = "Einstellung"
         verbose_name_plural = "Einstellungen"
@@ -1353,7 +1398,7 @@ class Einstellung(models.Model):
     objects = models.Manager()
 
 
-class Geheime_Einstellung(models.Model):
+class Geheime_Einstellung(CustomModel):
     id = models.CharField("ID", max_length=50, primary_key=True)
     typ = models.CharField("Typ", max_length=5,
                            default="char", choices=EINSTELLUNGSTYPEN)

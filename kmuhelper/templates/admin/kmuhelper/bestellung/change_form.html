@@ -15,9 +15,23 @@
 
         {% load kmuhelper_tags %}
         {% kmuhelper_email_show_buttons as show_email_buttons %}
-        {% if show_email_buttons and original.versendet and original.rechnungsadresse_email %}
-            {% if not original.rechnungsemail or not original.rechnungsemail.time_sent %}
-                <li><a href="{% url 'admin:kmuhelper_bestellung_pdf_email' object_id %}">Rechnung an Kunden senden</a></li>
+        {% if show_email_buttons %}
+            {% if perms.kmuhelper.view_emailtemplate and perms.kmuhelper.add_email %}
+                <li><a href="{% url 'admin:kmuhelper_emailtemplate_savevars' %}?{{ original.to_query_string }}">Zu E-Mail Vorlage</a></li>
+            {% endif %}
+            {% if original.rechnungsadresse_email %}
+                {% if original.email_rechnung and perms.kmuhelper.view_email %}
+                    <li><a href="{% url 'admin:kmuhelper_email_change' original.email_rechnung.pk %}">Rechnungsemail ansehen</a></li>
+                {% elif perms.kmuhelper.add_email %}
+                    <li><a href="{% url 'admin:kmuhelper_bestellung_email_rechnung' object_id %}">Rechnungsemail erstellen</a></li>
+                {% endif %}
+            {% endif %}
+            {% if original.lieferadresse_email and original.versendet %}
+                {% if original.email_lieferung and perms.kmuhelper.view_email %}
+                    <li><a href="{% url 'admin:kmuhelper_email_change' original.email_lieferung.pk %}">Lieferungsemail ansehen</a></li>
+                {% elif perms.kmuhelper.add_email %}
+                    <li><a href="{% url 'admin:kmuhelper_bestellung_email_lieferung' object_id %}">Lieferungsemail erstellen</a></li>
+                {% endif %}
             {% endif %}
         {% endif %}
         
@@ -38,6 +52,8 @@
                     document.getElementById("id_lieferadresse_kanton").value = document.getElementById("id_rechnungsadresse_kanton").value;
                     document.getElementById("id_lieferadresse_plz").value = document.getElementById("id_rechnungsadresse_plz").value;
                     document.getElementById("id_lieferadresse_land").value = document.getElementById("id_rechnungsadresse_land").value;
+                    document.getElementById("id_lieferadresse_email").value = document.getElementById("id_rechnungsadresse_email").value;
+                    document.getElementById("id_lieferadresse_telefon").value = document.getElementById("id_rechnungsadresse_telefon").value;
                 }
             </script>
         {% endif %}

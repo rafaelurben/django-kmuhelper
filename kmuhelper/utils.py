@@ -6,11 +6,15 @@ from io import BytesIO
 from packaging.version import Version, InvalidVersion, parse as parse_version
 
 from django.core import mail
+from django.shortcuts import render
 from django.template.loader import get_template
-
 
 ################
 
+def render_error(request):
+    return render(request, "kmuhelper/error.html")
+
+################
 
 def python_version():
     return str(sys.version.split(" ")[0])
