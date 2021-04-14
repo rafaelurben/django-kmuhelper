@@ -4,7 +4,11 @@
 
     <p>Sehr geehrter Kunde</p>
     <p>
-        Im Anhang finden Sie Ihre Rechnung zur Bestellung Nr. {{ id }}{% if woocommercedata %} (Online #{{ woocommerceid }}){% endif %}
+        Vielen Dank für Ihre Bestellung mit der Bestellnummer {{ id }}{% if woocommercedata %} (Online #{{ woocommerceid }}){% endif %}!
+        <br>
+        Ihre Bestellung ist per Post auf dem Weg zu Ihnen.
+        <br>
+        Im Anhang finden Sie den Lieferschein zur entsprechenden Bestellung. 
     </p>
 
     {% if trackingdata %}
