@@ -66,16 +66,21 @@ def bestellung_pdf_ansehen(request, obj):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.add_email")
+@permission_required(["kmuhelper.add_email", "kmuhelper.view_bestellung"])
 @require_object(Bestellung)
-@confirm_action("Rechnung an Kunden per E-Mail senden")
-def bestellung_pdf_an_kunden_senden(request, obj):
-    if obj.send_pdf_rechnung_to_customer():
-        messages.success(request, "Rechnung an Kunden gesendet!")
-    else:
-        messages.error(
-            request, "Rechnung konnte nicht an Kunden gesendet werden!")
-    return redirect(reverse("admin:kmuhelper_bestellung_change", args=[obj.pk]))
+def bestellung_email_rechnung(request, obj):
+    mail = obj.create_email_rechnung()
+    messages.success(request, "E-Mail wurde generiert!")
+    return redirect(reverse("admin:kmuhelper_email_change", args=[mail.pk]))
+
+
+@login_required(login_url=reverse_lazy("admin:login"))
+@permission_required(["kmuhelper.add_email", "kmuhelper.view_bestellung"])
+@require_object(Bestellung)
+def bestellung_email_lieferung(request, obj):
+    mail = obj.create_email_lieferung()
+    messages.success(request, "E-Mail wurde generiert!")
+    return redirect(reverse("admin:kmuhelper_email_change", args=[mail.pk]))
 
 
 @login_required(login_url=reverse_lazy("admin:login"))

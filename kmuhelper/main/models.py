@@ -102,7 +102,7 @@ class Ansprechpartner(CustomModel):
 
     @admin.display(description="Ansprechpartner")
     def __str__(self):
-        return str(self.name)
+        return f"{self.name} ({self.pk})"
 
     class Meta:
         verbose_name = "Ansprechpartner"
@@ -292,6 +292,9 @@ class Bestellung(CustomModel):
         "Postleitzahl", max_length=50, default="", blank=True)
     lieferadresse_land = models.CharField(
         "Land", max_length=2, default="CH", choices=LÄNDER)
+    lieferadresse_email = models.EmailField("E-Mail Adresse", blank=True)
+    lieferadresse_telefon = models.CharField(
+        "Telefon", max_length=50, default="", blank=True)
 
     produkte = models.ManyToManyField(
         "Produkt", through="Bestellungsposten", through_fields=("bestellung", "produkt"))
@@ -299,8 +302,12 @@ class Bestellung(CustomModel):
     kosten = models.ManyToManyField(
         "Kosten", through="Bestellungskosten", through_fields=("bestellung", "kosten"))
 
-    rechnungsemail = models.ForeignKey(
-        "EMail", on_delete=models.SET_NULL, blank=True, null=True)
+    email_rechnung = models.ForeignKey(
+        "EMail", on_delete=models.SET_NULL, blank=True, null=True,
+        related_name="+")
+    email_lieferung = models.ForeignKey(
+        "EMail", on_delete=models.SET_NULL, blank=True, null=True,
+        related_name="+")
 
     fix_summe = models.FloatField("Summe in CHF", default=0.0)
 
@@ -338,6 +345,8 @@ class Bestellung(CustomModel):
             self.lieferadresse_kanton = self.kunde.lieferadresse_kanton
             self.lieferadresse_plz = self.kunde.lieferadresse_plz
             self.lieferadresse_land = self.kunde.lieferadresse_land
+            self.lieferadresse_email = self.kunde.lieferadresse_email
+            self.lieferadresse_telefon = self.kunde.lieferadresse_telefon
 
         if self.rechnungsdatum is None:
             self.rechnungsdatum = timezone.now()
@@ -421,7 +430,7 @@ class Bestellung(CustomModel):
     def get_pdf(self, lieferschein: bool = False, digital: bool = True):
         return PDFOrder(self, lieferschein=lieferschein, digital=digital).get_response(as_attachment=False, filename=('Lieferschein' if lieferschein else 'Rechnung')+' zu Bestellung '+str(self)+'.pdf')
 
-    def send_pdf_rechnung_to_customer(self):
+    def create_email_rechnung(self):
         context = {
             "trackinglink": str(self.trackinglink()),
             "trackingdata": bool(self.trackinglink() and self.versendet),
@@ -430,7 +439,7 @@ class Bestellung(CustomModel):
             "woocommercedata": bool(self.woocommerceid),
         }
 
-        self.rechnungsemail = EMail.objects.create(
+        self.email_rechnung = EMail.objects.create(
             subject=f"Ihre Rechnung Nr. { self.id }"+(
                 " (Online #"+str(self.woocommerceid) + ")" if self.woocommerceid else ""),
             to=self.rechnungsadresse_email,
@@ -442,7 +451,7 @@ class Bestellung(CustomModel):
         filename = f"Rechnung Nr. { self.id }"+(
             " (Online #"+str(self.woocommerceid)+")" if self.woocommerceid else "")+".pdf"
 
-        self.rechnungsemail.add_attachments(
+        self.email_rechnung.add_attachments(
             Attachment.objects.create_from_binary(
                 filename=filename,
                 content=PDFOrder(self, lieferschein=False,
@@ -450,13 +459,38 @@ class Bestellung(CustomModel):
             )
         )
 
-        success = self.rechnungsemail.send(
-            headers={
-                "Rechnungs-ID": str(self.id)
-            },
-        )
         self.save()
-        return success
+        return self.email_rechnung
+    
+    def create_email_lieferung(self):
+        context = {
+            "trackinglink": str(self.trackinglink()),
+            "trackingdata": bool(self.trackinglink() and self.versendet),
+            "id": str(self.id),
+            "woocommerceid": str(self.woocommerceid),
+            "woocommercedata": bool(self.woocommerceid),
+        }
+
+        self.email_lieferung = EMail.objects.create(
+            subject=f"Ihre Lieferung Nr. { self.id }",
+            to=self.lieferadresse_email,
+            html_template="bestellung_lieferung.html",
+            html_context=context,
+            notes=f"Diese E-Mail wurde automatisch aus Bestellung #{self.pk} generiert.",
+        )
+
+        filename = f"Lieferschein Nr. { self.id }.pdf"
+
+        self.email_lieferung.add_attachments(
+            Attachment.objects.create_from_binary(
+                filename=filename,
+                content=PDFOrder(self, lieferschein=True,
+                                 digital=True).get_pdf()
+            )
+        )
+
+        self.save()
+        return self.email_lieferung
 
     @admin.display(description="ToDo Notiz")
     def html_todo_notiz(self):
@@ -602,7 +636,7 @@ class Bestellung(CustomModel):
 
     objects = models.Manager()
 
-    DICT_EXCLUDE_FIELDS = ['produkte', 'kosten', 'rechnungsemail', 'kunde',
+    DICT_EXCLUDE_FIELDS = ['produkte', 'kosten', 'email_rechnung', 'email_lieferung', 'kunde',
                            'ansprechpartner', 'zahlungsempfaenger', 'ausgelagert',
                            'versendet', 'bezahlt', 'zahlungsmethode', 'order_key']
 
@@ -779,6 +813,9 @@ class Kunde(CustomModel):
         "Postleitzahl", max_length=50, default="", blank=True)
     lieferadresse_land = models.CharField(
         "Land", max_length=2, default="CH", choices=LÄNDER)
+    lieferadresse_email = models.EmailField("E-Mail Adresse", blank=True)
+    lieferadresse_telefon = models.CharField(
+        "Telefon", max_length=50, default="", blank=True)
 
     zusammenfuegen = models.ForeignKey("self", on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Zusammenfügen mit",
                                        help_text="Dies kann nicht widerrufen werden! Werte im aktuellen Kunden werden bevorzugt.")
@@ -842,6 +879,8 @@ class Kunde(CustomModel):
             self.lieferadresse_kanton = self.lieferadresse_kanton or self.zusammenfuegen.lieferadresse_kanton
             self.lieferadresse_plz = self.lieferadresse_plz or self.zusammenfuegen.lieferadresse_plz
             self.lieferadresse_land = self.lieferadresse_land or self.zusammenfuegen.lieferadresse_land
+            self.lieferadresse_email = self.lieferadresse_email or self.zusammenfuegen.lieferadresse_email
+            self.lieferadresse_telefon = self.lieferadresse_telefon or self.zusammenfuegen.lieferadresse_telefon
 
             self.webseite = self.webseite or self.zusammenfuegen.webseite
             self.bemerkung = self.bemerkung+"\n"+self.zusammenfuegen.bemerkung
