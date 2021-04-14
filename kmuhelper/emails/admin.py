@@ -146,8 +146,10 @@ class EMailTemplateAdmin(CustomModelAdmin):
     fieldsets = [
         ('Infos', {
             'fields': ['title', 'description']}),
-        ('E-Mail', {
-            'fields': [('mail_subject', 'mail_text'), ('mail_template', 'mail_context')]})
+        ('Inhalt', {
+            'fields': ['mail_to', 'mail_subject', 'mail_text']}),
+        ('Optionen', {
+            'fields': ['mail_template', 'mail_context']}),
     ]
 
 
@@ -165,6 +167,10 @@ class EMailTemplateAdmin(CustomModelAdmin):
         urls = super().get_urls()
 
         my_urls = [
+            path('savevars', self.admin_site.admin_view(views.emailtemplate_savevars),
+                 name="%s_%s_savevars" % info),
+            path('resetvars', self.admin_site.admin_view(views.emailtemplate_resetvars),
+                 name="%s_%s_resetvars" % info),
             path('<path:object_id>/use', self.admin_site.admin_view(views.emailtemplate_use),
                  name='%s_%s_use' % info),
         ]

@@ -64,7 +64,8 @@ def email_view(request, obj):
         if obj.is_valid():
             return HttpResponse(obj.render(online=True))
 
-        messages.warning(request, "Diese E-Mail kann zurzeit leider nicht angezeigt werden.")
+        messages.warning(
+            request, "Diese E-Mail kann zurzeit leider nicht angezeigt werden.")
     else:
         messages.error(request, "Du hast keinen Zugriff auf diese E-Mail!")
 
@@ -104,7 +105,43 @@ def attachment_view(request, obj):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
+@permission_required(["kmuhelper.view_emailtemplate"])
+def emailtemplate_savevars(request):
+    """Save variables into session for usage in template"""
+
+    data = request.GET.dict()
+    request.session["emailtemplate-vars"] = data
+
+    messages.success(
+        request, f"Folgende Daten wurden gespeichert, um die nächste Vorlage auszufüllen: {data}")
+    return redirect(reverse("admin:kmuhelper_emailtemplate_changelist"))
+
+
+@login_required(login_url=reverse_lazy("admin:login"))
+@permission_required(["kmuhelper.view_emailtemplate"])
+def emailtemplate_resetvars(request):
+    """Reset saved session variables for email templates"""
+
+    if "emailtemplate-vars" in request.session:
+        del request.session["emailtemplate-vars"]
+
+    messages.success(
+        request, "Gespeicherte Daten wurden gelöscht!")
+    return redirect(reverse("admin:kmuhelper_emailtemplate_changelist"))
+
+
+@login_required(login_url=reverse_lazy("admin:login"))
 @permission_required(["kmuhelper.view_emailtemplate", "kmuhelper.add_email"])
 @require_object(EMailTemplate)
 def emailtemplate_use(request, obj):
-    return HttpResponse("soon")
+    """Use a template"""
+
+    savedvars = request.session.pop("emailtemplate-vars", dict())
+    requestvars = request.GET.dict()
+    data = {**savedvars, **requestvars}
+
+    mail = obj.create_mail(data)
+
+    messages.success(
+        request, f"Vorlage wurde mit folgenden Daten ausgefüllt: {data}")
+    return redirect(reverse("admin:kmuhelper_email_change", args=[mail.pk]))

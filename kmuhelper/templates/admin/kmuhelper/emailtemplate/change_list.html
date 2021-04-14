@@ -6,5 +6,12 @@
             <a href="{% url 'admin:kmuhelper_email_changelist' %}">Zu E-Mails wechseln</a>
         </li>
     {% endif %}
+    {% if perms.kmuhelper.add_email %}
+        {% if "emailtemplate-vars" in request.session %}
+            <li>
+                <a href="{% url 'admin:kmuhelper_emailtemplate_resetvars' %}">Gespeicherte Variablen löschen</a>
+            </li>
+        {% endif %}
+    {% endif %}
     {{ block.super }}
 {% endblock %}

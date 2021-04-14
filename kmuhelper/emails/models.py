@@ -304,6 +304,8 @@ class EMailTemplate(CustomModel):
     description = models.TextField(
         "Beschreibung", default="", blank=True)
 
+    mail_to = models.CharField(
+        "Empfänger", max_length=50, default="", blank=True)
     mail_subject = models.CharField(
         "Betreff", max_length=50)
     mail_text = models.TextField(
@@ -322,6 +324,26 @@ class EMailTemplate(CustomModel):
         link = reverse("admin:kmuhelper_emailtemplate_use", args=[self.pk])
         text = "Vorlage benutzen"
         return format_html('<a href="{}">{}</a>', link, text)
+
+    def create_mail(self, variables=dict()):
+        """Use this template and replace variables"""
+
+        def parse_vars(text):
+            for var in variables:
+                vartext = f'@{ var.upper() }@'
+                varcontent = variables[var]
+                text = text.replace(vartext, varcontent)
+            return text
+
+        email = EMail.objects.create(
+            to=parse_vars(self.mail_to),
+            subject=parse_vars(self.mail_subject),
+            text=parse_vars(self.mail_text),
+            html_template=self.mail_template,
+            html_context=self.mail_context,
+        )
+
+        return email
 
     class Meta:
         verbose_name = "E-Mail Vorlage"
