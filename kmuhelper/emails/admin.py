@@ -17,6 +17,8 @@ class AttachmentAdmin(CustomModelAdmin):
 
     ordering = ['-time_created']
 
+    save_on_top = True
+
     def get_readonly_fields(self, request, obj=None):
         if obj:
             return ['time_created', 'file', 'autocreated']
@@ -104,6 +106,8 @@ class EMailAdmin(CustomModelAdmin):
 
     inlines = (EMailAdminAttachmentInline, )
 
+    save_on_top = True
+
     # Permissions
 
     def has_module_permission(self, request):
@@ -152,6 +156,7 @@ class EMailTemplateAdmin(CustomModelAdmin):
             'fields': ['mail_template', 'mail_context']}),
     ]
 
+    save_on_top = True
 
     # Permissions
 

@@ -602,7 +602,9 @@ class Bestellung(CustomModel):
 
     objects = models.Manager()
 
-    DICT_EXCLUDE_FIELDS = ['produkte', 'kosten', 'rechnungsemail', 'kunde']
+    DICT_EXCLUDE_FIELDS = ['produkte', 'kosten', 'rechnungsemail', 'kunde',
+                           'ansprechpartner', 'zahlungsempfaenger', 'ausgelagert',
+                           'versendet', 'bezahlt', 'zahlungsmethode', 'order_key']
 
 
 # class Gutschein(CustomModel):
