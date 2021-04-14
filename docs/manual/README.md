@@ -24,6 +24,7 @@ Die Entwicklung und Unterhaltung des KMUHelper benötigt sehr viel Zeit, deshalb
 - [Lagermanagement](storage.md)
 - [Kundenmanagement](customers.md)
 - [Bestellungen & Rechnungen](order-and-invoice.md)
+- [E-Mails](emails.md)
 
 - [Sprachen](languages.md)
 
