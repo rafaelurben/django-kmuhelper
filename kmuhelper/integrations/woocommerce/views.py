@@ -15,6 +15,7 @@ from kmuhelper.decorators import require_object
 from kmuhelper.main.models import Einstellung, Geheime_Einstellung, Produkt, Kunde, Kategorie, Bestellung
 from kmuhelper.integrations.woocommerce.api import WooCommerce
 from kmuhelper.integrations.woocommerce.utils import is_connected
+from kmuhelper.utils import render_error
 
 
 def log(string, *args):
@@ -27,29 +28,32 @@ def log(string, *args):
 def wc_auth_key(request):
     """Endpoint for receiving the keys from WooCommerce"""
 
-    data = json.loads(request.body)
-    storeurl = request.headers.get("user-agent").split(";")[1].lstrip()
+    try:
+        data = json.loads(request.body)
+        storeurl = request.headers.get("user-agent").split(";")[1].lstrip()
 
-    savedurl = Einstellung.objects.get(id="wc-url")
-    if savedurl.inhalt.lstrip("https://").lstrip("http://").split("/")[0] == storeurl.lstrip("https://").lstrip("http://").split("/")[0]:
-        url = Geheime_Einstellung.objects.get(id="wc-url")
-        url.inhalt = storeurl
-        url.save()
+        savedurl = Einstellung.objects.get(id="wc-url")
+        if savedurl.inhalt.lstrip("https://").lstrip("http://").split("/")[0] == storeurl.lstrip("https://").lstrip("http://").split("/")[0]:
+            url = Geheime_Einstellung.objects.get(id="wc-url")
+            url.inhalt = storeurl
+            url.save()
 
-        key = Geheime_Einstellung.objects.get(id="wc-consumer_key")
-        key.inhalt = data["consumer_key"]
-        key.save()
+            key = Geheime_Einstellung.objects.get(id="wc-consumer_key")
+            key.inhalt = data["consumer_key"]
+            key.save()
 
-        secret = Geheime_Einstellung.objects.get(id="wc-consumer_secret")
-        secret.inhalt = data["consumer_secret"]
-        secret.save()
+            secret = Geheime_Einstellung.objects.get(id="wc-consumer_secret")
+            secret.inhalt = data["consumer_secret"]
+            secret.save()
 
-        savedurl.inhalt = "Bestätigt: " + storeurl + \
-            " (Änderungen an diesem Eintrag werden nur nach erneutem Verbinden angewendet!)"
-        savedurl.save()
-        return JsonResponse({"success": True}, status_code=200)
+            savedurl.inhalt = "Bestätigt: " + storeurl + \
+                " (Änderungen an diesem Eintrag werden nur nach erneutem Verbinden angewendet!)"
+            savedurl.save()
+            return JsonResponse({"success": True}, status=200)
 
-    return JsonResponse({"success": False}, status_code=403)
+        return JsonResponse({"success": False, "reason": "Unknown URL!"}, status=401)
+    except KeyError:
+        return JsonResponse({"success": False, "reason": "Useless data!"}, status=400)
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
@@ -194,8 +198,15 @@ def wc_update_order(request, obj):
 
 @csrf_exempt
 def wc_webhooks(request):
-    if not "x-wc-webhook-topic" in request.headers and "x-wc-webhook-source" in request.headers:
-        return JsonResponse({"accepted": False, "reason": "Doesn't have required headers"}, status_code=403)
+    if request.method != "POST":
+        messages.warning(request, "Dieser Endpunkt ist für Bots reserviert!")
+        return render_error(request, status=405)
+
+    if not ("x-wc-webhook-topic" in request.headers and "x-wc-webhook-source" in request.headers):
+        return JsonResponse({
+            "accepted": True,
+            "info": "Request was accepted but ignored because it doesn't contain any usable info!"
+        }, status=202)
 
     erwartete_url = Geheime_Einstellung.objects.get(
         id="wc-url").inhalt.lstrip("https://").lstrip("http://").split("/")[0]
@@ -203,9 +214,12 @@ def wc_webhooks(request):
         "https://").lstrip("http://").split("/")[0]
 
     if not erhaltene_url == erwartete_url:
-        log("[orange_red1]WooCommerce Webhook von einer falschen Webseite ignoriert![/] - Erwartet:",
-            erwartete_url, "- Erhalten:", erhaltene_url)
-        return JsonResponse({"accepted": False, "reason": "Does not match stored domain"})
+        log("[orange_red1]WooCommerce Webhook von einer falschen Webseite ignoriert![/] " +
+            "- Erwartet:", erwartete_url, "- Erhalten:", erhaltene_url)
+        return JsonResponse({
+            "accepted": False,
+            "reason": "Unknown domain!",
+        }, status=403)
 
     log("WooCommerce Webhook erhalten...")
 
