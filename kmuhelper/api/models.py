@@ -8,13 +8,32 @@ from kmuhelper.overwrites import CustomModel
 
 
 class ApiKey(CustomModel):
-    key = models.UUIDField("Key", default=uuid.uuid4, unique=True)
-    name = models.CharField("Name", max_length=100, blank=True, default="")
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,
-                             on_delete=models.CASCADE)
+    """Model representing an api key"""
 
-    read = models.BooleanField("Read permission?", default=True)
-    write = models.BooleanField("Write permission?", default=False)
+    key = models.UUIDField(
+        verbose_name="Key",
+        default=uuid.uuid4,
+        unique=True,
+    )
+    name = models.CharField(
+        verbose_name="Name",
+        max_length=100,
+        default="",
+        blank=True,
+    )
+    user = models.ForeignKey(
+        to=settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+    )
+
+    read = models.BooleanField(
+        verbose_name="Read permission?",
+        default=True,
+    )
+    write = models.BooleanField(
+        verbose_name="Write permission?",
+        default=False,
+    )
 
     objects = models.Manager()
 

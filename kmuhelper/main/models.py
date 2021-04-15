@@ -60,10 +60,10 @@ MWSTSÄTZE = [
 ]
 
 ZAHLUNGSMETHODEN = [
-    ("bacs",    "Überweisung"),
-    ("cheque",  "Scheck"),
-    ("cod",     "Rechnung / Nachnahme"),
-    ("paypal",  "PayPal")
+    ("bacs", "Überweisung"),
+    ("cheque", "Scheck"),
+    ("cod", "Rechnung / Nachnahme"),
+    ("paypal", "PayPal")
 ]
 
 LÄNDER = [
@@ -78,27 +78,38 @@ SPRACHEN = [
     ("en", "Englisch [EN]")
 ]
 
-GUTSCHEINTYPEN = [
-    ("percent",         "Prozent"),
-    ("fixed_cart",      "Fixer Betrag auf den Warenkorb"),
-    ("fixed_product",   "Fixer Betrag auf ein Produkt")
-]
+# GUTSCHEINTYPEN = [
+#     ("percent", "Prozent"),
+#     ("fixed_cart", "Fixer Betrag auf den Warenkorb"),
+#     ("fixed_product", "Fixer Betrag auf ein Produkt")
+# ]
 
-ORDER_FREQUENCY_TYPES = [
-    ("weekly",      "Wöchentlich"),
-    ("monthly",     "Monatlich"),
-    ("yearly",      "Jährlich"),
-]
+# ORDER_FREQUENCY_TYPES = [
+#     ("weekly", "Wöchentlich"),
+#     ("monthly", "Monatlich"),
+#     ("yearly", "Jährlich"),
+# ]
 
 #############
 
 
 class Ansprechpartner(CustomModel):
-    name = models.CharField('Name', max_length=50,
-                            help_text="Auf Rechnung ersichtlich!")
+    """Model representing a contact person"""
+
+    name = models.CharField(
+        verbose_name="Name",
+        max_length=50,
+        help_text="Auf Rechnung ersichtlich!",
+    )
     telefon = models.CharField(
-        'Telefon', max_length=50, help_text="Auf Rechnung ersichtlich!")
-    email = models.EmailField('E-Mail', help_text="Auf Rechnung ersichtlich!")
+        verbose_name="Telefon",
+        max_length=50,
+        help_text="Auf Rechnung ersichtlich!",
+    )
+    email = models.EmailField(
+        verbose_name="E-Mail",
+        help_text="Auf Rechnung ersichtlich!",
+    )
 
     @admin.display(description="Ansprechpartner")
     def __str__(self):
@@ -112,15 +123,37 @@ class Ansprechpartner(CustomModel):
 
 
 class Bestellungskosten(CustomModel):
-    bestellung = models.ForeignKey("Bestellung", on_delete=models.CASCADE)
-    kosten = models.ForeignKey("Kosten", on_delete=models.PROTECT)
-    bemerkung = models.CharField("Bemerkung", default="", max_length=250,
-                                 blank=True, help_text="Wird auf die Rechnung gedruckt.")
+    """Model representing the connection between 'Bestellung' and 'Kosten'"""
 
-    rabatt = models.IntegerField("Rabatt in %", default=0, validators=[
-                                 MinValueValidator(0), MaxValueValidator(100)])
+    bestellung = models.ForeignKey(
+        to='Bestellung',
+        on_delete=models.CASCADE,
+    )
+    kosten = models.ForeignKey(
+        to='Kosten',
+        on_delete=models.PROTECT,
+    )
+    bemerkung = models.CharField(
+        verbose_name="Bemerkung",
+        default="",
+        max_length=250,
+        blank=True,
+        help_text="Wird auf die Rechnung gedruckt.",
+    )
 
-    kostenpreis = models.FloatField("Preis (exkl. MwSt)", default=0.0)
+    rabatt = models.IntegerField(
+        verbose_name="Rabatt in %",
+        default=0,
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(100),
+        ],
+    )
+
+    kostenpreis = models.FloatField(
+        verbose_name="Preis (exkl. MwSt)",
+        default=0.0,
+    )
 
     @admin.display(description="Zwischensumme (exkl. MwSt)")
     def zwischensumme(self):
@@ -163,16 +196,41 @@ class Bestellungskosten(CustomModel):
 
 
 class Bestellungsposten(CustomModel):
-    bestellung = models.ForeignKey("Bestellung", on_delete=models.CASCADE)
-    produkt = models.ForeignKey("Produkt", on_delete=models.PROTECT)
-    bemerkung = models.CharField("Bemerkung", default="", max_length=250,
-                                 blank=True, help_text="Wird auf die Rechnung gedruckt.")
+    """Model representing the connection between 'Bestellung' and 'Produkt'"""
 
-    menge = models.IntegerField("Menge", default=1)
-    rabatt = models.IntegerField("Rabatt in %", default=0, validators=[
-                                 MinValueValidator(0), MaxValueValidator(100)])
+    bestellung = models.ForeignKey(
+        to='Bestellung',
+        on_delete=models.CASCADE,
+    )
+    produkt = models.ForeignKey(
+        to='Produkt',
+        on_delete=models.PROTECT,
+    )
+    bemerkung = models.CharField(
+        verbose_name="Bemerkung",
+        default="",
+        max_length=250,
+        blank=True,
+        help_text="Wird auf die Rechnung gedruckt.",
+    )
 
-    produktpreis = models.FloatField("Produktpreis (exkl. MwSt)", default=0.0)
+    menge = models.IntegerField(
+        verbose_name="Menge",
+        default=1,
+    )
+    rabatt = models.IntegerField(
+        verbose_name="Rabatt in %",
+        default=0,
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(100),
+        ],
+    )
+
+    produktpreis = models.FloatField(
+        verbose_name="Produktpreis (exkl. MwSt)",
+        default=0.0,
+    )
 
     @admin.display(description="Zwischensumme (exkl. MwSt)")
     def zwischensumme(self):
@@ -211,105 +269,296 @@ class Bestellungsposten(CustomModel):
 
 
 class Bestellung(CustomModel):
-    woocommerceid = models.IntegerField('WooCommerce ID', default=0)
+    """Model representing an order"""
 
-    datum = models.DateTimeField("Datum", default=timezone.now)
-
-    rechnungsdatum = models.DateField(
-        "Rechnungsdatum", default=None, blank=True, null=True, help_text="Datum der Rechnung. Wird auch als Startpunkt für die Zahlungskonditionen verwendet.")
-    rechnungstitel = models.CharField(
-        "Rechnungstitel", default="", blank=True, max_length=32, help_text="Titel der Rechnung. Leer lassen für 'RECHNUNG'")
-    rechnungstext = models.TextField(
-        "Rechnungstext", default="", blank=True, help_text=mark_safe("Wird auf der Rechnung gedruckt! Unterstützt <abbr title='<b>Fett</b><u>Unterstrichen</u><i>Kursiv</i>'>XML markup</abbr>."))
-    zahlungskonditionen = models.CharField(
-        "Zahlungskonditionen", default="0:30", validators=[RegexValidator("^[0-9]+:[0-9]+(;[0-9]+:[0-9]+)*$")], max_length=16, help_text="Skonto und Zahlfrist nach Syntaxdefinition von Swico. z.B. '2:15;0:30'"
+    woocommerceid = models.IntegerField(
+        verbose_name="WooCommerce ID",
+        default=0,
     )
 
-    status = models.CharField("Status", max_length=11,
-                              default="pending", choices=STATUS)
-    versendet = models.BooleanField(
-        "Versendet", default=False, help_text="Sobald eine Bestellung als versendet markiert wurde, können Teile der Bestellung nicht mehr bearbeitet werden! Ausserdem werden die Produkte aus dem Lagerbestand entfernt.")
-    trackingnummer = models.CharField("Trackingnummer", default="", blank=True, max_length=25, validators=[RegexValidator(
-        r'^99\.[0-9]{2}\.[0-9]{6}\.[0-9]{8}$', 'Bite benutze folgendes Format: 99.xx.xxxxxx.xxxxxxxx')], help_text="Bitte gib hier eine Trackingnummer der Schweizer Post ein. (optional)")
+    datum = models.DateTimeField(
+        verbose_name="Datum",
+        default=timezone.now,
+    )
 
-    ausgelagert = models.BooleanField("Ausgelagert", default=False)
+    rechnungsdatum = models.DateField(
+        verbose_name="Rechnungsdatum",
+        default=None,
+        blank=True,
+        null=True,
+        help_text="Datum der Rechnung. Wird auch als Startpunkt für die Zahlungskonditionen verwendet.",
+    )
+    rechnungstitel = models.CharField(
+        verbose_name="Rechnungstitel",
+        default="",
+        blank=True,
+        max_length=32,
+        help_text="Titel der Rechnung. Leer lassen für 'RECHNUNG'",
+    )
+    rechnungstext = models.TextField(
+        verbose_name="Rechnungstext",
+        default="",
+        blank=True,
+        help_text=mark_safe(
+            "Wird auf der Rechnung gedruckt! Unterstützt " +
+            "<abbr title='<b>Fett</b><u>Unterstrichen</u><i>Kursiv</i>'>XML markup</abbr>."
+        ),
+    )
+    zahlungskonditionen = models.CharField(
+        verbose_name="Zahlungskonditionen",
+        default="0:30",
+        validators=[
+            RegexValidator(
+                "^[0-9]+:[0-9]+(;[0-9]+:[0-9]+)*$",
+                "Bitte benutze folgendes Format: 'p:d;p:d' - p = Skonto in %; d = Tage",
+            )
+        ],
+        max_length=16,
+        help_text="Skonto und Zahlfrist nach Syntaxdefinition von Swico. z.B. '2:15;0:30'",
+    )
+
+    status = models.CharField(
+        verbose_name="Status",
+        max_length=11,
+        default='pending',
+        choices=STATUS,
+    )
+    versendet = models.BooleanField(
+        verbose_name="Versendet",
+        default=False,
+        help_text="Sobald eine Bestellung als versendet markiert wurde, können Teile " +
+                  "der Bestellung nicht mehr bearbeitet werden! " +
+                  "Ausserdem werden die Produkte aus dem Lagerbestand entfernt.",
+    )
+    trackingnummer = models.CharField(
+        verbose_name="Trackingnummer",
+        default="",
+        blank=True,
+        max_length=25,
+        validators=[
+            RegexValidator(
+                r'^99\.[0-9]{2}\.[0-9]{6}\.[0-9]{8}$',
+                'Bite benutze folgendes Format: 99.xx.xxxxxx.xxxxxxxx',
+            )
+        ],
+        help_text="Bitte gib hier eine Trackingnummer der Schweizer Post ein. (optional)",
+    )
+
+    ausgelagert = models.BooleanField(
+        verbose_name="Ausgelagert",
+        default=False,
+    )
 
     zahlungsmethode = models.CharField(
-        "Zahlungsmethode", max_length=7, default="cod", choices=ZAHLUNGSMETHODEN)
+        verbose_name="Zahlungsmethode",
+        max_length=7,
+        default="cod",
+        choices=ZAHLUNGSMETHODEN,
+    )
     bezahlt = models.BooleanField(
-        "Bezahlt", default=False, help_text="Sobald eine Bestellung als bezahlt markiert wurde, können Teile der Bestellung nicht mehr bearbeitet werden!")
+        verbose_name="Bezahlt",
+        default=False,
+        help_text="Sobald eine Bestellung als bezahlt markiert wurde, können Teile " +
+                  "der Bestellung nicht mehr bearbeitet werden!",
+    )
 
     kundennotiz = models.TextField(
-        "Kundennotiz", default="", blank=True, help_text="Vom Kunden erfasste Notiz.")
+        verbose_name="Kundennotiz",
+        default="",
+        blank=True,
+        help_text="Vom Kunden erfasste Notiz.",
+    )
 
     order_key = models.CharField(
-        "Bestellungs-Schlüssel", max_length=50, default=defaultorderkey, blank=True)
+        verbose_name="Bestellungs-Schlüssel",
+        max_length=50,
+        blank=True,
+        default=defaultorderkey,
+    )
 
     kunde = models.ForeignKey(
-        "Kunde", on_delete=models.SET_NULL, null=True, blank=True)
+        to='Kunde',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
     zahlungsempfaenger = models.ForeignKey(
-        "Zahlungsempfaenger", on_delete=models.PROTECT, verbose_name="Zahlungsempfänger", default=defaultzahlungsempfaenger)
+        to='Zahlungsempfaenger',
+        on_delete=models.PROTECT,
+        verbose_name="Zahlungsempfänger",
+        default=defaultzahlungsempfaenger,
+    )
     ansprechpartner = models.ForeignKey(
-        "Ansprechpartner", on_delete=models.PROTECT, verbose_name="Ansprechpartner", default=defaultansprechpartner)
+        to='Ansprechpartner',
+        verbose_name="Ansprechpartner",
+        on_delete=models.PROTECT,
+        default=defaultansprechpartner,
+    )
 
     rechnungsadresse_vorname = models.CharField(
-        "Vorname", max_length=50, default="", blank=True)
+        verbose_name="Vorname",
+        max_length=50,
+        default="",
+        blank=True,
+    )
     rechnungsadresse_nachname = models.CharField(
-        "Nachname", max_length=50, default="", blank=True)
+        verbose_name="Nachname",
+        max_length=50,
+        default="",
+        blank=True,
+    )
     rechnungsadresse_firma = models.CharField(
-        "Firma", max_length=50, default="", blank=True)
-    rechnungsadresse_adresszeile1 = models.CharField("Adresszeile 1", max_length=50, default="", blank=True,
-                                                     help_text='Strasse und Hausnummer oder "Postfach" ohne Nummer - Wird bei QR-Rechnung als Strasse und Hausnummer bzw. Postfach verwendet!')
+        verbose_name="Firma",
+        max_length=50,
+        default="",
+        blank=True,
+    )
+    rechnungsadresse_adresszeile1 = models.CharField(
+        verbose_name="Adresszeile 1",
+        max_length=50,
+        default="",
+        blank=True,
+        help_text="Strasse und Hausnummer oder 'Postfach' ohne Nummer - " +
+                  "Wird bei QR-Rechnung als Strasse und Hausnummer bzw. Postfach verwendet!",
+    )
     rechnungsadresse_adresszeile2 = models.CharField(
-        "Adresszeile 2", max_length=50, default="", blank=True, help_text="Wird in QR-Rechnung NICHT verwendet!")
+        verbose_name="Adresszeile 2",
+        max_length=50,
+        default="",
+        blank=True,
+        help_text="Wird in QR-Rechnung NICHT verwendet!",
+    )
     rechnungsadresse_ort = models.CharField(
-        "Ort", max_length=50, default="", blank=True)
+        verbose_name="Ort",
+        max_length=50,
+        default="",
+        blank=True,
+    )
     rechnungsadresse_kanton = models.CharField(
-        "Kanton", max_length=50, default="", blank=True)
+        verbose_name="Kanton",
+        max_length=50,
+        default="",
+        blank=True,
+    )
     rechnungsadresse_plz = models.CharField(
-        "Postleitzahl", max_length=50, default="", blank=True)
+        verbose_name="Postleitzahl",
+        max_length=50,
+        default="",
+        blank=True,
+    )
     rechnungsadresse_land = models.CharField(
-        "Land", max_length=2, default="CH", choices=LÄNDER)
-    rechnungsadresse_email = models.EmailField("E-Mail Adresse", blank=True)
+        verbose_name="Land",
+        max_length=2,
+        default="CH",
+        choices=LÄNDER,
+    )
+    rechnungsadresse_email = models.EmailField(
+        verbose_name="E-Mail Adresse",
+        blank=True,
+    )
     rechnungsadresse_telefon = models.CharField(
-        "Telefon", max_length=50, default="", blank=True)
+        verbose_name="Telefon",
+        max_length=50,
+        default="",
+        blank=True,
+    )
 
     lieferadresse_vorname = models.CharField(
-        "Vorname", max_length=50, default="", blank=True)
+        verbose_name="Vorname",
+        max_length=50,
+        default="",
+        blank=True,
+    )
     lieferadresse_nachname = models.CharField(
-        "Nachname", max_length=50, default="", blank=True)
+        verbose_name="Nachname",
+        max_length=50,
+        default="",
+        blank=True,
+    )
     lieferadresse_firma = models.CharField(
-        "Firma", max_length=50, default="", blank=True)
+        verbose_name="Firma",
+        max_length=50,
+        default="",
+        blank=True,
+    )
     lieferadresse_adresszeile1 = models.CharField(
-        "Adresszeile 1", max_length=50, default="", blank=True)
+        verbose_name="Adresszeile 1",
+        max_length=50,
+        default="",
+        blank=True,
+    )
     lieferadresse_adresszeile2 = models.CharField(
-        "Adresszeile 2", max_length=50, default="", blank=True)
+        verbose_name="Adresszeile 2",
+        max_length=50,
+        default="",
+        blank=True,
+    )
     lieferadresse_ort = models.CharField(
-        "Ort", max_length=50, default="", blank=True)
+        verbose_name="Ort",
+        max_length=50,
+        default="",
+        blank=True,
+    )
     lieferadresse_kanton = models.CharField(
-        "Kanton", max_length=50, default="", blank=True)
+        verbose_name="Kanton",
+        max_length=50,
+        default="",
+        blank=True,
+    )
     lieferadresse_plz = models.CharField(
-        "Postleitzahl", max_length=50, default="", blank=True)
+        verbose_name="Postleitzahl",
+        max_length=50,
+        default="",
+        blank=True,
+    )
     lieferadresse_land = models.CharField(
-        "Land", max_length=2, default="CH", choices=LÄNDER)
-    lieferadresse_email = models.EmailField("E-Mail Adresse", blank=True)
+        verbose_name="Land",
+        max_length=2,
+        default="CH",
+        choices=LÄNDER,
+    )
+    lieferadresse_email = models.EmailField(
+        verbose_name="E-Mail Adresse",
+        blank=True,
+    )
     lieferadresse_telefon = models.CharField(
-        "Telefon", max_length=50, default="", blank=True)
+        verbose_name="Telefon",
+        max_length=50,
+        default="",
+        blank=True,
+    )
 
     produkte = models.ManyToManyField(
-        "Produkt", through="Bestellungsposten", through_fields=("bestellung", "produkt"))
+        to='Produkt',
+        through='Bestellungsposten',
+        through_fields=('bestellung', 'produkt'),
+    )
 
     kosten = models.ManyToManyField(
-        "Kosten", through="Bestellungskosten", through_fields=("bestellung", "kosten"))
+        to='Kosten',
+        through='Bestellungskosten',
+        through_fields=('bestellung', 'kosten'),
+    )
 
     email_rechnung = models.ForeignKey(
-        "EMail", on_delete=models.SET_NULL, blank=True, null=True,
-        related_name="+")
+        to='EMail',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name='+',
+    )
     email_lieferung = models.ForeignKey(
-        "EMail", on_delete=models.SET_NULL, blank=True, null=True,
-        related_name="+")
+        to='EMail',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name='+',
+    )
 
-    fix_summe = models.FloatField("Summe in CHF", default=0.0)
+    fix_summe = models.FloatField(
+        verbose_name="Summe in CHF",
+        default=0.0,
+    )
 
     # # Wiederkehrende Rechnungen
 
@@ -461,7 +710,7 @@ class Bestellung(CustomModel):
 
         self.save()
         return self.email_rechnung
-    
+
     def create_email_lieferung(self):
         context = {
             "trackinglink": str(self.trackinglink()),
@@ -672,14 +921,35 @@ class Bestellung(CustomModel):
 
 
 class Kategorie(CustomModel):
-    woocommerceid = models.IntegerField('WooCommerce ID', default=0)
+    """Model representing a category for products"""
 
-    name = models.CharField('Name', max_length=250, default="")
-    beschrieb = models.TextField('Beschrieb', default="", blank=True)
-    bildlink = models.URLField('Bildlink', blank=True)
+    woocommerceid = models.IntegerField(
+        verbose_name="WooCommerce ID",
+        default=0,
+    )
+
+    name = models.CharField(
+        verbose_name="Name",
+        max_length=250,
+        default="",
+    )
+    beschrieb = models.TextField(
+        verbose_name="Beschrieb",
+        default="",
+        blank=True,
+    )
+    bildlink = models.URLField(
+        verbose_name="Bildlink",
+        blank=True,
+    )
 
     uebergeordnete_kategorie = models.ForeignKey(
-        "self", on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Übergeordnete Kategorie")
+        to='self',
+        verbose_name="Übergeordnete Kategorie",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
 
     @admin.display(description="Bild", ordering="bildlink")
     def bild(self):
@@ -711,10 +981,22 @@ class Kategorie(CustomModel):
 
 
 class Kosten(CustomModel):
-    name = models.CharField("Name", max_length=500,
-                            default="Zusätzliche Kosten")
-    preis = models.FloatField("Preis (exkl. MwSt)", default=0.0)
-    mwstsatz = models.FloatField('MwSt-Satz', choices=MWSTSÄTZE, default=7.7)
+    """Model representing additional costs"""
+
+    name = models.CharField(
+        verbose_name="Name",
+        max_length=500,
+        default="Zusätzliche Kosten",
+    )
+    preis = models.FloatField(
+        verbose_name="Preis (exkl. MwSt)",
+        default=0.0,
+    )
+    mwstsatz = models.FloatField(
+        verbose_name="MwSt-Satz",
+        choices=MWSTSÄTZE,
+        default=7.7,
+    )
 
     @property
     def mengenbezeichnung(self):
@@ -736,71 +1018,207 @@ class Kosten(CustomModel):
 
 
 class Kunde(CustomModel):
-    woocommerceid = models.IntegerField('WooCommerce ID', default=0)
+    """Model representing a customer"""
 
-    email = models.EmailField("E-Mail Adresse", blank=True)
+    woocommerceid = models.IntegerField(
+        verbose_name="WooCommerce ID",
+        default=0,
+    )
+
+    email = models.EmailField(
+        verbose_name="E-Mail Adresse",
+        blank=True,
+    )
     vorname = models.CharField(
-        "Vorname", max_length=50, default="", blank=True)
+        verbose_name="Vorname",
+        max_length=50,
+        default="",
+        blank=True,
+    )
     nachname = models.CharField(
-        "Nachname", max_length=50, default="", blank=True)
-    firma = models.CharField("Firma", max_length=50, default="", blank=True)
+        verbose_name="Nachname",
+        max_length=50,
+        default="",
+        blank=True,
+    )
+    firma = models.CharField(
+        verbose_name="Firma",
+        max_length=50,
+        default="",
+        blank=True,
+    )
     benutzername = models.CharField(
-        "Benutzername", max_length=50, default="", blank=True)
-    avatar_url = models.URLField("Avatar URL", blank=True, editable=False)
+        verbose_name="Benutzername",
+        max_length=50,
+        default="",
+        blank=True,
+    )
+    avatar_url = models.URLField(
+        verbose_name="Avatar URL",
+        blank=True,
+        editable=False,
+    )
     sprache = models.CharField(
-        "Sprache", default="de", choices=SPRACHEN, max_length=2)
+        verbose_name="Sprache",
+        default="de",
+        choices=SPRACHEN,
+        max_length=2,
+    )
 
     rechnungsadresse_vorname = models.CharField(
-        "Vorname", max_length=50, default="", blank=True)
+        verbose_name="Vorname",
+        max_length=50,
+        default="",
+        blank=True,
+    )
     rechnungsadresse_nachname = models.CharField(
-        "Nachname", max_length=50, default="", blank=True)
+        verbose_name="Nachname",
+        max_length=50,
+        default="",
+        blank=True,
+    )
     rechnungsadresse_firma = models.CharField(
-        "Firma", max_length=50, default="", blank=True)
+        verbose_name="Firma",
+        max_length=50,
+        default="",
+        blank=True,
+    )
     rechnungsadresse_adresszeile1 = models.CharField(
-        "Adresszeile 1", max_length=50, default="", blank=True, help_text='Strasse und Hausnummer oder "Postfach"')
+        verbose_name="Adresszeile 1",
+        max_length=50,
+        default="",
+        blank=True,
+        help_text='Strasse und Hausnummer oder "Postfach"',
+    )
     rechnungsadresse_adresszeile2 = models.CharField(
-        "Adresszeile 2", max_length=50, default="", blank=True, help_text="Wird in QR-Rechnung NICHT verwendet!")
+        verbose_name="Adresszeile 2",
+        max_length=50,
+        default="",
+        blank=True,
+        help_text="Wird in QR-Rechnung NICHT verwendet!",
+    )
     rechnungsadresse_ort = models.CharField(
-        "Ort", max_length=50, default="", blank=True)
+        verbose_name="Ort",
+        max_length=50,
+        default="",
+        blank=True,
+    )
     rechnungsadresse_kanton = models.CharField(
-        "Kanton", max_length=50, default="", blank=True)
+        verbose_name="Kanton",
+        max_length=50,
+        default="",
+        blank=True,
+    )
     rechnungsadresse_plz = models.CharField(
-        "Postleitzahl", max_length=50, default="", blank=True)
+        verbose_name="Postleitzahl",
+        max_length=50,
+        default="",
+        blank=True,
+    )
     rechnungsadresse_land = models.CharField(
-        "Land", max_length=2, default="CH", choices=LÄNDER)
-    rechnungsadresse_email = models.EmailField("E-Mail Adresse", blank=True)
+        verbose_name="Land",
+        max_length=2,
+        default="CH",
+        choices=LÄNDER,
+    )
+    rechnungsadresse_email = models.EmailField(
+        verbose_name="E-Mail Adresse",
+        blank=True,
+    )
     rechnungsadresse_telefon = models.CharField(
-        "Telefon", max_length=50, default="", blank=True)
+        verbose_name="Telefon",
+        max_length=50,
+        default="",
+        blank=True,
+    )
 
     lieferadresse_vorname = models.CharField(
-        "Vorname", max_length=50, default="", blank=True)
+        verbose_name="Vorname",
+        max_length=50,
+        default="",
+        blank=True,
+    )
     lieferadresse_nachname = models.CharField(
-        "Nachname", max_length=50, default="", blank=True)
+        verbose_name="Nachname",
+        max_length=50,
+        default="",
+        blank=True,
+    )
     lieferadresse_firma = models.CharField(
-        "Firma", max_length=50, default="", blank=True)
+        verbose_name="Firma",
+        max_length=50,
+        default="",
+        blank=True,
+    )
     lieferadresse_adresszeile1 = models.CharField(
-        "Adresszeile 1", max_length=50, default="", blank=True)
+        verbose_name="Adresszeile 1",
+        max_length=50,
+        default="",
+        blank=True,
+    )
     lieferadresse_adresszeile2 = models.CharField(
-        "Adresszeile 2", max_length=50, default="", blank=True)
+        verbose_name="Adresszeile 2",
+        max_length=50,
+        default="",
+        blank=True,
+    )
     lieferadresse_ort = models.CharField(
-        "Ort", max_length=50, default="", blank=True)
+        verbose_name="Ort",
+        max_length=50,
+        default="",
+        blank=True,
+    )
     lieferadresse_kanton = models.CharField(
-        "Kanton", max_length=50, default="", blank=True)
+        verbose_name="Kanton",
+        max_length=50,
+        default="",
+        blank=True,
+    )
     lieferadresse_plz = models.CharField(
-        "Postleitzahl", max_length=50, default="", blank=True)
+        verbose_name="Postleitzahl",
+        max_length=50,
+        default="",
+        blank=True,
+    )
     lieferadresse_land = models.CharField(
-        "Land", max_length=2, default="CH", choices=LÄNDER)
-    lieferadresse_email = models.EmailField("E-Mail Adresse", blank=True)
+        verbose_name="Land",
+        max_length=2,
+        default="CH",
+        choices=LÄNDER,
+    )
+    lieferadresse_email = models.EmailField(
+        verbose_name="E-Mail Adresse",
+        blank=True,
+    )
     lieferadresse_telefon = models.CharField(
-        "Telefon", max_length=50, default="", blank=True)
+        verbose_name="Telefon",
+        max_length=50,
+        default="",
+        blank=True,
+    )
 
-    zusammenfuegen = models.ForeignKey("self", on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Zusammenfügen mit",
-                                       help_text="Dies kann nicht widerrufen werden! Werte im aktuellen Kunden werden bevorzugt.")
-    webseite = models.URLField("Webseite", blank=True, default="")
-    bemerkung = models.TextField("Bemerkung", default="", blank=True)
+    zusammenfuegen = models.ForeignKey(
+        to='self',
+        verbose_name="Zusammenfügen mit",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        help_text="Dies kann nicht widerrufen werden! Werte im aktuellen Kunden werden bevorzugt.",
+    )
+    webseite = models.URLField(
+        verbose_name="Webseite",
+        default="",
+        blank=True,
+    )
+    bemerkung = models.TextField(
+        verbose_name="Bemerkung",
+        default="",
+        blank=True,
+    )
 
     registrierungsemail = models.ForeignKey(
-        "EMail", on_delete=models.SET_NULL, blank=True, null=True)
+        "EMail", on_delete=models.SET_NULL,
+        blank=True, null=True)
 
     @admin.display(description="Avatar", ordering="avatar_url")
     def avatar(self):
@@ -929,23 +1347,62 @@ class Kunde(CustomModel):
 
 
 class Lieferant(CustomModel):
-    kuerzel = models.CharField("Kürzel", max_length=5)
-    name = models.CharField('Name', max_length=50)
+    """Model representing a supplier (used only for categorizing)"""
 
-    webseite = models.URLField("Webseite", blank=True)
+    kuerzel = models.CharField(
+        verbose_name="Kürzel",
+        max_length=5,
+    )
+    name = models.CharField(
+        verbose_name="Name",
+        max_length=50,
+    )
+
+    webseite = models.URLField(
+        verbose_name="Webseite",
+        blank=True,
+    )
     telefon = models.CharField(
-        'Telefon', max_length=50, default="", blank=True)
-    email = models.EmailField('E-Mail', null=True, blank=True)
+        verbose_name="Telefon",
+        max_length=50,
+        default="",
+        blank=True,
+    )
+    email = models.EmailField(
+        verbose_name="E-Mail",
+        null=True,
+        blank=True,
+    )
 
-    adresse = models.TextField('Adresse', default="", blank=True)
-    notiz = models.TextField('Notiz', default="", blank=True)
+    adresse = models.TextField(
+        verbose_name="Adresse",
+        default="",
+        blank=True,
+    )
+    notiz = models.TextField(
+        verbose_name="Notiz",
+        default="",
+        blank=True,
+    )
 
     ansprechpartner = models.CharField(
-        'Ansprechpartner', max_length=250, default="", blank=True)
+        verbose_name="Ansprechpartner",
+        max_length=250,
+        default="",
+        blank=True,
+    )
     ansprechpartnertel = models.CharField(
-        'Ansprechpartner Telefon', max_length=50, default="", blank=True)
+        verbose_name="Ansprechpartner Telefon",
+        max_length=50,
+        default="",
+        blank=True,
+    )
     ansprechpartnermail = models.EmailField(
-        'Ansprechpartner E-Mail', null=True, default="", blank=True)
+        verbose_name="Ansprechpartner E-Mail",
+        null=True,
+        default="",
+        blank=True,
+    )
 
     @admin.display(description="Lieferant")
     def __str__(self):
@@ -966,9 +1423,20 @@ class Lieferant(CustomModel):
 
 
 class Lieferungsposten(CustomModel):
-    lieferung = models.ForeignKey("Lieferung", on_delete=models.CASCADE)
-    produkt = models.ForeignKey("Produkt", on_delete=models.PROTECT)
-    menge = models.IntegerField("Menge", default=1)
+    """Model representing the connection between 'Lieferung' and 'Produkt'"""
+
+    lieferung = models.ForeignKey(
+        to="Lieferung",
+        on_delete=models.CASCADE,
+    )
+    produkt = models.ForeignKey(
+        to="Produkt",
+        on_delete=models.PROTECT,
+    )
+    menge = models.IntegerField(
+        verbose_name="Menge",
+        default=1,
+    )
 
     @admin.display(description="Lieferungsposten")
     def __str__(self):
@@ -982,16 +1450,34 @@ class Lieferungsposten(CustomModel):
 
 
 class Lieferung(CustomModel):
-    name = models.CharField("Name", max_length=50,
-                            default=defaultlieferungsname)
-    datum = models.DateField("Erfasst am", auto_now_add=True)
+    """Model representing an *incoming* delivery"""
+
+    name = models.CharField(
+        verbose_name="Name",
+        max_length=50,
+        default=defaultlieferungsname,
+    )
+    datum = models.DateField(
+        verbose_name="Erfasst am",
+        auto_now_add=True,
+    )
 
     lieferant = models.ForeignKey(
-        "Lieferant", on_delete=models.SET_NULL, null=True, blank=True)
+        to="Lieferant",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
     produkte = models.ManyToManyField(
-        "Produkt", through="Lieferungsposten", through_fields=("lieferung", "produkt"))
+        to="Produkt",
+        through="Lieferungsposten",
+        through_fields=("lieferung", "produkt"),
+    )
 
-    eingelagert = models.BooleanField("Eingelagert", default=False)
+    eingelagert = models.BooleanField(
+        verbose_name="Eingelagert",
+        default=False,
+    )
 
     @admin.display(description="Anzahl Produklte")
     def anzahlprodukte(self):
@@ -1005,8 +1491,7 @@ class Lieferung(CustomModel):
             self.eingelagert = True
             self.save()
             return True
-        else:
-            return False
+        return False
 
     @admin.display(description="ToDo Notiz")
     def html_todo_notiz(self):
@@ -1044,22 +1529,61 @@ class Lieferung(CustomModel):
 
 
 class Notiz(CustomModel):
-    name = models.CharField("Name", max_length=50)
-    beschrieb = models.TextField("Beschrieb", default="", blank=True)
+    """Model representing a note"""
 
-    erledigt = models.BooleanField("Erledigt", default=False)
+    name = models.CharField(
+        verbose_name="Name",
+        max_length=50,
+    )
+    beschrieb = models.TextField(
+        verbose_name="Beschrieb",
+        default="",
+        blank=True,
+    )
 
-    priority = models.IntegerField("Priorität", default=0, blank=True)
-    erstellt_am = models.DateTimeField("Erstellt am", auto_now_add=True)
+    erledigt = models.BooleanField(
+        verbose_name="Erledigt",
+        default=False,
+    )
+
+    priority = models.IntegerField(
+        verbose_name="Priorität",
+        default=0,
+        blank=True,
+    )
+    erstellt_am = models.DateTimeField(
+        verbose_name="Erstellt am",
+        auto_now_add=True,
+    )
 
     bestellung = models.OneToOneField(
-        "Bestellung", blank=True, null=True, on_delete=models.CASCADE, related_name="notiz")
+        to="Bestellung",
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE,
+        related_name="notiz",
+    )
     produkt = models.OneToOneField(
-        "Produkt", blank=True, null=True, on_delete=models.CASCADE, related_name="notiz")
+        to="Produkt",
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE,
+        related_name="notiz",
+    )
     kunde = models.OneToOneField(
-        "Kunde", blank=True, null=True, on_delete=models.CASCADE, related_name="notiz")
+        to="Kunde",
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE,
+        related_name="notiz",
+    )
     lieferung = models.OneToOneField(
-        "Lieferung", blank=True, null=True, on_delete=models.CASCADE, related_name="notiz")
+        to="Lieferung",
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE,
+        related_name="notiz",
+    )
 
     @admin.display(description="Notiz")
     def __str__(self):
@@ -1093,6 +1617,8 @@ class Notiz(CustomModel):
 
 
 class Produktkategorie(CustomModel):
+    """Model representing the connection between 'Produkt' and 'Kategorie'"""
+
     produkt = models.ForeignKey("Produkt", on_delete=models.CASCADE)
     kategorie = models.ForeignKey("Kategorie", on_delete=models.CASCADE)
 
@@ -1108,49 +1634,125 @@ class Produktkategorie(CustomModel):
 
 
 class Produkt(CustomModel):
-    artikelnummer = models.CharField("Artikelnummer", max_length=25)
+    """Model representing a product"""
 
-    woocommerceid = models.IntegerField('WooCommerce ID', default=0)
-
-    name = models.CharField('Name', max_length=500)
-    kurzbeschrieb = models.TextField('Kurzbeschrieb', default="", blank=True)
-    beschrieb = models.TextField('Beschrieb', default="", blank=True)
-
-    mengenbezeichnung = models.CharField(
-        'Mengenbezeichnung', max_length=100, default="[:de]Stück[:fr]Pièce[:it]Pezzo[:en]Piece[:]", blank=True)
-    verkaufspreis = models.FloatField(
-        'Normalpreis in CHF (exkl. MwSt)', default=0)
-    mwstsatz = models.FloatField(
-        'Mehrwertsteuersatz', choices=MWSTSÄTZE, default=7.7)
-
-    lagerbestand = models.IntegerField("Lagerbestand", default=0)
-    soll_lagerbestand = models.IntegerField("Soll-Lagerbestand", default=1)
-
-    bemerkung = models.TextField('Bemerkung', default="", blank=True,
-                                 help_text="Wird nicht gedruckt oder angezeigt; nur für eigene Zwecke.")
-    #packlistenbemerkung = models.TextField('Packlistenbemerkung', default="", blank=True, help_text="Wird auf die Packliste gedruckt.")
-
-    aktion_von = models.DateTimeField("In Aktion von", blank=True, null=True)
-    aktion_bis = models.DateTimeField("In Aktion bis", blank=True, null=True)
-    aktion_preis = models.FloatField(
-        "Aktionspreis in CHF (exkl. MwSt)", blank=True, null=True)
-
-    datenblattlink = models.CharField(
-        'Datenblattlink', max_length=500, default="", blank=True)
-    bildlink = models.URLField('Bildlink', default="", blank=True)
-
-    lieferant = models.ForeignKey(
-        "Lieferant", on_delete=models.SET_NULL, blank=True, null=True, verbose_name="Lieferant")
-    lieferant_preis = models.CharField(
-        "Lieferantenpreis", default="", blank=True, max_length=20)
-    lieferant_artikelnummer = models.CharField(
-        "Lieferantenartikelnummer", default="", blank=True, max_length=25)
-    lieferant_url = models.URLField(
-        "Lieferantenurl (Für Nachbestellungen)", default="", blank=True
+    artikelnummer = models.CharField(
+        verbose_name="Artikelnummer",
+        max_length=25,
     )
 
-    kategorien = models.ManyToManyField("Kategorie", through="Produktkategorie", through_fields=(
-        "produkt", "kategorie"), verbose_name="Kategorie", related_name="produkte")
+    woocommerceid = models.IntegerField(
+        verbose_name='WooCommerce ID',
+        default=0,
+    )
+
+    name = models.CharField(
+        verbose_name='Name',
+        max_length=500,
+    )
+    kurzbeschrieb = models.TextField(
+        verbose_name='Kurzbeschrieb',
+        default="",
+        blank=True,
+    )
+    beschrieb = models.TextField(
+        verbose_name='Beschrieb',
+        default="",
+        blank=True,
+    )
+
+    mengenbezeichnung = models.CharField(
+        verbose_name='Mengenbezeichnung',
+        max_length=100,
+        default="[:de]Stück[:fr]Pièce[:it]Pezzo[:en]Piece[:]",
+        blank=True,
+    )
+    verkaufspreis = models.FloatField(
+        verbose_name='Normalpreis in CHF (exkl. MwSt)',
+        default=0,
+    )
+    mwstsatz = models.FloatField(
+        verbose_name='Mehrwertsteuersatz',
+        choices=MWSTSÄTZE,
+        default=7.7,
+    )
+
+    lagerbestand = models.IntegerField(
+        verbose_name="Lagerbestand",
+        default=0,
+    )
+    soll_lagerbestand = models.IntegerField(
+        verbose_name="Soll-Lagerbestand",
+        default=1,
+    )
+
+    bemerkung = models.TextField(
+        verbose_name='Bemerkung',
+        default="",
+        blank=True,
+        help_text="Wird nicht gedruckt oder angezeigt; nur für eigene Zwecke.",
+    )
+
+    aktion_von = models.DateTimeField(
+        verbose_name="In Aktion von",
+        blank=True,
+        null=True,
+    )
+    aktion_bis = models.DateTimeField(
+        verbose_name="In Aktion bis",
+        blank=True,
+        null=True,
+    )
+    aktion_preis = models.FloatField(
+        verbose_name="Aktionspreis in CHF (exkl. MwSt)",
+        blank=True,
+        null=True,
+    )
+
+    datenblattlink = models.CharField(
+        verbose_name='Datenblattlink',
+        max_length=500,
+        default="",
+        blank=True,
+    )
+    bildlink = models.URLField(
+        verbose_name='Bildlink',
+        default="",
+        blank=True,
+    )
+
+    lieferant = models.ForeignKey(
+        to="Lieferant",
+        verbose_name="Lieferant",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
+    lieferant_preis = models.CharField(
+        verbose_name="Lieferantenpreis",
+        default="",
+        blank=True,
+        max_length=20,
+    )
+    lieferant_artikelnummer = models.CharField(
+        verbose_name="Lieferantenartikelnummer",
+        default="",
+        blank=True,
+        max_length=25,
+    )
+    lieferant_url = models.URLField(
+        verbose_name="Lieferantenurl (Für Nachbestellungen)",
+        default="",
+        blank=True,
+    )
+
+    kategorien = models.ManyToManyField(
+        to="Kategorie",
+        through="Produktkategorie",
+        through_fields=("produkt", "kategorie"),
+        verbose_name="Kategorie",
+        related_name="produkte",
+    )
 
     @admin.display(description="Name", ordering="name")
     def clean_name(self, lang="de"):
@@ -1293,24 +1895,77 @@ class Produkt(CustomModel):
 
 
 class Zahlungsempfaenger(CustomModel):
-    qriban = models.CharField("QR-IBAN", max_length=21+5, validators=[RegexValidator(
-        r'^(CH|LI)[0-9]{2}\s3[0-9]{3}\s[0-9]{4}\s[0-9]{4}\s[0-9]{4}\s[0-9]{1}$', 'Bite benutze folgendes Format: (CH|LI)pp 3xxx xxxx xxxx xxxx x')], help_text="QR-IBAN mit Leerzeichen")
-    logourl = models.URLField("Logo (URL)", validators=[RegexValidator(r'''^[0-9a-zA-Z\-\.\|\?\(\)\*\+&"'_:;/]+\.(png|jpg)$''',
-                                                                       '''Nur folgende Zeichen gestattet: 0-9a-zA-Z-_.:;/|?&()"'*+ - Muss auf .jpg/.png enden.''')], help_text="URL eines Bildes (.jpg/.png) - Wird auf die Rechnung gedruckt.")
+    """Model representing a payment receiver for the qr bill"""
+
+    qriban = models.CharField(
+        verbose_name="QR-IBAN",
+        max_length=21+5,
+        validators=[
+            RegexValidator(
+                r'^(CH|LI)[0-9]{2}\s3[0-9]{3}\s[0-9]{4}\s[0-9]{4}\s[0-9]{4}\s[0-9]{1}$',
+                'Bite benutze folgendes Format: (CH|LI)pp 3xxx xxxx xxxx xxxx x',
+            ),
+        ],
+        help_text="QR-IBAN mit Leerzeichen",
+    )
+    logourl = models.URLField(
+        verbose_name="Logo (URL)",
+        validators=[
+            RegexValidator(
+                r'''^[0-9a-zA-Z\-\.\|\?\(\)\*\+&"'_:;/]+\.(png|jpg)$''',
+                '''Nur folgende Zeichen gestattet: 0-9a-zA-Z-_.:;/|?&()"'*+ - ''' +
+                '''Muss auf .jpg/.png enden.''',
+            ),
+        ],
+        help_text="URL eines Bildes (.jpg/.png) - Wird auf die Rechnung gedruckt.",
+    )
     firmenname = models.CharField(
-        "Firmennname", max_length=70, help_text="Name der Firma")
-    firmenuid = models.CharField("Firmen-UID", max_length=15, validators=[RegexValidator(
-        r'^CHE-[0-9]{3}\.[0-9]{3}\.[0-9]{3}$', 'Bite benutze folgendes Format: CHE-123.456.789')], help_text="UID der Firma - Format: CHE-123.456.789 (Mehrwertsteuernummer)")
+        verbose_name="Firmennname",
+        max_length=70,
+        help_text="Name der Firma",
+    )
+    firmenuid = models.CharField(
+        verbose_name="Firmen-UID",
+        max_length=15,
+        validators=[
+            RegexValidator(
+                r'^CHE-[0-9]{3}\.[0-9]{3}\.[0-9]{3}$',
+                'Bite benutze folgendes Format: CHE-123.456.789'
+            )
+        ],
+        help_text="UID der Firma - Format: CHE-123.456.789 (Mehrwertsteuernummer)",
+    )
     adresszeile1 = models.CharField(
-        "Strasse und Hausnummer oder 'Postfach'", max_length=70)
-    adresszeile2 = models.CharField("PLZ und Ort", max_length=70)
-    land = models.CharField("Land", max_length=2, choices=LÄNDER, default="CH")
+        verbose_name="Strasse und Hausnummer oder 'Postfach'",
+        max_length=70,
+    )
+    adresszeile2 = models.CharField(
+        verbose_name="PLZ und Ort",
+        max_length=70,
+    )
+    land = models.CharField(
+        verbose_name="Land",
+        max_length=2,
+        choices=LÄNDER,
+        default="CH",
+    )
     email = models.EmailField(
-        "E-Mail", default="", blank=True, help_text="Nicht auf der Rechnung ersichtlich")
-    telefon = models.CharField("Telefon", max_length=70, default="",
-                               blank=True, help_text="Nicht auf der Rechnung ersichtlich")
+        verbose_name="E-Mail",
+        default="",
+        blank=True,
+        help_text="Nicht auf der Rechnung ersichtlich",
+    )
+    telefon = models.CharField(
+        verbose_name="Telefon",
+        max_length=70,
+        default="",
+        blank=True,
+        help_text="Nicht auf der Rechnung ersichtlich",
+    )
     webseite = models.URLField(
-        "Webseite", help_text="Auf der Rechnung ersichtlich!")
+        verbose_name="Webseite",
+        help_text="Auf der Rechnung ersichtlich!",
+    )
 
     def has_valid_qr_iban(self):
         import string
@@ -1351,41 +2006,70 @@ class Zahlungsempfaenger(CustomModel):
 ######################
 
 ######################
+
+
 EINSTELLUNGSTYPEN = [
     ("char", "Text"),
     ("text", "Mehrzeiliger Text"),
     ("bool", "Wahrheitswert"),
-    ("int",  "Zahl"),
+    ("int", "Zahl"),
     ("float", "Fliesskommazahl"),
-    ("url",  "Url"),
+    ("url", "Url"),
     ("email", "E-Mail"),
 ]
 
 
-class Einstellung(CustomModel):
-    id = models.CharField("ID", max_length=50, primary_key=True)
-    name = models.CharField("Name", max_length=200)
-    typ = models.CharField("Typ", max_length=5,
-                           default="char", choices=EINSTELLUNGSTYPEN)
+class SettingsBase(CustomModel):
+    """Base model for 'Einstellung' and 'Geheime_Einstellung'"""
+
+    id = models.CharField(
+        verbose_name="ID",
+        max_length=50,
+        primary_key=True,
+    )
+    typ = models.CharField(
+        verbose_name="Typ",
+        max_length=5,
+        default="char",
+        choices=EINSTELLUNGSTYPEN,
+    )
 
     char = models.CharField(
-        "Inhalt (Text)", max_length=250, default="",    blank=True)
-    text = models.TextField("Inhalt (Mehrzeiliger Text)",
-                            default="",    blank=True)
-    boo = models.BooleanField("Inhalt (Wahrheitswert)",
-                              default=False, blank=True)
-    inte = models.IntegerField("Inhalt (Zahl)",
-                               default=0,     blank=True)
-    floa = models.FloatField("Inhalt (Fliesskommazahl)",
-                             default=0.0,   blank=True)
-    url = models.URLField("Inhalt (Url)",
-                          default="",    blank=True)
-    email = models.EmailField("Inhalt (E-Mail)",
-                              default="",    blank=True)
-
-    @admin.display(description="Einstellung")
-    def __str__(self):
-        return self.name
+        verbose_name="Inhalt (Text)",
+        max_length=250,
+        default="",
+        blank=True,
+    )
+    text = models.TextField(
+        verbose_name="Inhalt (Mehrzeiliger Text)",
+        default="",
+        blank=True,
+    )
+    boo = models.BooleanField(
+        verbose_name="Inhalt (Wahrheitswert)",
+        default=False,
+        blank=True,
+    )
+    inte = models.IntegerField(
+        verbose_name="Inhalt (Zahl)",
+        default=0,
+        blank=True,
+    )
+    floa = models.FloatField(
+        verbose_name="Inhalt (Fliesskommazahl)",
+        default=0.0,
+        blank=True,
+    )
+    url = models.URLField(
+        verbose_name="Inhalt (Url)",
+        default="",
+        blank=True,
+    )
+    email = models.EmailField(
+        verbose_name="Inhalt (E-Mail)",
+        default="",
+        blank=True,
+    )
 
     @property
     @admin.display(description="Inhalt")
@@ -1423,73 +2107,33 @@ class Einstellung(CustomModel):
             self.email = var
 
     class Meta:
-        verbose_name = "Einstellung"
-        verbose_name_plural = "Einstellungen"
+        abstract = True
 
     objects = models.Manager()
 
 
-class Geheime_Einstellung(CustomModel):
-    id = models.CharField("ID", max_length=50, primary_key=True)
-    typ = models.CharField("Typ", max_length=5,
-                           default="char", choices=EINSTELLUNGSTYPEN)
+class Einstellung(SettingsBase):
+    """Model representing a setting"""
 
-    char = models.CharField(
-        "Inhalt (Text)", max_length=250, default="",    blank=True)
-    text = models.TextField("Inhalt (Mehrzeiliger Text)",
-                            default="",    blank=True)
-    boo = models.BooleanField("Inhalt (Wahrheitswert)",
-                              default=False, blank=True)
-    inte = models.IntegerField("Inhalt (Zahl)",
-                               default=0,     blank=True)
-    floa = models.FloatField("Inhalt (Fliesskommazahl)",
-                             default=0.0,   blank=True)
-    url = models.URLField("Inhalt (Url)",
-                          default="",    blank=True)
-    email = models.EmailField("Inhalt (E-Mail)",
-                              default="",    blank=True)
+    name = models.CharField("Name",
+                            max_length=200)
+
+    @admin.display(description="Einstellung")
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Einstellung"
+        verbose_name_plural = "Einstellungen"
+
+
+class Geheime_Einstellung(SettingsBase):
+    """Model representing a setting not visible to the user"""
 
     @admin.display(description="Geheime Einstellung")
     def __str__(self):
         return self.id
 
-    @property
-    @admin.display(description="Inhalt")
-    def inhalt(self):
-        if self.typ == "char":
-            return self.char
-        if self.typ == "text":
-            return self.text
-        if self.typ == "bool":
-            return self.boo
-        if self.typ == "int":
-            return self.inte
-        if self.typ == "float":
-            return self.floa
-        if self.typ == "url":
-            return self.url
-        if self.typ == "email":
-            return self.email
-
-    @inhalt.setter
-    def inhalt(self, var):
-        if self.typ == "char":
-            self.char = var
-        elif self.typ == "text":
-            self.text = var
-        elif self.typ == "bool":
-            self.boo = var
-        elif self.typ == "int":
-            self.inte = var
-        elif self.typ == "float":
-            self.floa = var
-        elif self.typ == "url":
-            self.url = var
-        elif self.typ == "email":
-            return self.email
-
     class Meta:
         verbose_name = "Geheime Einstellung"
         verbose_name_plural = "Geheime Einstellungen"
-
-    objects = models.Manager()
