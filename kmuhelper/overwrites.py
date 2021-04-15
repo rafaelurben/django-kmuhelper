@@ -41,3 +41,13 @@ class CustomModelAdmin(admin.ModelAdmin):
         super()._get_obj_does_not_exist_redirect(request, opts, object_id)
         info = self.model._meta.app_label, self.model._meta.model_name
         return redirect(reverse('admin:%s_%s_changelist' % info))
+
+    def get_actions(self, request):
+        """Make some action not always available"""
+        
+        actions = super().get_actions(request)
+        if 'wc_update' in actions:
+            from kmuhelper.integrations.woocommerce.utils import is_connected as woocommerce_connected
+            if not woocommerce_connected():
+                del actions['wc_update']
+        return actions
