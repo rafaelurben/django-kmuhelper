@@ -11,8 +11,10 @@ from django.template.loader import get_template
 
 ################
 
-def render_error(request):
-    return render(request, "kmuhelper/error.html")
+def render_error(request, status=404):
+    """Show the error page"""
+
+    return render(request, "kmuhelper/error.html", status=status)
 
 ################
 

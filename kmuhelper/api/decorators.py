@@ -31,12 +31,12 @@ def protected(read=False, write=False, perms_required=()):
                     return JsonResponse({
                         "error": "no-permission",
                         "message": "You do not have permission to access this endpoint! (authentication method: api key)"
-                    })
+                    }, status=403)
 
                 return JsonResponse({
                     "error": "apikey-invalid",
                     "message": "Your api key is invalid!"
-                })
+                }, status=403)
             
             if request.user.is_authenticated:
                 if request.user.has_perms(perms_required):
@@ -45,12 +45,12 @@ def protected(read=False, write=False, perms_required=()):
                 return JsonResponse({
                     "error": "no-permission",
                     "message": "You do not have permission to access this endpoint! (authentication method: session)"
-                })
+                }, status=403)
 
             return JsonResponse({
                 "error": "not-authenticated",
                 "message": "You must authenticate yourself to use this endpoint!"
-            })
+            }, status=403)
         return wrap
     return decorator
 

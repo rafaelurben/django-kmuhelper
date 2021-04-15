@@ -14,7 +14,7 @@ def not_found(request):
     return JsonResponse({
         "error": "endpoint-not-found",
         "message": "This endpoint does not exist!"
-    })
+    }, status=404)
 
 #####
 
