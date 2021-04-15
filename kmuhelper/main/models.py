@@ -6,7 +6,7 @@ from random import randint
 from rich import print
 
 from django.db import models
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.core import mail
 from django.core.validators import RegexValidator, MinValueValidator, MaxValueValidator
 from django.utils import timezone
@@ -516,31 +516,10 @@ class Bestellung(CustomModel):
             text = "Notiz hinzufügen"
         return format_html('<a target="_blank" href="{}">{}</a>', link, text)
 
-    def get_future_stock(self):
-        data = {}
-        for p in self.produkte.all():
-            p_name = p.clean_name()
-            p_adminurl = reverse(
-                f'admin:{p._meta.app_label}_{p._meta.model_name}_change', args=(p.pk,))
+    def get_stock_data(self):
+        """Get the stock data of all products in this order"""
 
-            n_current = p.lagerbestand
-            n_going = p.get_reserved_stock()
-            n_coming = p.get_incoming_stock()
-            n_min = p.soll_lagerbestand
-
-            data[p.id] = {
-                "product": {
-                    "id": p.id,
-                    "artikelnummer": p.artikelnummer,
-                    "name": p_name,
-                    "adminurl": p_adminurl,
-                },
-                "current": n_current,
-                "going": n_going,
-                "coming": n_coming,
-                "min": n_min
-            }
-        return data
+        return [p.get_stock_data() for p in self.produkte.all()]
 
     def email_stock_warning(self):
         email_receiver = Einstellung.objects.get(
@@ -548,12 +527,10 @@ class Bestellung(CustomModel):
 
         if email_receiver:
             warnings = []
-            stock = self.get_future_stock()
-            for p_id in stock:
-                s = stock[p_id]
-                p = s.pop("product")
-                if (s["current"]-s["going"]) < s["min"]:
-                    warnings.append({"product": p, "stock": s})
+            stock = self.get_stock_data()
+            for data in stock:
+                if data["stock_in_danger"]:
+                    warnings.append(data)
 
             if warnings != []:
                 email = EMail.objects.create(
@@ -1216,6 +1193,60 @@ class Produkt(CustomModel):
         for lp in Lieferungsposten.objects.filter(lieferung__eingelagert=False, produkt__id=self.id):
             n += lp.menge
         return n
+
+    def get_stock_data(self, includemessage=False):
+        """Get the stock and product information as a dictionary"""
+
+        p_id = self.id
+        p_name = self.clean_name()
+        p_artikelnummer = self.artikelnummer
+
+        n_current = self.lagerbestand
+        n_going = self.get_reserved_stock()
+        n_coming = self.get_incoming_stock()
+        n_min = self.soll_lagerbestand
+
+        data = {
+            "product": {
+                "id": p_id,
+                "artikelnummer": p_artikelnummer,
+                "name": p_name,
+            },
+            "stock": {
+                "current": n_current,
+                "going": n_going,
+                "coming": n_coming,
+                "min": n_min,
+            },
+            "stock_overbooked": n_current-n_going < 0,
+            "stock_in_danger": n_current-n_going < n_min,
+        }
+
+        if includemessage:
+            stockstring = f"Aktuell: { n_current } | Ausgehend: { n_going }" + (
+                f" | Eingehend: { n_coming }" if n_coming else "")
+            adminurl = reverse(
+                f'admin:kmuhelper_produkt_change', args=[self.pk])
+            adminlink = format_html('<a href="{}">{}</a>', adminurl, p_name)
+
+            formatdata = (adminlink, p_artikelnummer, stockstring)
+
+            if data["stock_overbooked"]:
+                data["message"] = format_html(
+                    'Zu wenig Lagerbestand bei "{}" [{}]: {}', *formatdata)
+            elif data["stock_in_danger"]:
+                data["message"] = format_html(
+                    'Knapper Lagerbestand bei "{}" [{}]: {}', *formatdata)
+
+        return data
+
+    def show_stock_warning(self, request):
+        data = self.get_stock_data(includemessage=True)
+
+        if data["stock_overbooked"]:
+            messages.error(request, data["message"])
+        elif data["stock_in_danger"]:
+            messages.warning(request, data["message"])
 
     def save(self, *args, **kwargs):
         if self.mengenbezeichnung == "Stück":
