@@ -87,3 +87,20 @@
     background-position-x: right;
     background-position-y: -160px;
 } */
+
+/* Additional buttons in submit row */
+
+.submit-row a.button {
+    display: inline-block;
+    text-decoration: none;
+    padding: 10px 15px;
+    width: auto;
+
+    -webkit-appearance: none;
+    appearance: none;
+
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}

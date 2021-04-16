@@ -62,14 +62,6 @@
                 </abbr>
         {% endif %}
 
-        {% if perms.kmuhelper.add_bestellung %}
-            <li>
-                <attr title="Diese Bestellung duplizieren">
-                    <a href="{% url 'admin:kmuhelper_bestellung_duplizieren' object_id %}" rel="noopener">Duplizieren</a>
-                </abbr>
-            </li>
-        {% endif %}
-
         {% if perms.kmuhelper.add_lieferung and original.versendet %}
             <li>
                 <attr title="Die Produkte dieser Bestellung zu einer Lieferung kopieren">

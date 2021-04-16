@@ -1,0 +1,11 @@
+{% extends "admin/submit_line.html" %}
+
+{% block submit-row %}
+
+    {% if perms.kmuhelper.add_bestellung %}
+        <a class="button" href="{% url 'admin:kmuhelper_bestellung_duplizieren' object_id %}">Duplizieren</a>
+    {% endif %}
+
+    {{ block.super }}
+
+{% endblock %}
