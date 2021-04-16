@@ -7,7 +7,7 @@
     --link-selected-fg: var(--kmuhelper-light);
 }
 
-/* Fix overlapping buttons */
+/* Fix overlapping object-tools buttons */
 
 @media (min-width: 768px) {
     .change-form #content-main {
@@ -22,3 +22,68 @@
 .change-form .object-tools li {
     margin-left: 5px;
 }
+
+/* Dropdowns in object tools */
+
+.object-tools .dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.object-tools .dropdown div {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    border-radius: 10px;
+    z-index: 1;
+}
+
+.object-tools .dropdown:hover div,
+.object-tools .dropdown:active div {
+    display: block;
+}
+
+.object-tools .dropdown div a, 
+.object-tools .dropdown div b {
+    width: calc(100% - 24px);
+    display: block;
+    padding: 6px 12px;
+    background: none;
+    border-radius: 0;
+    color: black;
+}
+
+.object-tools .dropdown div a:not(.disabled):hover {
+    background-color: #d3d3d3;
+}
+
+.object-tools .dropdown div a:first-child {
+    border-radius: 10px 10px 0 0;
+}
+
+.object-tools .dropdown div a:last-child {
+    border-radius: 0 0 10px 10px;
+}
+
+.object-tools .dropdown div a.disabled {
+    color: grey;
+}
+
+.object-tools .dropdown div a.disabled:hover {
+    background-color: none !important;
+}
+
+.object-tools .dropdown div hr {
+    color: lightgray;
+    background-color: lightgray;
+}
+/* 
+.object-tools .dropdown > a {
+    padding: 3px 18px 3px 12px;
+    background-image: url(../../img/selector-icons.svg);
+    background-repeat: no-repeat;
+    background-position-x: right;
+    background-position-y: -160px;
+} */

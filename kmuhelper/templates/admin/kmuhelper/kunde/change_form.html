@@ -8,18 +8,34 @@
                     <li><a href="{% url 'kmuhelper:wc-update-customer' object_id %}">Von WooCommerce importieren und ersetzen</a></li>
                 {% endif %}
 
-                {% load kmuhelper_tags %}
-                {% kmuhelper_email_show_buttons as show_email_buttons %}
-                {% if show_email_buttons %}
-                    {% if perms.kmuhelper.view_emailtemplate and perms.kmuhelper.add_email %}
-                        <li><a href="{% url 'admin:kmuhelper_emailtemplate_savevars' %}?{{ original.to_query_string }}">Zu E-Mail Vorlage</a></li>
-                    {% endif %}
-                    {% if original.email %}
-                        {% if original.registrierungsemail and perms.kmuhelper.view_email %}
-                            <li><a href="{% url 'admin:kmuhelper_email_change' original.registrierungsemail.pk %}">E-Mail ansehen</a></li>
-                        {% elif perms.kmuhelper.add_email %}
-                            <li><a href="{% url 'admin:kmuhelper_kunde_email_registriert' object_id %}">Registrierungsemail senden</a></li>
-                        {% endif %}
+                {% if perms.kmuhelper.view_email or perms.kmuhelper.add_email %}
+                    {% load kmuhelper_tags %}
+                    {% kmuhelper_email_show_buttons as show_email_buttons %}
+                    {% if show_email_buttons %}
+                        
+                        <li class="dropdown">
+                            <a href="#">E-Mails</a>
+                            <div>
+                                <b>E-Mails</b>
+                                <hr>
+
+                                {% if perms.kmuhelper.view_emailtemplate and perms.kmuhelper.add_email %}
+                                    <a href="{% url 'admin:kmuhelper_emailtemplate_savevars' %}?{{ original.to_query_string }}">Zu E-Mail Vorlage</a>
+                                {% endif %}
+                                <hr>
+                                {% if original.email %}
+                                    {% if original.email_registriert and perms.kmuhelper.view_email %}
+                                        <a href="{% url 'admin:kmuhelper_email_change' original.email_registriert.pk %}">Registrierungsemail ansehen</a>
+                                    {% endif %}
+                                    {% if perms.kmuhelper.add_email and perms.kmuhelper.change_kunde %}
+                                        <a href="{% url 'admin:kmuhelper_kunde_email_registriert' object_id %}">Registrierungsemail generieren</a>
+                                    {% endif %}
+                                {% else %}
+                                    <a href="" class="disabled">Registrierungsemail</a>
+                                {% endif %}
+                            </div>
+                        </li>
+
                     {% endif %}
                 {% endif %}
 

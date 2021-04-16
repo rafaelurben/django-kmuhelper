@@ -1216,9 +1216,12 @@ class Kunde(CustomModel):
         blank=True,
     )
 
-    registrierungsemail = models.ForeignKey(
-        "EMail", on_delete=models.SET_NULL,
-        blank=True, null=True)
+    email_registriert = models.ForeignKey(
+        to='EMail', 
+        on_delete=models.SET_NULL,
+        blank=True, 
+        null=True,
+    )
 
     @admin.display(description="Avatar", ordering="avatar_url")
     def avatar(self):
@@ -1293,7 +1296,7 @@ class Kunde(CustomModel):
             self.zusammenfuegen = None
         super().save(*args, **kwargs)
 
-    def send_register_mail(self):
+    def create_email_registriert(self):
         context = {
             "kunde": {
                 "id": self.pk,
@@ -1304,7 +1307,7 @@ class Kunde(CustomModel):
             }
         }
 
-        self.registrierungsemail = EMail.objects.create(
+        self.email_registriert = EMail.objects.create(
             subject="Registrierung erfolgreich!",
             to=self.email,
             html_template="kunde_registriert.html",
@@ -1312,10 +1315,8 @@ class Kunde(CustomModel):
             notes=f"Diese E-Mail wurde automatisch aus Kunde #{self.pk} generiert.",
         )
 
-        success = self.registrierungsemail.send(
-            headers={"Kunden-ID": str(self.pk)})
         self.save()
-        return success
+        return self.email_registriert
 
     @admin.display(description="ToDo Notiz")
     def html_todo_notiz(self):
@@ -1343,7 +1344,7 @@ class Kunde(CustomModel):
 
     objects = models.Manager()
 
-    DICT_EXCLUDE_FIELDS = ['registrierungsemail', 'zusammenfuegen']
+    DICT_EXCLUDE_FIELDS = ['email_registriert', 'zusammenfuegen']
 
 
 class Lieferant(CustomModel):

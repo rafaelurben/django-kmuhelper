@@ -43,16 +43,14 @@ def lieferung_einlagern(request, obj):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.add_email")
+@permission_required(
+    ["kmuhelper.add_email", "kmuhelper.view_kunde", "kmuhelper.change_kunde"]
+)
 @require_object(Kunde)
-@confirm_action("Registrierungsmail versenden")
 def kunde_email_registriert(request, obj):
-    if obj.send_register_mail():
-        messages.success(request, "Registrierungsmail gesendet!")
-    else:
-        messages.error(
-            request, "Registrierungsmail konnte nicht gesendet werden!")
-    return redirect(reverse("admin:kmuhelper_kunde_change", args=[obj.pk]))
+    mail = obj.create_email_registriert()
+    messages.success(request, "E-Mail wurde generiert!")
+    return redirect(reverse("admin:kmuhelper_email_change", args=[mail.pk]))
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
@@ -66,7 +64,9 @@ def bestellung_pdf_ansehen(request, obj):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required(["kmuhelper.add_email", "kmuhelper.view_bestellung"])
+@permission_required(
+    ["kmuhelper.add_email", "kmuhelper.view_bestellung", "kmuhelper.change_bestellung"]
+)
 @require_object(Bestellung)
 def bestellung_email_rechnung(request, obj):
     mail = obj.create_email_rechnung()
@@ -75,7 +75,9 @@ def bestellung_email_rechnung(request, obj):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required(["kmuhelper.add_email", "kmuhelper.view_bestellung"])
+@permission_required(
+    ["kmuhelper.add_email", "kmuhelper.view_bestellung", "kmuhelper.change_bestellung"]
+)
 @require_object(Bestellung)
 def bestellung_email_lieferung(request, obj):
     mail = obj.create_email_lieferung()

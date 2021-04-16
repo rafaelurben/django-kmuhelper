@@ -2,37 +2,80 @@
 
 {% block object-tools-items %}
     {% if change %}
-        {% if original.woocommerceid %}
-            <li><a href="{% url 'kmuhelper:wc-update-order' object_id %}">Von WooCommerce importieren und ersetzen</a></li>
-        {% endif %}
-        <li><a href="{% url 'admin:kmuhelper_bestellung_duplizieren' object_id %}" rel="noopener">Duplizieren</a></li>
-        {% if original.versendet %}
-            <li><attr title="Test"><a href="{% url 'admin:kmuhelper_bestellung_zu_lieferung' object_id %}" rel="noopener">Rücksendung</a></attr></li>
-        {% endif %}
-        <li><a href="{% url 'admin:kmuhelper_bestellung_pdf' object_id %}" target="_blank" rel="noopener">Rechnung (digital)</a></li>
-        <li><a href="{% url 'admin:kmuhelper_bestellung_pdf' object_id %}?druck" target="_blank" rel="noopener">Rechnung (druck)</a></li>
-        <li><a href="{% url 'admin:kmuhelper_bestellung_pdf' object_id %}?lieferschein" target="_blank" rel="noopener">Lieferschein</a></li>
+        <li class="dropdown">
+            <a href="#">PDF Generieren</a>
+            <div>
+                <b>PDF generieren</b>
+                <hr>
+                <a href="{% url 'admin:kmuhelper_bestellung_pdf' object_id %}" target="_blank" rel="noopener">Rechnung (digital)</a>
+                <a href="{% url 'admin:kmuhelper_bestellung_pdf' object_id %}?druck" target="_blank" rel="noopener">Rechnung (druck)</a>
+                <a href="{% url 'admin:kmuhelper_bestellung_pdf' object_id %}?lieferschein" target="_blank" rel="noopener">Lieferschein</a>
+            </div>
+        </li>
 
-        {% load kmuhelper_tags %}
-        {% kmuhelper_email_show_buttons as show_email_buttons %}
-        {% if show_email_buttons %}
-            {% if perms.kmuhelper.view_emailtemplate and perms.kmuhelper.add_email %}
-                <li><a href="{% url 'admin:kmuhelper_emailtemplate_savevars' %}?{{ original.to_query_string }}">Zu E-Mail Vorlage</a></li>
+        {% if perms.kmuhelper.view_email or perms.kmuhelper.add_email %}
+            {% load kmuhelper_tags %}
+            {% kmuhelper_email_show_buttons as show_email_buttons %}
+            {% if show_email_buttons %}
+
+                <li class="dropdown">
+                    <a href="#">E-Mails</a>
+                    <div>
+                        <b>E-Mails</b>
+                        <hr>
+
+                        {% if perms.kmuhelper.view_emailtemplate and perms.kmuhelper.add_email %}
+                            <a href="{% url 'admin:kmuhelper_emailtemplate_savevars' %}?{{ original.to_query_string }}">Zu E-Mail Vorlage</a>
+                            <hr>
+                        {% endif %}
+                        {% if original.rechnungsadresse_email %}
+                            {% if original.email_rechnung and perms.kmuhelper.view_email %}
+                                <a href="{% url 'admin:kmuhelper_email_change' original.email_rechnung.pk %}">Rechnungsemail ansehen</a>
+                            {% endif %}
+                            {% if perms.kmuhelper.add_email and perms.kmuhelper.change_bestellung %}
+                                <a href="{% url 'admin:kmuhelper_bestellung_email_rechnung' object_id %}">Rechnungsemail generieren</a>
+                            {% endif %}
+                        {% else %}
+                            <a href="#" class="disabled">Rechnungsemail</a>
+                        {% endif %}
+                        <hr>
+                        {% if original.lieferadresse_email and original.versendet %}
+                            {% if original.email_lieferung and perms.kmuhelper.view_email %}
+                                <a href="{% url 'admin:kmuhelper_email_change' original.email_lieferung.pk %}">Lieferungsemail ansehen</a>
+                            {% endif %}
+                            {% if perms.kmuhelper.add_email and perms.kmuhelper.change_bestellung %}
+                                <a href="{% url 'admin:kmuhelper_bestellung_email_lieferung' object_id %}">Lieferungsemail generieren</a>
+                            {% endif %}
+                        {% else %}
+                            <a href="#" class="disabled">Lieferungsemail</a>
+                        {% endif %}
+                    </div>
+                </li>
+
             {% endif %}
-            {% if original.rechnungsadresse_email %}
-                {% if original.email_rechnung and perms.kmuhelper.view_email %}
-                    <li><a href="{% url 'admin:kmuhelper_email_change' original.email_rechnung.pk %}">Rechnungsemail ansehen</a></li>
-                {% elif perms.kmuhelper.add_email %}
-                    <li><a href="{% url 'admin:kmuhelper_bestellung_email_rechnung' object_id %}">Rechnungsemail erstellen</a></li>
-                {% endif %}
-            {% endif %}
-            {% if original.lieferadresse_email and original.versendet %}
-                {% if original.email_lieferung and perms.kmuhelper.view_email %}
-                    <li><a href="{% url 'admin:kmuhelper_email_change' original.email_lieferung.pk %}">Lieferungsemail ansehen</a></li>
-                {% elif perms.kmuhelper.add_email %}
-                    <li><a href="{% url 'admin:kmuhelper_bestellung_email_lieferung' object_id %}">Lieferungsemail erstellen</a></li>
-                {% endif %}
-            {% endif %}
+        {% endif %}
+
+        {% if perms.kmuhelper.change_bestellung and original.woocommerceid %}
+            <li>
+                <abbr title="Achtung: Hier abgeänderte Werte werden überschrieben, sofern diese in WooCommerce gespeichert werden können!">
+                    <a href="{% url 'kmuhelper:wc-update-order' object_id %}">Von WooCommerce importieren und ersetzen</abbr></li>
+                </abbr>
+        {% endif %}
+
+        {% if perms.kmuhelper.add_bestellung %}
+            <li>
+                <attr title="Diese Bestellung duplizieren">
+                    <a href="{% url 'admin:kmuhelper_bestellung_duplizieren' object_id %}" rel="noopener">Duplizieren</a>
+                </abbr>
+            </li>
+        {% endif %}
+
+        {% if perms.kmuhelper.add_lieferung and original.versendet %}
+            <li>
+                <attr title="Die Produkte dieser Bestellung zu einer Lieferung kopieren">
+                    <a href="{% url 'admin:kmuhelper_bestellung_zu_lieferung' object_id %}" rel="noopener">Rücksendung</a>
+                </attr>
+            </li>
         {% endif %}
         
         {% if original.trackingnummer %}
