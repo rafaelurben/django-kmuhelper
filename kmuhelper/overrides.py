@@ -10,7 +10,7 @@ from kmuhelper import widgets
 
 
 class CustomModel(models.Model):
-    """django.db.models.Model with custom overwrites"""
+    """django.db.models.Model with custom overrides"""
 
     @property
     def to_dict(self):
@@ -35,7 +35,7 @@ class CustomModel(models.Model):
 
 
 class CustomModelAdmin(admin.ModelAdmin):
-    """django.contrib.admin.ModelAdmin with custom overwrites"""
+    """django.contrib.admin.ModelAdmin with custom overrides"""
 
     formfield_overrides = {
         models.JSONField: {'widget': widgets.PrettyJSONWidget}

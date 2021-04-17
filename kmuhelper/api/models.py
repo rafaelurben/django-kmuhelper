@@ -4,7 +4,7 @@ from django.db import models
 from django.conf import settings
 from django.contrib import admin
 
-from kmuhelper.overwrites import CustomModel
+from kmuhelper.overrides import CustomModel
 
 
 class ApiKey(CustomModel):

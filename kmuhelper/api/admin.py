@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from kmuhelper.api.models import ApiKey
-from kmuhelper.overwrites import CustomModelAdmin
+from kmuhelper.overrides import CustomModelAdmin
 
 @admin.register(ApiKey)
 class ApiKeyAdmin(CustomModelAdmin):

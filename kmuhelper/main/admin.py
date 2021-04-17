@@ -16,7 +16,7 @@ from kmuhelper.main.models import (
     Ansprechpartner, Bestellung, Kategorie, Kosten, Kunde,
     Lieferant, Lieferung, Notiz, Produkt, Zahlungsempfaenger, Einstellung
 )
-from kmuhelper.overwrites import CustomModelAdmin
+from kmuhelper.overrides import CustomModelAdmin
 
 
 #######

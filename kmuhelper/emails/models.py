@@ -18,7 +18,7 @@ from django.utils.html import format_html
 from django.template import TemplateDoesNotExist, TemplateSyntaxError
 from django.template.loader import get_template
 
-from kmuhelper.overwrites import CustomModel
+from kmuhelper.overrides import CustomModel
 
 
 def log(string, *args):

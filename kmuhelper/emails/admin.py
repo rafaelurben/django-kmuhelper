@@ -3,7 +3,7 @@ from django.urls import path
 
 from kmuhelper.emails import views
 from kmuhelper.emails.models import EMail, EMailAttachment, Attachment, EMailTemplate
-from kmuhelper.overwrites import CustomModelAdmin
+from kmuhelper.overrides import CustomModelAdmin
 
 #######
 

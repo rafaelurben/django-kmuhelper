@@ -14,7 +14,7 @@ from django.utils.html import mark_safe, format_html
 from django.urls import reverse
 
 from kmuhelper.emails.models import EMail, Attachment
-from kmuhelper.overwrites import CustomModel
+from kmuhelper.overrides import CustomModel
 from kmuhelper.pdf_generators import PDFOrder
 from kmuhelper.utils import runden, clean, formatprice, modulo10rekursiv, send_pdf
 

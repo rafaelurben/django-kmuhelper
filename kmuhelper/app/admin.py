@@ -7,7 +7,7 @@ from django.views.generic import RedirectView
 
 from kmuhelper.app.models import ToDoNotiz, ToDoVersand, ToDoZahlungseingang, ToDoLagerbestand, ToDoLieferung
 from kmuhelper.main.admin import NotizenAdmin, BestellungsAdmin, LieferungenAdmin, ProduktAdmin
-from kmuhelper.overwrites import CustomModelAdmin
+from kmuhelper.overrides import CustomModelAdmin
 
 #######
 
