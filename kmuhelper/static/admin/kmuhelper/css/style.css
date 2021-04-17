@@ -59,11 +59,13 @@
     background-color: #d3d3d3;
 }
 
-.object-tools .dropdown div a:first-child {
+.object-tools .dropdown div > a:first-child,
+.object-tools .dropdown div > abbr:first-child {
     border-radius: 10px 10px 0 0;
 }
 
-.object-tools .dropdown div a:last-child {
+.object-tools .dropdown div > a:last-child,
+.object-tools .dropdown div > abbr:last-child {
     border-radius: 0 0 10px 10px;
 }
 
