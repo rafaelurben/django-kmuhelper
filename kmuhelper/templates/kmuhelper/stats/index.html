@@ -2,8 +2,18 @@
 
 {% block content %}
 
-    <h1>Statistiken</h1>
+    <h1>Willkommen bei KMUHelper Statistiken!</h1>
 
+    <p>
+        Diese Funktion ist mehr oder weniger in der ewigen Probephase, da kein besonderes Interesse daran besteht.
+        <br>
+        Möglicherweise werden in Zukunft weitere Statistiken und Funktionen eingebaut. 
+    </p>
+
+    <br>
+
+    <h3>Statistiken</h3>
+    
     <ul>
         <li><a href="{% url 'kmuhelper:stats-products-price' %}">Produkt &amp; Preis</a></li>
         <li><a href="{% url 'kmuhelper:stats-best-products' %}">Beste Produkte</a></li>
@@ -49,7 +59,7 @@
 
     <br>
 
-    <p>Beispiel: <kbd>?from=2020-06-20&to=2020-10-24&max=35</kbd></p>
+    <p>Beispiel: <kbd>?from=2020-06-20&amp;to=2020-10-24&amp;max=35</kbd></p>
 
     <p>* = nicht bei allen Statistiken vorhanden</p>
 

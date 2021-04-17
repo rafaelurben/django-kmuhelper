@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.http import HttpResponse
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 
 from kmuhelper.decorators import require_object, confirm_action
@@ -97,7 +97,7 @@ def attachment_view(request, obj):
         download = "download" in request.GET
         return obj.get_file_response(download=download)
 
-    messages.error(request, "Du hast keinen Zugriff auf diesen E-Mail Anhang!")
+    messages.error(request, "Du hast keinen Zugriff auf diesen E-Mail-Anhang!")
     return render_error(request)
 
 
@@ -145,3 +145,57 @@ def emailtemplate_use(request, obj):
     messages.success(
         request, f"Vorlage wurde mit folgenden Daten ausgefüllt: {data}")
     return redirect(reverse("admin:kmuhelper_email_change", args=[mail.pk]))
+
+
+# Custom fake admin
+
+@login_required(login_url=reverse_lazy("admin:login"))
+def email_index(request):
+    return render(request, 'admin/kmuhelper/_special/emails/app_index.html', {
+        'app_label': 'kmuhelper',
+        'app_list': [{
+            'app_label': 'kmuhelper',
+            'app_url': reverse('kmuhelper:email-index'),
+            'has_module_perms': True,
+            'models': [
+                {
+                    'add_url': reverse("admin:kmuhelper_email_add"),
+                    'admin_url': reverse("admin:kmuhelper_email_changelist"),
+                    'name': "E-Mails",
+                    'perms': {
+                        'add': request.user.has_perm("kmuhelper.add_email"),
+                        'change': request.user.has_perm("kmuhelper.change_email"),
+                        'delete': request.user.has_perm("kmuhelper.delete_email"),
+                        'view': request.user.has_perm("kmuhelper.view_email")},
+                    'view_only': False
+                },
+                {
+                    'add_url': reverse("admin:kmuhelper_attachment_add"),
+                    'admin_url': reverse("admin:kmuhelper_attachment_changelist"),
+                    'name': "E-Mail-Anhänge",
+                    'perms': {
+                        'add': request.user.has_perm("kmuhelper.add_attachment"),
+                        'change': request.user.has_perm("kmuhelper.change_attachment"),
+                        'delete': request.user.has_perm("kmuhelper.delete_attachment"),
+                        'view': request.user.has_perm("kmuhelper.view_attachment")},
+                    'view_only': False
+                },
+                {
+                    'add_url': reverse("admin:kmuhelper_emailtemplate_add"),
+                    'admin_url': reverse("admin:kmuhelper_emailtemplate_changelist"),
+                    'name': "E-Mail-Vorlagen",
+                    'perms': {
+                        'add': request.user.has_perm("kmuhelper.add_emailtemplate"),
+                        'change': request.user.has_perm("kmuhelper.change_emailtemplate"),
+                        'delete': request.user.has_perm("kmuhelper.delete_emailtemplate"),
+                        'view': request.user.has_perm("kmuhelper.view_emailtemplate")},
+                    'view_only': False
+                },
+            ],
+            'name': 'KMUHelper E-Mails'
+        }],
+        'has_permission': True,
+        'is_nav_sidebar_enabled': False,
+        'is_popup': False,
+        'title': 'KMUHelper E-Mails',
+    })

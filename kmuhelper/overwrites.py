@@ -51,3 +51,11 @@ class CustomModelAdmin(admin.ModelAdmin):
             if not woocommerce_connected():
                 del actions['wc_update']
         return actions
+
+    def has_module_permission(self, request):
+        """Add option to hide model in default admin"""
+        
+        if getattr(self.__class__, 'hidden', False):
+            return {}
+
+        return super().has_module_permission(request)

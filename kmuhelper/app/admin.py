@@ -13,11 +13,9 @@ from kmuhelper.overwrites import CustomModelAdmin
 
 
 class ToDoAdminBase(CustomModelAdmin):
+    hidden = True
+    
     # Permissions
-
-    def has_module_permission(self, request):
-        """Hide model in default admin"""
-        return {}
 
     def has_delete_permission(self, request, obj=None):
         """Deactivate delete feature inside the app"""

@@ -811,6 +811,8 @@ class EinstellungenAdmin(CustomModelAdmin):
     search_fields = ['name', 'char', 'text', 'inte', 'floa', 'url', 'email']
 
     readonly_fields = ["id", "name"]
+    
+    hidden = True
 
     def get_fieldsets(self, request, obj=None):
         fieldsets = [

@@ -418,8 +418,7 @@ class Bestellung(CustomModel):
         max_length=50,
         default="",
         blank=True,
-        help_text="Strasse und Hausnummer oder 'Postfach' ohne Nummer - " +
-                  "Wird bei QR-Rechnung als Strasse und Hausnummer bzw. Postfach verwendet!",
+        help_text="Strasse und Hausnummer oder 'Postfach'",
     )
     rechnungsadresse_adresszeile2 = models.CharField(
         verbose_name="Adresszeile 2",

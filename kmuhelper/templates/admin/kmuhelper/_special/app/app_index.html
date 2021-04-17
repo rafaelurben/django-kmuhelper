@@ -1,5 +1,7 @@
 {% extends "admin/kmuhelper/app_index.html" %}
 
+{% block title %}KMUHelper App{% endblock %}
+
 {% block content_title %}
     <h1>Willkommen in der KMUHelper App!</h1>
 {% endblock %}
@@ -8,43 +10,19 @@
     <h1 id="site-name"><a target="_top" href="{% url 'kmuhelper:home' %}">KMUHelper</a> | <a target="_top" href="{% url 'kmuhelper:app-index' %}">App</a></h1>
 {% endblock %}
 
-{% block breadcrumbs %}
-{% endblock %}
-
-{% block extrahead %}
-    {{ block.super }}
-
-    <script src="https://kit.fontawesome.com/67ab7aa4a7.js" crossorigin="anonymous"></script>
-    <style>
-        #pages {
-            padding-left: 16px;
-        }
-
-        #pages li i {
-            width: 25px;
-            text-align: center;
-        }
-
-        #pages-container,
-        #app-info {
-            padding: 0 10px;
-        }
-
-    </style>
-{% endblock %}
-
-{% block content %}
-    <p id="app-info">In dieser App hast du Zugriff auf bestimmte Seiten des <a href="{% url 'admin:app_list' app_label='kmuhelper' %}" target="_top">Adminbereichs</a>, 
-        welche normalerweise versteckt sind und eine einfachere Verarbeitung von grösseren Mengen an Daten ermöglichen.
+{% block pageinfo %}
+    <p id="pageinfo">
+        In diesem Bereich hast du Zugriff auf bereits bekannt Seiten des <a href="{% url 'admin:app_list' app_label='kmuhelper' %}" target="_top">Adminbereichs</a>, 
+        jedoch auf eine etwas andere Art.
+        Sie ist dazu gedacht, für bestimmte Arbeitsschritte eine einfache Massenverarbeitung zu ermöglichen.
     </p>
     <br>
+{% endblock %}
 
-    {{ block.super }}
-
-    <br>
-    <div id="pages-container">
+{% block pagelist %}    
+    <div id="pagelist-container">
         <h3>Erklärungen der Seiten</h3>
-        <ul style="padding-left: 16px;" id="pages">
+        <ul style="padding-left: 16px;" id="pagelist">
             <li>
                 <i class="fas fa-clipboard-list"></i><span>ToDo-Liste (Unerledigte Notizen)</span>
                 <p>Erstelle dir eine To-Do Liste (Erledigte Einträge sind weiterhin im Adminbereich unter "Notizen" ersichtlich.)</p>

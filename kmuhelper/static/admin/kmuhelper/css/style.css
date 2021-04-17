@@ -7,6 +7,22 @@
     --link-selected-fg: var(--kmuhelper-light);
 }
 
+/* Additional app index style */
+
+#pagelist {
+    padding-left: 16px;
+}
+
+#pagelist li i {
+    width: 25px;
+    text-align: center;
+}
+
+#pagelist-container,
+#pageinfo {
+    padding: 0 10px;
+}
+
 /* Fix overlapping object-tools buttons */
 
 @media (min-width: 768px) {

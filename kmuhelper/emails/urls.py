@@ -9,4 +9,7 @@ urlpatterns = [
          name="email-view"),
     path('attachments/<int:object_id>/view', views.attachment_view,
          name="attachment-view"),
+
+    path('', views.email_index,
+         name="email-index"),
 ]

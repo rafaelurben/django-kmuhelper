@@ -129,13 +129,13 @@ class EMailAttachment(CustomModel):
         on_delete=models.CASCADE,
     )
 
-    @admin.display(description="E-Mail Anhang")
+    @admin.display(description="E-Mail-Anhang")
     def __str__(self):
         return "EMail-Anhang Verknüpfung"
 
     class Meta:
-        verbose_name = "E-Mail Anhang"
-        verbose_name_plural = "E-Mail Anhänge"
+        verbose_name = "E-Mail-Anhang"
+        verbose_name_plural = "E-Mail-Anhänge"
 
     objects = models.Manager()
 
@@ -404,7 +404,7 @@ class EMailTemplate(CustomModel):
         null=True,
     )
 
-    @admin.display(description="E-Mail Vorlage")
+    @admin.display(description="E-Mail-Vorlage")
     def __str__(self):
         return f"{self.title} ({self.pk})"
 
@@ -435,7 +435,7 @@ class EMailTemplate(CustomModel):
         return email
 
     class Meta:
-        verbose_name = "E-Mail Vorlage"
-        verbose_name_plural = "E-Mail Vorlagen"
+        verbose_name = "E-Mail-Vorlage"
+        verbose_name_plural = "E-Mail-Vorlagen"
 
     objects = models.Manager()

@@ -1,15 +1,1 @@
-{% extends 'admin/kmuhelper/change_list.html' %}
-
-{% block object-tools-items %}
-    {% if perms.kmuhelper.view_attachment %}
-        <li>
-            <a href="{% url 'admin:kmuhelper_attachment_changelist' %}">Zu Anhängen wechseln</a>
-        </li>
-    {% endif %}
-    {% if perms.kmuhelper.view_emailtemplate %}
-        <li>
-            <a href="{% url 'admin:kmuhelper_emailtemplate_changelist' %}">Zu Vorlagen wechseln</a>
-        </li>
-    {% endif %}
-    {{ block.super }}
-{% endblock %}
+{% extends 'admin/kmuhelper/_special/emails/change_list.html' %}

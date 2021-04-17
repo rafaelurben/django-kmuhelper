@@ -1,0 +1,13 @@
+{% extends 'admin/kmuhelper/change_form.html' %}
+
+{% load admin_urls %}
+
+{% block branding %}
+    <h1 id="site-name"><a target="_top" href="{% url 'kmuhelper:home' %}">KMUHelper</a> | <a target="_top" href="{% url 'kmuhelper:email-index' %}">E-Mails</a></h1>
+{% endblock %}
+
+{% block breadcrumbs %}
+    <div id="breadcrumbs" class="breadcrumbs">
+        <a href="{% url 'kmuhelper:email-index' %}">KMUHelper E-Mails</a> &gt; <a href="{% url opts|admin_urlname:'changelist' %}">{% block modulename %}{{ opts.verbose_name_plural }}{% endblock %}</a> &gt; {% if change %}{{ original }}{% else %}{{ opts.verbose_name }} hinzufügen{% endif %}
+    </div>
+{% endblock %}

@@ -4,7 +4,7 @@
 
 {% block extrahead %}
     {{ block.super }}
-    <script src="https://kit.fontawesome.com/67ab7aa4a7.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
     <style>
         #pages {
             padding-left: 16px;
@@ -19,12 +19,17 @@
 
 {% block content %}
     <h1>Willkommen in der KMUHelper-App!</h1>
-    <p>In dieser App hast du Zugriff auf bestimmte Seiten des <a href="{% url 'admin:app_list' app_label='kmuhelper' %}" target="_top">Adminbereichs</a>, welche normalerweise versteckt sind.</p>
+    <p>
+        In dieser App hast du Zugriff auf bereits bekannt Seiten des <a href="{% url 'admin:app_list' app_label='kmuhelper' %}" target="_top">Adminbereichs</a>, 
+        jedoch auf eine etwas andere Art.
+        <br>
+        Sie ist dazu gedacht, für bestimmte Arbeitsschritte eine einfache Massenverarbeitung zu ermöglichen.
+    </p>
     <h3>Seiten</h3>
     <ul style="padding-left: 16px;" id="pages">
         <li>
             <i class="fas fa-clipboard-list"></i><span>ToDo-Liste (Unerledigte Notizen)</span>
-            <p>Erstelle dir eine To-Do Liste (Erledigte Einträge sind weiterhin im Adminbereich unter "Notizen" ersichtlich.)</p>
+            <p>Erstelle dir eine To-Do Liste</p>
         </li>
         <li>
             <i class="fas fa-shipping-fast"></i><span>Versand (Unversendete Bestellungen)</span>
@@ -40,7 +45,7 @@
         </li>
         <li>
             <i class="fas fa-truck-loading"></i><span>Wareneingang (Lieferungen)</span>
-            <p>Erfasse Lieferungen und lagere sie ein. (Eingelagerte Lieferungen sind weiterhin im Adminbereich unter "Lieferungen" ersichtlich.)</p>
+            <p>Erfasse Lieferungen und lagere sie ein.</p>
         </li>
         <li>
             <i class="fas fa-key"></i><span>Admin (<i class="fas fa-external-link-alt"></i>)</span>

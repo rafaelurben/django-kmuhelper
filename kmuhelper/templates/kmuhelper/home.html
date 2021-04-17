@@ -13,6 +13,7 @@
 {% block extrastyle %}
     {{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'admin/kmuhelper/css/style.css' %}">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
     <style>
         #page-chooser a {
             padding: 50px;
@@ -21,6 +22,7 @@
             color: white;
             background-color: var(--kmuhelper-dark);
             transition-duration: 0.5s;
+            text-decoration: none !important;
         }
 
         #page-chooser a:hover {
@@ -47,8 +49,6 @@
 
 {% block extrahead %}
     {{ block.super }}
-    <script src="https://kit.fontawesome.com/67ab7aa4a7.js" crossorigin="anonymous"></script>
-
     <link rel="shortcut icon" type="image/x-icon" href="{% static 'kmuhelper/favicon.ico' %}">
     <link rel="apple-touch-icon" href="{% static 'kmuhelper/favicon.ico' %}">
 {% endblock %}
@@ -63,15 +63,15 @@
                     <i class="fas fa-2x fa-fw fa-key"></i>
                     <br><br>
                     <h2>Admin</h2>
-                    <p>Volle Kontrolle über alle Daten</p>
+                    <p>Volle Kontrolle über die Hauptfunktionen</p>
                 </div>
             </a>
-            <a href="{% url 'kmuhelper:stats' %}" target="_top">
+            <a href="{% url 'kmuhelper:email-index' %}" target="_top">
                 <div class="center">
-                    <i class="fas fa-2x fa-fw fa-chart-pie"></i>
+                    <i class="fas fa-2x fa-fw fa-envelope-open"></i>
                     <br><br>
-                    <h2>Statistiken</h2>
-                    <p>Diagramme und co.</p>
+                    <h2>E-Mails</h2>
+                    <p>Verwaltung und Erstellung von E-Mails</p>
                 </div>
             </a>
         </div>
@@ -96,12 +96,12 @@
         </div>
         <br>
         <div class="split">
-            <a href="{% url 'admin:kmuhelper_email_changelist' %}" target="_top">
+            <a href="{% url 'kmuhelper:stats' %}" target="_top">
                 <div class="center">
-                    <i class="fas fa-2x fa-fw fa-envelope-open"></i>
+                    <i class="fas fa-2x fa-fw fa-chart-pie"></i>
                     <br><br>
-                    <h2>E-Mails</h2>
-                    <p>Verwaltung und Erstellung von E-Mails</p>
+                    <h2>Statistiken</h2>
+                    <p>Diagramme und co.</p>
                 </div>
             </a>
             <a href="https://rafaelurben.github.io/django-kmuhelper/manual/" target="_top">

@@ -1,5 +1,7 @@
 {% extends 'admin/kmuhelper/change_list.html' %}
 
+{% load static %}
+
 {% block branding %}
     <h1 id="site-name"><a target="_top" href="{% url 'kmuhelper:home' %}">KMUHelper</a> | <a id="app-link" target="_top" href="{% url 'kmuhelper:app-index' %}">App</a></h1>
 {% endblock %}
@@ -19,18 +21,6 @@
 
 {% block extrahead %}
     {{ block.super }}
-    <script>
-        'use strict'
-        var $ = django.jQuery
-
-        $(document).ready(function () {
-            // Add Buttonrow to top too
-            var saveButtonRow = $('.paginator')[0]
-            var resultsDiv = $('#changelist-form > div.results')[0]
-
-            if (saveButtonRow && resultsDiv) {
-                $(saveButtonRow).clone().insertBefore(resultsDiv);
-            }
-        })
-    </script>
+    
+    <script src="{% static 'admin/js/changelist_saveontop.js' %}"></script>
 {% endblock %}

@@ -27,12 +27,12 @@ iframe {
     align-items: center;
     overflow: hidden;
     position: static;
-    background-color: #ffffff;
+    background-color: white;
 }
 
 .appbar .item {
     text-decoration: none;
-    color: #000000;
+    color: black;
     font-size: 150%;
 }
 
@@ -40,10 +40,21 @@ iframe {
     color: #7c7c7c;
 }
 
-.appbar .item:hover {
+.appbar .item:hover,
+.appbar .item:focus {
     color: #dd1155;
 }
 
 .appbar .item.hidden {
     display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+    .appbar {
+        background-color: #121212;
+    }
+
+    .appbar .item {
+        color: #eeeeee;
+    }
 }

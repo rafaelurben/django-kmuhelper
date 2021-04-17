@@ -25,8 +25,8 @@
                         <hr>
 
                         {% if perms.kmuhelper.view_emailtemplate and perms.kmuhelper.add_email %}
-                            <abbr title="Speichere die Daten dieser Bestellung im Zwischenspeicher und gehe zu E-Mail Vorlagen">
-                                <a href="{% url 'admin:kmuhelper_emailtemplate_savevars' %}?{{ original.to_query_string }}">Zu E-Mail Vorlage</a>
+                            <abbr title="Speichere die Daten dieser Bestellung im Zwischenspeicher und gehe zu E-Mail-Vorlagen">
+                                <a href="{% url 'admin:kmuhelper_emailtemplate_savevars' %}?{{ original.to_query_string }}">Zu E-Mail-Vorlage</a>
                             </abbr>
                             <hr>
                         {% endif %}

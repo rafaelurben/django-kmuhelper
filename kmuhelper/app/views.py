@@ -29,7 +29,7 @@ def app_error(request):
 @allow_iframe
 @login_required(login_url=reverse_lazy("admin:login"))
 def app_index(request):
-    return render(request, 'admin/kmuhelper/app-todo/app_index.html', {
+    return render(request, 'admin/kmuhelper/_special/app/app_index.html', {
         'app_label': 'kmuhelper',
         'app_list': [{
             'app_label': 'kmuhelper',

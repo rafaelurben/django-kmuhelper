@@ -17,11 +17,7 @@ class ApiKeyAdmin(CustomModelAdmin):
 
     ordering = ('id', )
 
-    # Permissions
-
-    def has_module_permission(self, request):
-        """Hide model in default admin"""
-        return {}
+    hidden = True
 
 #
 

@@ -1,0 +1,22 @@
+{% extends "admin/kmuhelper/app_index.html" %}
+
+{% block title %}KMUHelper E-Mails{% endblock %}
+
+{% block content_title %}
+    <h1>Willkommen bei KMUHelper E-Mails!</h1>
+{% endblock %}
+
+{% block branding %}
+    <h1 id="site-name"><a target="_top" href="{% url 'kmuhelper:home' %}">KMUHelper</a> | <a target="_top" href="{% url 'kmuhelper:email-index' %}">E-Mails</a></h1>
+{% endblock %}
+
+{% block pageinfo %}
+    <p id="pageinfo">
+        Mit dem KMUHelper E-Mail-Modul kannst du ganz einfach E-Mails erstellen und versenden. 
+        Die Hauptfunktionen befinden sich im <a href="{% url 'admin:app_list' app_label='kmuhelper' %}">Adminbereich</a>.
+    </p>
+    <br>
+{% endblock %}
+
+{% block pagelist %}
+{% endblock %}
