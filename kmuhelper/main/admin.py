@@ -152,7 +152,7 @@ class BestellungsAdmin(CustomModelAdmin):
     list_display = ('id', 'datum', 'kunde', 'status', 'zahlungsmethode',
                     'versendet', 'bezahlt', 'fix_summe', 'html_notiz')
     list_filter = ('status', 'bezahlt', 'versendet', 'zahlungsmethode')
-    search_fields = ['id', 'datum', 'notiz__name', 'notiz__beschrieb', 'kundennotiz', 
+    search_fields = ['id', 'datum', 'notiz__name', 'notiz__beschrieb', 'kundennotiz',
                      'trackingnummer'] + RECHNUNGSADRESSE_FIELDS + LIEFERADRESSE_FIELDS
 
     ordering = ("versendet", "bezahlt", "-datum")
@@ -182,10 +182,10 @@ class BestellungsAdmin(CustomModelAdmin):
                     'fields': ['kundennotiz', 'html_notiz'],
                     'classes': ["collapse start-open"]}),
                 ('Rechnungsadresse', {
-                    'fields': RECHNUNGSADRESSE_FIELDS if obj.bezahlt else RECHNUNGSADRESSE_FIELDS_CATEGORIZED, 
+                    'fields': RECHNUNGSADRESSE_FIELDS if obj.bezahlt else RECHNUNGSADRESSE_FIELDS_CATEGORIZED,
                     'classes': ["collapse default-open"]}),
                 ('Lieferadresse', {
-                    'fields': LIEFERADRESSE_FIELDS if obj.versendet else LIEFERADRESSE_FIELDS_CATEGORIZED, 
+                    'fields': LIEFERADRESSE_FIELDS if obj.versendet else LIEFERADRESSE_FIELDS_CATEGORIZED,
                     'classes': ["collapse start-open"]})
             ]
 
@@ -376,7 +376,7 @@ class KundenAdmin(CustomModelAdmin):
             ('Rechnungsadresse', {
                 'fields': RECHNUNGSADRESSE_FIELDS_CATEGORIZED}),
             ('Lieferadresse', {
-                'fields': LIEFERADRESSE_FIELDS_CATEGORIZED, 
+                'fields': LIEFERADRESSE_FIELDS_CATEGORIZED,
                 'classes': ["collapse start-open"]}),
         ]
 
@@ -406,7 +406,7 @@ class KundenAdmin(CustomModelAdmin):
     readonly_fields = ["html_notiz"]
 
     list_select_related = ["notiz"]
-    
+
     autocomplete_fields = ["zusammenfuegen"]
 
     inlines = [KundenAdminBestellungsInline]
@@ -695,7 +695,7 @@ class ProduktAdmin(CustomModelAdmin):
         return [
             ('Infos', {'fields': ['artikelnummer', 'name']}),
             ('Beschrieb', {
-                'fields': ['kurzbeschrieb', 'beschrieb'], 
+                'fields': ['kurzbeschrieb', 'beschrieb'],
                 'classes': ["collapse start-open"]}),
             ('Daten', {'fields': [
                 'mengenbezeichnung', 'verkaufspreis', 'mwstsatz', 'lagerbestand', 'soll_lagerbestand']}),
@@ -811,7 +811,7 @@ class EinstellungenAdmin(CustomModelAdmin):
     search_fields = ['name', 'char', 'text', 'inte', 'floa', 'url', 'email']
 
     readonly_fields = ["id", "name"]
-    
+
     hidden = True
 
     def get_fieldsets(self, request, obj=None):
@@ -824,7 +824,8 @@ class EinstellungenAdmin(CustomModelAdmin):
                         ['inte'] if obj.typ == 'int' else
                         ['floa'] if obj.typ == 'float' else
                         ['url'] if obj.typ == 'url' else
-                        ['email'] if obj.typ == 'email' else []
+                        ['email'] if obj.typ == 'email' else
+                        ['json'] if obj.typ == 'json' else []
                         }),
         ]
         return fieldsets

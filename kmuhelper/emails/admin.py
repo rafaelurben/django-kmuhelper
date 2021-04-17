@@ -1,18 +1,17 @@
 from django.contrib import admin
-from django.db import models
 from django.urls import path
 
 from kmuhelper.emails import views
 from kmuhelper.emails.models import EMail, EMailAttachment, Attachment, EMailTemplate
 from kmuhelper.overwrites import CustomModelAdmin
-from kmuhelper.widgets import PrettyJSONWidget
 
 #######
 
 
 @admin.register(Attachment)
 class AttachmentAdmin(CustomModelAdmin):
-    list_display = ['filename', 'description', 'time_created', 'autocreated', 'id']
+    list_display = ['filename', 'description',
+                    'time_created', 'autocreated', 'id']
     list_display_links = ['filename']
 
     search_fields = ('filename', 'description', )
@@ -20,7 +19,7 @@ class AttachmentAdmin(CustomModelAdmin):
     ordering = ['-time_created']
 
     save_on_top = True
-    
+
     hidden = True
 
     def get_readonly_fields(self, request, obj=None):
@@ -100,11 +99,8 @@ class EMailAdmin(CustomModelAdmin):
                     'time_created', 'sent', 'time_sent')
     list_filter = ('html_template', 'sent')
 
-    search_fields = ['subject', 'to', 'cc', 'bcc', 'html_context', 'text', 'notes']
-
-    formfield_overrides = {
-        models.JSONField: {'widget': PrettyJSONWidget}
-    }
+    search_fields = ['subject', 'to', 'cc',
+                     'bcc', 'html_context', 'text', 'notes']
 
     inlines = (EMailAdminAttachmentInline, )
 
@@ -153,10 +149,6 @@ class EMailTemplateAdmin(CustomModelAdmin):
         ('Optionen', {
             'fields': ['mail_template', 'mail_context']}),
     ]
-
-    formfield_overrides = {
-        models.JSONField: {'widget': PrettyJSONWidget}
-    }
 
     save_on_top = True
 

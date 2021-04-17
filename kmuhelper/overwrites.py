@@ -6,6 +6,8 @@ from django.forms.models import model_to_dict
 from django.shortcuts import redirect
 from django.urls import reverse
 
+from kmuhelper import widgets
+
 
 class CustomModel(models.Model):
     """django.db.models.Model with custom overwrites"""
@@ -35,6 +37,10 @@ class CustomModel(models.Model):
 class CustomModelAdmin(admin.ModelAdmin):
     """django.contrib.admin.ModelAdmin with custom overwrites"""
 
+    formfield_overrides = {
+        models.JSONField: {'widget': widgets.PrettyJSONWidget}
+    }
+
     def _get_obj_does_not_exist_redirect(self, request, opts, object_id):
         """Redirect to changelist page instead of admin home if object is not found"""
 
@@ -44,7 +50,7 @@ class CustomModelAdmin(admin.ModelAdmin):
 
     def get_actions(self, request):
         """Make some action not always available"""
-        
+
         actions = super().get_actions(request)
         if 'wc_update' in actions:
             from kmuhelper.integrations.woocommerce.utils import is_connected as woocommerce_connected
@@ -54,7 +60,7 @@ class CustomModelAdmin(admin.ModelAdmin):
 
     def has_module_permission(self, request):
         """Add option to hide model in default admin"""
-        
+
         if getattr(self.__class__, 'hidden', False):
             return {}
 

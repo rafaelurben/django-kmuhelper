@@ -1216,9 +1216,9 @@ class Kunde(CustomModel):
     )
 
     email_registriert = models.ForeignKey(
-        to='EMail', 
+        to='EMail',
         on_delete=models.SET_NULL,
-        blank=True, 
+        blank=True,
         null=True,
     )
 
@@ -2016,6 +2016,7 @@ EINSTELLUNGSTYPEN = [
     ("float", "Fliesskommazahl"),
     ("url", "Url"),
     ("email", "E-Mail"),
+    ("json", "JSON Daten"),
 ]
 
 
@@ -2071,6 +2072,13 @@ class SettingsBase(CustomModel):
         blank=True,
     )
 
+    json = models.JSONField(
+        verbose_name="Inhalt (JSON)",
+        default=dict,
+        blank=True,
+        null=True,
+    )
+
     @property
     @admin.display(description="Inhalt")
     def inhalt(self):
@@ -2088,6 +2096,8 @@ class SettingsBase(CustomModel):
             return self.url
         if self.typ == "email":
             return self.email
+        if self.typ == "json":
+            return self.json
 
     @inhalt.setter
     def inhalt(self, var):
@@ -2105,6 +2115,8 @@ class SettingsBase(CustomModel):
             self.url = var
         elif self.typ == "email":
             self.email = var
+        elif self.typ == "json":
+            self.json = var
 
     class Meta:
         abstract = True
@@ -2113,7 +2125,7 @@ class SettingsBase(CustomModel):
 
 
 class Einstellung(SettingsBase):
-    """Model representing a setting"""
+    """Model representing an editable setting"""
 
     name = models.CharField("Name",
                             max_length=200)
@@ -2128,7 +2140,7 @@ class Einstellung(SettingsBase):
 
 
 class Geheime_Einstellung(SettingsBase):
-    """Model representing a setting not visible to the user"""
+    """Model representing a hidden setting"""
 
     @admin.display(description="Geheime Einstellung")
     def __str__(self):
