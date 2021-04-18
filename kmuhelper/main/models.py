@@ -13,6 +13,7 @@ from django.utils import timezone
 from django.utils.html import mark_safe, format_html
 from django.urls import reverse
 
+from kmuhelper import settings
 from kmuhelper.emails.models import EMail, Attachment
 from kmuhelper.overrides import CustomModel
 from kmuhelper.pdf_generators import PDFOrder
@@ -770,8 +771,7 @@ class Bestellung(CustomModel):
         return [p.get_stock_data() for p in self.produkte.all()]
 
     def email_stock_warning(self):
-        email_receiver = Einstellung.objects.get(
-            id="email-stock-warning-receiver").inhalt
+        email_receiver = settings.get_db_setting("email-stock-warning-receiver")
 
         if email_receiver:
             warnings = []

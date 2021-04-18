@@ -1,6 +1,6 @@
 from django import template
-from kmuhelper.main.models import Geheime_Einstellung, Einstellung
 
+from kmuhelper import settings
 from kmuhelper.integrations.woocommerce.utils import is_connected as is_woocommerce_connected
 
 register = template.Library()
@@ -13,11 +13,8 @@ def kmuhelper_woocommerce_connected(context=None):
 
 
 @register.simple_tag(takes_context=True, name="kmuhelper_email_show_buttons")
-def kmuhelper_email_show_buttons(context):
-    show = bool(
-        Einstellung.objects.filter(id="email-show-buttons").exists() and
-        Einstellung.objects.get(id="email-show-buttons").inhalt
-    )
+def kmuhelper_email_show_buttons(context=None):
+    show = bool(settings.get_db_setting("email-show-buttons"))
     return show
 
 

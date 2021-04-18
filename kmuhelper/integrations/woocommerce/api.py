@@ -7,7 +7,8 @@ from rich.progress import Progress
 
 from woocommerce import API as WCAPI
 
-from kmuhelper.main.models import Geheime_Einstellung, Produkt, Kunde, Kategorie, Bestellung, Kosten
+from kmuhelper import settings
+from kmuhelper.main.models import Produkt, Kunde, Kategorie, Bestellung, Kosten
 from kmuhelper.utils import runden
 
 
@@ -32,11 +33,12 @@ class WooCommerce():
     def get_api(self):
         """Create a API object from data stored in settings"""
         return WCAPI(
-            url=Geheime_Einstellung.objects.get(id="wc-url").inhalt,
-            consumer_key=Geheime_Einstellung.objects.get(
-                id="wc-consumer_key").inhalt,
-            consumer_secret=Geheime_Einstellung.objects.get(
-                id="wc-consumer_secret").inhalt
+            url=settings.get_secret_db_setting(
+                "wc-url"),
+            consumer_key=settings.get_secret_db_setting(
+                "wc-consumer_key"),
+            consumer_secret=settings.get_secret_db_setting(
+                "wc-consumer_secret")
         )
 
     # General methods

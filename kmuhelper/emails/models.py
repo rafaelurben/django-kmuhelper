@@ -7,7 +7,6 @@ from rich import print
 from multi_email_field.fields import MultiEmailField
 
 from django.db import models
-from django.conf import settings
 from django.contrib import admin, messages
 from django.core import mail
 from django.core.files import storage
@@ -18,6 +17,7 @@ from django.utils.html import format_html
 from django.template import TemplateDoesNotExist, TemplateSyntaxError
 from django.template.loader import get_template
 
+from kmuhelper import settings
 from kmuhelper.overrides import CustomModel
 
 
@@ -278,8 +278,7 @@ class EMail(CustomModel):
 
         ctx = dict(self.html_context) if self.html_context is not None else {}
 
-        defaultcontext = dict(
-            getattr(settings, "KMUHELPER_EMAILS_DEFAULT_CONTEXT", dict()))
+        defaultcontext = settings.get_file_setting("KMUHELPER_EMAILS_DEFAULT_CONTEXT", dict())
 
         return {
             **defaultcontext,
@@ -319,8 +318,8 @@ class EMail(CustomModel):
             **options
         )
 
-        if hasattr(settings, "KMUHELPER_LOG_EMAIL"):
-            msg.bcc.append(settings.KMUHELPER_LOG_EMAIL)
+        if settings.has_file_setting("KMUHELPER_LOG_EMAIL"):
+            msg.bcc.append(settings.get_file_setting("KMUHELPER_LOG_EMAIL"))
 
         msg.content_subtype = "html"
 
@@ -348,7 +347,7 @@ class EMail(CustomModel):
     def get_url_with_domain(self):
         """Get the public view online URL with domain prefix"""
 
-        domain = getattr(settings, "KMUHELPER_DOMAIN", None)
+        domain = settings.get_file_setting("KMUHELPER_DOMAIN", None)
 
         if domain:
             url = self.get_url()

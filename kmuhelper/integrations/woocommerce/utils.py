@@ -1,8 +1,7 @@
-from kmuhelper.main.models import Geheime_Einstellung
+from kmuhelper import settings
 
 
-def is_connected(context=None):
-    return bool(
-        Geheime_Einstellung.objects.filter(id="wc-url").exists() and
-        Geheime_Einstellung.objects.get(id="wc-url").inhalt
-    )
+def is_connected():
+    """Check if WooCommerce has been connected"""
+
+    return bool(settings.get_secret_db_setting("wc-url", False))

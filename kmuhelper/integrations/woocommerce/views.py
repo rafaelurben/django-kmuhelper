@@ -11,8 +11,9 @@ from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 
+from kmuhelper import settings
 from kmuhelper.decorators import require_object
-from kmuhelper.main.models import Einstellung, Geheime_Einstellung, Produkt, Kunde, Kategorie, Bestellung
+from kmuhelper.main.models import Produkt, Kunde, Kategorie, Bestellung
 from kmuhelper.integrations.woocommerce.api import WooCommerce
 from kmuhelper.integrations.woocommerce.utils import is_connected
 from kmuhelper.utils import render_error
@@ -31,24 +32,26 @@ def wc_auth_key(request):
     try:
         data = json.loads(request.body)
         storeurl = request.headers.get("user-agent").split(";")[1].lstrip()
+        savedurl = settings.get_db_setting("wc-url")
 
-        savedurl = Einstellung.objects.get(id="wc-url")
-        if savedurl.inhalt.lstrip("https://").lstrip("http://").split("/")[0] == storeurl.lstrip("https://").lstrip("http://").split("/")[0]:
-            url = Geheime_Einstellung.objects.get(id="wc-url")
-            url.inhalt = storeurl
-            url.save()
+        storedomain = storeurl.lstrip("https://").lstrip("http://").split("/")[0]
+        saveddomain = savedurl.lstrip("https://").lstrip("http://").split("/")[0]
 
-            key = Geheime_Einstellung.objects.get(id="wc-consumer_key")
-            key.inhalt = data["consumer_key"]
-            key.save()
+        if saveddomain == storedomain:
+            settings.set_secret_db_setting(
+                "wc-url",
+                storeurl)
+            settings.set_secret_db_setting(
+                "wc-consumer_key",
+                data["consumer_key"])
+            settings.set_secret_db_setting(
+                "wc-consumer_secret",
+                data["consumer_secret"])
 
-            secret = Geheime_Einstellung.objects.get(id="wc-consumer_secret")
-            secret.inhalt = data["consumer_secret"]
-            secret.save()
-
-            savedurl.inhalt = "Bestätigt: " + storeurl + \
-                " (Änderungen an diesem Eintrag werden nur nach erneutem Verbinden angewendet!)"
-            savedurl.save()
+            settings.set_db_setting(
+                "wc-url",
+                "Bestätigt: " + storeurl +
+                " (Änderungen werden nur nach erneutem Verbinden angewendet!)")
             return JsonResponse({"success": True}, status=200)
 
         return JsonResponse({"success": False, "reason": "Unknown URL!"}, status=401)
@@ -68,7 +71,7 @@ def wc_auth_end(request):
 @login_required(login_url=reverse_lazy("admin:login"))
 @permission_required("kmuhelper.change_einstellung")
 def wc_auth_start(request):
-    shopurl = Einstellung.objects.get(id="wc-url").inhalt
+    shopurl = settings.get_db_setting("wc-url", "Bestätigt")
 
     if "Bestätigt" in shopurl:
         messages.error(
@@ -208,8 +211,8 @@ def wc_webhooks(request):
             "info": "Request was accepted but ignored because it doesn't contain any usable info!"
         }, status=202)
 
-    erwartete_url = Geheime_Einstellung.objects.get(
-        id="wc-url").inhalt.lstrip("https://").lstrip("http://").split("/")[0]
+    erwartete_url = settings.get_secret_db_setting("wc-url").lstrip(
+        "https://").lstrip("http://").split("/")[0]
     erhaltene_url = request.headers["x-wc-webhook-source"].lstrip(
         "https://").lstrip("http://").split("/")[0]
 
