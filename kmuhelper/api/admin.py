@@ -3,6 +3,7 @@ from django.contrib import admin
 from kmuhelper.api.models import ApiKey
 from kmuhelper.overrides import CustomModelAdmin
 
+
 @admin.register(ApiKey)
 class ApiKeyAdmin(CustomModelAdmin):
     list_display = ['id', 'name', 'user', 'read', 'write', 'key_preview']

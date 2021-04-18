@@ -771,7 +771,8 @@ class Bestellung(CustomModel):
         return [p.get_stock_data() for p in self.produkte.all()]
 
     def email_stock_warning(self):
-        email_receiver = settings.get_db_setting("email-stock-warning-receiver")
+        email_receiver = settings.get_db_setting(
+            "email-stock-warning-receiver")
 
         if email_receiver:
             warnings = []

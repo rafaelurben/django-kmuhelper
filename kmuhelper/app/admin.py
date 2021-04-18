@@ -14,7 +14,7 @@ from kmuhelper.overrides import CustomModelAdmin
 
 class ToDoAdminBase(CustomModelAdmin):
     hidden = True
-    
+
     # Permissions
 
     def has_delete_permission(self, request, obj=None):
@@ -37,11 +37,11 @@ class ToDoAdminBase(CustomModelAdmin):
         return [
             path('', wrap(self.changelist_view),
                  name='%s_%s_changelist' % info),
-            path('add/', wrap(self.add_view), 
+            path('add/', wrap(self.add_view),
                  name='%s_%s_add' % info),
-            # path('<path:object_id>/history/', wrap(self.history_view), 
+            # path('<path:object_id>/history/', wrap(self.history_view),
             #      name='%s_%s_history' % info),
-            # path('<path:object_id>/delete/', wrap(self.delete_view), 
+            # path('<path:object_id>/delete/', wrap(self.delete_view),
             #      name='%s_%s_delete' % info),
             path('<path:object_id>/change/', wrap(self.change_view),
                  name='%s_%s_change' % info),

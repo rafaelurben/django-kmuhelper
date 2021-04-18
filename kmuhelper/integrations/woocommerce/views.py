@@ -34,8 +34,10 @@ def wc_auth_key(request):
         storeurl = request.headers.get("user-agent").split(";")[1].lstrip()
         savedurl = settings.get_db_setting("wc-url")
 
-        storedomain = storeurl.lstrip("https://").lstrip("http://").split("/")[0]
-        saveddomain = savedurl.lstrip("https://").lstrip("http://").split("/")[0]
+        storedomain = storeurl.lstrip(
+            "https://").lstrip("http://").split("/")[0]
+        saveddomain = savedurl.lstrip(
+            "https://").lstrip("http://").split("/")[0]
 
         if saveddomain == storedomain:
             settings.set_secret_db_setting(
@@ -88,7 +90,7 @@ def wc_auth_start(request):
     }
     query_string = urlencode(params)
 
-    if not "https://" in shopurl and not "http://" in shopurl:
+    if "https://" not in shopurl and "http://" not in shopurl:
         shopurl = "https://" + shopurl
 
     url = "%s%s?%s" % (shopurl, '/wc-auth/v1/authorize', query_string)

@@ -278,7 +278,8 @@ class EMail(CustomModel):
 
         ctx = dict(self.html_context) if self.html_context is not None else {}
 
-        defaultcontext = settings.get_file_setting("KMUHELPER_EMAILS_DEFAULT_CONTEXT", {})
+        defaultcontext = settings.get_file_setting(
+            "KMUHELPER_EMAILS_DEFAULT_CONTEXT", {})
         signature = settings.get_db_setting("email-signature", "") or \
             defaultcontext.get("postcontent", "")
 

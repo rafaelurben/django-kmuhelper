@@ -8,6 +8,7 @@ register = template.Library()
 
 ##########
 
+
 @register.simple_tag(takes_context=True, name="kmuhelper_woocommerce_connected")
 def kmuhelper_woocommerce_connected(context=None):
     return is_woocommerce_connected()
@@ -31,6 +32,7 @@ def kmuhelper_breadcrumbs(value, args=None):
         title, viewname = args.split('|')
         url = reverse(viewname)
 
-    value = "</a>".join(value.split(f'<a href="{url_admin_kmuhelper}">')[1].split("</a>")[1::])
+    value = "</a>".join(value.split(f'<a href="{url_admin_kmuhelper}">')[
+                        1].split("</a>")[1::])
     value = f'<div id="breadcrumbs" class="breadcrumbs"><a href="{url}">{title}</a>' + value
     return value

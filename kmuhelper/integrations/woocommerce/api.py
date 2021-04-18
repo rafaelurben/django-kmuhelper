@@ -86,7 +86,7 @@ class WooCommerce():
         wcapi = api or self.get_api()
 
         if not newproduct:
-            newproduct = wcapi.get("products/" + str(product.woocommerceid)).json()
+            newproduct = wcapi.get(f'products/{product.woocommerceid}').json()
 
         try:
             product.verkaufspreis = float(newproduct["price"])
@@ -233,7 +233,7 @@ class WooCommerce():
         wcapi = api or self.get_api()
 
         if not newcustomer:
-            newcustomer = wcapi.get("customers/" + str(customer.woocommerceid)).json()
+            newcustomer = wcapi.get(f'customers/{customer.woocommerceid}').json()
 
         if "code" in newcustomer and newcustomer["code"] == "woocommerce_rest_customer_invalid_id":
             log("[red]Kunde existiert in WooCommerce nicht![/]")
@@ -339,8 +339,7 @@ class WooCommerce():
         wcapi = api or self.get_api()
 
         if not newcategory:
-            newcategory = wcapi.get("products/categories/" +
-                                             str(category.woocommerceid)).json()
+            newcategory = wcapi.get(f'products/categories/{category.woocommerceid}').json()
 
         if "code" in newcategory and newcategory["code"] == "woocommerce_rest_category_invalid_id":
             log("[red]Kategorie existiert in WooCommerce nicht![/]")
@@ -524,7 +523,7 @@ class WooCommerce():
         wcapi = api or self.get_api()
 
         if not neworder:
-            neworder = wcapi.get("orders/" + str(order.woocommerceid)).json()
+            neworder = wcapi.get(f'orders/{order.woocommerceid}').json()
 
         if "code" in neworder and neworder["code"] == "woocommerce_rest_order_invalid_id":
             log("[red]Bestellung existiert in WooCommerce nicht![/]")

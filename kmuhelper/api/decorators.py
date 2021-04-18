@@ -20,7 +20,7 @@ def protected(read=False, write=False, perms_required=()):
         @wraps(function)
         def wrap(request, *args, **kwargs):
             apikey = request.GET.get("apikey", None)
-            
+
             if apikey:
                 if _is_valid_uuid(apikey) and ApiKey.objects.filter(key=apikey).exists():
                     keyobject = ApiKey.objects.get(key=apikey)
@@ -37,7 +37,7 @@ def protected(read=False, write=False, perms_required=()):
                     "error": "apikey-invalid",
                     "message": "Your api key is invalid!"
                 }, status=403)
-            
+
             if request.user.is_authenticated:
                 if request.user.has_perms(perms_required):
                     return function(request, *args, **kwargs)
