@@ -16,7 +16,7 @@
                 {% if not noheader %}
                     <div id="header" style="flex-shrink: 0; color: {{ header_foreground|default:'#FFEE88' }}; background-color: {{ header_background|default:'#AA1155' }}; width: auto; height: auto; display: flex; justify-content: space-between; align-items: center; padding: 10px 40px; overflow: hidden;">
                         <div id="branding" style="float: left;">
-                            <h1 id="site-name" style=" padding: 0; margin: 0 20px 0 0; font-weight: 300; font-size: 24px;">{% block title %}{{ title|default:'KMUHelper | E-Mail' }}{% endblock %}</h1>
+                            <h1 id="site-name" style=" padding: 0; margin: 0 20px 0 0; font-weight: 300; font-size: 24px;">{% block title %}{{ header_title|default:'KMUHelper | E-Mail' }}{% endblock %}</h1>
                         </div>
                         <div id="user-tools" style="float: right; padding: 0; margin: 0 0 0 20px; font-weight: 300; font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase; text-align: right; color: #F6C400;">
                             
@@ -31,14 +31,15 @@
                         <div id="content" style="padding: 20px 40px;">
                             <h1 style="margin: 0 0 20px; font-weight: 300; font-size: 20px; color: #666;">{% block subtitle %}{{ subtitle }}{% endblock %}</h1>
 
-                            {% block firstcontent %}
-                                {{ firstcontent|urlize|linebreaks }}
+                            {% block precontent %}
+                                {{ precontent|urlize|linebreaks }}
                             {% endblock %}
                             {% block maincontent %}
                                 {{ text|urlize|linebreaks }}
                             {% endblock %}
-                            {% block lastcontent %}
-                                {{ lastcontent|urlize|linebreaks }}
+                            {% block postcontent %}
+                                <br>
+                                {{ postconent|urlize|linebreaks }}
                             {% endblock %}
                         </div>
                     </div>
@@ -57,6 +58,7 @@
                         <li><a href="{{ attachment.get_url }}">{{ attachment.filename }}</a></li>
                     {% endfor %}
                     </ul>
+                    <br>
                 {% endif %}
             {% endblock %}
         {% else %}

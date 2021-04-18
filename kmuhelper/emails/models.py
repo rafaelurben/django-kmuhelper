@@ -278,14 +278,19 @@ class EMail(CustomModel):
 
         ctx = dict(self.html_context) if self.html_context is not None else {}
 
-        defaultcontext = settings.get_file_setting("KMUHELPER_EMAILS_DEFAULT_CONTEXT", dict())
+        defaultcontext = settings.get_file_setting("KMUHELPER_EMAILS_DEFAULT_CONTEXT", {})
+        signature = settings.get_db_setting("email-signature", "") or \
+            defaultcontext.get("postcontent", "")
 
-        return {
+        data = {
             **defaultcontext,
             "subtitle": self.subject,
+            "postconent": signature,
             **ctx,
             "text": self.text,
         }
+
+        return data
 
     def render(self, online=False):
         """Render the email and return the rendered string"""

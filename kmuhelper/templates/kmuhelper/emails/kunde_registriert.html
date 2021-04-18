@@ -4,8 +4,12 @@
 
 {% block maincontent %}
 
-    <p>Sehr geehrter Kunde</p>
-    <p>Sie wurden erfolgreich in unserer Datenbank mit folgenden Daten registriert:</p>
+    {% if not text %}
+        <p>Sehr geehrter Kunde</p>
+        <p>Sie wurden erfolgreich in unserer Datenbank mit folgenden Daten registriert:</p>
+    {% else %}
+        {{ text|urlize|linebreaks }}
+    {% endif %}
 
     <ul>
         <li>ID: {{ kunde.id }}</li>

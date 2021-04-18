@@ -24,6 +24,9 @@ try:
     Einstellung.objects.update_or_create(
         id="email-show-buttons", defaults={
             "typ": "bool", "name": "E-Mail Knöpfe anzeigen"})
+    Einstellung.objects.update_or_create(
+        id="email-signature", defaults={
+            "typ": "text", "name": "E-Mail Signatur"})
 
     Geheime_Einstellung.objects.update_or_create(
         id="wc-consumer_key", defaults={

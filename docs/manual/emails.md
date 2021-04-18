@@ -39,12 +39,13 @@ Zusätzlich können festgelegt werden:
   - Zusätzliche Daten, mit welchen die Designvorlage befüllt wird.
   - In den meisten Fällen überflüssig.
   - Müssen im JSON-Format angegeben werden.
-  - Die Vorlage `default.html` unterstützt folgende Einstellungen:
-    - `title`: Der Text im Header
-    - `header-background`: Die Hintergrundfarbe des Headers (HEX, z.B. `#FFFFFF`)
-    - `header-foreground`: Die Vordergrundfarbde des Headers (HEX, z.B. `#000000`)
-    - `firstcontent`: Inhalt vor dem Hauptinhalt (gleiche Funktionen wie Text)
-    - `lastcontent`: Inhalt nach dem Hauptinhalt (gleiche Funktionen wie Text)
+  - Die Vorlage `base.html` (und somit `default.html`) unterstützt folgende Einstellungen:
+    - `header_title`: Der Text im Header
+    - `header_background`: Die Hintergrundfarbe des Headers (HEX, z.B. `#FFFFFF`)
+    - `header_foreground`: Die Vordergrundfarbde des Headers (HEX, z.B. `#000000`)
+    - `precontent`: Inhalt vor dem Hauptinhalt (gleiche Funktionen wie Text)
+    - `postconent`: Inhalt nach dem Hauptinhalt (gleiche Funktionen wie Text)
+      &dash;&gt; Überschreibt Signatur!
 
 ### Anhänge
 
@@ -56,27 +57,36 @@ E-Mail Vorlagen betreffen nur den Text einer E-Mail. Diese sind jedoch nicht mit
 
 Hinweis: Die Vorlagen werden mit der E-Mail NICHT verknüpft, diese werden nur zum Generieren einer E-Mail verwendet.
 
-## "Online ansehen"
+## Online ansehen
 
-E-Mails werden, sofern in den [Einstellungen](#einstellungen-(fortgeschritten)) aktiviert, mit einem "online ansehen" Link versendet. Personen, welche einen veralteten E-Mail Client verwenden, können die E-Mail so im Browser ansehen.
+E-Mails werden, sofern in den [Einstellungen](#einstellungen-fortgeschritten) aktiviert, mit einem "online ansehen" Link versendet. Personen, welche einen veralteten E-Mail Client verwenden, können die E-Mail somit im Browser ansehen.
+ACHTUNG: Wenn ein E-Mail im KMUHelper gelöscht wird, wird dieser Link ungültig!
 
 ## Automatisch generierte E-Mails
 
-Die Rechnung zu einer Bestellung kann per Knopfdruck an die hinterlegte E-Mail-Adresse in der Rechnungsadresse gesendet werden. Dazu erscheint, sofern E-Mail Knöpfe in den Admin-Einstellungen aktiviert sind und benötigte Berechtigungen vorhanden sind, in der oberen rechten Ecke ein Knopf. Die Vorlage dazu (`kmuhelper/emails/bestellung_rechnung.html`) muss möglicherweise je nach Verwendungszweck überschrieben werden.
+Eine E-Mail mit der Rechnung oder dem Lieferschein zu einer Bestellung kann per Knopfdruck automatisch generiert werden. Dazu erscheint, sofern E-Mail Knöpfe in den Admin-Einstellungen aktiviert sind und benötigte Berechtigungen vorhanden sind, in der oberen rechten Ecke ein Knopf. E-Mails werden jedoch nicht direkt versendet und können zuerst angesehen und z.T. angepasst werden. Die Vorlage dazu (`kmuhelper/emails/bestellung_rechnung.html`) muss möglicherweise je nach Verwendungszweck überschrieben werden. (fortgeschritten)
 
 ## Automatisierte E-Mails
 
-Wenn in den Einstellungen eine E-Mail-Adresse für Warnungen zum Lagerbestand angegeben wurde, wird beim Import von Bestellungen automatisch geprüft, ob diese Bestellung den Lagerbestand mancher Produkte gefährdet. Sollte dies der Fall sein, wird automatisch eine E-Mail versendet, in welcher ersichtlich ist, von welchen Produkten noch wie viel vorhanden sind. Dies wird übrigens auch beim Speichern einer Bestellung sowie eines Produktes geprüft, jedoch wird in diesem Fall keine E-Mail versendet.
+Wenn in den [Einstellungen](#einstellungen) eine E-Mail-Adresse für Warnungen zum Lagerbestand angegeben wurde, wird beim Import von Bestellungen automatisch geprüft, ob diese Bestellung den Lagerbestand mancher Produkte gefährdet. Sollte dies der Fall sein, wird automatisch eine E-Mail versendet, in welcher ersichtlich ist, von welchen Produkten noch wie viel vorhanden sind. Dies wird übrigens auch beim Speichern einer Bestellung sowie eines Produktes geprüft, jedoch wird in diesem Fall keine E-Mail versendet.
 
-Alle automatischen E-Mails werden auch in der E-Mail-Ansicht aufgeführt.
+Alle automatisch gesendeten E-Mails werden auch in der E-Mail-Ansicht aufgeführt.
+
+## Einstellungen
+
+In den Einstellungen, welche via Adminbereich erreicht werden können, befinden sich folgende Optionen:
+
+1. E-Mail Knöpfe anzeigen: Zeige oder verstecke E-Mail Knöpfe bei Bestellungen und Kunden
+2. E-Mail für Warnungen zum Lagerbestand: E-Mail Adresse für automatische Lagerbestandswarnungen
+3. E-Mail Signatur: Hiermit kann eine Signatur gespeichert werden, welche allen E-Mails nach dem Hauptinhalt angehängt wird. (Kann per E-Mail via `postcontent` überschrieben werden.)
 
 ## Einstellungen (fortgeschritten)
 
-Hinweis: Hierbei handelt es sich nicht um die Einstellungen im Adminbereich, sondern um die Einstellungsdatei `settings.py`. Für all diese Einstellungen befindet sich in der [Einstellungsdatei der Vorlage](https://github.com/rafaelurben/djangoproject-template-kmuhelper-heroku/blob/master/mysite/settings.py) ein Beispiel.
+Bei den fortgeschrittenen Einstellungen handelt es sich um die Einstellungsdatei `settings.py`. Für all diese Einstellungen befindet sich in der [Einstellungsdatei der Vorlage](https://github.com/rafaelurben/djangoproject-template-kmuhelper-heroku/blob/master/mysite/settings.py) ein Beispiel.
 
-1. Um zu jeder E-Mail einen "online ansehen" Link hinzuzufügen, muss die Einstellung `KMUHELPER_DOMAIN` gesetzt sein.
+1. Um zu jeder E-Mail einen "online ansehen" Link hinzuzufügen, muss die Einstellung `KMUHELPER_DOMAIN` gesetzt sein. (z.B. `https://office.example.com`)
 2. Mit `KMUHELPER_LOG_EMAIL` kann eine E-Mail Adresse festgelegt werden, welche zu allen ausgehenden E-Mails als BCC hinzugefügt wird.
-3. Ausserdem können mit `KMUHELPER_EMAILS_DEFAULT_CONTEXT` ein paar Einstellungen für das Aussehen getroffen werden. Darunter z.B. die Farben des "Headers", der Text darin sowie Text vor und nach dem Hauptinhalt. Diese Einstellungen können auch für einzelne E-Mails angepasst werden. ("Daten")
+3. Ausserdem können mit `KMUHELPER_EMAILS_DEFAULT_CONTEXT` die Standarddaten für E-Mails festgelegt werden. Diese werden bei allen E-Mails verwendet, sofern nicht via "Daten" überschrieben. (Hinweis: `postcontent` wird von der Signatur überschrieben, sofern vorhanden!)
 
 ## Zurück
 
