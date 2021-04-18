@@ -8,5 +8,5 @@ urlpatterns = [
     path('versions', views.versions, name="api-versions"),
     path('orders/unpaid', views.orders_unpaid, name="api-orders-unpaid"),
 
-    re_path('.*', views.not_found, name="not-found")
+    re_path('.*', views.not_found, name="api-not-found")
 ]

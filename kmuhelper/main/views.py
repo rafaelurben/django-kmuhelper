@@ -5,6 +5,7 @@ from django.urls import reverse, reverse_lazy
 
 from kmuhelper.main.models import Kunde, Lieferant, Lieferung, Bestellung
 from kmuhelper.decorators import confirm_action, require_object
+from kmuhelper.utils import render_error
 
 ###############
 
@@ -107,9 +108,9 @@ def bestellung_zu_lieferung(request, obj):
     return redirect(reverse("admin:kmuhelper_lieferung_change", args=[new.pk]))
 
 
-# Kunden-Entpunkte
+# Public views
 
-@require_object(Bestellung, reverse_lazy("kmuhelper:info"))
+@require_object(Bestellung, reverse_lazy("kmuhelper:info"), show_errorpage=True)
 def public_view_order(request, obj, order_key):
     lieferschein = bool("lieferschein" in dict(request.GET))
     digital = not bool("druck" in dict(request.GET))
@@ -119,4 +120,4 @@ def public_view_order(request, obj, order_key):
 
     messages.error(
         request, "Der Bestellungsschlüssel dieser Bestellung stimmt nicht überein.")
-    return redirect(reverse("kmuhelper:info"))
+    return render_error(request)
