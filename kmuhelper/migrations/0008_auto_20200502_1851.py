@@ -2,7 +2,7 @@
 
 import django.core.validators
 from django.db import migrations, models
-import kmuhelper.models
+import kmuhelper.main.models
 
 
 class Migration(migrations.Migration):
@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='bestellung',
             name='order_key',
-            field=models.CharField(blank=True, default=kmuhelper.models.defaultorderkey, max_length=50, verbose_name='Bestellungs-Schlüssel'),
+            field=models.CharField(blank=True, default=kmuhelper.main.models.defaultorderkey, max_length=50, verbose_name='Bestellungs-Schlüssel'),
         ),
         migrations.AlterField(
             model_name='bestellung',

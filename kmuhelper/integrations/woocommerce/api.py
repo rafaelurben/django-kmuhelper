@@ -1,5 +1,3 @@
-# pylint: disable=no-member
-
 from django.utils.html import strip_tags
 
 from rich import print

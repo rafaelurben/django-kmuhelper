@@ -1,6 +1,5 @@
-# pylint: disable=unused-wildcard-import
+import kmuhelper.main.models
+import kmuhelper.app.models
+import kmuhelper.emails.models
+import kmuhelper.api.models
 
-from kmuhelper.main.models import *
-from kmuhelper.app.models import *
-from kmuhelper.emails.models import *
-from kmuhelper.api.models import *
