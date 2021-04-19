@@ -4,7 +4,7 @@ permalink: /manual/languages
 
 # Sprachen
 
-Der KMUHelper selbst ist aktuell nur in Deutsch verfügbar und eine Übersetzung ist vorerst nicht geplant. Jedoch können die Rechnungen in Deutsch, Französisch, Italienisch und Englisch gedruckt werden. Dabei wird immer die beim Kunden eingestellte Sprache verwendet.
+Der KMUHelper selbst ist aktuell nur in Deutsch verfügbar und eine Übersetzung ist vorerst nicht geplant, jedoch können die Rechnungen in Deutsch, Französisch, Italienisch und Englisch gedruckt werden. Dabei wird immer die beim verlinkten Kunden eingestellte Sprache verwendet.
 
 Um auch Produkte und Mengenbezeichnungen zu übersetzen, wird der gleiche Syntax wie beim Wordpress Plugin `qTranslate-X` verwendet.
 

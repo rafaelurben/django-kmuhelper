@@ -16,4 +16,4 @@ Hier finden Sie eine Bedienungsanleitung zum KMUHelper. Wenn Sie auf der Suche n
 
 ## Infos
 
-Kontaktmöglichkeiten und weiter Informationen finden Sie alle auf [der Projektseite](https://rafaelurben.ch/kmuhelper).
+Kontaktmöglichkeiten und weitere Informationen finden Sie alle auf [der Projektseite](https://rafaelurben.ch/kmuhelper).

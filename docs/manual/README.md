@@ -21,10 +21,14 @@ Die Entwicklung und Unterhaltung des KMUHelper benötigt sehr viel Zeit, deshalb
 - [Einrichtung](setup.md)
 - [App](app.md)
 
+<!-- List divider -->
+
 - [Lagermanagement](storage.md)
 - [Kundenmanagement](customers.md)
 - [Bestellungen & Rechnungen](order-and-invoice.md)
 - [E-Mails](emails.md)
+
+<!-- List divider -->
 
 - [Sprachen](languages.md)
 
