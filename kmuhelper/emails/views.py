@@ -19,11 +19,14 @@ from kmuhelper.utils import render_error
 @confirm_action("E-Mail Nachricht senden")
 def email_send(request, obj):
     if obj.is_valid():
-        success = obj.send()
-        if success:
-            messages.success(request, "E-Mail wurde versendet!")
-        else:
-            messages.error(request, "E-Mail konnte nicht gesendet werden!")
+        try:
+            success = obj.send()
+            if success:
+                messages.success(request, "E-Mail wurde versendet!")
+            else:
+                messages.error(request, "E-Mail konnte nicht gesendet werden!")
+        except FileNotFoundError:
+            messages.error(request, "Eine Datei aus dem Anhang konnte nicht gefunden werden!")
     return redirect(reverse("admin:kmuhelper_email_change", args=[obj.pk]))
 
 
@@ -33,11 +36,14 @@ def email_send(request, obj):
 @confirm_action("E-Mail Nachricht ERNEUT senden")
 def email_resend(request, obj):
     if obj.is_valid(request):
-        success = obj.send()
-        if success:
-            messages.success(request, "E-Mail wurde erneut versendet!")
-        else:
-            messages.error(request, "E-Mail konnte nicht gesendet werden!")
+        try:
+            success = obj.send()
+            if success:
+                messages.success(request, "E-Mail wurde erneut versendet!")
+            else:
+                messages.error(request, "E-Mail konnte nicht gesendet werden!")
+        except FileNotFoundError:
+            messages.error(request, "Eine Datei aus dem Anhang konnte nicht gefunden werden!")
     return redirect(reverse("admin:kmuhelper_email_change", args=[obj.pk]))
 
 
@@ -80,7 +86,11 @@ def email_view(request, obj):
 @require_object(Attachment)
 def attachment_download(request, obj):
     download = not "preview" in request.GET
-    return obj.get_file_response(download=download)
+    try:
+        return obj.get_file_response(download=download)
+    except FileNotFoundError:
+        messages.error(request, "Datei wurde nicht gefunden!")
+        return render_error(request)
 
 
 # Public views
@@ -95,9 +105,13 @@ def attachment_view(request, obj):
 
     if request.user.has_perm("kmuhelper.download_attachment") or (token_received == token_stored):
         download = "download" in request.GET
-        return obj.get_file_response(download=download)
+        try:
+            return obj.get_file_response(download=download)
+        except FileNotFoundError:
+            messages.error(request, "Diese Datei ist leider nicht mehr verfügbar!")
+    else:
+        messages.error(request, "Du hast keinen Zugriff auf diesen E-Mail-Anhang!")
 
-    messages.error(request, "Du hast keinen Zugriff auf diesen E-Mail-Anhang!")
     return render_error(request)
 
 
