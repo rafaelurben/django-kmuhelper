@@ -1,7 +1,9 @@
 from django.contrib import admin, messages
+from django.urls import path
 
 from kmuhelper.overrides import CustomModelAdmin
 from kmuhelper.integrations.paymentimport.models import PaymentImport, PaymentImportEntry
+from kmuhelper.integrations.paymentimport import views
 
 
 class PaymentImportAdminEntryInline(admin.TabularInline):
@@ -15,31 +17,28 @@ class PaymentImportAdmin(CustomModelAdmin):
 
     ordering = ('is_parsed',)
 
-    list_display = ('title', 'time_imported', 'is_parsed', 'entrycount',)
+    list_display = ('title', 'time_imported', 'is_parsed',)
     list_filter = ('is_parsed',)
 
     # inlines = (PaymentImportAdminEntryInline, )
 
     save_on_top = True
-
     hidden = True
 
-    def get_fieldsets(self, request, obj=None):
-        if obj:
-            return []
+    # Views
 
-        return [
-            (None, {'fields': ['title', 'xmlfile']})
+    def get_urls(self):
+        info = self.model._meta.app_label, self.model._meta.model_name
+
+        urls = super().get_urls()
+
+        my_urls = [
+            path('upload', self.admin_site.admin_view(views.upload),
+                 name="%s_%s_upload" % info),
+            path('<path:object_id>/process', self.admin_site.admin_view(views.process),
+                 name="%s_%s_process" % info),
         ]
-
-    # Custom save
-
-    def save_model(self, request, obj, form, change):
-        super().save_model(request, obj, form, change)
-        if not obj.is_parsed:
-            if not obj.parse(request):
-                messages.error(request, "Datei konnte nicht verarbeitet werden!")
-
+        return my_urls + urls
 
 #
 
