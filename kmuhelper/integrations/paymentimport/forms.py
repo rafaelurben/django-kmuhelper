@@ -88,7 +88,7 @@ class CamtUploadForm(forms.Form):
                                 currency=currency,
                             )
 
-            return redirect(reverse('admin:kmuhelper_paymentimport_upload', args=[dbentry.pk]))
+            return redirect(reverse('admin:kmuhelper_paymentimport_process', args=[dbentry.pk]))
         except AttributeError as error:
             log(error)
             messages.error(
