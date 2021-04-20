@@ -1,4 +1,4 @@
-from xml.etree.ElementTree import parse as parse_xml, ParseError
+from defusedxml.ElementTree import parse as parse_xml, ParseError
 
 from rich import print
 
@@ -88,7 +88,7 @@ class CamtUploadForm(forms.Form):
                                 currency=currency,
                             )
 
-            return redirect(reverse('admin:kmuhelper_paymentimport_change', args=[dbentry.pk]))
+            return redirect(reverse('admin:kmuhelper_paymentimport_upload', args=[dbentry.pk]))
         except AttributeError as error:
             log(error)
             messages.error(
