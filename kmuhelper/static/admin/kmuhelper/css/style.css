@@ -7,6 +7,12 @@
     --link-selected-fg: var(--kmuhelper-light);
 }
 
+/* Optimize for more messages */
+
+ul.messagelist li:not(:last-child) {
+    margin-bottom: 2px;
+}
+
 /* Additional app index style */
 
 #pagelist {

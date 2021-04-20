@@ -1,0 +1,8 @@
+{% extends 'admin/kmuhelper/change_list.html' %}
+
+{% block object-tools-items %}
+    {% if perms.kmuhelper.add_paymentimport %}
+        <li><a href="{% url 'admin:kmuhelper_paymentimport_upload' %}">XML Datei hochladen</a></li>
+    {% endif %}
+    {{ block.super }}
+{% endblock %}

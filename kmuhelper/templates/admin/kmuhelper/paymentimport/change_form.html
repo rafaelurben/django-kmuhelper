@@ -1,0 +1,8 @@
+{% extends 'admin/kmuhelper/change_form.html' %}
+
+{% block object-tools-items %}
+    {% if change and perms.kmuhelper.change_paymentimport and original.entrycount > 0 %}
+        <li><a href="{% url 'admin:kmuhelper_paymentimport_process' object_id %}">Verarbeiten / prüfen</a></li>
+    {% endif %}
+    {{ block.super }}
+{% endblock %}
