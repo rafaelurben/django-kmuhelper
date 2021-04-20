@@ -7,6 +7,8 @@ from django.contrib import messages
 from django.core.validators import FileExtensionValidator
 from django.shortcuts import redirect, reverse
 
+from kmuhelper.integrations.paymentimport.models import PaymentImport, PaymentImportEntry
+
 
 def log(string, *args):
     print("[deep_pink4][KMUHelper Paymentimport][/] -", string, *args)
@@ -19,7 +21,8 @@ class CamtUploadForm(forms.Form):
 
     file = forms.FileField(
         label="XML-Datei",
-        help_text="Die Datei muss nach dem camt.054.001.02 Standard aufgebaut sein.",
+        help_text="Die Datei muss nach dem camt.053.001.04 Standard aufgebaut sein und "
+                  "Detailinformationen enthalten.",
         validators=[FileExtensionValidator(['xml'])],
     )
 
@@ -30,50 +33,64 @@ class CamtUploadForm(forms.Form):
             try:
                 tree = parse_xml(file)
                 root = tree.getroot()
-                msg = root.find('{*}BkToCstmrDbtCdtNtfctn')
+                msg = root.find('{*}BkToCstmrStmt')
 
-                if 'camt.054.001.02' not in str(root.attrib) or msg is None:
+                if 'camt.053.001.04' not in str(root.tag) or msg is None:
                     raise forms.ValidationError(
                         "Die Datei liegt nicht im korrekten Format vor!"
                     )
 
-                self.cleaned_data["camt.054.001.02"] = msg
-            except ParseError:
+                self.cleaned_data["camt.053.001.04"] = msg
+            except ParseError as error:
                 raise forms.ValidationError(
-                    "Die Datei kann nicht verarbeitet werden!"
+                    f"Die Datei kann nicht verarbeitet werden! {error}"
                 )
 
         return file
 
     def create_payment_import_and_redirect(self, request):
-        msg = self.cleaned_data.get('camt.054.001.02')
+        msg = self.cleaned_data.get('camt.053.001.04')
         try:
-            log("Start processing", msg)
-            for notif in msg.findall('{*}Ntfctn'):
-                iban = notif.find('./{*}Acct/{*}Id/{*}IBAN').text
-                log("Processing notification for account", iban)
-                for entry in notif.findall('{*}Ntry'):
-                    ispositive = entry.find('{*}CdtDbtInd').text == 'DBIT'
-                    # _amt = entry.find('{*}Amt')
-                    # amount = _amt.text
-                    # currency = _amt.attrib.get('Ccy', 'CHF')
-                    # if ispositive:
-                    #     log("Saving positive", amount, currency)
-                    # else:
-                    #     log("Skipping negative:", amount, currency)
-                    if ispositive:
-                        for ntrydtls in entry.findall('{*}NtryDtls'):
-                            for txdtls in ntrydtls.findall('{*}TxDtls'):
-                                log(txdtls)
-                                log(txdtls.find('{*}AmtDtls'))
-                                _amt = txdtls.find(
-                                    './{*}AmtDtls/{*}TxAmt/{*}Amt')
-                                amount = _amt.text
-                                currency = _amt.attrib.get('Ccy', 'CHF')
-                                log(amount, currency)
-            # TODO: Create PaymentImport and redirect to its change page
-            return redirect(reverse('admin:kmuhelper_paymentimport_changelist'))
+            msgid = msg.find('./{*}GrpHdr/{*}MsgId').text
+            creationdate = msg.find('./{*}GrpHdr/{*}CreDtTm').text
+            log(
+                f"Start processing - Message id: '{msgid}' - Creation date: '{creationdate}'")
+
+            dbentry = PaymentImport.objects.create(
+                data_msgid=msgid,
+                data_creationdate=creationdate,
+            )
+
+            for entry in msg.findall('./{*}Stmt/{*}Ntry'):
+                description = entry.find('{*}AddtlNtryInf').text
+                iscredit = entry.find('{*}CdtDbtInd').text == 'CRDT'
+                log(f"- Entry {iscredit} Description: '{description}'")
+                if iscredit:
+                    if description in ['Sammelbuchung QR-Rechnung mit QR-Referenz']:
+                        for txdtls in entry.findall('./{*}NtryDtls/{*}TxDtls'):
+                            _amt = txdtls.find('{*}Amt')
+                            amount = _amt.text
+                            currency = _amt.attrib.get('Ccy', 'CHF')
+                            name = txdtls.find(
+                                './{*}RltdPties/{*}Dbtr/{*}Nm').text
+                            iban = txdtls.find(
+                                './{*}RltdPties/{*}DbtrAcct/{*}Id/{*}IBAN').text
+                            ref = txdtls.find(
+                                './{*}RmtInf/{*}Strd/{*}CdtrRefInf/{*}Ref').text
+                            log(f"- - {amount} {currency} '{name}' '{iban}' {ref}")
+
+                            PaymentImportEntry.objects.create(
+                                parent=dbentry,
+                                name=name,
+                                iban=iban,
+                                ref=ref,
+                                amount=float(amount),
+                                currency=currency,
+                            )
+
+            return redirect(reverse('admin:kmuhelper_paymentimport_change', args=[dbentry.pk]))
         except AttributeError as error:
             log(error)
-            messages.error(request, f"Bei der Verarbeitung ist ein Fehler aufgetreten: {error}")
+            messages.error(
+                request, f"Bei der Verarbeitung ist ein Fehler aufgetreten: {error}")
             return redirect(reverse('admin:kmuhelper_paymentimport_upload'))

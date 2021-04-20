@@ -5,35 +5,40 @@ from django.db import models
 
 from kmuhelper.main.models import Bestellung
 from kmuhelper.overrides import CustomModel
+from kmuhelper.utils import formatprice
 
 
 #############
 
 
 class PaymentImport(CustomModel):
-    title = models.CharField(
-        verbose_name="Titel",
-        max_length=50,
+    time_imported = models.DateTimeField(
+        verbose_name="Importiert am",
+        auto_now_add=True,
     )
     is_parsed = models.BooleanField(
         verbose_name="Verarbeitet?",
         default=False,
     )
-    time_imported = models.DateTimeField(
-        verbose_name="Importiert am",
-        auto_now_add=True,
+
+    data_msgid = models.CharField(
+        verbose_name="Nachrichtenid",
+        max_length=50,
+    )
+    data_creationdate = models.DateTimeField(
+        verbose_name="Erstellt am"
     )
 
     # Display
 
-    # @admin.display(description="Anzahl Einträge")
-    # def entrycount(self):
-    #     if hasattr(self, 'entries'):
-    #         return self.entries.count()
+    @admin.display(description="Anzahl Einträge")
+    def entrycount(self):
+        if hasattr(self, 'entries'):
+            return self.entries.count()
 
-    @admin.display(description="Zahlungsimport", ordering='title')
+    @admin.display(description="Zahlungsimport")
     def __str__(self):
-        return f"{self.title} ({self.pk})"
+        return f"{self.time_imported} ({self.pk})"
 
     # Methods
 
@@ -46,13 +51,49 @@ class PaymentImport(CustomModel):
 
 
 class PaymentImportEntry(models.Model):
-    referenznummer = models.CharField(
+    parent = models.ForeignKey(
+        to='PaymentImport',
+        on_delete=models.CASCADE,
+        related_name='entries',
+    )
+
+    ref = models.CharField(
         verbose_name="Referenznummer",
         max_length=50,
     )
-    betrag = models.FloatField(
+    iban = models.CharField(
+        verbose_name="IBAN",
+        max_length=22,
+    )
+    name = models.CharField(
+        verbose_name="Name",
+        max_length=100,
+    )
+
+    amount = models.FloatField(
         verbose_name="Betrag",
     )
+    currency = models.CharField(
+        verbose_name="Währung",
+        max_length=10,
+    )
+
+    @admin.display(description="Betrag", ordering='amount')
+    def betrag(self):
+        return formatprice(self.amount)
+
+    @admin.display(description="ID", ordering='ref')
+    def order_id(self):
+        if (
+                len(self.ref) == 27 and
+                str(self.ref)[-5:-1] == '0000'
+        ):
+            return str(self.ref).lstrip('0')[:-5]
+        return None
+
+    @admin.display(description="Eintrag")
+    def __str__(self):
+        return f"{self.currency} {self.amount} - {self.order_id()}"
 
     class Meta:
         verbose_name = "Zahlungsimport-Eintrag"

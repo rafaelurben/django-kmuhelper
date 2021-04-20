@@ -8,19 +8,29 @@ from kmuhelper.integrations.paymentimport import views
 
 class PaymentImportAdminEntryInline(admin.TabularInline):
     model = PaymentImportEntry
+    verbose_name = "Eintrag"
+    verbose_name_plural = "Einträge"
     extra = 0
+
+    fields = ('currency', 'betrag', 'ref', 'order_id', 'iban', 'name',)
+    readonly_fields = ('order_id', 'betrag',)
 
 
 @admin.register(PaymentImport)
 class PaymentImportAdmin(CustomModelAdmin):
     readonly_fields = ('time_imported',)
 
+    fieldsets = [
+        ('Infos', {'fields': ['is_parsed', 'time_imported']}),
+        ('Daten', {'fields': ['data_msgid', 'data_creationdate']}),
+    ]
+
     ordering = ('is_parsed',)
 
-    list_display = ('title', 'time_imported', 'is_parsed',)
+    list_display = ('time_imported', 'entrycount', 'is_parsed',)
     list_filter = ('is_parsed',)
 
-    # inlines = (PaymentImportAdminEntryInline, )
+    inlines = (PaymentImportAdminEntryInline, )
 
     save_on_top = True
     hidden = True
@@ -38,7 +48,15 @@ class PaymentImportAdmin(CustomModelAdmin):
             path('<path:object_id>/process', self.admin_site.admin_view(views.process),
                  name="%s_%s_process" % info),
         ]
-        return my_urls + urls
+        return urls + my_urls
+
+    # Permissions
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
 
 #
 
