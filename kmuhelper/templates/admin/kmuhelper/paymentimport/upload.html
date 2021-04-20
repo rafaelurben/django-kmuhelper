@@ -2,9 +2,14 @@
 
 {% load static %}
 
-{% block title %}Zahlungsimport | KMUHelper Admin{% endblock %}
+{% block title %}XML-Upload | KMUHelper Zahlungsimport{% endblock %}
 
 {% block breadcrumbs %}
+    <div id="breadcrumbs" class="breadcrumbs">
+        <a href="{% url 'admin:app_list' app_label='kmuhelper' %}">KMUHelper Admin</a>
+        &rsaquo; <a href="{% url 'admin:kmuhelper_paymentimport_changelist' %}">Zahlungsimporte</a>
+        &rsaquo; XML-Upload
+    </div>
 {% endblock %}
 
 {% block extrahead %}
@@ -12,7 +17,7 @@
 {% endblock %}
 
 {% block content_title %}
-    <h1>Zahlungsimport</h1>
+    <h1>Zahlungsimport - XML-Upload</h1>
 {% endblock %}
 
 {% block content %}

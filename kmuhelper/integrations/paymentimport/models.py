@@ -1,7 +1,10 @@
 from rich import print
 
-from django.contrib import admin
+from django.contrib import admin, messages
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
+from django.urls import reverse
+from django.utils.html import format_html, mark_safe
 
 from kmuhelper.main.models import Bestellung
 from kmuhelper.overrides import CustomModel
@@ -16,7 +19,7 @@ class PaymentImport(CustomModel):
         verbose_name="Importiert am",
         auto_now_add=True,
     )
-    is_parsed = models.BooleanField(
+    is_processed = models.BooleanField(
         verbose_name="Verarbeitet?",
         default=False,
     )
@@ -42,8 +45,70 @@ class PaymentImport(CustomModel):
 
     # Methods
 
-    def process(self, request):
-        pass
+    def add_processing_info_messages(self, request):
+        notfound = []
+        alreadypaid = []
+        willmark = []
+        for entry in self.entries.all():
+            oid = entry.order_id()
+            if oid is None:
+                messages.error(request,
+                               f"{entry.ref} scheint keine KMUHelper-Bestellung zu sein.")
+            else:
+                try:
+                    bestellung = Bestellung.objects.get(pk=oid)
+                    orderlink = format_html(
+                        '<a target="_blank" href="{}">{}</a>',
+                        reverse('admin:kmuhelper_bestellung_change',
+                                args=[oid]),
+                        f'#{oid}')
+
+                    if bestellung.bezahlt:
+                        alreadypaid.append(orderlink)
+                    elif bestellung.fix_summe == entry.amount and entry.currency == 'CHF':
+                        willmark.append(orderlink)
+                    else:
+                        messages.warning(request, format_html(
+                            "Beträge der Bestellung {} stimmen nicht überein! "
+                            "Zu bezahlen: <u>{} CHF</u> - "
+                            "Bezahlt: <u>{} {}</u> - "
+                            "Name: <b>{}</b>",
+                            orderlink, bestellung.fix_summe,
+                            entry.amount, entry.currency, entry.name,
+                        ))
+                except ObjectDoesNotExist:
+                    notfound.append(f'#{oid}')
+
+        if notfound:
+            messages.error(request, (
+                "Folgende Bestellung(en) wurde(n) nicht gefunden: " +
+                (", ".join(notfound))
+            ))
+        if alreadypaid:
+            messages.info(request, format_html(
+                "Folgende Bestellung(en) wurde(n) bereits als bezahlt markiert: " +
+                ", ".join(["{}" for i in range(len(alreadypaid))]),
+                *alreadypaid
+            ))
+        if willmark:
+            messages.warning(request, format_html(
+                "Folgende Bestellung(en) wird/werden als bezahlt markiert: "
+                ", ".join(["{}" for i in range(len(willmark))]),
+                *willmark
+            ))
+
+    def process(self):
+        for entry in self.entries.all():
+            oid = entry.order_id()
+            try:
+                bestellung = Bestellung.objects.get(pk=oid)
+                if not bestellung.bezahlt and bestellung.fix_summe == entry.amount and entry.currency == 'CHF':
+                    bestellung.bezahlt = True
+                    bestellung.save()
+            except ObjectDoesNotExist:
+                pass
+        self.is_processed = True
+        self.save()
 
     class Meta:
         verbose_name = "Zahlungsimport"
@@ -93,11 +158,11 @@ class PaymentImportEntry(models.Model):
 
     @admin.display(description="Eintrag")
     def __str__(self):
-        return f"{self.currency} {self.amount} - {self.order_id()}"
+        return f"{self.currency} {self.amount} - {self.order_id()} - {self.name}"
 
     class Meta:
         verbose_name = "Zahlungsimport-Eintrag"
-        verbose_name = "Zahlungsimport-Einträge"
+        verbose_name_plural = "Zahlungsimport-Einträge"
         default_permissions = ()
 
     objects = models.Manager()

@@ -14,6 +14,7 @@ class PaymentImportAdminEntryInline(admin.TabularInline):
 
     fields = ('currency', 'betrag', 'ref', 'order_id', 'iban', 'name',)
     readonly_fields = ('order_id', 'betrag',)
+    ordering = ('ref',)
 
 
 @admin.register(PaymentImport)
@@ -21,14 +22,14 @@ class PaymentImportAdmin(CustomModelAdmin):
     readonly_fields = ('time_imported',)
 
     fieldsets = [
-        ('Infos', {'fields': ['is_parsed', 'time_imported']}),
+        ('Infos', {'fields': ['is_processed', 'time_imported']}),
         ('Daten', {'fields': ['data_msgid', 'data_creationdate']}),
     ]
 
-    ordering = ('is_parsed',)
+    ordering = ('is_processed',)
 
-    list_display = ('time_imported', 'entrycount', 'is_parsed',)
-    list_filter = ('is_parsed',)
+    list_display = ('time_imported', 'entrycount', 'is_processed',)
+    list_filter = ('is_processed',)
 
     inlines = (PaymentImportAdminEntryInline, )
 
