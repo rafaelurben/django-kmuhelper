@@ -1,0 +1,40 @@
+{% extends 'admin/kmuhelper/base_site.html' %}
+
+{% load static %}
+
+{% block title %}XML-Upload | KMUHelper Zahlungsimport{% endblock %}
+
+{% block breadcrumbs %}
+    <div id="breadcrumbs" class="breadcrumbs">
+        <a href="{% url 'admin:app_list' app_label='kmuhelper' %}">KMUHelper Admin</a>
+        &rsaquo; <a href="{% url 'admin:kmuhelper_paymentimport_changelist' %}">Zahlungsimporte</a>
+        &rsaquo; XML-Upload
+    </div>
+{% endblock %}
+
+{% block extrahead %}
+    <link rel="stylesheet" href="{% static 'admin/css/forms.css' %}">
+{% endblock %}
+
+{% block content_title %}
+    <h1>Zahlungsimport - XML-Upload</h1>
+{% endblock %}
+
+{% block content %}
+    <form enctype="multipart/form-data" method="post">
+        {% csrf_token %}
+        <fieldset class="module aligned">
+            <h2>Dateiupload</h2>
+            <div class="form-row field-file {% if form.file.errors %}errors{% endif %}">
+                {{ form.file.errors }}
+                <div>
+                    <label class="required" for="id_file">{{ form.file.label }}:</label>
+                    <input type="file" name="file" required="" id="id_file" />
+                    <div class="help">{{ form.file.help_text }}</div>
+                </div>
+            </div>
+        </fieldset>
+        {{ form.non_field_errors }}
+        <input type="submit" value="Hochladen" />
+    </form>
+{% endblock %}

@@ -3,7 +3,7 @@
 import django.core.validators
 from django.db import migrations, models
 import django.db.models.deletion
-import kmuhelper.models
+import kmuhelper.main.models
 
 
 class Migration(migrations.Migration):
@@ -63,7 +63,7 @@ class Migration(migrations.Migration):
                 ('lieferadresse_kanton', models.CharField(blank=True, default='', max_length=50, verbose_name='Kanton')),
                 ('lieferadresse_plz', models.CharField(blank=True, default='', max_length=50, verbose_name='Postleitzahl')),
                 ('lieferadresse_land', models.CharField(choices=[('CH', 'Schweiz'), ('LI', 'Liechtenstein')], default='CH', max_length=2, verbose_name='Land')),
-                ('ansprechpartner', models.ForeignKey(default=kmuhelper.models.defaultansprechpartner, on_delete=django.db.models.deletion.PROTECT, to='kmuhelper.Ansprechpartner', verbose_name='Ansprechpartner')),
+                ('ansprechpartner', models.ForeignKey(default=kmuhelper.main.models.defaultansprechpartner, on_delete=django.db.models.deletion.PROTECT, to='kmuhelper.Ansprechpartner', verbose_name='Ansprechpartner')),
             ],
             options={
                 'verbose_name': 'Bestellung',
@@ -183,7 +183,7 @@ class Migration(migrations.Migration):
             name='Lieferung',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(default=kmuhelper.models.defaultlieferungsname, max_length=50, verbose_name='Name')),
+                ('name', models.CharField(default=kmuhelper.main.models.defaultlieferungsname, max_length=50, verbose_name='Name')),
                 ('datum', models.DateField(auto_now_add=True, verbose_name='Erfasst am')),
                 ('notiz', models.TextField(blank=True, default='', verbose_name='Notiz')),
                 ('eingelagert', models.BooleanField(default=False, verbose_name='Eingelagert')),
@@ -328,6 +328,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='bestellung',
             name='zahlungsempfaenger',
-            field=models.ForeignKey(default=kmuhelper.models.defaultzahlungsempfaenger, on_delete=django.db.models.deletion.PROTECT, to='kmuhelper.Zahlungsempfaenger', verbose_name='Zahlungsempfänger'),
+            field=models.ForeignKey(default=kmuhelper.main.models.defaultzahlungsempfaenger, on_delete=django.db.models.deletion.PROTECT, to='kmuhelper.Zahlungsempfaenger', verbose_name='Zahlungsempfänger'),
         ),
     ]

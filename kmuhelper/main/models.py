@@ -1,5 +1,3 @@
-# pylint: disable=no-member
-
 from datetime import datetime
 from pytz import utc
 from random import randint

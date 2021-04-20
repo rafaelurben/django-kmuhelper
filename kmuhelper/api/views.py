@@ -2,7 +2,7 @@ from django.db import models
 from django.http import JsonResponse
 
 from kmuhelper.utils import package_version, python_version
-from kmuhelper.models import Bestellung
+from kmuhelper.main.models import Bestellung
 from kmuhelper.api.decorators import api_read, api_write, api_readwrite
 
 #####

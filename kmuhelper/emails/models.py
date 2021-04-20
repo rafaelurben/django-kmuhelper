@@ -1,5 +1,3 @@
-# pylint: disable=unsupported-assignment-operation, no-member
-
 import uuid
 
 from rich import print
