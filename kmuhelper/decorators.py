@@ -7,6 +7,7 @@ from django.shortcuts import redirect, render
 
 from kmuhelper.utils import render_error
 
+
 def confirm_action(action_message):
     """Decorator to show a confirm page where the user has to 
     confirm an action before executing it."""
@@ -21,7 +22,7 @@ def confirm_action(action_message):
     return decorator
 
 
-def require_object(model, redirect_url=None, raise_404=False, show_errorpage=False):
+def require_object(model, redirect_url=None, raise_404=False, show_errorpage=False, custom_response=None):
     """Decorator to only call the view if an object with the given id exists
     and automatically pass it instead of the id."""
 
@@ -31,6 +32,9 @@ def require_object(model, redirect_url=None, raise_404=False, show_errorpage=Fal
             if model.objects.filter(pk=int(object_id)).exists():
                 obj = model.objects.get(pk=int(object_id))
                 return function(request, obj, *args, **kwargs)
+
+            if custom_response:
+                return custom_response
 
             messages.warning(
                 request, f'{model._meta.verbose_name} mit ID "{object_id}" wurde nicht gefunden!')

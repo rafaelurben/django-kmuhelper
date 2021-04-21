@@ -3,6 +3,7 @@ from django.http import JsonResponse
 
 from kmuhelper.utils import package_version, python_version
 from kmuhelper.main.models import Bestellung
+from kmuhelper.api.constants import ENDPOINT_NOT_FOUND, SUCCESSFULLY_CHANGED
 from kmuhelper.api.decorators import api_read, api_write, api_readwrite
 
 #####
@@ -11,10 +12,7 @@ from kmuhelper.api.decorators import api_read, api_write, api_readwrite
 def not_found(request):
     """Return a json error message"""
 
-    return JsonResponse({
-        "error": "endpoint-not-found",
-        "message": "This endpoint does not exist!"
-    }, status=404)
+    return ENDPOINT_NOT_FOUND
 
 #####
 

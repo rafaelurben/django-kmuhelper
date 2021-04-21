@@ -1,9 +1,12 @@
 import uuid
 
 from functools import wraps
-from django.http import JsonResponse
 
+from kmuhelper.api.constants import (
+    NO_PERMISSION_APIKEY, APIKEY_INVALID, NO_PERMISSION_SESSION, NOT_AUTHENTICATED, OBJ_NOT_FOUND
+)
 from kmuhelper.api.models import ApiKey
+from kmuhelper.decorators import require_object as original_require_object
 
 
 def _is_valid_uuid(val):
@@ -28,29 +31,17 @@ def protected(read=False, write=False, perms_required=()):
                     if ((not read) or keyobject.read) and ((not write) or keyobject.write) and keyobject.has_perms(perms_required):
                         return function(request, *args, **kwargs)
 
-                    return JsonResponse({
-                        "error": "no-permission",
-                        "message": "You do not have permission to access this endpoint! (authentication method: api key)"
-                    }, status=403)
+                    return NO_PERMISSION_APIKEY
 
-                return JsonResponse({
-                    "error": "apikey-invalid",
-                    "message": "Your api key is invalid!"
-                }, status=403)
+                return APIKEY_INVALID
 
             if request.user.is_authenticated:
                 if request.user.has_perms(perms_required):
                     return function(request, *args, **kwargs)
 
-                return JsonResponse({
-                    "error": "no-permission",
-                    "message": "You do not have permission to access this endpoint! (authentication method: session)"
-                }, status=403)
+                return NO_PERMISSION_SESSION
 
-            return JsonResponse({
-                "error": "not-authenticated",
-                "message": "You must authenticate yourself to use this endpoint!"
-            }, status=403)
+            return NOT_AUTHENTICATED
         return wrap
     return decorator
 
@@ -70,3 +61,8 @@ def api_write(perms_required=()):
 def api_readwrite(perms_required=()):
     """Decorator: Requires a read/write api key or a logged in user to access this view"""
     return protected(read=True, write=True, perms_required=perms_required)
+
+
+def require_object(model):
+    """Decorator: Requires an object with gived ID and passes it to the view"""
+    return original_require_object(model, custom_response=OBJ_NOT_FOUND)
