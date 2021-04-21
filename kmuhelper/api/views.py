@@ -1,5 +1,6 @@
 from django.db import models
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 from kmuhelper.utils import package_version, python_version
 from kmuhelper.main.models import Bestellung
@@ -54,6 +55,7 @@ def orders_unpaid(request):
     return JsonResponse(context)
 
 
+@csrf_exempt
 @api_write(['kmuhelper.change_order'])
 @require_object(Bestellung)
 def orders_set_paid(request, obj):

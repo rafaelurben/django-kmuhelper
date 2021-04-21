@@ -29,11 +29,14 @@ def upload(request):
 @require_object(PaymentImport)
 def process(request, obj):
     if request.method == 'POST':
-        obj.process()
-        messages.success(request, "Grüne Bestellungen wurden als bezahlt markiert.")
+        obj.is_processed = True
+        obj.save()
+        messages.success(request, "Bestellung wurde als verarbeitet markiert!")
         return redirect(reverse('admin:kmuhelper_paymentimport_changelist'))
-    else:
-        obj.add_processing_info_messages(request)
-        return render(request, 'admin/kmuhelper/paymentimport/process.html', {
-            'has_permission': True
-        })
+
+    ctx = obj.get_processing_context()
+    return render(request, 'admin/kmuhelper/paymentimport/process.html', {
+        'has_permission': True,
+        'original': obj,
+        'data': ctx,
+    })

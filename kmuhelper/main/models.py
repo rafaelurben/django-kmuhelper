@@ -380,6 +380,7 @@ class Bestellung(CustomModel):
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
+        related_name='bestellungen',
     )
     zahlungsempfaenger = models.ForeignKey(
         to='Zahlungsempfaenger',

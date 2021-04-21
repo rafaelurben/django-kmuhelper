@@ -45,70 +45,41 @@ class PaymentImport(CustomModel):
 
     # Methods
 
-    def add_processing_info_messages(self, request):
-        notfound = []
-        alreadypaid = []
-        willmark = []
+    def get_processing_context(self):
+        context = {
+            'unknown': [],
+            'notfound': [],
+            'ready': [],
+            'alreadypaid': [],
+            'unclear': [],
+        }
         for entry in self.entries.all():
             oid = entry.order_id()
+            data = {
+                'payment': entry,
+                'id': oid,
+            }
             if oid is None:
-                messages.error(request,
-                               f"{entry.ref} scheint keine KMUHelper-Bestellung zu sein.")
+                context['unknown'].append(entry)
             else:
                 try:
                     bestellung = Bestellung.objects.get(pk=oid)
-                    orderlink = format_html(
-                        '<a target="_blank" href="{}">{}</a>',
-                        reverse('admin:kmuhelper_bestellung_change',
-                                args=[oid]),
-                        f'#{oid}')
 
-                    if bestellung.bezahlt:
-                        alreadypaid.append(orderlink)
-                    elif bestellung.fix_summe == entry.amount and entry.currency == 'CHF':
-                        willmark.append(orderlink)
+                    data['order'] = bestellung
+
+                    if bestellung.fix_summe == entry.amount and entry.currency == 'CHF':
+                        if bestellung.bezahlt:
+                            context['alreadypaid'].append(data)
+                        else:
+                            context['ready'].append(data)
                     else:
-                        messages.warning(request, format_html(
-                            "Beträge der Bestellung {} stimmen nicht überein! "
-                            "Zu bezahlen: <u>{} CHF</u> - "
-                            "Bezahlt: <u>{} {}</u> - "
-                            "Name: <b>{}</b>",
-                            orderlink, bestellung.fix_summe,
-                            entry.amount, entry.currency, entry.name,
-                        ))
+                        if bestellung.kunde:
+                            data['relatedorders'] = bestellung.kunde.bestellungen.exclude(
+                                id=bestellung.id).filter(bezahlt=False)
+                        context['unclear'].append(data)
                 except ObjectDoesNotExist:
-                    notfound.append(f'#{oid}')
-
-        if notfound:
-            messages.error(request, (
-                "Folgende Bestellung(en) wurde(n) nicht gefunden: " +
-                (", ".join(notfound))
-            ))
-        if alreadypaid:
-            messages.info(request, format_html(
-                "Folgende Bestellung(en) wurde(n) bereits als bezahlt markiert: " +
-                ", ".join(["{}" for i in range(len(alreadypaid))]),
-                *alreadypaid
-            ))
-        if willmark:
-            messages.warning(request, format_html(
-                "Folgende Bestellung(en) wird/werden als bezahlt markiert: "
-                ", ".join(["{}" for i in range(len(willmark))]),
-                *willmark
-            ))
-
-    def process(self):
-        for entry in self.entries.all():
-            oid = entry.order_id()
-            try:
-                bestellung = Bestellung.objects.get(pk=oid)
-                if not bestellung.bezahlt and bestellung.fix_summe == entry.amount and entry.currency == 'CHF':
-                    bestellung.bezahlt = True
-                    bestellung.save()
-            except ObjectDoesNotExist:
-                pass
-        self.is_processed = True
-        self.save()
+                    context['notfound'].append(data)
+        return context
 
     class Meta:
         verbose_name = "Zahlungsimport"
