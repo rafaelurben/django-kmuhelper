@@ -127,3 +127,9 @@ ul.messagelist li:not(:last-child) {
     -ms-user-select: none;
     user-select: none;
 }
+
+/* Object tools overflow */
+
+.object-tools {
+    overflow-y: visible !important;
+}
