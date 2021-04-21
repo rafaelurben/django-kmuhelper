@@ -638,6 +638,8 @@ class Bestellung(CustomModel):
                 mwst[str(k.kosten.mwstsatz)] += k.zwischensumme()
             else:
                 mwst[str(k.kosten.mwstsatz)] = k.zwischensumme()
+        for s in mwst:
+            mwst[s] = runden(mwst[s])
         return mwst
 
     @admin.display(description="Summe (exkl. MwSt) in CHF")
