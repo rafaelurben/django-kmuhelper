@@ -43,6 +43,7 @@
 
     details>div {
         padding: 10px;
+        display: grid;
     }
 
     a.markpaid {
@@ -65,15 +66,11 @@
         margin-bottom: 10px;
     }
 
-    .relatedorders {
-        display: grid;
-    }
-
-    th a {
+    th a:not(.button) {
         color: var(--link-fg) !important;
     }
 
-    th a:hover {
+    th a:not(.button):hover {
         color: var(--link-hover-color) !important;
     }
 </style>
