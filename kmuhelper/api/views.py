@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from kmuhelper.utils import package_version, python_version
 from kmuhelper.main.models import Bestellung
 from kmuhelper.api.constants import ENDPOINT_NOT_FOUND, SUCCESSFULLY_CHANGED
-from kmuhelper.api.decorators import api_read, api_write, api_readwrite
+from kmuhelper.api.decorators import require_object, api_read, api_write, api_readwrite
 
 #####
 
@@ -52,3 +52,16 @@ def orders_unpaid(request):
         }
     }
     return JsonResponse(context)
+
+
+@api_write(['kmuhelper.change_order'])
+@require_object(Bestellung)
+def orders_set_paid(request, obj):
+    """Set an order as paid"""
+
+    if not obj.bezahlt:
+        obj.bezahlt = True
+        if obj.versendet and obj.status == 'pending':
+            obj.status = 'completed'
+        obj.save()
+    return SUCCESSFULLY_CHANGED
