@@ -6,12 +6,14 @@
             <title>E-Mail Viewer | KMUHelper</title>
         {% endif %}
 
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
         {% block extrahead %}
           
         {% endblock %}
     </head>
     <body style="height: 100%; margin: 0; padding: 0; font-size: 14px; color: #333; background: #fff; font-family: 'Roboto','Lucida Grande','DejaVu Sans','Bitstream Vera Sans',Verdana,Arial,sans-serif;">
-        <div id="container" style="position: relative; width: 100%; padding: 0; display: flex; flex-direction: column; height: 100%;">
+        <div id="container" style="position: relative; width: 100%; padding: 0; display: flex; flex-direction: column;">
             {% block header %}
                 {% if not noheader %}
                     <div id="header" style="flex-shrink: 0; color: {{ header_foreground|default:'#FFEE88' }}; background-color: {{ header_background|default:'#AA1155' }}; width: auto; height: auto; display: flex; justify-content: space-between; align-items: center; padding: 10px 40px; overflow: hidden;">
