@@ -53,15 +53,25 @@ class PaymentImport(CustomModel):
             'alreadypaid': [],
             'unclear': [],
         }
-        for entry in self.entries.all():
+        for entry in self.entries.order_by('ref').all():
             oid = entry.order_id()
             data = {
                 'payment': entry,
                 'id': oid,
             }
+
             if oid is None:
                 context['unknown'].append(entry)
             else:
+                relatedpayments = PaymentImportEntry.objects.filter(
+                    amount=entry.amount,
+                    currency=entry.currency,
+                    iban=entry.iban,
+                    ref=entry.ref,
+                ).order_by('valuedate').exclude(pk=entry.pk)
+                if relatedpayments.count() > 0:
+                    data['relatedpayments'] = relatedpayments.all()
+
                 try:
                     bestellung = Bestellung.objects.get(pk=oid)
 
@@ -74,7 +84,7 @@ class PaymentImport(CustomModel):
                             context['ready'].append(data)
                     else:
                         if bestellung.kunde:
-                            data['relatedorders'] = bestellung.kunde.bestellungen.exclude(
+                            data['samecustomerorders'] = bestellung.kunde.bestellungen.exclude(
                                 id=bestellung.id).filter(bezahlt=False)
                         context['unclear'].append(data)
                 except ObjectDoesNotExist:
@@ -96,14 +106,27 @@ class PaymentImportEntry(models.Model):
     ref = models.CharField(
         verbose_name="Referenznummer",
         max_length=50,
+        default="",
+    )
+    additionalref = models.CharField(
+        verbose_name="Zusätzliche Referenz",
+        max_length=250,
+        default="",
     )
     iban = models.CharField(
         verbose_name="IBAN",
         max_length=22,
+        default="",
     )
     name = models.CharField(
         verbose_name="Name",
-        max_length=100,
+        max_length=250,
+        default="",
+    )
+
+    valuedate = models.DateField(
+        verbose_name="Valuta",
+        null=True,
     )
 
     amount = models.FloatField(

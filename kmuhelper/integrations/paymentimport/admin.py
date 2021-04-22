@@ -12,7 +12,8 @@ class PaymentImportAdminEntryInline(admin.TabularInline):
     verbose_name_plural = "Einträge"
     extra = 0
 
-    fields = ('currency', 'betrag', 'ref', 'order_id', 'iban', 'name',)
+    fields = ('currency', 'betrag', 'ref', 'order_id',
+              'valuedate', 'name', 'iban', 'additionalref')
     readonly_fields = ('order_id', 'betrag',)
     ordering = ('ref',)
 
@@ -28,7 +29,7 @@ class PaymentImportAdmin(CustomModelAdmin):
 
     ordering = ('is_processed',)
 
-    list_display = ('time_imported', 'entrycount', 'is_processed',)
+    list_display = ('time_imported', 'entrycount', 'is_processed', 'data_msgid',)
     list_filter = ('is_processed',)
 
     inlines = (PaymentImportAdminEntryInline, )

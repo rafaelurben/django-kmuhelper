@@ -10,6 +10,6 @@
     {% csrf_token %}
     <p>Bitte bestätige, dass du folgende Aktion ausführen möchtest:</p>
     <p>-&gt; <i>{{ action }}</i></p>
-    <input type="submit" value="Bestätigen" class="{{ buttonclass }}" />
+    <input type="submit" value="Bestätigen" />
 </form>
 {% endblock %}

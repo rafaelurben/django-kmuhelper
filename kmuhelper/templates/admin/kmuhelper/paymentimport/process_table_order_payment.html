@@ -1,0 +1,59 @@
+<table>
+    <thead>
+        <tr>
+            <th colspan="2">Zahlung</th>
+            <th>Bestellung
+                <a target="_blank"
+                    href="{% url 'admin:kmuhelper_bestellung_change' object_id=order.pk %}">
+                    #{{ order.pk}}
+                </a>
+            </th>
+            <th>
+                <abbr title="Hier klicken, um die Bestellung als bezahlt zu markieren">
+                    <a class="button markpaid{% if order.bezahlt %} success{% endif %}" 
+                        url="{% url 'kmuhelper:api-orders-set-paid' order.pk %}">
+                        Bezahlt
+                    </a>
+                </abbr>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Betrag:</td>
+            <td>{{ payment.amount }} {{ payment.currency }}</td>
+            <td>Betrag:</td>
+            <td>{{ order.fix_summe }} CHF</td>
+        </tr>
+        <tr>
+            <td>Valuta:</td>
+            <td>{{ payment.valuedate }}</td>
+            <td>Rechnungsdatum:</td>
+            <td>{{ order.rechnungsdatum }}</td>
+        </tr>
+        <tr>
+            <td>Name:</td>
+            <td>{{ payment.name }}</td>
+            <td>Name:</td>
+            <td>{{ order.rechnungsadresse_vorname }} {{ order.rechnungsadresse_nachname }}
+                {{ order.rechnungsadresse_firma }}</td>
+        </tr>
+        <tr>
+            <td>IBAN:</td>
+            <td>{{ payment.iban }}</td>
+            <td>Kunde:</td>
+            <td>
+                <a href="{% url 'admin:kmuhelper_kunde_change' object_id=order.kunde.pk %}" target="_blank">
+                    {{ order.kunde }}
+                </a>
+            </td>
+        </tr>
+        {% if payment.additionalref %}
+        <tr>
+            <td>Zusätzliche Referenz:</td>
+            <td>{{ payment.additionalref }}</td>
+            <td></td>
+        </tr>
+        {% endif %}
+    </tbody>
+</table>

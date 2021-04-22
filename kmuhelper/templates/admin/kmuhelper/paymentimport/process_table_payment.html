@@ -1,0 +1,29 @@
+<table>
+    <thead>
+        <tr>
+            <th colspan="2">Zahlung</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Betrag:</td>
+            <td>{{ payment.amount }} {{ payment.currency }}</td>
+        </tr>
+        <tr>
+            <td>Valuta:</td>
+            <td>{{ payment.valuedate }}</td>
+        </tr>
+        <tr>
+            <td>IBAN:</td>
+            <td>{{ payment.iban }}</td>
+        </tr>
+        <tr>
+            <td>Name:</td>
+            <td>{{ payment.name }}</td>
+        </tr>
+        <tr>
+            <td>Zusätzliche Referenz:</td>
+            <td>{{ payment.additionalref }}</td>
+        </tr>
+    </tbody>
+</table>

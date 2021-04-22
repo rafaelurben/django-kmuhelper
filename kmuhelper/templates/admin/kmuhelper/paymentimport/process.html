@@ -18,6 +18,7 @@
 
 {% block extrastyle %}
 {{ block.super }}
+<link rel="stylesheet" href="{% static 'kmuhelper/css/details.css' %}" type="text/css">
 <style>
     .entry td:nth-child(2n-1) {
         width: 15%;
@@ -27,25 +28,6 @@
         width: 35%;
     }
 
-    details {
-        border: 1px solid gray;
-        border-radius: 5px;
-        margin-bottom: 5px;
-    }
-
-    details>summary {
-        padding: 8px;
-    }
-
-    details[open]>summary {
-        border-bottom: 1px solid gray;
-    }
-
-    details>div {
-        padding: 10px;
-        display: grid;
-    }
-
     a.markpaid {
         margin: 2px;
         padding: 4px;
@@ -53,17 +35,12 @@
     }
 
     a.markpaid.success {
-        background-color: var(--message-success-bg);
+        background-color: #006b1b;
         pointer-events: none;
     }
 
     th {
         vertical-align: bottom;
-    }
-
-    table:not(:last-child),
-    details:not(:last-child) {
-        margin-bottom: 10px;
     }
 
     th a:not(.button) {
@@ -78,37 +55,44 @@
 
 {% block content %}
 
-<h3>Nützliche Links</h3>
+<h3>Infos</h3>
 
-<ul>
-    <li>
-        <a target="_blank" href="{% url 'admin:kmuhelper_bestellung_changelist' %}?bezahlt__exact=0&versendet__exact=1">
-            Noch nicht bezahlte, versendete Bestellungen
-        </a>
-    </li>
-    <li>
-        <a target="_blank" href="{% url 'admin:kmuhelper_bestellung_changelist' %}?bezahlt__exact=0&versendet__exact=0">
-            Noch nicht bezahlte, unversendete Bestellungen
-        </a>
-    </li>
-    <li>
-        <a target="_blank" href="{% url 'admin:kmuhelper_bestellung_changelist' %}?bezahlt__exact">
-            Alle noch nicht bezahlten Bestellungen
-        </a>
-    </li>
+<p>
+    Auf dieser Seite können die einzelnen Einträge des Zahlungsimports unter die Lupe genommen werden und bei Bedarf die
+    zugehörigen Bestellungen als bezahlt markiert werden.
+    <br>
+    Klicken auf "Bezahlt" markiert die Bestellung im Hintergrund als bezahlt. Die Bestellung wird direkt aktualisiert
+    und gespeichert - bei Erfolg wird der Knopf grün.
+    <br>
+    Das Neuladen der Seite kann unter Umständen komische Auswirkungen auf die Auflistung dieser
+    Zahlungen haben. Deshalb sollte, um Fehler zu vermeiden, 
+    <strong>der ganze Import auf einmal verarbeitet werden!</strong>
+</p>
+
+<h3>Nützliche Adminseiten</h3>
+
+<p>
+    Noch nicht bezahlte Bestellungen
+    (<a target="_blank" href="{% url 'admin:kmuhelper_bestellung_changelist' %}?bezahlt__exact=0">
+        Alle
+    </a>/<a target="_blank" href="{% url 'admin:kmuhelper_bestellung_changelist' %}?bezahlt__exact=0&versendet__exact=1">
+        Versendet
+    </a>/<a target="_blank" href="{% url 'admin:kmuhelper_bestellung_changelist' %}?bezahlt__exact=0&versendet__exact=0">
+        Noch nicht versendet
+    </a>)
 </ul>
 
 <h3>Einträge</h3>
 
 <br>
 
-<div class="entries-container">
+<div>
     {% if data.unknown %}
     <details>
         <summary>Unbekannte Zahlungen ({{ data.unknown|length }})</summary>
-        <div class="entrylist">
+        <div>
             {% for entry in data.unknown %}
-            {% include 'admin/kmuhelper/paymentimport/process_entry.html' with entry=entry %}
+            {% include 'admin/kmuhelper/paymentimport/process_entry.html' with entry=entry closed=True %}
             {% endfor %}
         </div>
     </details>
@@ -116,9 +100,9 @@
     {% if data.notfound %}
     <details>
         <summary>Zahlungen mit unbekannten Bestellungen ({{ data.notfound|length }})</summary>
-        <div class="entrylist">
+        <div>
             {% for entry in data.notfound %}
-            {% include 'admin/kmuhelper/paymentimport/process_entry.html' with entry=entry %}
+            {% include 'admin/kmuhelper/paymentimport/process_entry.html' with entry=entry closed=True %}
             {% endfor %}
         </div>
     </details>
@@ -126,9 +110,9 @@
     {% if data.ready %}
     <details open>
         <summary>Korrekte Zahlungen ({{ data.ready|length }})</summary>
-        <div class="entrylist">
+        <div>
             {% for entry in data.ready %}
-            {% include 'admin/kmuhelper/paymentimport/process_entry.html' with entry=entry %}
+            {% include 'admin/kmuhelper/paymentimport/process_entry.html' with entry=entry closed=True %}
             {% endfor %}
         </div>
     </details>
@@ -136,7 +120,7 @@
     {% if data.alreadypaid %}
     <details open>
         <summary>Zahlungen mit bereits als bezahlt markierten Bestellungen ({{ data.alreadypaid|length }})</summary>
-        <div class="entrylist">
+        <div>
             {% for entry in data.alreadypaid %}
             {% include 'admin/kmuhelper/paymentimport/process_entry.html' with entry=entry %}
             {% endfor %}
@@ -146,7 +130,7 @@
     {% if data.unclear %}
     <details open>
         <summary>Unklare Zahlungen ({{ data.unclear|length }})</summary>
-        <div class="entrylist">
+        <div>
             {% for entry in data.unclear %}
             {% include 'admin/kmuhelper/paymentimport/process_entry.html' with entry=entry %}
             {% endfor %}
@@ -160,7 +144,11 @@
 <form method="POST">
     {% csrf_token %}
     <p>Um die Verarbeitung abzuschliessen, bitte hier klicken:</p>
-    <input type="submit" value="Als verarbeitet markieren" class="{{ buttonclass }}" />
+    {% if not original.is_processed %}
+    <input type="submit" value="Als verarbeitet markieren" />
+    {% else %}
+    <input type="submit" value="Zurück" />
+    {% endif %}
 </form>
 
 <script src="{% static '/admin/js/vendor/jquery/jquery.js' %}"></script>
@@ -168,7 +156,7 @@
 <script type="text/javascript">
     $ = window.django.jQuery
 
-    $('a.markpaid').click(event => {
+    $('a.markpaid:not(.success)').click(event => {
         let url = event.target.getAttribute('url');
         event.target.setAttribute('disabled', 'true')
         $.post(

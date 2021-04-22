@@ -1,113 +1,40 @@
-<details open>
+<details class="entry"{% if not closed %} open{% endif %}>
     <summary>
         {% if entry.id %}ID #{{ entry.id }} - {% endif %}Ref {{ entry.payment.ref }}
     </summary>
     <div>
-        <table class="entry">
-            <thead class="entryheader">
-                <tr>
-                    <th colspan="2">Zahlung</th>
-                    {% if entry.order %}
-                    <th>Bestellung
-                        <a target="_blank"
-                            href="{% url 'admin:kmuhelper_bestellung_change' object_id=entry.order.pk %}">
-                            #{{ entry.order.pk}}
-                        </a>
-                    </th>
-                    <th>
-                        {% if not entry.order.bezahlt %}
-                        <abbr title="Hier klicken, um die Bestellung als bezahlt zu markieren">
-                            <a class="button markpaid" url="{% url 'kmuhelper:api-orders-set-paid' entry.order.pk %}">
-                                Bezahlt
-                            </a>
-                        </abbr>
-                        {% endif %}
-                    </th>
-                    {% else %}
-                    <th colspan="2"></th>
-                    {% endif %}
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Betrag:</td>
-                    <td>{{ entry.payment.amount }} {{ entry.payment.currency }}</td>
-                    {% if entry.order %}
-                    <td>Betrag:</td>
-                    <td>{{ entry.order.fix_summe }} CHF</td>
-                    {% else %}
-                    <td></td>
-                    <td></td>
-                    {% endif %}
-                </tr>
-                <tr>
-                    <td>IBAN:</td>
-                    <td>{{ entry.payment.iban }}</td>
-                    {% if entry.order %}
-                    <td>Rechnungsdatum:</td>
-                    <td>{{ entry.order.rechnungsdatum }}</td>
-                    {% else %}
-                    <td></td>
-                    <td></td>
-                    {% endif %}
-                </tr>
-                <tr>
-                    <td>Name:</td>
-                    <td>{{ entry.payment.name }}</td>
-                    {% if entry.order %}
-                    <td>Name:</td>
-                    <td>{{ entry.order.rechnungsadresse_vorname }} {{ entry.order.rechnungsadresse_nachname }}
-                        {{ entry.order.rechnungsadresse_firma }}</td>
-                    {% else %}
-                    <td></td>
-                    <td></td>
-                    {% endif %}
-                </tr>
-            </tbody>
-        </table>
+        {% if entry.order %}
+        {% include 'admin/kmuhelper/paymentimport/process_table_order_payment.html' with order=entry.order payment=entry.payment %}
+        {% else %}
+        {% include 'admin/kmuhelper/paymentimport/process_table_payment.html' with payment=entry.payment %}
+        {% endif %}
 
-        {% if entry.relatedorders %}
+        {% if entry.samecustomerorders %}
         <details>
             <summary>
                 Andere unbezahlte Bestellungen von
                 <a target="_blank"
                     href="{% url 'admin:kmuhelper_kunde_change' object_id=entry.order.kunde.pk %}#bestellungen-group">
                     {{ entry.order.kunde }}
-                </a> ({{ entry.relatedorders|length }})
+                </a> ({{ entry.samecustomerorders|length }})
             </summary>
-            <div class="relatedorders">
-                {% for order in entry.relatedorders %}
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Bestellung
-                                <a target="_blank"
-                                    href="{% url 'admin:kmuhelper_bestellung_change' object_id=order.pk %}">
-                                    #{{ order.pk }}
-                                </a>
-                            </th>
-                            <th>
-                                {% if not order.bezahlt %}
-                                <abbr title="Hier klicken, um die Bestellung als bezahlt zu markieren">
-                                    <a class="button markpaid" url="{% url 'kmuhelper:api-orders-set-paid' order.pk %}">
-                                        Bezahlt
-                                    </a>
-                                </abbr>
-                                {% endif %}
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Betrag:</td>
-                            <td>{{ entry.order.fix_summe }} CHF</td>
-                        </tr>
-                        <tr>
-                            <td>Rechnungsdatum:</td>
-                            <td>{{ entry.order.rechnungsdatum }}</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div>
+                {% for order in entry.samecustomerorders %}
+                {% include 'admin/kmuhelper/paymentimport/process_table_order.html' with order=order %}
+                {% endfor %}
+            </div>
+        </details>
+        {% endif %}
+
+        {% if entry.relatedpayments %}
+        <details>
+            <summary>
+                Möglicherweise doppelte Zahlungen
+                ({{ entry.relatedpayments|length }})
+            </summary>
+            <div>
+                {% for payment in entry.relatedpayments %}
+                {% include 'admin/kmuhelper/paymentimport/process_table_payment.html' with payment=payment %}
                 {% endfor %}
             </div>
         </details>

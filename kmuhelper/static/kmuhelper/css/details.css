@@ -1,0 +1,56 @@
+/* Custom style for collapsible details */
+
+details {
+    border: 1px solid gray;
+    border-radius: 5px;
+    margin-bottom: 5px;
+}
+
+details>summary {
+    padding: 8px;
+    border-radius: 5px;
+    position: sticky;
+    background-color: var(--body-bg);
+}
+
+details[open]>summary {
+    border-bottom: 1px solid gray;
+    border-radius: 5px 5px 0 0;
+}
+
+details>div {
+    padding: 10px;
+    display: grid;
+}
+
+details>div>*:not(:last-child) {
+    margin-bottom: 10px;
+}
+
+details>div>*:last-child {
+    margin-bottom: 0;
+}
+
+/* Stick to top for embedded details */
+
+details>summary {
+    --details-level: 0;
+    top: calc(var(--details-level) * 32px);
+    z-index: calc(100 - var(--details-level));
+}
+
+details details>summary {
+    --details-level: 1;
+}
+
+details details details>summary {
+    --details-level: 2;
+}
+
+details details details details>summary {
+    --details-level: 3;
+}
+
+details details details details details>summary {
+    --details-level: 4;
+}

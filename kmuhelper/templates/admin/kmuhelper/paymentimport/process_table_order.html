@@ -1,0 +1,30 @@
+<table>
+    <thead>
+        <tr>
+            <th>Bestellung
+                <a target="_blank"
+                    href="{% url 'admin:kmuhelper_bestellung_change' object_id=order.pk %}">
+                    #{{ order.pk }}
+                </a>
+            </th>
+            <th>
+                <abbr title="Hier klicken, um die Bestellung als bezahlt zu markieren">
+                    <a class="button markpaid{% if order.bezahlt %} success{% endif %}" 
+                        url="{% url 'kmuhelper:api-orders-set-paid' order.pk %}">
+                        Bezahlt
+                    </a>
+                </abbr>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Betrag:</td>
+            <td>{{ entry.order.fix_summe }} CHF</td>
+        </tr>
+        <tr>
+            <td>Rechnungsdatum:</td>
+            <td>{{ entry.order.rechnungsdatum }}</td>
+        </tr>
+    </tbody>
+</table>
