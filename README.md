@@ -17,9 +17,13 @@ die Entwicklung dieser Djangoapp die neue Schweizer QR-Rechnung ist.
 
 Diverse Infos über den KMUHelper gibt's auf der [Webseite](https://rafaelurben.github.io/kmuhelper/) sowie in der [Dokumentation](https://rafaelurben.github.io/django-kmuhelper/)
 
-Bei Fragen, Ideen, Problemen oder Feedback kann sehr gerne eine [Diskussion](https://github.com/rafaelurben/django-kmuhelper/discussions) oder ein [Issue](https://github.com/rafaelurben/django-kmuhelper/issues) eröffnt oder [mich kontaktiert](https://rafaelurben.github.io/kmuhelper/kontakt) werden! Ich antworte i.d.R. in unter 12 Stunden und freue mich über konstruktive Kritik und/oder neue Ideen.
+## Änderungen und Feedback
 
-Geplante Änderungen können im [Projekt-Board](https://github.com/rafaelurben/django-kmuhelper/projects/1?fullscreen=true) gefunden werden.
+- [Diskussionen](https://github.com/rafaelurben/django-kmuhelper/discussions) - Fragen und Ideen
+- [Issue](https://github.com/rafaelurben/django-kmuhelper/issues) - Bugs und Feature requests
+- [Kontakt](https://rafaelurben.github.io/kmuhelper/kontakt) - Dringende Anfragen und Sicherheitslücken
+
+Geplante Änderungen und aktuelle Programmierfortschritte können im [Projekt-Board](https://github.com/rafaelurben/django-kmuhelper/projects/1?fullscreen=true) gefunden werden.
 
 ## Installation
 
