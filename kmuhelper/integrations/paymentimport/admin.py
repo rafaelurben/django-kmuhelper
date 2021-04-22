@@ -58,7 +58,7 @@ class PaymentImportAdmin(CustomModelAdmin):
         return False
 
     def has_change_permission(self, request, obj=None):
-        return False
+        return obj is None
 
 #
 
