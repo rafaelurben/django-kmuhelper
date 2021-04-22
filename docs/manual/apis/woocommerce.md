@@ -17,13 +17,13 @@ Import einrichten:
 
 Sie sollten nun auf Ihren Shop weitergeleitet werden, wo Sie dem KMUHelper Lese-Berechtigungen erteilen können. Sobald Sie die Berechtigungen erteilt haben, sollten Sie zurück auf den KMUHelper weitergeleitet werden und eine Meldung mit dem Inhalt `WooCommerce erfolgreich verbunden` erhalten. Ebenfalls sollte bei der URL nun `Bestätigt` stehen.
 
-Damit die Daten im KMUHelper auch automatisch aktualisiert werden, können sogenannte "Webhooks" eingerichtet werden, welche bei jeder Änderung in WooCommerce den KMUHelper darüber informieren. (WICHTIG: Manche Daten im KMUHelper werden bei Erhalt der Daten von WooCommerce ÜBERSCHRIEBEN! Deshalb sollten Sie Änderungen an Produkten und Kunden vorzugsweise in WooCommerce vornehmen, statt im KMUHelper, um Fehler zu vermeiden.)
+Damit die Daten im KMUHelper auch automatisch aktualisiert werden, können sogenannte "Webhooks" eingerichtet werden, welche bei jeder Änderung in WooCommerce den KMUHelper darüber informieren. (WICHTIG: Manche Daten im KMUHelper werden bei Erhalt der Daten von WooCommerce ÜBERSCHRIEBEN! Deshalb sollten Sie Änderungen an Produkten und Kunden vorzugsweise in WooCommerce vornehmen, anstatt im KMUHelper, um Fehler zu vermeiden.)
 
 Webhooks einrichten:
 
 1. Gehen Sie in den Wordpress-Adminbereich Ihrer Wordpress-Seite
 2. Gehen Sie zu `WooCommerce -> Einstellungen -> Erweitert -> Webhooks`
-3. Fügen Sie für folgende Themen je einen Webhook mit der Auslieferungs-URL `https://EXAMPLE.COM/kmuhelper/wc/webhooks` hinzu:
+3. Fügen Sie für folgende Themen je einen Webhook mit der Auslieferungs-URL `https://EXAMPLE.COM/kmuhelper/integrations/woocommerce/webhooks` hinzu:
    - Bestellung erstellt (order.created)
    - Bestellung aktualisiert (order.updated)
    - Bestellung gelöscht (order.deleted)
@@ -33,6 +33,8 @@ Webhooks einrichten:
    - Produkt erstellt (product.created)
    - Produkt aktualisiert (product.updated)
    - Produkt entfernt (product.deleted)
+
+Hinweis: Beim löschen einer Bestellung in WooCommerce wird diese im KMUHelper nicht automatisch gelöscht! Es wird lediglich die Verknüpfung entfernt.
 
 ## Verwendung
 
