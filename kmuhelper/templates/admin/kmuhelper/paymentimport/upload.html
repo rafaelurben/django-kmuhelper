@@ -21,6 +21,14 @@
 {% endblock %}
 
 {% block content %}
+    <p>
+        Hier können XML-Dateien nach ISO20022 Standard hochgeladen werden.
+        <br>
+        Zurzeit werden nur camt.053.001.04 mit Detailinformationen (053d) unterstützt.
+    </p>
+
+    <br>
+
     <form enctype="multipart/form-data" method="post">
         {% csrf_token %}
         <fieldset class="module aligned">
