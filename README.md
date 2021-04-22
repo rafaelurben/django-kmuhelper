@@ -12,12 +12,12 @@
 
 [![CodeFactor](https://www.codefactor.io/repository/github/rafaelurben/django-kmuhelper/badge)](https://www.codefactor.io/repository/github/rafaelurben/django-kmuhelper)
 
-Der KMUHelper ist, wie der Name schon sagt, ein Helfer für KMU, hauptsächlich für Schweizer, da der Hauptgrund für
-die Entwicklung dieser Djangoapp die neue schweizer QR-Rechnung ist.
+Der KMUHelper ist, wie der Name schon sagt, ein Helfer für KMU - hauptsächlich jedoch für Schweizer, da der Hauptgrund für
+die Entwicklung dieser Djangoapp die neue Schweizer QR-Rechnung ist.
 
 Diverse Infos über den KMUHelper gibt's auf der [Webseite](https://rafaelurben.github.io/kmuhelper/) sowie in der [Dokumentation](https://rafaelurben.github.io/django-kmuhelper/)
 
-Bei Fragen oder Probleme bitte unbedingt [mich kontaktieren](https://rafaelurben.github.io/kmuhelper/kontakt) oder eine [Diskussion](https://github.com/rafaelurben/django-kmuhelper/discussions) respektive ein [Issue](https://github.com/rafaelurben/django-kmuhelper/issues) eröffnen!
+Bei Fragen, Ideen, Problemen oder Feedback kann sehr gerne eine [Diskussion](https://github.com/rafaelurben/django-kmuhelper/discussions) oder ein [Issue](https://github.com/rafaelurben/django-kmuhelper/issues) eröffnen oder [mich kontaktiert](https://rafaelurben.github.io/kmuhelper/kontakt) werden! Ich antworte i.d.R. in unter 12 Stunden.
 
 Geplante Änderungen können im [Projekt-Board](https://github.com/rafaelurben/django-kmuhelper/projects/1?fullscreen=true) gefunden werden.
 
