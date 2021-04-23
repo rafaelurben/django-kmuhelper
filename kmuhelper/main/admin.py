@@ -192,6 +192,7 @@ class BestellungsAdmin(CustomModelAdmin):
         return [
             ('Einstellungen', {'fields': [
                 'zahlungsempfaenger', 'ansprechpartner']}),
+            ('Infos', {'fields': ['status']}),
             ('Rechnungsoptionen', {'fields': [
                 'rechnungstitel', 'rechnungstext', 'rechnungsdatum', 'zahlungskonditionen']}),
             ('Lieferung', {
@@ -269,15 +270,15 @@ class BestellungsAdmin(CustomModelAdmin):
         urls = super().get_urls()
 
         my_urls = [
-            path('<path:object_id>/pdf', self.admin_site.admin_view(views.bestellung_pdf_ansehen),
+            path('<path:object_id>/pdf/', self.admin_site.admin_view(views.bestellung_pdf_ansehen),
                  name='%s_%s_pdf' % info),
-            path('<path:object_id>/email/rechnung', self.admin_site.admin_view(views.bestellung_email_rechnung),
+            path('<path:object_id>/email/rechnung/', self.admin_site.admin_view(views.bestellung_email_rechnung),
                  name='%s_%s_email_rechnung' % info),
-            path('<path:object_id>/email/lieferung', self.admin_site.admin_view(views.bestellung_email_lieferung),
+            path('<path:object_id>/email/lieferung/', self.admin_site.admin_view(views.bestellung_email_lieferung),
                  name='%s_%s_email_lieferung' % info),
-            path('<path:object_id>/duplizieren', self.admin_site.admin_view(views.bestellung_duplizieren),
+            path('<path:object_id>/duplizieren/', self.admin_site.admin_view(views.bestellung_duplizieren),
                  name='%s_%s_duplizieren' % info),
-            path('<path:object_id>/zu-lieferung', self.admin_site.admin_view(views.bestellung_zu_lieferung),
+            path('<path:object_id>/zu-lieferung/', self.admin_site.admin_view(views.bestellung_zu_lieferung),
                  name='%s_%s_zu_lieferung' % info),
         ]
         return my_urls + urls
@@ -434,7 +435,7 @@ class KundenAdmin(CustomModelAdmin):
         urls = super().get_urls()
 
         my_urls = [
-            path('<path:object_id>/email/registriert', self.admin_site.admin_view(views.kunde_email_registriert),
+            path('<path:object_id>/email/registriert/', self.admin_site.admin_view(views.kunde_email_registriert),
                  name='%s_%s_email_registriert' % info),
         ]
         return my_urls + urls
@@ -467,7 +468,7 @@ class LieferantenAdmin(CustomModelAdmin):
         urls = super().get_urls()
 
         my_urls = [
-            path('<path:object_id>/zuordnen', self.admin_site.admin_view(views.lieferant_zuordnen),
+            path('<path:object_id>/zuordnen/', self.admin_site.admin_view(views.lieferant_zuordnen),
                  name='%s_%s_zuordnen' % info),
         ]
         return my_urls + urls
@@ -571,7 +572,7 @@ class LieferungenAdmin(CustomModelAdmin):
         urls = super().get_urls()
 
         my_urls = [
-            path('<path:object_id>/einlagern', self.admin_site.admin_view(views.lieferung_einlagern),
+            path('<path:object_id>/einlagern/', self.admin_site.admin_view(views.lieferung_einlagern),
                  name='%s_%s_einlagern' % info),
         ]
         return my_urls + urls

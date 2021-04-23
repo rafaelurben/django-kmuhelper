@@ -174,7 +174,7 @@ class Bestellungskosten(CustomModel):
 
     @admin.display(description="Bestellungskosten")
     def __str__(self):
-        return "1x "+str(self.kosten)
+        return f'({self.bestellung.pk}) -> 1x {self.kosten}'
 
     def save(self, *args, **kwargs):
         if not self.kostenpreis:
@@ -247,7 +247,7 @@ class Bestellungsposten(CustomModel):
 
     @admin.display(description="Bestellungsposten")
     def __str__(self):
-        return str(self.menge)+"x "+self.produkt.clean_name()
+        return f'({self.bestellung.pk}) -> {self.menge}x {self.produkt}'
 
     def save(self, *args, **kwargs):
         if not self.produktpreis:
@@ -319,7 +319,7 @@ class Bestellung(CustomModel):
     status = models.CharField(
         verbose_name="Status",
         max_length=11,
-        default='pending',
+        default='processing',
         choices=STATUS,
     )
     versendet = models.BooleanField(
@@ -609,10 +609,10 @@ class Bestellung(CustomModel):
 
     @admin.display(description="Trackinglink", ordering="trackingnummer")
     def trackinglink(self):
-        return "https://www.post.ch/swisspost-tracking?formattedParcelCodes="+self.trackingnummer if self.trackingnummer else None
+        return f'https://www.post.ch/swisspost-tracking?formattedParcelCodes={self.trackingnummer}' if self.trackingnummer else None
 
     def referenznummer(self):
-        a = str(self.pk).zfill(22)+"0000"
+        a = self.pkfill(22)+"0000"
         b = a+str(modulo10rekursiv(a))
         c = b[0:2]+" "+b[2:7]+" "+b[7:12]+" " + \
             b[12:17]+" "+b[17:22]+" "+b[22:27]
@@ -624,8 +624,8 @@ class Bestellung(CustomModel):
         kond = self.zahlungskonditionen
         mwstdict = self.mwstdict()
         mwststring = ";".join(
-            satz+":"+str(mwstdict[satz]) for satz in mwstdict)
-        return "//S1/10/"+str(self.pk)+"/11/"+date+"/30/"+uid+"/31/"+date+"/32/"+mwststring+"/40/"+kond
+            f'{satz}:{mwstdict[satz]}' for satz in mwstdict)
+        return f'//S1/10/{self.pk}/11/{date}/30/{uid}/31/{date}/32/{mwststring}/40/{kond}'
 
     def mwstdict(self):
         mwst = {}
@@ -667,11 +667,13 @@ class Bestellung(CustomModel):
 
     @admin.display(description="Name")
     def name(self):
-        return (self.datum.strftime("%Y")+"-" if self.datum and not isinstance(self.datum, str) else "")+str(self.pk).zfill(6)+(" (WC#"+str(self.woocommerceid)+")" if self.woocommerceid else "")+" - "+(str(self.kunde) if self.kunde is not None else "Gast")
+        return (f'{self.datum.year}-' if self.datum and not isinstance(self.datum, str) else '') + \
+               (f'{self.pkfill(6)}'+(f' (WC#{self.woocommerceid})' if self.woocommerceid else '')) + \
+               (f' - {self.kunde}' if self.kunde is not None else "Gast")
 
     @admin.display(description="Info")
     def info(self):
-        return self.datum.strftime("%d.%m.%Y")+" - "+((self.kunde.firma if self.kunde.firma else (self.kunde.vorname+" "+self.kunde.nachname)) if self.kunde else "Gast")
+        return f'{self.datum.strftime("%d.%m.%Y")} - '+((self.kunde.firma if self.kunde.firma else (f'{self.kunde.vorname} {self.kunde.nachname}')) if self.kunde else "Gast")
 
     @admin.display(description="Bestellung")
     def __str__(self):
@@ -683,7 +685,7 @@ class Bestellung(CustomModel):
     def create_email_rechnung(self):
         context = {
             "trackinglink": str(self.trackinglink()),
-            "trackingdata": bool(self.trackinglink() and self.versendet),
+            "trackingdata": bool(self.trackingnummer and self.versendet),
             "id": str(self.id),
             "woocommerceid": str(self.woocommerceid),
             "woocommercedata": bool(self.woocommerceid),
@@ -691,7 +693,7 @@ class Bestellung(CustomModel):
 
         self.email_rechnung = EMail.objects.create(
             subject=f"Ihre Rechnung Nr. { self.id }"+(
-                " (Online #"+str(self.woocommerceid) + ")" if self.woocommerceid else ""),
+                f' (Online #{self.woocommerceid})' if self.woocommerceid else ''),
             to=self.rechnungsadresse_email,
             html_template="bestellung_rechnung.html",
             html_context=context,
@@ -699,7 +701,7 @@ class Bestellung(CustomModel):
         )
 
         filename = f"Rechnung Nr. { self.id }"+(
-            " (Online #"+str(self.woocommerceid)+")" if self.woocommerceid else "")+".pdf"
+            f' (Online #{self.woocommerceid})' if self.woocommerceid else '')+".pdf"
 
         self.email_rechnung.add_attachments(
             Attachment.objects.create_from_binary(
@@ -972,7 +974,7 @@ class Kategorie(CustomModel):
 
     @admin.display(description="Kategorie")
     def __str__(self):
-        return self.clean_name()
+        return f'{self.clean_name()} ({self.pk})'
 
     class Meta:
         verbose_name = "Kategorie"
@@ -1009,7 +1011,9 @@ class Kosten(CustomModel):
 
     @admin.display(description="Kosten")
     def __str__(self):
-        return f"{ self.clean_name() } ({ self.preis } CHF " + ("+ "+str(self.mwstsatz)+"% MwSt" if self.mwstsatz else "") + ")"
+        return f'{ self.clean_name() } ({ self.preis } CHF' + \
+            (f' + {self.mwstsatz}% MwSt' if self.mwstsatz else '') + \
+            f') ({self.pk})'
 
     class Meta:
         verbose_name = "Kosten"
@@ -1232,14 +1236,18 @@ class Kunde(CustomModel):
 
     @admin.display(description="Kunde")
     def __str__(self):
-        return (
-            str(self.pk).zfill(8)+" " +
-            (("(WC#"+str(self.woocommerceid)+") ") if self.woocommerceid else "") +
-            ((self.vorname + " ") if self.vorname else "") +
-            ((self.nachname + " ") if self.nachname else "") +
-            ((self.firma + " ") if self.firma else "") +
-            (("(" + str(self.rechnungsadresse_plz) + " " + self.rechnungsadresse_ort + ")"))
-        )
+        s = f'{self.pkfill(8)} '
+        if self.woocommerceid:
+            s += f'(WC#{self.woocommerceid}) '
+        if self.vorname:
+            s += f'{self.vorname} '
+        if self.nachname:
+            s += f'{self.nachname} '
+        if self.firma:
+            s += f'{self.firma} '
+        if self.rechnungsadresse_plz and self.rechnungsadresse_ort:
+            s += f'({self.rechnungsadresse_plz} {self.rechnungsadresse_ort})'
+        return s
 
     class Meta:
         verbose_name = "Kunde"
@@ -1284,13 +1292,13 @@ class Kunde(CustomModel):
             self.webseite = self.webseite or self.zusammenfuegen.webseite
             self.bemerkung = self.bemerkung+"\n"+self.zusammenfuegen.bemerkung
 
-            for bestellung in self.zusammenfuegen.bestellung_set.all():
+            for bestellung in self.zusammenfuegen.bestellungen.all():
                 bestellung.kunde = self
                 bestellung.save()
 
-            if getattr(self.zusammenfuegen, "notiz", False):
+            if getattr(self.zusammenfuegen, 'notiz', False):
                 notiz = self.zusammenfuegen.notiz
-                notiz.kunde = None if getattr(self, "notiz", False) else self
+                notiz.kunde = None if getattr(self, 'notiz', False) else self
                 notiz.save()
 
             self.zusammenfuegen.delete()
@@ -1408,7 +1416,7 @@ class Lieferant(CustomModel):
 
     @admin.display(description="Lieferant")
     def __str__(self):
-        return self.name
+        return f'{self.name} ({self.pk})'
 
     def zuordnen(self):
         produkte = Produkt.objects.filter(lieferant=None)
@@ -1442,7 +1450,7 @@ class Lieferungsposten(CustomModel):
 
     @admin.display(description="Lieferungsposten")
     def __str__(self):
-        return str(self.menge)+"x "+self.produkt.clean_name()
+        return f'({self.lieferung.pk}) -> {self.menge}x {self.produkt}'
 
     class Meta:
         verbose_name = "Lieferungsposten"
@@ -1521,7 +1529,7 @@ class Lieferung(CustomModel):
 
     @admin.display(description="Lieferung")
     def __str__(self):
-        return self.name
+        return f'{self.name} ({self.pk})'
 
     class Meta:
         verbose_name = "Lieferung"
@@ -1589,7 +1597,7 @@ class Notiz(CustomModel):
 
     @admin.display(description="Notiz")
     def __str__(self):
-        return self.name
+        return f'{self.name} ({self.pk})'
 
     def links(self):
         text = ""
@@ -1626,7 +1634,7 @@ class Produktkategorie(CustomModel):
 
     @admin.display(description="Produktkategorie")
     def __str__(self):
-        return f"({self.pk}) {self.kategorie.clean_name()} <-> {self.produkt.clean_name()}"
+        return f'({self.kategorie.pk}) {self.kategorie.clean_name()} <-> {self.produkt}'
 
     class Meta:
         verbose_name = "Produktkategorie"
@@ -1887,7 +1895,7 @@ class Produkt(CustomModel):
 
     @admin.display(description="Produkt")
     def __str__(self):
-        return self.artikelnummer+" - "+self.clean_name()
+        return f'{self.artikelnummer} - {self.clean_name()} ({self.pk})'
 
     class Meta:
         verbose_name = "Produkt"
@@ -1996,7 +2004,7 @@ class Zahlungsempfaenger(CustomModel):
 
     @admin.display(description="Zahlungsempfänger")
     def __str__(self):
-        return self.firmenname
+        return f'{self.firmenname} ({self.pk})'
 
     class Meta:
         verbose_name = "Zahlungsempfänger"

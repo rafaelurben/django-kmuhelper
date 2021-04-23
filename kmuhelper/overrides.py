@@ -12,6 +12,11 @@ from kmuhelper import widgets
 class CustomModel(models.Model):
     """django.db.models.Model with custom overrides"""
 
+    def pkfill(self, width=6):
+        """Get the primary key of this object padded with zeros"""
+
+        return str(self.pk).zfill(width)
+
     @property
     def to_dict(self):
         """Return the model fields as a dict"""
@@ -53,8 +58,8 @@ class CustomModelAdmin(admin.ModelAdmin):
 
         actions = super().get_actions(request)
         if 'wc_update' in actions:
-            from kmuhelper.integrations.woocommerce.utils import is_connected as woocommerce_connected
-            if not woocommerce_connected():
+            from kmuhelper.integrations.woocommerce.utils import is_connected
+            if not is_connected():
                 del actions['wc_update']
         return actions
 

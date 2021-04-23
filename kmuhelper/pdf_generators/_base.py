@@ -1,3 +1,5 @@
+"""Base class for PDFCreators"""
+
 from io import BytesIO
 
 from reportlab.platypus import SimpleDocTemplate

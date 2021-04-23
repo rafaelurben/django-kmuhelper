@@ -49,7 +49,7 @@ class AttachmentAdmin(CustomModelAdmin):
         urls = super().get_urls()
 
         my_urls = [
-            path('<path:object_id>/download', self.admin_site.admin_view(views.attachment_download),
+            path('<path:object_id>/download/', self.admin_site.admin_view(views.attachment_download),
                  name='%s_%s_download' % info),
         ]
         return my_urls + urls
@@ -116,11 +116,11 @@ class EMailAdmin(CustomModelAdmin):
         urls = super().get_urls()
 
         my_urls = [
-            path('<path:object_id>/preview', self.admin_site.admin_view(views.email_preview),
+            path('<path:object_id>/preview/', self.admin_site.admin_view(views.email_preview),
                  name='%s_%s_preview' % info),
-            path('<path:object_id>/send', self.admin_site.admin_view(views.email_send),
+            path('<path:object_id>/send/', self.admin_site.admin_view(views.email_send),
                  name='%s_%s_send' % info),
-            path('<path:object_id>/resend', self.admin_site.admin_view(views.email_resend),
+            path('<path:object_id>/resend/', self.admin_site.admin_view(views.email_resend),
                  name='%s_%s_resend' % info),
         ]
         return my_urls + urls
@@ -166,7 +166,7 @@ class EMailTemplateAdmin(CustomModelAdmin):
                  name="%s_%s_savevars" % info),
             path('resetvars', self.admin_site.admin_view(views.emailtemplate_resetvars),
                  name="%s_%s_resetvars" % info),
-            path('<path:object_id>/use', self.admin_site.admin_view(views.emailtemplate_use),
+            path('<path:object_id>/use/', self.admin_site.admin_view(views.emailtemplate_use),
                  name='%s_%s_use' % info),
         ]
         return my_urls + urls

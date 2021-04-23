@@ -129,7 +129,7 @@ class EMailAttachment(CustomModel):
 
     @admin.display(description="E-Mail-Anhang")
     def __str__(self):
-        return "EMail-Anhang Verknüpfung"
+        return f'({self.email.pk}) -> {self.attachment}'
 
     class Meta:
         verbose_name = "E-Mail-Anhang"

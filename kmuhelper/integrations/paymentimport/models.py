@@ -3,7 +3,6 @@ from rich import print
 from django.contrib import admin, messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
-from django.urls import reverse
 from django.utils.html import format_html, mark_safe
 
 from kmuhelper.main.models import Bestellung
@@ -152,7 +151,7 @@ class PaymentImportEntry(models.Model):
 
     @admin.display(description="Eintrag")
     def __str__(self):
-        return f"{self.currency} {self.amount} - {self.order_id()} - {self.name}"
+        return f"{self.currency} {self.amount} - {self.order_id()} - {self.name} ({self.pk})"
 
     class Meta:
         verbose_name = "Zahlungsimport-Eintrag"

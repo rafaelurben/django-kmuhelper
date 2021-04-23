@@ -1,3 +1,5 @@
+"""PDF creator for invoices and delivery notes"""
+
 from reportlab.platypus import Table, TableStyle, Paragraph, Spacer, TopPadder, Flowable
 from reportlab.lib.utils import ImageReader
 from reportlab.lib.units import mm
@@ -514,7 +516,7 @@ class _PDFOrderHeader(Flowable):
         t = c.beginText(64*mm, 27*mm)
         t.setFont("Helvetica", 12)
         t.textLine(bestellung.ansprechpartner.name)
-        t.textLine(str(bestellung.kunde.pk).zfill(6)
+        t.textLine(bestellung.kunde.pkfill(6)
                    if bestellung.kunde else "n.a.")
         t.textLine(bestelldatum)
         if not self.lieferschein:
@@ -529,24 +531,20 @@ class _PDFOrderHeader(Flowable):
             if bestellung.lieferadresse_firma:
                 t.textLine(bestellung.lieferadresse_firma)
             if bestellung.lieferadresse_vorname or bestellung.lieferadresse_nachname:
-                t.textLine((bestellung.lieferadresse_vorname+" " if bestellung.lieferadresse_vorname else "")+(
-                    bestellung.lieferadresse_nachname or ""))
+                t.textLine(f'{bestellung.lieferadresse_vorname} {bestellung.lieferadresse_nachname}'.strip())
             t.textLine(bestellung.lieferadresse_adresszeile1)
             if bestellung.lieferadresse_adresszeile2:
                 t.textLine(bestellung.lieferadresse_adresszeile2)
-            t.textLine(bestellung.lieferadresse_plz +
-                       " "+bestellung.lieferadresse_ort)
+            t.textLine(f'{bestellung.lieferadresse_plz} {bestellung.lieferadresse_ort}'.strip())
         else:
             if bestellung.rechnungsadresse_firma:
                 t.textLine(bestellung.rechnungsadresse_firma)
             if bestellung.rechnungsadresse_vorname or bestellung.rechnungsadresse_nachname:
-                t.textLine((bestellung.rechnungsadresse_vorname+" " if bestellung.rechnungsadresse_vorname else "")+(
-                    bestellung.rechnungsadresse_nachname or ""))
+                t.textLine(f'{bestellung.rechnungsadresse_vorname} {bestellung.rechnungsadresse_nachname}'.strip())
             t.textLine(bestellung.rechnungsadresse_adresszeile1)
             if bestellung.rechnungsadresse_adresszeile2:
                 t.textLine(bestellung.rechnungsadresse_adresszeile2)
-            t.textLine(bestellung.rechnungsadresse_plz +
-                       " "+bestellung.rechnungsadresse_ort)
+            t.textLine(f'{bestellung.rechnungsadresse_plz} {bestellung.rechnungsadresse_ort}'.strip())
         c.drawText(t)
 
         # Rechnung
@@ -558,9 +556,9 @@ class _PDFOrderHeader(Flowable):
                 12*mm, 0*mm, self.bestellung.rechnungstitel or _("RECHNUNG"))
 
         c.setFont("Helvetica", 10)
-        if not (self.bestellung.rechnungstitel and len(self.bestellung.rechnungstitel) > 20):
-            c.drawString(64*mm, 0*mm, (bestellung.datum.strftime("%Y")+"-"+str(bestellung.pk).zfill(
-                6)+(" (Online #"+str(bestellung.woocommerceid)+")" if bestellung.woocommerceid else "")))
+        if not (bestellung.rechnungstitel and len(bestellung.rechnungstitel) > 20):
+            c.drawString(64*mm, 0*mm, f'{bestellung.datum.year}-{bestellung.pkfill(6)}' + \
+                (f' (Online #{bestellung.woocommerceid})' if bestellung.woocommerceid else ''))
 
         c.restoreState()
 

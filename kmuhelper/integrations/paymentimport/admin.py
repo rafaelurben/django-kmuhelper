@@ -47,7 +47,7 @@ class PaymentImportAdmin(CustomModelAdmin):
         my_urls = [
             path('upload', self.admin_site.admin_view(views.upload),
                  name="%s_%s_upload" % info),
-            path('<path:object_id>/process', self.admin_site.admin_view(views.process),
+            path('<path:object_id>/process/', self.admin_site.admin_view(views.process),
                  name="%s_%s_process" % info),
         ]
         return urls + my_urls
