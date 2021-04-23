@@ -44,7 +44,7 @@ Von `/admin/kmuhelper` können Sie mit einem Klick auf `Einstellungen` ein paar 
 
 ## Integrationen
 
-Falls Sie eine Wordpress-Seite mit WooCommerce haben, können Sie diese [mit dem KMUHelper verbinden](apis/woocommerce.md).
+Falls Sie eine Wordpress-Seite mit WooCommerce haben, können Sie diese [mit dem KMUHelper verbinden](integrations/woocommerce.md).
 
 ## Fertig
 

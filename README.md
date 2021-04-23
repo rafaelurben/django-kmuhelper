@@ -20,10 +20,10 @@ Diverse Infos über den KMUHelper gibt's auf der [Webseite](https://rafaelurben.
 ## Änderungen und Feedback
 
 - [Diskussionen](https://github.com/rafaelurben/django-kmuhelper/discussions) - Fragen und Ideen
-- [Issue](https://github.com/rafaelurben/django-kmuhelper/issues) - Bugs und Feature requests
+- [Issues](https://github.com/rafaelurben/django-kmuhelper/issues) - Bugs und Feature requests
 - [Kontakt](https://rafaelurben.github.io/kmuhelper/kontakt) - Dringende Anfragen und Sicherheitslücken
 
-Geplante Änderungen und aktuelle Programmierfortschritte können im [Projekt-Board](https://github.com/rafaelurben/django-kmuhelper/projects/1?fullscreen=true) gefunden werden.
+Geplante Änderungen und aktuelle Programmierfortschritte können im [Projekt-Board](https://github.com/rafaelurben/django-kmuhelper/projects/1) gefunden werden.
 
 ## Installation
 
@@ -31,4 +31,4 @@ Siehe [hier](https://rafaelurben.github.io/django-kmuhelper/installation).
 
 ## English / Translations
 
-There is currently no english translation planned because this app's main focus is switzerland with it's QR invoice, so there's no point in an english translation, although I might consider creating a French translation.
+There is currently no english translation planned because this app's main focus is Switzerland with it's QR invoice, so there's no point in an english translation, although I might consider creating a French translation.

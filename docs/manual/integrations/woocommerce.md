@@ -1,5 +1,5 @@
 ---
-permalink: /manual/apis/woocommerce
+permalink: /manual/integrations/woocommerce
 ---
 
 # WooCommerce-Integration
@@ -44,4 +44,4 @@ Das Neuladen ist jedoch nicht hilfreich bei manuellem Aktualisieren von einer gr
 
 ## Zurück
 
-[Zurück zur Einrichtung](../setup.md#integrationen)
+[Zurück zur Einrichtung](../setup.md#integrationen) - [Zurück zum Handbuch](../README.md#inhalt)

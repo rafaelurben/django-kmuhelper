@@ -18,12 +18,15 @@ home:
             title: Handbuch
             url: /manual/
             pages:
-                apis:
+                integrations:
                     title: Integrationen
                     pages:
                         woocommerce:
                             title: WooCommerce
-                            url: /manual/apis/woocommerce/
+                            url: /manual/integrations/woocommerce
+                        paymentimport:
+                            title: Zahlungsimport
+                            url: /manual/integrations/paymentimport
                 app:
                     title: App
                     url: /manual/app

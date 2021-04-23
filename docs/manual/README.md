@@ -32,4 +32,9 @@ Die Entwicklung und Unterhaltung des KMUHelper benötigt sehr viel Zeit, deshalb
 
 - [Sprachen](languages.md)
 
+Integrationen:
+
+- [WooCommerce](integrations/woocommerce.md)
+- [Zahlungsimport (camt-Dateien)](integrations/paymentimport.md)
+
 Hinweis: Zu Demonstrationszwecken werden in dieser Bedienungsanleitung relative URL oder die Domain `example.com` verwendet. In beiden Fällen sollten Sie diese mit Ihrer Domain ergänzen bzw. ersetzen.
