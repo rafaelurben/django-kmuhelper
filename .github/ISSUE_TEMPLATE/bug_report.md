@@ -7,24 +7,24 @@ assignees: ''
 
 ---
 
-**Description**
+## Description
 A clear and concise description of what the bug is.
 
-**Steps To Reproduce**
-Steps to reproduce the behaviour: (if reproducible, else steps you did before the bug occured)
+## Steps To Reproduce
+Steps to reproduce the behaviour: (if reproducible, otherwise the steps you did before the bug occured)
 1. Go to '...'
 2. Click on '....'
 3. Scroll down to '....'
 4. See error
 
-**Expected behaviour**
-A clear and concise description of what you expected to happen.
+## Behaviour
+A clear and concise description of what you expected to happen and what actually happened.
 
-**Screenshots**
+## Screenshots
 If applicable, add screenshots to help explain your problem.
 
-**Version**
-Note the used version number here.
+## Version
+Note the used version number here. (can be found in the kmuhelper settings)
 
-**Additional context**
-Add any other context about the problem here.
+## Additional information
+Add anything else you want to say here.
