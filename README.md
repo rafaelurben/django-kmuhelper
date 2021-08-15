@@ -31,4 +31,4 @@ Siehe [hier](https://rafaelurben.github.io/django-kmuhelper/installation).
 
 ## English / Translations
 
-There is currently no english translation planned because this app's main focus is Switzerland with it's QR invoice, so there's no point in an english translation, although I might consider creating a French translation.
+There is currently no english translation planned because this app's main focus is Switzerland with its QR invoice, so there's no point in an english translation, although I might consider creating a French translation.
