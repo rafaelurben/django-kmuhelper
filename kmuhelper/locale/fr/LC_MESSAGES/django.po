@@ -124,7 +124,7 @@ msgstr "Votre commande du"
 
 #: .\pdf_generators\bestellung.py:493
 msgid "Rechnungsdatum"
-msgstr "Date de fracture"
+msgstr "Date de facture"
 
 #: .\pdf_generators\bestellung.py:532
 msgid "LIEFERSCHEIN"
