@@ -35,6 +35,15 @@ try:
             "typ": "text",
             "name": "E-Mail-Signatur",
             "description": "Standardsignatur bei E-Mails"})
+    Einstellung.objects.update_or_create(
+        id="default-payment-conditions", defaults={
+            "typ": "char",
+            "name": "Standardzahlungskonditionen",
+            "description": "Standardwert für neue Bestellungen.\n" + 
+                           "Skonto und Zahlfrist nach Syntaxdefinition von Swico.\n\n" +
+                           "Beispiel: '2:15;0:30' steht für 2% Skonto bei Zahlung innerhalb " +
+                           "von 15 Tagen und eine Zahlungsfrist von 30 Tagen.\n\n" +
+                           "Wenn leer gelassen, wird '0:30' als Standard verwendet."})
 
     Geheime_Einstellung.objects.update_or_create(
         id="wc-consumer_key", defaults={

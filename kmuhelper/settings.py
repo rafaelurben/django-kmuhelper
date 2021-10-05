@@ -24,7 +24,10 @@ def get_db_setting(settingid, default=None):
     """Get a setting from the 'Einstellung' model"""
 
     try:
-        return models.Einstellung.objects.get(id=settingid).inhalt
+        setting = models.Einstellung.objects.get(id=settingid)
+        if setting.typ in ['char', 'text'] and setting.inhalt == "":
+            return default
+        return setting.inhalt
     except ObjectDoesNotExist:
         return default
 

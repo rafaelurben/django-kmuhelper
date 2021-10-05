@@ -40,6 +40,9 @@ def defaultorderkey():
     return "kh-"+str(randint(10000000, 99999999))
 
 
+def defaultzahlungskonditionen():
+    return settings.get_db_setting("default-payment-conditions", "0:30")
+
 STATUS = [
     ("pending", "Zahlung ausstehend"),
     ("processing", "In Bearbeitung"),
@@ -305,7 +308,7 @@ class Bestellung(CustomModel):
     )
     zahlungskonditionen = models.CharField(
         verbose_name="Zahlungskonditionen",
-        default="0:30",
+        default=defaultzahlungskonditionen,
         validators=[
             RegexValidator(
                 "^[0-9]+:[0-9]+(;[0-9]+:[0-9]+)*$",
@@ -313,7 +316,9 @@ class Bestellung(CustomModel):
             )
         ],
         max_length=16,
-        help_text="Skonto und Zahlfrist nach Syntaxdefinition von Swico. z.B. '2:15;0:30'",
+        help_text="Skonto und Zahlfrist nach Syntaxdefinition von Swico.\n\n" +
+                  "Beispiel: '2:15;0:30' steht für 2% Skonto bei Zahlung innerhalb " +
+                  "von 15 Tagen und eine Zahlungsfrist von 30 Tagen.",
     )
 
     status = models.CharField(
