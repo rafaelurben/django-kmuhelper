@@ -2137,8 +2137,16 @@ class SettingsBase(CustomModel):
 class Einstellung(SettingsBase):
     """Model representing an editable setting"""
 
-    name = models.CharField("Name",
-                            max_length=200)
+    name = models.CharField(
+        verbose_name="Name",
+        max_length=200,
+    )
+
+    description = models.TextField(
+        verbose_name="Beschreibung",
+        blank=True,
+        default="",
+    )
 
     @admin.display(description="Einstellung")
     def __str__(self):
@@ -2150,7 +2158,12 @@ class Einstellung(SettingsBase):
 
 
 class Geheime_Einstellung(SettingsBase):
-    """Model representing a hidden setting"""
+    """Model representing a hidden setting
+    
+    Hidden settings should only be edited through code and are not
+    meant to be seen by the user.
+    
+    Example usage: WooCommerce authentication data"""
 
     @admin.display(description="Geheime Einstellung")
     def __str__(self):

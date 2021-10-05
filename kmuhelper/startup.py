@@ -16,19 +16,25 @@ try:
     Einstellung.objects.update_or_create(
         id="wc-url", defaults={
             "typ": "url",
-            "name": "WooCommerce Shop-Url"})
+            "name": "WooCommerce Shop-Url",
+            "description": "Falls vorhanden: Die URL der Wordpress-Seite."})
     Einstellung.objects.update_or_create(
         id="email-stock-warning-receiver", defaults={
             "typ": "email",
-            "name": "E-Mail für Warnungen zum Lagerbestand"})
+            "name": "E-Mail-Adresse für Warnungen zum Lagerbestand",
+            "description": "E-Mail-Adresse für E-Mails zu durch " +
+                           "Bestellungsimport hervorgerufenem, geringem Lagerbestand.\n\n" +
+                           "Leer lassen, um diese E-Mails zu deaktivieren."})
     Einstellung.objects.update_or_create(
         id="email-show-buttons", defaults={
             "typ": "bool",
-            "name": "E-Mail-Knöpfe anzeigen"})
+            "name": "E-Mail-Knöpfe anzeigen",
+            "description": "Aktivieren oder Deaktivieren der E-Mail-Knöpfe bei Bestellungen und Kunden."})
     Einstellung.objects.update_or_create(
         id="email-signature", defaults={
             "typ": "text",
-            "name": "E-Mail-Signatur"})
+            "name": "E-Mail-Signatur",
+            "description": "Standardsignatur bei E-Mails"})
 
     Geheime_Einstellung.objects.update_or_create(
         id="wc-consumer_key", defaults={
