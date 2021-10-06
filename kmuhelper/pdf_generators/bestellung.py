@@ -19,7 +19,10 @@ from kmuhelper.utils import clean, formatprice
 
 
 class _PDFOrderPriceTable(Table):
-    def __init__(self, bestellung):
+    COLWIDTHS = [26*mm, 80*mm, 20*mm, 20*mm, 20*mm, 20*mm]
+    
+    @classmethod
+    def from_bestellung(cls, bestellung):
         sprache = bestellung.kunde.sprache if bestellung.kunde else "de"
 
         data = [(_("Art-Nr."), _("Bezeichnung"), _("Anzahl"),
@@ -29,6 +32,9 @@ class _PDFOrderPriceTable(Table):
         style_bold = ParagraphStyle("Bold", fontname="Helvetica-Bold")
 
         # Produkte
+
+        h_produkte = 0
+
         for bp in bestellung.produkte.through.objects.filter(bestellung=bestellung):
             data.append((
                 bp.produkt.artikelnummer,
@@ -38,6 +44,7 @@ class _PDFOrderPriceTable(Table):
                 formatprice(bp.produktpreis),
                 formatprice(bp.zwischensumme_ohne_rabatt())
             ))
+            h_produkte += 1
             if bp.rabatt:
                 data.append((
                     "",
@@ -47,6 +54,7 @@ class _PDFOrderPriceTable(Table):
                     formatprice(bp.zwischensumme_ohne_rabatt()),
                     formatprice(bp.nur_rabatt())
                 ))
+                h_produkte += 1
             if bp.bemerkung:
                 data.append((
                     "",
@@ -56,10 +64,12 @@ class _PDFOrderPriceTable(Table):
                     "",
                     ""
                 ))
-
-        kostenzeilen = 0
+                h_produkte += 1
 
         # Kosten
+
+        h_kosten = 0
+
         for bk in bestellung.kosten.through.objects.filter(bestellung=bestellung):
             data.append((
                 "",
@@ -69,7 +79,7 @@ class _PDFOrderPriceTable(Table):
                 formatprice(bk.kosten.preis),
                 formatprice(bk.kosten.preis)
             ))
-            kostenzeilen += 1
+            h_kosten += 1
             if bk.rabatt:
                 data.append((
                     "",
@@ -79,7 +89,7 @@ class _PDFOrderPriceTable(Table):
                     formatprice(bk.zwischensumme_ohne_rabatt()),
                     formatprice(bk.nur_rabatt())
                 ))
-                kostenzeilen += 1
+                h_kosten += 1
             if bk.bemerkung:
                 data.append((
                     "",
@@ -89,7 +99,11 @@ class _PDFOrderPriceTable(Table):
                     "",
                     ""
                 ))
-                kostenzeilen += 1
+                h_kosten += 1
+
+        # Mehrwertsteuer
+
+        h_mwst = 0
 
         mwstdict = dict(bestellung.mwstdict())
         for mwstsatz in mwstdict:  # Mehrwertsteuer
@@ -101,9 +115,11 @@ class _PDFOrderPriceTable(Table):
                 formatprice(float(mwstdict[mwstsatz])),
                 formatprice(float(mwstdict[mwstsatz]*(float(mwstsatz)/100)))
             ))
-            kostenzeilen += 1
+            h_mwst += 1
 
-        data.append((  # Total
+        # Total
+
+        data.append((
             _("RECHNUNGSBETRAG"),
             "",
             "",
@@ -112,26 +128,34 @@ class _PDFOrderPriceTable(Table):
             formatprice(bestellung.summe_gesamt())
         ))
 
+        # Style
+
         style = [
+            # Horizontal lines
             ('LINEABOVE', (0, 0), (-1, 0), 1, black),
             ('LINEBELOW', (0, 0), (-1, 0), 1, black),
-            ('LINEABOVE', (0, -1-kostenzeilen), (-1, -1-kostenzeilen), 0.5, black),
+            ('LINEABOVE', (0, -1-h_kosten-h_mwst), (-1, -1-h_kosten-h_mwst), 0.5, black),
             ('LINEABOVE', (0, -1), (-1, -1), 1, black),
             ('LINEBELOW', (0, -1), (-1, -1), 1, black),
+
+            # Horizontal alignment (same for all rows)
             ('ALIGN', (-1, 0), (-1, -1), "RIGHT"),
             ('ALIGN', (-2, 0), (-2, -1), "RIGHT"),
             ('ALIGN', (-4, 0), (-4, -1), "RIGHT"),
             ('ALIGN', (1, -1), (1, -1), "CENTER"),
-            ('FONTNAME', (0, -1), (-1, -1), "Helvetica-Bold"),
+            # Vertical alignment (same for whole table)
             ('VALIGN', (0, 0), (-1, -1), "TOP"),
+            # Font
+            ('FONTNAME', (0, -1), (-1, -1), "Helvetica-Bold"),
         ]
 
-        super().__init__(data, repeatRows=1, style=TableStyle(style),
-                         colWidths=[26*mm, 80*mm, 20*mm, 20*mm, 20*mm, 20*mm])
-
+        return cls(data, repeatRows=1, style=TableStyle(style), colWidths=cls.COLWIDTHS)
 
 class _PDFOrderProductTable(Table):
-    def __init__(self, bestellung):
+    COLWIDTHS = [36*mm, 110*mm, 20*mm, 20*mm]
+    
+    @classmethod
+    def from_bestellung(cls, bestellung):
         sprache = bestellung.kunde.sprache if bestellung.kunde and bestellung.kunde.sprache else "de"
 
         data = [(_("Art-Nr."), _("Bezeichnung"), _("Anzahl"), _("Einheit"))]
@@ -166,7 +190,7 @@ class _PDFOrderProductTable(Table):
             ""
         ))
 
-        style = [
+        style = TableStyle([
             ('LINEABOVE', (0, 0), (-1, 0), 1, black),
             ('LINEBELOW', (0, 0), (-1, 0), 1, black),
             ('LINEABOVE', (0, -1), (-1, -1), 1, black),
@@ -174,21 +198,22 @@ class _PDFOrderProductTable(Table):
             ('ALIGN', (1, -1), (1, -1), "CENTER"),
             ('FONTNAME', (0, -1), (-1, -1), "Helvetica-Bold"),
             ('VALIGN', (0, 0), (-1, -1), "TOP"),
-        ]
+        ])
 
-        super().__init__(data, repeatRows=1, style=TableStyle(
-            style), colWidths=[36*mm, 110*mm, 20*mm, 20*mm])
+        return cls(data, repeatRows=1, style=style, colWidths=cls.COLWIDTHS)
 
 
 class _PDFOrderQrInvoice(Flowable):
-    def __init__(self, bestellung, digital=True):
-        super().__init__()
-        self.width = 210
-        self.height = 110
-        self._fixedWidth = 210
-        self._fixedHeight = 110
-        self.digital = digital
-        self.bestellung = bestellung
+    @classmethod
+    def from_bestellung(cls, bestellung, digital=True):
+        elem = cls()
+        elem.width = 210
+        elem.height = 110
+        elem._fixedWidth = 210
+        elem._fixedHeight = 110
+        elem.digital = digital
+        elem.bestellung = bestellung
+        return elem
 
     def __repr__(self):
         return "QR-Invoice"
@@ -444,14 +469,16 @@ class _PDFOrderQrInvoice(Flowable):
 
 
 class _PDFOrderHeader(Flowable):
-    def __init__(self, bestellung, lieferschein=False):
-        super().__init__()
-        self.width = 210
-        self.height = 75
-        self._fixedWidth = 210
-        self._fixedHeight = 75
-        self.lieferschein = lieferschein
-        self.bestellung = bestellung
+    @classmethod
+    def from_bestellung(cls, bestellung, lieferschein=False):
+        elem = cls()
+        elem.width = 210
+        elem.height = 75
+        elem._fixedWidth = 210
+        elem._fixedHeight = 75
+        elem.lieferschein = lieferschein
+        elem.bestellung = bestellung
+        return elem
 
     def __repr__(self):
         return "QR-Invoice"
@@ -571,7 +598,7 @@ class PDFOrder(PDFGenerator):
     def get_elements(self, bestellung, lieferschein=False, digital: bool = True):
         # Header
         elements = [
-            _PDFOrderHeader(bestellung, lieferschein=lieferschein),
+            _PDFOrderHeader.from_bestellung(bestellung, lieferschein=lieferschein),
             Spacer(1, 48*mm),
         ]
 
@@ -585,13 +612,14 @@ class PDFOrder(PDFGenerator):
         # Main body
         if lieferschein:
             elements += [
-                _PDFOrderProductTable(bestellung)
+                _PDFOrderProductTable.from_bestellung(bestellung)
             ]
         else:
             elements += [
-                _PDFOrderPriceTable(bestellung),
+                _PDFOrderPriceTable.from_bestellung(bestellung),
                 Spacer(1, 65*mm),
-                TopPadder(_PDFOrderQrInvoice(bestellung, digital))
+                TopPadder(_PDFOrderQrInvoice.from_bestellung(
+                    bestellung, digital))
             ]
 
         return elements
