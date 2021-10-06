@@ -1,9 +1,9 @@
 import uuid
 
 from django.db import models
-from django.conf import settings
 from django.contrib import admin
 
+from kmuhelper import settings
 from kmuhelper.overrides import CustomModel
 
 

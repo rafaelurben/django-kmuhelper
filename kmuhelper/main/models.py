@@ -40,6 +40,9 @@ def defaultorderkey():
     return "kh-"+str(randint(10000000, 99999999))
 
 
+def defaultzahlungskonditionen():
+    return settings.get_db_setting("default-payment-conditions", "0:30")
+
 STATUS = [
     ("pending", "Zahlung ausstehend"),
     ("processing", "In Bearbeitung"),
@@ -305,7 +308,7 @@ class Bestellung(CustomModel):
     )
     zahlungskonditionen = models.CharField(
         verbose_name="Zahlungskonditionen",
-        default="0:30",
+        default=defaultzahlungskonditionen,
         validators=[
             RegexValidator(
                 "^[0-9]+:[0-9]+(;[0-9]+:[0-9]+)*$",
@@ -313,7 +316,9 @@ class Bestellung(CustomModel):
             )
         ],
         max_length=16,
-        help_text="Skonto und Zahlfrist nach Syntaxdefinition von Swico. z.B. '2:15;0:30'",
+        help_text="Skonto und Zahlfrist nach Syntaxdefinition von Swico.\n\n" +
+                  "Beispiel: '2:15;0:30' steht für 2% Skonto bei Zahlung innerhalb " +
+                  "von 15 Tagen und eine Zahlungsfrist von 30 Tagen.",
     )
 
     status = models.CharField(
@@ -2137,8 +2142,16 @@ class SettingsBase(CustomModel):
 class Einstellung(SettingsBase):
     """Model representing an editable setting"""
 
-    name = models.CharField("Name",
-                            max_length=200)
+    name = models.CharField(
+        verbose_name="Name",
+        max_length=200,
+    )
+
+    description = models.TextField(
+        verbose_name="Beschreibung",
+        blank=True,
+        default="",
+    )
 
     @admin.display(description="Einstellung")
     def __str__(self):
@@ -2150,7 +2163,12 @@ class Einstellung(SettingsBase):
 
 
 class Geheime_Einstellung(SettingsBase):
-    """Model representing a hidden setting"""
+    """Model representing a hidden setting
+    
+    Hidden settings should only be edited through code and are not
+    meant to be seen by the user.
+    
+    Example usage: WooCommerce authentication data"""
 
     @admin.display(description="Geheime Einstellung")
     def __str__(self):
