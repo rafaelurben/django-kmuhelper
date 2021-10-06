@@ -2,7 +2,7 @@
 
 {% block submit-row %}
 
-    {% if perms.kmuhelper.add_bestellung %}
+    {% if change and perms.kmuhelper.add_bestellung %}
         <a class="button" href="{% url 'admin:kmuhelper_bestellung_duplizieren' object_id %}">Duplizieren</a>
     {% endif %}
 
