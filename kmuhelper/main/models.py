@@ -311,14 +311,15 @@ class Bestellung(CustomModel):
         default=defaultzahlungskonditionen,
         validators=[
             RegexValidator(
-                "^[0-9]+:[0-9]+(;[0-9]+:[0-9]+)*$",
+                "^([0-9]+(\.[0-9]+)?:[0-9]+;)*0:[0-9]+$",
                 "Bitte benutze folgendes Format: 'p:d;p:d' - p = Skonto in %; d = Tage",
             )
         ],
         max_length=16,
-        help_text="Skonto und Zahlfrist nach Syntaxdefinition von Swico.\n\n" +
+        help_text="Skonto und Zahlungsfrist nach Syntaxdefinition von Swico.\n\n" +
                   "Beispiel: '2:15;0:30' steht für 2% Skonto bei Zahlung innerhalb " +
-                  "von 15 Tagen und eine Zahlungsfrist von 30 Tagen.",
+                  "von 15 Tagen und eine Zahlungsfrist von 30 Tagen.\n\n" +
+                  "Eine Zahlungsfrist MUSS vorhanden sein und am Schluss aufgeführt werden.",
     )
 
     status = models.CharField(
@@ -632,7 +633,21 @@ class Bestellung(CustomModel):
             f'{satz}:{mwstdict[satz]}' for satz in mwstdict)
         return f'//S1/10/{self.pk}/11/{date}/30/{uid}/31/{date}/32/{mwststring}/40/{kond}'
 
+    def paymentconditionsdict(self):
+        "Get the payment conditions as a dictionary"
+        data = {}
+        for pc in self.zahlungskonditionen.split(";"):
+            percent, days = pc.split(":")
+            percent, days = float(percent), int(days)
+            data[percent] = {
+                "days": days,
+                "percent": percent,
+                "price": runden(self.fix_summe*(1-(percent/100))),
+            }
+        return data
+
     def mwstdict(self):
+        "Get the VAT as a dictionary"
         mwst = {}
         for p in self.produkte.through.objects.filter(bestellung=self):
             if str(p.produkt.mwstsatz) in mwst:

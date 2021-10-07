@@ -37,10 +37,19 @@ SETTINGS = {
         "typ": "char",
         "name": "Standardzahlungskonditionen",
         "description": "Standardwert für neue Bestellungen.\n" +
-                       "Skonto und Zahlfrist nach Syntaxdefinition von Swico.\n\n" +
+                       "Skonto und Zahlungsfrist nach Syntaxdefinition von Swico.\n\n" +
                        "Beispiel: '2:15;0:30' steht für 2% Skonto bei Zahlung innerhalb " +
                        "von 15 Tagen und eine Zahlungsfrist von 30 Tagen.\n\n" +
+                       "Eine Zahlungsfrist MUSS vorhanden sein und am Schluss aufgeführt werden.\n\n" +
                        "Wenn leer gelassen, wird '0:30' als Standard verwendet."
+    },
+    "print-payment-conditions": {
+        "typ": "bool",
+        "name": "Zahlungskonditionen drucken",
+        "description": "Wenn aktiviert, werden die Zahlungskonditionen bei Rechnungen " +
+                       "in menschenlesbarer Form unter dem Rechnungstotal gedruckt.\n\n" + 
+                       "Die Zahlungskonditionen werden unabhängig von dieser Einstellung " + 
+                       "immer auch in manschinenlesbarer Form im QR-Code integriert."
     },
 }
 
