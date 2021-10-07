@@ -19,9 +19,11 @@ Diverse Infos über den KMUHelper gibt's auf der [Webseite](https://rafaelurben.
 
 ## Änderungen und Feedback
 
+Die neusten Änderungen können im [Änderungsprotokoll](https://github.com/rafaelurben/django-kmuhelper/releases) angesehen werden.
+
 - [Diskussionen](https://github.com/rafaelurben/django-kmuhelper/discussions) - Fragen und Ideen
 - [Issues](https://github.com/rafaelurben/django-kmuhelper/issues) - Bugs und Feature requests
-- [Kontakt](https://rafaelurben.github.io/kmuhelper/kontakt) - Dringende Anfragen und Sicherheitslücken
+- [Kontakt](mailto:kmuhelper@rafaelurben.ch) - Dringende Anfragen und Sicherheitslücken
 
 Geplante Änderungen und aktuelle Programmierfortschritte können im [Projekt-Board](https://github.com/rafaelurben/django-kmuhelper/projects/1) gefunden werden.
 
