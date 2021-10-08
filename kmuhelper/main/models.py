@@ -985,7 +985,7 @@ class Kosten(CustomModel):
 
     @property
     def mengenbezeichnung(self):
-        return clean("[:de]Stück[:fr]Pièce[:it]Pezzo[:en]Piece[:]")
+        return "[:de]Stück[:fr]Pièce[:it]Pezzo[:en]Piece[:]"
 
     @admin.display(description="Name", ordering="name")
     def clean_name(self):

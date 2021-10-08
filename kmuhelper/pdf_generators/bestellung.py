@@ -75,7 +75,7 @@ class _PDFOrderPriceTable(Table):
                 "",
                 Paragraph(clean(bk.kosten.name, sprache)),
                 "1",
-                bk.kosten.mengenbezeichnung,
+                clean(bk.kosten.mengenbezeichnung, sprache),
                 formatprice(bk.kosten.preis),
                 formatprice(bk.kosten.preis)
             ))
