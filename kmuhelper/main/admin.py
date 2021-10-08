@@ -258,6 +258,11 @@ class BestellungsAdmin(CustomModelAdmin):
             for product in obj.produkte.all():
                 product.show_stock_warning(request)
 
+    def save_related(self, request, form, formsets, change):
+        super().save_related(request, form, formsets, change)
+
+        form.instance.second_save()
+
     # Views
 
     def get_urls(self):

@@ -572,25 +572,27 @@ class Bestellung(CustomModel):
     # recurring_until = models.DateField("Wiederkehrend bis", default=None, blank=True, null=True)
     # recurring_frequency = models.CharField("Häufigkeit", choices=ORDER_FREQUENCY_TYPES, default=None, blank=True, null=True)
 
-    def save(self, *args, **kwargs):
-        double_save = True
-        if self.pk:
-            self.fix_summe = self.summe_gesamt()
-            double_save = False
-        elif (not self.woocommerceid) and self.kunde:
-            for field in constants.LIEFERADRESSE_FIELDS+constants.RECHNUNGSADRESSE_FIELDS:
-                setattr(self, field, getattr(self.kunde, field))
+    def second_save(self, *args, **kwargs):
+        "This HAS to be called after all related models have been saved."
 
-        if self.rechnungsdatum is None:
-            self.rechnungsdatum = timezone.now()
+        self.fix_summe = self.summe_gesamt()
         if self.versendet and (not self.ausgelagert):
             for i in self.produkte.through.objects.filter(bestellung=self):
                 i.produkt.lagerbestand -= i.menge
                 i.produkt.save()
             self.ausgelagert = True
+
         super().save(*args, **kwargs)
-        if double_save:
-            self.save()
+
+    def save(self, *args, **kwargs):
+        if not self.pk and not self.woocommerceid and self.kunde:
+            for field in constants.LIEFERADRESSE_FIELDS+constants.RECHNUNGSADRESSE_FIELDS:
+                setattr(self, field, getattr(self.kunde, field))
+
+        if self.rechnungsdatum is None:
+            self.rechnungsdatum = timezone.now()
+
+        super().save(*args, **kwargs)
 
     @admin.display(description="Trackinglink", ordering="trackingnummer")
     def trackinglink(self):

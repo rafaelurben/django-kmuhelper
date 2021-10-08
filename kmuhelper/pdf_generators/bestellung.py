@@ -35,13 +35,14 @@ class _PDFOrderPriceTable(Table):
         h_produkte = 0
 
         for bp in bestellung.produkte.through.objects.filter(bestellung=bestellung):
+            zwsumohnerabatt = bp.zwischensumme_ohne_rabatt()
             data.append((
                 bp.produkt.artikelnummer,
                 Paragraph(clean(bp.produkt.name, sprache)),
                 str(bp.menge),
                 clean(bp.produkt.mengenbezeichnung, sprache),
                 formatprice(bp.produktpreis),
-                formatprice(bp.zwischensumme_ohne_rabatt())
+                formatprice(zwsumohnerabatt)
             ))
             h_produkte += 1
             if bp.rabatt:
@@ -50,7 +51,7 @@ class _PDFOrderPriceTable(Table):
                     "- "+_("Rabatt"),
                     str(bp.rabatt),
                     "%",
-                    formatprice(bp.zwischensumme_ohne_rabatt()),
+                    formatprice(zwsumohnerabatt),
                     formatprice(bp.nur_rabatt())
                 ))
                 h_produkte += 1
@@ -133,7 +134,7 @@ class _PDFOrderPriceTable(Table):
             "",
             "CHF",
             "",
-            formatprice(bestellung.summe_gesamt()),
+            formatprice(bestellung.fix_summe),
         ))
 
         h_paycond = 0
@@ -326,7 +327,7 @@ class _PDFOrderQrInvoice(Flowable):
 
         # - CcyAmt
         # - - Amt
-        ln(formatprice(bestellung.summe_gesamt()))
+        ln(formatprice(bestellung.fix_summe))
         # - - Ccy
         ln("CHF")
 
@@ -373,7 +374,7 @@ class _PDFOrderQrInvoice(Flowable):
         bestelldatum = str(bestellung.datum.strftime("%d.%m.%Y"))
         rechnungsinformationen = bestellung.rechnungsinformationen().split("/31/")
         referenznummer = bestellung.referenznummer()
-        gesamtsumme = format(bestellung.summe_gesamt(),
+        gesamtsumme = format(bestellung.fix_summe,
                              "08,.2f").replace(",", " ").lstrip(" 0")
         ze = bestellung.zahlungsempfaenger
 
@@ -636,6 +637,8 @@ class _PDFOrderHeader(Flowable):
 
 class PDFOrder(PDFGenerator):
     def get_elements(self, bestellung, lieferschein=False, digital: bool = True):
+        bestellung.fix_summe = bestellung.summe_gesamt()
+
         # Header
         elements = [
             _PDFOrderHeader.from_bestellung(
