@@ -11,7 +11,7 @@ from django.utils import timezone
 from django.utils.html import mark_safe, format_html
 from django.urls import reverse
 
-from kmuhelper import settings
+from kmuhelper import settings, constants
 from kmuhelper.emails.models import EMail, Attachment
 from kmuhelper.overrides import CustomModel
 from kmuhelper.pdf_generators import PDFOrder
@@ -578,29 +578,8 @@ class Bestellung(CustomModel):
             self.fix_summe = self.summe_gesamt()
             double_save = False
         elif (not self.woocommerceid) and self.kunde:
-            self.rechnungsadresse_vorname = self.kunde.rechnungsadresse_vorname
-            self.rechnungsadresse_nachname = self.kunde.rechnungsadresse_nachname
-            self.rechnungsadresse_firma = self.kunde.rechnungsadresse_firma
-            self.rechnungsadresse_adresszeile1 = self.kunde.rechnungsadresse_adresszeile1
-            self.rechnungsadresse_adresszeile2 = self.kunde.rechnungsadresse_adresszeile2
-            self.rechnungsadresse_ort = self.kunde.rechnungsadresse_ort
-            self.rechnungsadresse_kanton = self.kunde.rechnungsadresse_kanton
-            self.rechnungsadresse_plz = self.kunde.rechnungsadresse_plz
-            self.rechnungsadresse_land = self.kunde.rechnungsadresse_land
-            self.rechnungsadresse_email = self.kunde.rechnungsadresse_email
-            self.rechnungsadresse_telefon = self.kunde.rechnungsadresse_telefon
-
-            self.lieferadresse_vorname = self.kunde.lieferadresse_vorname
-            self.lieferadresse_nachname = self.kunde.lieferadresse_nachname
-            self.lieferadresse_firma = self.kunde.lieferadresse_firma
-            self.lieferadresse_adresszeile1 = self.kunde.lieferadresse_adresszeile1
-            self.lieferadresse_adresszeile2 = self.kunde.lieferadresse_adresszeile2
-            self.lieferadresse_ort = self.kunde.lieferadresse_ort
-            self.lieferadresse_kanton = self.kunde.lieferadresse_kanton
-            self.lieferadresse_plz = self.kunde.lieferadresse_plz
-            self.lieferadresse_land = self.kunde.lieferadresse_land
-            self.lieferadresse_email = self.kunde.lieferadresse_email
-            self.lieferadresse_telefon = self.kunde.lieferadresse_telefon
+            for field in constants.LIEFERADRESSE_FIELDS+constants.RECHNUNGSADRESSE_FIELDS:
+                setattr(self, field, getattr(self.kunde, field))
 
         if self.rechnungsdatum is None:
             self.rechnungsdatum = timezone.now()
@@ -844,28 +823,9 @@ class Bestellung(CustomModel):
 
             kundennotiz=f"Kopie aus Bestellung #{self.pk}\n--------------------------------\n{self.kundennotiz}",
         )
-
-        new.rechnungsadresse_vorname = self.rechnungsadresse_vorname
-        new.rechnungsadresse_nachname = self.rechnungsadresse_nachname
-        new.rechnungsadresse_firma = self.rechnungsadresse_firma
-        new.rechnungsadresse_adresszeile1 = self.rechnungsadresse_adresszeile1
-        new.rechnungsadresse_adresszeile2 = self.rechnungsadresse_adresszeile2
-        new.rechnungsadresse_ort = self.rechnungsadresse_ort
-        new.rechnungsadresse_kanton = self.rechnungsadresse_kanton
-        new.rechnungsadresse_plz = self.rechnungsadresse_plz
-        new.rechnungsadresse_land = self.rechnungsadresse_land
-        new.rechnungsadresse_email = self.rechnungsadresse_email
-        new.rechnungsadresse_telefon = self.rechnungsadresse_telefon
-
-        new.lieferadresse_vorname = self.lieferadresse_vorname
-        new.lieferadresse_nachname = self.lieferadresse_nachname
-        new.lieferadresse_firma = self.lieferadresse_firma
-        new.lieferadresse_adresszeile1 = self.lieferadresse_adresszeile1
-        new.lieferadresse_adresszeile2 = self.lieferadresse_adresszeile2
-        new.lieferadresse_ort = self.lieferadresse_ort
-        new.lieferadresse_kanton = self.lieferadresse_kanton
-        new.lieferadresse_plz = self.lieferadresse_plz
-        new.lieferadresse_land = self.lieferadresse_land
+        
+        for field in constants.LIEFERADRESSE_FIELDS+constants.RECHNUNGSADRESSE_FIELDS:
+            setattr(new, field, getattr(self, field))
 
         for bp in self.produkte.through.objects.filter(bestellung=self):
             bp.copyto(new)

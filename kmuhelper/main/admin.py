@@ -4,12 +4,7 @@ from pytz import utc
 from django.contrib import admin, messages
 from django.urls import path
 
-from kmuhelper.constants import (
-    RECHNUNGSADRESSE_FIELDS_WITHOUT_CONTACT,
-    RECHNUNGSADRESSE_FIELDS, RECHNUNGSADRESSE_FIELDS_CATEGORIZED,
-    LIEFERADRESSE_FIELDS_WITHOUT_CONTACT,
-    LIEFERADRESSE_FIELDS, LIEFERADRESSE_FIELDS_CATEGORIZED,
-)
+from kmuhelper import constants
 from kmuhelper.integrations.woocommerce import WooCommerce
 from kmuhelper.main import views
 from kmuhelper.main.models import (
@@ -153,7 +148,7 @@ class BestellungsAdmin(CustomModelAdmin):
                     'versendet', 'bezahlt', 'fix_summe', 'html_notiz')
     list_filter = ('status', 'bezahlt', 'versendet', 'zahlungsmethode')
     search_fields = ['id', 'datum', 'notiz__name', 'notiz__beschrieb', 'kundennotiz',
-                     'trackingnummer'] + RECHNUNGSADRESSE_FIELDS + LIEFERADRESSE_FIELDS
+                     'trackingnummer'] + constants.RECHNUNGSADRESSE_FIELDS + constants.LIEFERADRESSE_FIELDS
 
     ordering = ("versendet", "bezahlt", "-datum")
 
@@ -182,10 +177,10 @@ class BestellungsAdmin(CustomModelAdmin):
                     'fields': ['kundennotiz', 'html_notiz'],
                     'classes': ["collapse start-open"]}),
                 ('Rechnungsadresse', {
-                    'fields': RECHNUNGSADRESSE_FIELDS if obj.bezahlt else RECHNUNGSADRESSE_FIELDS_CATEGORIZED,
+                    'fields': constants.RECHNUNGSADRESSE_FIELDS if obj.bezahlt else constants.RECHNUNGSADRESSE_FIELDS_CATEGORIZED,
                     'classes': ["collapse default-open"]}),
                 ('Lieferadresse', {
-                    'fields': LIEFERADRESSE_FIELDS if obj.versendet else LIEFERADRESSE_FIELDS_CATEGORIZED,
+                    'fields': constants.LIEFERADRESSE_FIELDS if obj.versendet else constants.LIEFERADRESSE_FIELDS_CATEGORIZED,
                     'classes': ["collapse start-open"]})
             ]
 
@@ -212,10 +207,11 @@ class BestellungsAdmin(CustomModelAdmin):
                   'summe', 'summe_mwst', 'summe_gesamt']
         if obj:
             if obj.versendet:
-                fields += ['versendet'] + LIEFERADRESSE_FIELDS_WITHOUT_CONTACT
+                fields += ['versendet'] + \
+                    constants.LIEFERADRESSE_FIELDS_WITHOUT_CONTACT
             if obj.bezahlt:
                 fields += ['bezahlt', 'zahlungsmethode', 'rechnungsdatum', 'rechnungstitel',
-                           'rechnungstext', 'zahlungskonditionen'] + RECHNUNGSADRESSE_FIELDS_WITHOUT_CONTACT
+                           'rechnungstext', 'zahlungskonditionen'] + constants.RECHNUNGSADRESSE_FIELDS_WITHOUT_CONTACT
             if obj.woocommerceid:
                 fields += ["kundennotiz"]
         return fields
@@ -375,9 +371,9 @@ class KundenAdmin(CustomModelAdmin):
             ('Infos', {'fields': [
                 'vorname', 'nachname', 'firma', 'email', 'sprache']}),
             ('Rechnungsadresse', {
-                'fields': RECHNUNGSADRESSE_FIELDS_CATEGORIZED}),
+                'fields': constants.RECHNUNGSADRESSE_FIELDS_CATEGORIZED}),
             ('Lieferadresse', {
-                'fields': LIEFERADRESSE_FIELDS_CATEGORIZED,
+                'fields': constants.LIEFERADRESSE_FIELDS_CATEGORIZED,
                 'classes': ["collapse start-open"]}),
         ]
 
@@ -402,7 +398,7 @@ class KundenAdmin(CustomModelAdmin):
     list_display = ('id', 'firma', 'nachname', 'vorname', 'rechnungsadresse_plz',
                     'rechnungsadresse_ort', 'email', 'avatar', 'html_notiz')
     search_fields = ['id', 'nachname', 'vorname', 'firma', 'email', 'benutzername', 'webseite',
-                     'notiz__name', 'notiz__beschrieb'] + RECHNUNGSADRESSE_FIELDS + LIEFERADRESSE_FIELDS
+                     'notiz__name', 'notiz__beschrieb'] + constants.RECHNUNGSADRESSE_FIELDS + constants.LIEFERADRESSE_FIELDS
 
     readonly_fields = ["html_notiz"]
 
@@ -809,7 +805,8 @@ class EinstellungenAdmin(CustomModelAdmin):
     list_display = ('name', 'inhalt')
     ordering = ('name',)
 
-    search_fields = ['name', 'description', 'char', 'text', 'inte', 'floa', 'url', 'email']
+    search_fields = ['name', 'description', 'char',
+                     'text', 'inte', 'floa', 'url', 'email']
 
     readonly_fields = ["id", "name", "description"]
 
@@ -817,14 +814,14 @@ class EinstellungenAdmin(CustomModelAdmin):
 
     def get_fields(self, request, obj=None):
         return ['description'] + (
-        ['char'] if obj.typ == 'char' else
-        ['text'] if obj.typ == 'text' else
-        ['boo'] if obj.typ == 'bool' else
-        ['inte'] if obj.typ == 'int' else
-        ['floa'] if obj.typ == 'float' else
-        ['url'] if obj.typ == 'url' else
-        ['email'] if obj.typ == 'email' else
-        ['json'] if obj.typ == 'json' else []
+            ['char'] if obj.typ == 'char' else
+            ['text'] if obj.typ == 'text' else
+            ['boo'] if obj.typ == 'bool' else
+            ['inte'] if obj.typ == 'int' else
+            ['floa'] if obj.typ == 'float' else
+            ['url'] if obj.typ == 'url' else
+            ['email'] if obj.typ == 'email' else
+            ['json'] if obj.typ == 'json' else []
         )
 
     # Permissions
