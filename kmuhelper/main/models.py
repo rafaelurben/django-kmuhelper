@@ -572,6 +572,12 @@ class Bestellung(CustomModel):
     # recurring_until = models.DateField("Wiederkehrend bis", default=None, blank=True, null=True)
     # recurring_frequency = models.CharField("Häufigkeit", choices=ORDER_FREQUENCY_TYPES, default=None, blank=True, null=True)
 
+    def import_customer_data(self):
+        "Copy the customer data from the customer into the order"
+
+        for field in constants.LIEFERADRESSE_FIELDS+constants.RECHNUNGSADRESSE_FIELDS:
+            setattr(self, field, getattr(self.kunde, field))
+
     def second_save(self, *args, **kwargs):
         "This HAS to be called after all related models have been saved."
 
@@ -586,8 +592,7 @@ class Bestellung(CustomModel):
 
     def save(self, *args, **kwargs):
         if not self.pk and not self.woocommerceid and self.kunde:
-            for field in constants.LIEFERADRESSE_FIELDS+constants.RECHNUNGSADRESSE_FIELDS:
-                setattr(self, field, getattr(self.kunde, field))
+            self.import_customer_data()
 
         if self.rechnungsdatum is None:
             self.rechnungsdatum = timezone.now()
