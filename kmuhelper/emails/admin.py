@@ -3,7 +3,7 @@ from django.urls import path
 
 from kmuhelper.emails import views
 from kmuhelper.emails.models import EMail, EMailAttachment, Attachment, EMailTemplate
-from kmuhelper.overrides import CustomModelAdmin
+from kmuhelper.overrides import CustomModelAdmin, CustomTabularInline
 
 #######
 
@@ -55,7 +55,7 @@ class AttachmentAdmin(CustomModelAdmin):
         return my_urls + urls
 
 
-class EMailAdminAttachmentInline(admin.TabularInline):
+class EMailAdminAttachmentInline(CustomTabularInline):
     model = EMailAttachment
     verbose_name = "Anhang"
     verbose_name_plural = "Anhänge"
@@ -67,8 +67,7 @@ class EMailAdminAttachmentInline(admin.TabularInline):
 
     # Permissions
 
-    def has_change_permission(self, request, obj=None):
-        return False
+    NO_CHANGE = True
 
 
 @admin.register(EMail)

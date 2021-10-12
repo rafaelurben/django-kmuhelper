@@ -11,7 +11,7 @@ from kmuhelper.main.models import (
     Ansprechpartner, Bestellung, Kategorie, Kosten, Kunde,
     Lieferant, Lieferung, Notiz, Produkt, Zahlungsempfaenger, Einstellung
 )
-from kmuhelper.overrides import CustomModelAdmin
+from kmuhelper.overrides import CustomModelAdmin, CustomTabularInline, CustomStackedInline
 
 
 #######
@@ -30,7 +30,7 @@ class AnsprechpartnerAdmin(CustomModelAdmin):
     search_fields = ['name', 'telefon', 'email']
 
 
-class BestellungInlineBestellungsposten(admin.TabularInline):
+class BestellungInlineBestellungsposten(CustomTabularInline):
     model = Bestellung.produkte.through
     verbose_name = "Bestellungsposten"
     verbose_name_plural = "Bestellungsposten"
@@ -51,17 +51,13 @@ class BestellungInlineBestellungsposten(admin.TabularInline):
 
     # Permissions
 
-    def has_change_permission(self, request, obj=None):
-        return False if (obj and (obj.versendet and obj.bezahlt)) else super().has_change_permission(request, obj)
-
-    def has_add_permission(self, request, obj=None):
-        return False
+    NO_ADD = True
 
     def has_delete_permission(self, request, obj=None):
         return False if (obj and (obj.versendet or obj.bezahlt)) else super().has_delete_permission(request, obj)
 
 
-class BestellungInlineBestellungspostenAdd(admin.TabularInline):
+class BestellungInlineBestellungspostenAdd(CustomTabularInline):
     model = Bestellung.produkte.through
     verbose_name = "Bestellungsposten"
     verbose_name_plural = "Bestellungsposten hinzufügen"
@@ -75,20 +71,15 @@ class BestellungInlineBestellungspostenAdd(admin.TabularInline):
 
     # Permissions
 
-    def has_change_permission(self, request, obj=None):
-        return False
+    NO_CHANGE = True
+    NO_DELETE = True
+    NO_VIEW = True
 
     def has_add_permission(self, request, obj=None):
         return False if (obj and (obj.versendet or obj.bezahlt)) else super().has_add_permission(request, obj)
 
-    def has_delete_permission(self, request, obj=None):
-        return False
 
-    def has_view_permission(self, request, obj=None):
-        return False
-
-
-class BestellungInlineBestellungskosten(admin.TabularInline):
+class BestellungInlineBestellungskosten(CustomTabularInline):
     model = Bestellung.kosten.through
     verbose_name = "Bestellungskosten"
     verbose_name_plural = "Bestellungskosten"
@@ -105,17 +96,13 @@ class BestellungInlineBestellungskosten(admin.TabularInline):
 
     # Permissions
 
-    def has_change_permission(self, request, obj=None):
-        return False if (obj and obj.bezahlt) else super().has_change_permission(request, obj)
-
-    def has_add_permission(self, request, obj=None):
-        return False
+    NO_ADD = True
 
     def has_delete_permission(self, request, obj=None):
         return False if (obj and obj.bezahlt) else super().has_delete_permission(request, obj)
 
 
-class BestellungInlineBestellungskostenAdd(admin.TabularInline):
+class BestellungInlineBestellungskostenAdd(CustomTabularInline):
     model = Bestellung.kosten.through
     verbose_name = "Bestellungskosten"
     verbose_name_plural = "Bestellungskosten hinzufügen"
@@ -129,17 +116,13 @@ class BestellungInlineBestellungskostenAdd(admin.TabularInline):
 
     # Permissions
 
-    def has_change_permission(self, request, obj=None):
-        return False
+    NO_CHANGE = True
+    NO_DELETE = True
+    NO_VIEW = True
 
     def has_add_permission(self, request, obj=None):
         return False if (obj and obj.bezahlt) else super().has_add_permission(request, obj)
 
-    def has_delete_permission(self, request, obj=None):
-        return False
-
-    def has_view_permission(self, request, obj=None):
-        return False
 
 
 @admin.register(Bestellung)
@@ -285,7 +268,7 @@ class BestellungsAdmin(CustomModelAdmin):
         return my_urls + urls
 
 
-class KategorienAdminProduktInline(admin.StackedInline):
+class KategorienAdminProduktInline(CustomStackedInline):
     model = Produkt.kategorien.through
     verbose_name = "Produkt in dieser Kategorie"
     verbose_name_plural = "Produkte in dieser Kategorie"
@@ -295,8 +278,7 @@ class KategorienAdminProduktInline(admin.StackedInline):
 
     # Permissions
 
-    def has_change_permission(self, request, obj=None):
-        return False
+    NO_CHANGE = True
 
 
 @admin.register(Kategorie)
@@ -345,7 +327,7 @@ class KostenAdmin(CustomModelAdmin):
     ]
 
 
-class KundenAdminBestellungsInline(admin.TabularInline):
+class KundenAdminBestellungsInline(CustomTabularInline):
     model = Bestellung
     verbose_name = "Bestellung"
     verbose_name_plural = "Bestellungen"
@@ -359,14 +341,9 @@ class KundenAdminBestellungsInline(admin.TabularInline):
 
     # Permissions
 
-    def has_change_permission(self, request, obj=None):
-        return False
-
-    def has_add_permission(self, request, obj=None):
-        return False
-
-    def has_delete_permission(self, request, obj=None):
-        return False
+    NO_CHANGE = True
+    NO_ADD = True
+    NO_DELETE = True
 
 
 @admin.register(Kunde)
@@ -475,7 +452,7 @@ class LieferantenAdmin(CustomModelAdmin):
         return my_urls + urls
 
 
-class LieferungInlineProdukte(admin.TabularInline):
+class LieferungInlineProdukte(CustomTabularInline):
     model = Lieferung.produkte.through
     verbose_name = "Produkt"
     verbose_name_plural = "Produkte"
@@ -487,17 +464,16 @@ class LieferungInlineProdukte(admin.TabularInline):
 
     # Permissions
 
+    NO_ADD = True
+
     def has_change_permission(self, request, obj=None):
         return False if obj and obj.eingelagert else super().has_change_permission(request, obj)
-
-    def has_add_permission(self, request, obj=None):
-        return False
 
     def has_delete_permission(self, request, obj=None):
         return False if obj and obj.eingelagert else super().has_delete_permission(request, obj)
 
 
-class LieferungInlineProdukteAdd(admin.TabularInline):
+class LieferungInlineProdukteAdd(CustomTabularInline):
     model = Lieferung.produkte.through
     verbose_name = "Produkt"
     verbose_name_plural = "Produkte hinzufügen"
@@ -509,18 +485,12 @@ class LieferungInlineProdukteAdd(admin.TabularInline):
 
     # Permissions
 
-    def has_view_permission(self, request, obj=None):
-        return False
-
-    def has_change_permission(self, request, obj=None):
-        return False
+    NO_VIEW = True
+    NO_CHANGE = True
+    NO_DELETE = True
 
     def has_add_permission(self, request, obj=None):
         return False if obj and obj.eingelagert else super().has_add_permission(request, obj)
-
-    def has_delete_permission(self, request, obj=None):
-        return False
-
 
 @admin.register(Lieferung)
 class LieferungenAdmin(CustomModelAdmin):
@@ -679,7 +649,7 @@ class NotizenAdmin(CustomModelAdmin):
                         request, "Lieferung #" + request.GET["from_lieferung"] + " konnte nicht gefunden werden. Die Notiz wurde trotzdem erstellt.")
 
 
-class ProduktInlineKategorienInline(admin.TabularInline):
+class ProduktInlineKategorienInline(CustomTabularInline):
     model = Produkt.kategorien.through
     extra = 0
 
@@ -687,8 +657,7 @@ class ProduktInlineKategorienInline(admin.TabularInline):
 
     # Permissions
 
-    def has_change_permission(self, request, obj=None):
-        return False
+    NO_CHANGE = True
 
 
 @admin.register(Produkt)
@@ -831,11 +800,8 @@ class EinstellungenAdmin(CustomModelAdmin):
 
     # Permissions
 
-    def has_add_permission(self, request):
-        return False
-
-    def has_delete_permission(self, request, obj=None):
-        return False
+    NO_ADD = True
+    NO_DELETE = True
 
 
 #

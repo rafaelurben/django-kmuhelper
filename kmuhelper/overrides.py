@@ -70,3 +70,77 @@ class CustomModelAdmin(admin.ModelAdmin):
             return {}
 
         return super().has_module_permission(request)
+
+    # Permissions
+
+    NO_CHANGE = False
+
+    def has_change_permission(self, request, obj=None):
+        return False if self.NO_CHANGE else super().has_change_permission(request, obj)
+
+    NO_ADD = False
+
+    def has_add_permission(self, request):
+        return False if self.NO_ADD else super().has_add_permission(request)
+
+    NO_DELETE = False
+
+    def has_delete_permission(self, request, obj=None):
+        return False if self.NO_DELETE else super().has_delete_permission(request, obj)
+
+    NO_VIEW = False
+
+    def has_view_permission(self, request, obj=None):
+        return False if self.NO_VIEW else super().has_view_permission(request, obj)
+
+
+class CustomTabularInline(admin.TabularInline):
+    """django.contrib.admin.TabularInline with custom overrides"""
+
+    # Permissions
+
+    NO_CHANGE = False
+
+    def has_change_permission(self, request, obj=None):
+        return False if self.NO_CHANGE else super().has_change_permission(request, obj)
+
+    NO_ADD = False
+
+    def has_add_permission(self, request, obj=None):
+        return False if self.NO_ADD else super().has_add_permission(request, obj)
+
+    NO_DELETE = False
+
+    def has_delete_permission(self, request, obj=None):
+        return False if self.NO_DELETE else super().has_delete_permission(request, obj)
+
+    NO_VIEW = False
+
+    def has_view_permission(self, request, obj=None):
+        return False if self.NO_VIEW else super().has_view_permission(request, obj)
+
+
+class CustomStackedInline(admin.StackedInline):
+    """django.contrib.admin.StackedInline with custom overrides"""
+
+    # Permissions
+
+    NO_CHANGE = False
+
+    def has_change_permission(self, request, obj=None):
+        return False if self.NO_CHANGE else super().has_change_permission(request, obj)
+
+    NO_ADD = False
+
+    def has_add_permission(self, request, obj=None):
+        return False if self.NO_ADD else super().has_add_permission(request, obj)
+
+    NO_DELETE = False
+
+    def has_delete_permission(self, request, obj=None):
+        return False if self.NO_DELETE else super().has_delete_permission(request, obj)
+
+    NO_VIEW = False
+
+    def has_view_permission(self, request, obj=None):
+        return False if self.NO_VIEW else super().has_view_permission(request, obj)
