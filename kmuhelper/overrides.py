@@ -71,6 +71,16 @@ class CustomModelAdmin(admin.ModelAdmin):
 
         return super().has_module_permission(request)
 
+    # Readonly fields
+
+    def get_readonly_fields(self, request, obj=None) -> tuple:
+        if "unlock" in request.GET:
+            return tuple(self.readonly_fields)
+        return tuple(self.readonly_fields) + tuple(self.get_additional_readonly_fields(request, obj))
+
+    def get_additional_readonly_fields(self, request, obj=None) -> list:
+        return []
+
     # Permissions
 
     NO_CHANGE = False
@@ -97,6 +107,16 @@ class CustomModelAdmin(admin.ModelAdmin):
 class CustomTabularInline(admin.TabularInline):
     """django.contrib.admin.TabularInline with custom overrides"""
 
+    # Readonly fields
+
+    def get_readonly_fields(self, request, obj=None) -> tuple:
+        if "unlock" in request.GET:
+            return tuple(self.readonly_fields)
+        return tuple(self.readonly_fields) + tuple(self.get_additional_readonly_fields(request, obj))
+
+    def get_additional_readonly_fields(self, request, obj=None) -> list:
+        return []
+
     # Permissions
 
     NO_CHANGE = False
@@ -122,6 +142,16 @@ class CustomTabularInline(admin.TabularInline):
 
 class CustomStackedInline(admin.StackedInline):
     """django.contrib.admin.StackedInline with custom overrides"""
+
+    # Readonly fields
+
+    def get_readonly_fields(self, request, obj=None) -> tuple:
+        if "unlock" in request.GET:
+            return tuple(self.readonly_fields)
+        return tuple(self.readonly_fields) + tuple(self.get_additional_readonly_fields(request, obj))
+
+    def get_additional_readonly_fields(self, request, obj=None) -> list:
+        return []
 
     # Permissions
 

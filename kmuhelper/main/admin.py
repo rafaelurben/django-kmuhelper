@@ -41,8 +41,10 @@ class BestellungInlineBestellungsposten(CustomTabularInline):
                            'menge', 'rabatt', 'mwstsatz', 'zwischensumme']})
     ]
 
-    def get_readonly_fields(self, request, obj=None):
-        fields = ["zwischensumme", "mwstsatz", "produkt", "produktpreis"]
+    readonly_fields = ('zwischensumme', 'mwstsatz', 'produkt',)
+
+    def get_additional_readonly_fields(self, request, obj=None):
+        fields = ["produktpreis"]
         if obj and (obj.versendet or obj.bezahlt):
             fields += ["menge"]
         if obj and obj.bezahlt:
@@ -90,8 +92,12 @@ class BestellungInlineBestellungskosten(CustomTabularInline):
                            'kostenpreis', 'rabatt', 'mwstsatz', 'zwischensumme']})
     ]
 
-    def get_readonly_fields(self, request, obj=None):
-        fields = ["zwischensumme", "mwstsatz", "kostenpreis", "kosten_name"]
+    readonly_fields = ('zwischensumme', 'mwstsatz', 'kosten_name',)
+
+    def get_additional_readonly_fields(self, request, obj=None):
+        fields = ["kostenpreis"]
+        if obj and obj.bezahlt:
+            fields += ["rabatt"]
         return fields
 
     # Permissions
@@ -185,9 +191,10 @@ class BestellungsAdmin(CustomModelAdmin):
                 'classes': ["collapse start-open"]}),
         ]
 
-    def get_readonly_fields(self, request, obj=None):
-        fields = ['html_notiz', 'name', 'trackinglink',
-                  'summe', 'summe_mwst', 'summe_gesamt']
+    readonly_fields = ('html_notiz', 'name', 'trackinglink', 'summe', 'summe_mwst', 'summe_gesamt',)
+
+    def get_additional_readonly_fields(self, request, obj=None):
+        fields = []
         if obj:
             if obj.versendet:
                 fields += ['versendet'] + \
