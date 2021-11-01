@@ -41,9 +41,9 @@ def orders_unpaid(request):
     """Get sums of currently unpaid orders."""
 
     sum_unsent = Bestellung.objects.filter(bezahlt=False, versendet=False).aggregate(
-        models.Sum('fix_summe'))["fix_summe__sum"]
+        models.Sum('fix_summe'))["fix_summe__sum"] or 0
     sum_sent = Bestellung.objects.filter(bezahlt=False, versendet=True).aggregate(
-        models.Sum('fix_summe'))["fix_summe__sum"]
+        models.Sum('fix_summe'))["fix_summe__sum"] or 0
 
     context = {
         "orders_unpaid_sum": {
