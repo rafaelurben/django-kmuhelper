@@ -43,43 +43,6 @@ def defaultorderkey():
 def defaultzahlungskonditionen():
     return settings.get_db_setting("default-payment-conditions", "0:30")
 
-STATUS = [
-    ("pending", "Zahlung ausstehend"),
-    ("processing", "In Bearbeitung"),
-    ("on-hold", "In Wartestellung"),
-    ("completed", "Abgeschlossen"),
-    ("cancelled", "Storniert/Abgebrochen"),
-    ("refunded", "Rückerstattet"),
-    ("failed", "Fehlgeschlagen"),
-    ("trash", "Gelöscht")
-]
-
-MWSTSÄTZE = [
-    (0.0, "0.0% (Mehrwertsteuerfrei)"),
-    (7.7, "7.7% (Normalsatz)"),
-    (3.7, "3.7% (Sondersatz für Beherbergungsdienstleistungen)"),
-    (2.5, "2.5% (Reduzierter Satz)")
-]
-
-ZAHLUNGSMETHODEN = [
-    ("bacs", "Überweisung"),
-    ("cheque", "Scheck"),
-    ("cod", "Rechnung / Nachnahme"),
-    ("paypal", "PayPal")
-]
-
-LÄNDER = [
-    ("CH", "Schweiz"),
-    ("LI", "Liechtenstein")
-]
-
-SPRACHEN = [
-    ("de", "Deutsch [DE]"),
-    ("fr", "Französisch [FR]"),
-    ("it", "Italienisch [IT]"),
-    ("en", "Englisch [EN]")
-]
-
 # GUTSCHEINTYPEN = [
 #     ("percent", "Prozent"),
 #     ("fixed_cart", "Fixer Betrag auf den Warenkorb"),
@@ -326,7 +289,7 @@ class Bestellung(CustomModel):
         verbose_name="Status",
         max_length=11,
         default='processing',
-        choices=STATUS,
+        choices=constants.ORDERSTATUS,
     )
     versendet = models.BooleanField(
         verbose_name="Versendet",
@@ -358,7 +321,7 @@ class Bestellung(CustomModel):
         verbose_name="Zahlungsmethode",
         max_length=7,
         default="cod",
-        choices=ZAHLUNGSMETHODEN,
+        choices=constants.PAYMENTMETHODS,
     )
     bezahlt = models.BooleanField(
         verbose_name="Bezahlt",
@@ -403,39 +366,39 @@ class Bestellung(CustomModel):
 
     rechnungsadresse_vorname = models.CharField(
         verbose_name="Vorname",
-        max_length=50,
+        max_length=250,
         default="",
         blank=True,
     )
     rechnungsadresse_nachname = models.CharField(
         verbose_name="Nachname",
-        max_length=50,
+        max_length=250,
         default="",
         blank=True,
     )
     rechnungsadresse_firma = models.CharField(
         verbose_name="Firma",
-        max_length=50,
+        max_length=250,
         default="",
         blank=True,
     )
     rechnungsadresse_adresszeile1 = models.CharField(
         verbose_name="Adresszeile 1",
-        max_length=50,
+        max_length=250,
         default="",
         blank=True,
         help_text="Strasse und Hausnummer oder 'Postfach'",
     )
     rechnungsadresse_adresszeile2 = models.CharField(
         verbose_name="Adresszeile 2",
-        max_length=50,
+        max_length=250,
         default="",
         blank=True,
         help_text="Wird in QR-Rechnung NICHT verwendet!",
     )
     rechnungsadresse_ort = models.CharField(
         verbose_name="Ort",
-        max_length=50,
+        max_length=250,
         default="",
         blank=True,
     )
@@ -455,7 +418,7 @@ class Bestellung(CustomModel):
         verbose_name="Land",
         max_length=2,
         default="CH",
-        choices=LÄNDER,
+        choices=constants.COUNTRIES,
     )
     rechnungsadresse_email = models.EmailField(
         verbose_name="E-Mail Adresse",
@@ -470,37 +433,37 @@ class Bestellung(CustomModel):
 
     lieferadresse_vorname = models.CharField(
         verbose_name="Vorname",
-        max_length=50,
+        max_length=250,
         default="",
         blank=True,
     )
     lieferadresse_nachname = models.CharField(
         verbose_name="Nachname",
-        max_length=50,
+        max_length=250,
         default="",
         blank=True,
     )
     lieferadresse_firma = models.CharField(
         verbose_name="Firma",
-        max_length=50,
+        max_length=250,
         default="",
         blank=True,
     )
     lieferadresse_adresszeile1 = models.CharField(
         verbose_name="Adresszeile 1",
-        max_length=50,
+        max_length=250,
         default="",
         blank=True,
     )
     lieferadresse_adresszeile2 = models.CharField(
         verbose_name="Adresszeile 2",
-        max_length=50,
+        max_length=250,
         default="",
         blank=True,
     )
     lieferadresse_ort = models.CharField(
         verbose_name="Ort",
-        max_length=50,
+        max_length=250,
         default="",
         blank=True,
     )
@@ -520,7 +483,7 @@ class Bestellung(CustomModel):
         verbose_name="Land",
         max_length=2,
         default="CH",
-        choices=LÄNDER,
+        choices=constants.COUNTRIES,
     )
     lieferadresse_email = models.EmailField(
         verbose_name="E-Mail Adresse",
@@ -984,7 +947,7 @@ class Kosten(CustomModel):
     )
     mwstsatz = models.FloatField(
         verbose_name="MwSt-Satz",
-        choices=MWSTSÄTZE,
+        choices=constants.MWSTSETS,
         default=7.7,
     )
 
@@ -1023,19 +986,19 @@ class Kunde(CustomModel):
     )
     vorname = models.CharField(
         verbose_name="Vorname",
-        max_length=50,
+        max_length=250,
         default="",
         blank=True,
     )
     nachname = models.CharField(
         verbose_name="Nachname",
-        max_length=50,
+        max_length=250,
         default="",
         blank=True,
     )
     firma = models.CharField(
         verbose_name="Firma",
-        max_length=50,
+        max_length=250,
         default="",
         blank=True,
     )
@@ -1053,45 +1016,45 @@ class Kunde(CustomModel):
     sprache = models.CharField(
         verbose_name="Sprache",
         default="de",
-        choices=SPRACHEN,
+        choices=constants.LANGUAGES,
         max_length=2,
     )
 
     rechnungsadresse_vorname = models.CharField(
         verbose_name="Vorname",
-        max_length=50,
+        max_length=250,
         default="",
         blank=True,
     )
     rechnungsadresse_nachname = models.CharField(
         verbose_name="Nachname",
-        max_length=50,
+        max_length=250,
         default="",
         blank=True,
     )
     rechnungsadresse_firma = models.CharField(
         verbose_name="Firma",
-        max_length=50,
+        max_length=250,
         default="",
         blank=True,
     )
     rechnungsadresse_adresszeile1 = models.CharField(
         verbose_name="Adresszeile 1",
-        max_length=50,
+        max_length=250,
         default="",
         blank=True,
         help_text='Strasse und Hausnummer oder "Postfach"',
     )
     rechnungsadresse_adresszeile2 = models.CharField(
         verbose_name="Adresszeile 2",
-        max_length=50,
+        max_length=250,
         default="",
         blank=True,
         help_text="Wird in QR-Rechnung NICHT verwendet!",
     )
     rechnungsadresse_ort = models.CharField(
         verbose_name="Ort",
-        max_length=50,
+        max_length=250,
         default="",
         blank=True,
     )
@@ -1111,7 +1074,7 @@ class Kunde(CustomModel):
         verbose_name="Land",
         max_length=2,
         default="CH",
-        choices=LÄNDER,
+        choices=constants.COUNTRIES,
     )
     rechnungsadresse_email = models.EmailField(
         verbose_name="E-Mail Adresse",
@@ -1126,37 +1089,37 @@ class Kunde(CustomModel):
 
     lieferadresse_vorname = models.CharField(
         verbose_name="Vorname",
-        max_length=50,
+        max_length=250,
         default="",
         blank=True,
     )
     lieferadresse_nachname = models.CharField(
         verbose_name="Nachname",
-        max_length=50,
+        max_length=250,
         default="",
         blank=True,
     )
     lieferadresse_firma = models.CharField(
         verbose_name="Firma",
-        max_length=50,
+        max_length=250,
         default="",
         blank=True,
     )
     lieferadresse_adresszeile1 = models.CharField(
         verbose_name="Adresszeile 1",
-        max_length=50,
+        max_length=250,
         default="",
         blank=True,
     )
     lieferadresse_adresszeile2 = models.CharField(
         verbose_name="Adresszeile 2",
-        max_length=50,
+        max_length=250,
         default="",
         blank=True,
     )
     lieferadresse_ort = models.CharField(
         verbose_name="Ort",
-        max_length=50,
+        max_length=250,
         default="",
         blank=True,
     )
@@ -1176,7 +1139,7 @@ class Kunde(CustomModel):
         verbose_name="Land",
         max_length=2,
         default="CH",
-        choices=LÄNDER,
+        choices=constants.COUNTRIES,
     )
     lieferadresse_email = models.EmailField(
         verbose_name="E-Mail Adresse",
@@ -1670,7 +1633,7 @@ class Produkt(CustomModel):
     )
     mwstsatz = models.FloatField(
         verbose_name='Mehrwertsteuersatz',
-        choices=MWSTSÄTZE,
+        choices=constants.MWSTSETS,
         default=7.7,
     )
 
@@ -1943,7 +1906,7 @@ class Zahlungsempfaenger(CustomModel):
     land = models.CharField(
         verbose_name="Land",
         max_length=2,
-        choices=LÄNDER,
+        choices=constants.COUNTRIES,
         default="CH",
     )
     email = models.EmailField(
