@@ -504,11 +504,25 @@ class WooCommerce():
                 product = cls.product_update(product[0], api=wcapi)
             else:
                 product = product[0]
-            neworder.produkte.add(product, through_defaults={"menge": int(
-                item["quantity"]), "produktpreis": runden(float(item["price"]))})
+
+            neworder.produkte.add(
+                product, 
+                through_defaults={
+                    "menge": int(item["quantity"]),
+                    "produktpreis": runden(float(item["price"]))
+                }
+            )
         for item in order["shipping_lines"]:
-            neworder.kosten.add(Kosten.objects.get_or_create(name=item["method_title"], preis=float(
-                item["total"]), mwstsatz=(7.7 if float(item["total_tax"]) > 0 else 0))[0])
+            price = float(item["total"])
+
+            neworder.kosten.add(
+                Kosten.objects.get_or_create(
+                    name=item["method_title"],
+                    preis=price,
+                    mwstsatz=(7.7 if float(item["total_tax"]) > 0 else 0)
+                )[0],
+                through_defaults={"kostenpreis": price}
+            )
         neworder.save()
         neworder.second_save()
         log("Bestellung erstellt:", str(neworder))
