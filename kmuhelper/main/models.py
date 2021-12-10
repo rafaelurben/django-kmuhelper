@@ -29,11 +29,15 @@ def defaultlieferungsname():
 
 
 def defaultzahlungsempfaenger():
-    return Zahlungsempfaenger.objects.first().pk
+    if Zahlungsempfaenger.objects.exists():
+        return Zahlungsempfaenger.objects.first().pk
+    return None
 
 
 def defaultansprechpartner():
-    return Ansprechpartner.objects.first().pk
+    if Ansprechpartner.objects.exists():
+        return Ansprechpartner.objects.first().pk
+    return None
 
 
 def defaultorderkey():
