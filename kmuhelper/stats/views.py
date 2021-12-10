@@ -7,7 +7,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.shortcuts import render
 from django.urls import reverse_lazy
 
-from kmuhelper.utils import clean
+from kmuhelper.utils import clean, render_error
 from kmuhelper.main.models import Bestellungsposten, Bestellung
 
 
@@ -22,6 +22,9 @@ def stats(request):
 @login_required(login_url=reverse_lazy("admin:login"))
 @permission_required("kmuhelper.view_produkt")
 def stats_products_price(request):
+    if not Bestellung.objects.exists():
+        return render_error(request, "Keine Bestellungen vorhanden.")
+    
     try:
         from_date = pytz.utc.localize(datetime.datetime.strptime(
             str(request.GET.get("from")), "%Y-%m-%d"))
@@ -73,6 +76,9 @@ def stats_products_price(request):
 @login_required(login_url=reverse_lazy("admin:login"))
 @permission_required("kmuhelper.view_produkt")
 def best_products(request):
+    if not Bestellung.objects.exists():
+        return render_error(request, "Keine Bestellungen vorhanden.")
+
     try:
         if "max" in request.GET:
             max_count = int(request.GET.get("max"))
