@@ -23,7 +23,8 @@ def stats(request):
 @permission_required("kmuhelper.view_produkt")
 def stats_products_price(request):
     if not Bestellung.objects.exists():
-        return render_error(request, "Keine Bestellungen vorhanden.")
+        return render_error(request, status=400,
+                            message="Keine Bestellungen vorhanden.")
     
     try:
         from_date = pytz.utc.localize(datetime.datetime.strptime(
@@ -77,7 +78,8 @@ def stats_products_price(request):
 @permission_required("kmuhelper.view_produkt")
 def best_products(request):
     if not Bestellung.objects.exists():
-        return render_error(request, "Keine Bestellungen vorhanden.")
+        return render_error(request, status=400,
+                            message="Keine Bestellungen vorhanden.")
 
     try:
         if "max" in request.GET:

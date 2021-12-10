@@ -118,6 +118,5 @@ def public_view_order(request, obj, order_key):
     if str(obj.order_key) == order_key:
         return obj.get_pdf(lieferschein=lieferschein, digital=digital)
 
-    messages.error(
-        request, "Der Bestellungsschlüssel dieser Bestellung stimmt nicht überein.")
-    return render_error(request)
+    return render_error(request, status=404,
+                        message="Der Bestellungsschlüssel dieser Bestellung stimmt nicht überein.")

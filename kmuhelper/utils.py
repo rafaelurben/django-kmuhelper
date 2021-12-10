@@ -5,14 +5,18 @@ import requests
 from io import BytesIO
 from packaging.version import Version, InvalidVersion, parse as parse_version
 
+from django.contrib import messages
 from django.core import mail
 from django.shortcuts import render
 from django.template.loader import get_template
 
 ################
 
-def render_error(request, status=404):
+def render_error(request, status:int=404, message:str=""):
     """Show the error page"""
+
+    if message:
+        messages.error(request, message)
 
     return render(request, "kmuhelper/error.html", status=status)
 

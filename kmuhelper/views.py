@@ -1,4 +1,3 @@
-from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.urls import NoReverseMatch
 from django.shortcuts import render
@@ -28,14 +27,11 @@ def _templatetest(request, templatename):
         get_template(templatename)
         return render(request, templatename, request.GET.dict())
     except TemplateDoesNotExist:
-        messages.error(request,
-                       f"Vorlage '{templatename}' wurde nicht gefunden.")
-        return render_error(request, status=404)
+        return render_error(request, status=404, 
+                            message=f"Vorlage '{templatename}' wurde nicht gefunden.")
     except TemplateSyntaxError as error:
-        messages.error(request,
-                       f"Vorlage '{templatename}' enthält ungültige Syntax: {error}")
+        return render_error(request, status=400, 
+                            message=f"Vorlage '{templatename}' enthält ungültige Syntax: {error}")
     except (NoReverseMatch) as error:
-        messages.error(request,
-                       f"Er ist ein Fehler aufgetreten: {error}")
-
-    return render_error(request, status=400)
+        return render_error(request, status=400, 
+                            message=f"Er ist ein Fehler aufgetreten: {error}")
