@@ -1,8 +1,8 @@
 from datetime import datetime
-from pytz import utc
 
 from django.contrib import admin, messages
 from django.urls import path
+from django.utils import timezone
 
 from kmuhelper import constants
 from kmuhelper.integrations.woocommerce import WooCommerce
@@ -736,7 +736,7 @@ class ProduktAdmin(CustomModelAdmin):
     @admin.action(description="Aktion beenden", permissions=["change"])
     def aktion_beenden(self, request, queryset):
         for produkt in queryset.all():
-            produkt.aktion_bis = datetime.now(utc)
+            produkt.aktion_bis = timezone.now()
             produkt.save()
         messages.success(request, (('Aktion von {} Produkten' if queryset.count(
         ) != 1 else 'Aktion von einem Produkt') + ' beendet!').format(queryset.count()))

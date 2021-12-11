@@ -1,11 +1,11 @@
 import datetime
 import json
-import pytz
 
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.serializers.json import DjangoJSONEncoder
 from django.shortcuts import render
 from django.urls import reverse_lazy
+from django.utils import timezone
 
 from kmuhelper.utils import clean, render_error
 from kmuhelper.main.models import Bestellungsposten, Bestellung
@@ -25,15 +25,15 @@ def stats_products_price(request):
     if not Bestellung.objects.exists():
         return render_error(request, status=400,
                             message="Keine Bestellungen vorhanden.")
-    
+
     try:
-        from_date = pytz.utc.localize(datetime.datetime.strptime(
+        from_date = timezone.make_aware(datetime.datetime.strptime(
             str(request.GET.get("from")), "%Y-%m-%d"))
     except (ValueError, IndexError):
         from_date = Bestellung.objects.order_by("datum").first().datum
 
     try:
-        to_date = pytz.utc.localize(datetime.datetime.strptime(
+        to_date = timezone.make_aware(datetime.datetime.strptime(
             str(request.GET.get("to")), "%Y-%m-%d"))
     except (ValueError, IndexError):
         to_date = Bestellung.objects.order_by("datum").last().datum
@@ -90,13 +90,13 @@ def best_products(request):
         max_count = 20
 
     try:
-        from_date = pytz.utc.localize(datetime.datetime.strptime(
+        from_date = timezone.make_aware(datetime.datetime.strptime(
             str(request.GET.get("from")), "%Y-%m-%d"))
     except (ValueError, IndexError):
         from_date = Bestellung.objects.order_by("datum").first().datum
 
     try:
-        to_date = pytz.utc.localize(datetime.datetime.strptime(
+        to_date=timezone.make_aware(datetime.datetime.strptime(
             str(request.GET.get("to")), "%Y-%m-%d"))
     except (ValueError, IndexError):
         to_date = Bestellung.objects.order_by("datum").last().datum

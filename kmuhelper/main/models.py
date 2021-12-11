@@ -1,5 +1,4 @@
 from datetime import datetime
-from pytz import utc
 from random import randint
 from rich import print
 
@@ -1732,14 +1731,14 @@ class Produkt(CustomModel):
 
     @admin.display(description="In Aktion", boolean=True)
     def in_aktion(self, zeitpunkt: datetime = None):
-        zp = zeitpunkt or datetime.now(utc)
+        zp = zeitpunkt or timezone.now()
         if self.aktion_von and self.aktion_bis and self.aktion_preis:
             return bool((self.aktion_von < zp) and (zp < self.aktion_bis))
         return False
 
     @admin.display(description="Aktueller Preis in CHF (exkl. MwSt)")
     def preis(self, zeitpunkt: datetime = None):
-        zp = zeitpunkt or datetime.now(utc)
+        zp = zeitpunkt or timezone.now()
         return self.aktion_preis if self.in_aktion(zp) else self.verkaufspreis
 
     @admin.display(description="Bild", ordering="bildlink")
