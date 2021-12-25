@@ -1,4 +1,4 @@
-Django==3.2.10
+Django==4.0
 gunicorn==20.1.0
 requests==2.26.0
 WooCommerce==3.0.0
