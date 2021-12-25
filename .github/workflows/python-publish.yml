@@ -9,6 +9,7 @@ on:
 # Trigger on release publish
   release:
     types: [published]
+  workflow_dispatch:
 # Trigger on tag creation
 #   push:
 #     tags:
