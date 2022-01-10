@@ -1,6 +1,6 @@
 Django==3.2.11
 gunicorn==20.1.0
-requests==2.26.0
+requests==2.27.1
 WooCommerce==3.0.0
 reportlab==3.6.5
 rich==10.16.2
