@@ -20,6 +20,8 @@ class ToDoNotiz(Notiz):
         verbose_name_plural = "Notizen"
         default_permissions = ('add', 'change', 'view')
 
+    admin_title = "ToDo-Liste"
+
 
 class ToDoVersandManager(models.Manager):
     def get_queryset(self):
@@ -35,6 +37,9 @@ class ToDoVersand(Bestellung):
         verbose_name_plural = "Bestellungen"
         default_permissions = ('add', 'change', 'view')
 
+    admin_title = "Warenausgang"
+    admin_icon = "fas fa-box-open"
+
 
 class ToDoZahlungseingangManager(models.Manager):
     def get_queryset(self):
@@ -49,6 +54,9 @@ class ToDoZahlungseingang(Bestellung):
         verbose_name = "Bestellung"
         verbose_name_plural = "Bestellung"
         default_permissions = ('add', 'change', 'view')
+
+    admin_title = "Zahlungseingang"
+    admin_icon = "fas fa-hand-holding-dollar"
 
 
 class ToDoLagerbestand(Produkt):
@@ -66,6 +74,8 @@ class ToDoLagerbestand(Produkt):
         verbose_name_plural = "Produkte"
         default_permissions = ('add', 'change', 'view')
 
+    admin_title = "Lagerbestand"
+
 
 class ToDoLieferungsManager(models.Manager):
     def get_queryset(self):
@@ -80,3 +90,5 @@ class ToDoLieferung(Lieferung):
         verbose_name = "Lieferung"
         verbose_name_plural = "Lieferungen"
         default_permissions = ('add', 'change', 'view')
+
+    admin_title = "Wareneingang"

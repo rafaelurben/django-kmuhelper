@@ -48,7 +48,7 @@ def kmuhelper_pagechooser_from_model_list(model_list):
         except LookupError:
             dbmodel = None
         griddata.append({
-            "title": model["name"],
+            "title": getattr(dbmodel, "admin_title", "") or model["name"],
             "url": model["admin_url"],
             "subtitle": getattr(dbmodel, "admin_description", ""),
             "icon": getattr(dbmodel, "admin_icon", "fa-solid fa-circle-exclamation"),
