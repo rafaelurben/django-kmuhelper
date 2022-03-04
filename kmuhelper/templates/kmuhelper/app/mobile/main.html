@@ -7,9 +7,10 @@
         <meta name="viewport" content="width=device-width,initial-scale=1.0">
         <meta name="apple-mobile-web-app-status-bar-style" content="black">
         <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="theme-color" content="#880044">
 
         {% load static %}
-        <link rel="manifest" href="{% url 'kmuhelper:app-manifest' %}">
+        <link rel="manifest" href="{% url 'kmuhelper:app-mobile-manifest' %}">
         <link rel="shortcut icon" type="image/x-icon" href="{% static 'kmuhelper/favicon.ico' %}">
         <link rel="apple-touch-icon" href="{% static 'kmuhelper/favicon.ico' %}">
 
@@ -19,23 +20,23 @@
         <script src="{% static 'kmuhelper/app/js/main.js' %}"></script>
         
         <style>
-            #body {
+            {% comment %} #body {
                 background-image: url("{% static 'kmuhelper/images/loading.gif' %}");
-            }
+            } {% endcomment %}
         </style>
     </head>
 
     <body>
         <div id="body">
-            <iframe id="frame" name="frame" src="about:blank" seamless="seamless" onerror="window.location.hash='{% url 'kmuhelper:app-error' %}';" onload="checkFrame(this);"></iframe>
+            <iframe id="frame" name="frame" src="about:blank" seamless="seamless" onerror="window.location.hash='{% url 'kmuhelper:app-mobile-error' %}';" onload="checkFrame(this);"></iframe>
         </div>
 
         <div class="appbar">
-            <a href="#error" id="error" url="{% url 'kmuhelper:app-error' %}" class="item hidden">
+            <a href="#error" id="error" url="{% url 'kmuhelper:app-mobile-error' %}" class="item hidden">
                 <i class="fas fa-exclamation-triangle"></i>
             </a>
             {% if perms.kmuhelper %}
-            <a href="#home" id="home" url="{% url 'kmuhelper:app-home' %}" class="item">
+            <a href="#home" id="home" url="{% url 'kmuhelper:app-mobile-home' %}" class="item">
                 <i class="fas fa-home"></i>
             </a>
             {% endif %}

@@ -50,7 +50,7 @@ iframe {
 }
 
 @media (prefers-color-scheme: dark) {
-    .appbar {
+    .appbar, body {
         background-color: #121212;
     }
 

@@ -30,13 +30,13 @@ def home(request):
             {
                 "title": "App (Mobile)",
                 "subtitle": "Eingeschränkte Verwaltung von Daten in verschiedenen Arbeitsschritten",
-                "url": reverse("kmuhelper:app-main"),
+                "url": reverse("kmuhelper:app-mobile"),
                 "icon": "fas fa-mobile-alt",
             },
             {
                 "title": "App (Desktop)",
                 "subtitle": "Eingeschränkte Verwaltung von Daten in verschiedenen Arbeitsschritten",
-                "url": reverse("kmuhelper:app-index"),
+                "url": reverse("kmuhelper:app-desktop"),
                 "icon": "fas fa-desktop",
             }
         ],

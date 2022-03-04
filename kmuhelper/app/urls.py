@@ -5,10 +5,11 @@ from kmuhelper.app import views
 #######################
 
 urlpatterns = [
-    path('', views.app_main, name="app-main"),
-    path('home', views.app_home, name="app-home"),
-    path('error', views.app_error, name="app-error"),
-    path('index', views.app_index, name="app-index"),
+    path('mobile/', views.app_mobile_main, name="app-mobile"),
+    path('mobile/home', views.app_mobile_home, name="app-mobile-home"),
+    path('mobile/error', views.app_mobile_error, name="app-mobile-error"),
 
-    path('manifest.webmanifest', views.app_manifest, name="app-manifest"),
+    path('mobile/manifest.webmanifest', views.app_mobile_manifest, name="app-mobile-manifest"),
+
+    path('desktop/', views.app_desktop, name="app-desktop"),
 ]
