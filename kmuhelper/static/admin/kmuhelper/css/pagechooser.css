@@ -8,6 +8,10 @@
     text-decoration: none !important;
 }
 
+.pagechooser.smallboxes a {
+    padding: 20px;
+}
+
 .pagechooser a:hover {
     background-color: var(--kmuhelper-darkest);
 }
@@ -20,6 +24,11 @@
     display: grid;
     grid-gap: 15px;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.pagechooser.smallboxes .split {
+    grid-gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(225px, 1fr));
 }
 
 .initialwidth {

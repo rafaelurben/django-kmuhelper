@@ -105,6 +105,8 @@ class Attachment(CustomModel):
 
     objects = AttachmentManager()
 
+    admin_icon = "fas fa-paperclip"
+
     # Custom delete
 
     def delete(self, *args, **kwargs):
@@ -368,6 +370,8 @@ class EMail(CustomModel):
 
     objects = models.Manager()
 
+    admin_icon = "fas fa-envelope"
+
 
 class EMailTemplate(CustomModel):
     """Model representing an email template (not to confuse with design template)"""
@@ -442,3 +446,5 @@ class EMailTemplate(CustomModel):
         verbose_name_plural = "E-Mail-Vorlagen"
 
     objects = models.Manager()
+
+    admin_icon = "fas fa-envelope-open-text"

@@ -89,6 +89,8 @@ class Ansprechpartner(CustomModel):
 
     objects = models.Manager()
 
+    admin_icon = "fas fa-user-tie"
+
 
 class Bestellungskosten(CustomModel):
     """Model representing the connection between 'Bestellung' and 'Kosten'"""
@@ -796,7 +798,7 @@ class Bestellung(CustomModel):
 
             kundennotiz=f"Kopie aus Bestellung #{self.pk}\n--------------------------------\n{self.kundennotiz}",
         )
-        
+
         for field in constants.LIEFERADRESSE_FIELDS+constants.RECHNUNGSADRESSE_FIELDS:
             setattr(new, field, getattr(self, field))
 
@@ -817,6 +819,8 @@ class Bestellung(CustomModel):
         return new
 
     objects = models.Manager()
+
+    admin_icon = "fas fa-clipboard-list"
 
     DICT_EXCLUDE_FIELDS = ['produkte', 'kosten', 'email_rechnung', 'email_lieferung', 'kunde',
                            'ansprechpartner', 'zahlungsempfaenger', 'ausgelagert',
@@ -935,6 +939,8 @@ class Kategorie(CustomModel):
 
     objects = models.Manager()
 
+    admin_icon = "fas fa-folder-tree"
+
 
 class Kosten(CustomModel):
     """Model representing additional costs"""
@@ -973,6 +979,8 @@ class Kosten(CustomModel):
         verbose_name_plural = "Kosten"
 
     objects = models.Manager()
+
+    admin_icon = "fas fa-coins"
 
 
 class Kunde(CustomModel):
@@ -1306,6 +1314,8 @@ class Kunde(CustomModel):
 
     objects = models.Manager()
 
+    admin_icon = "fas fa-users"
+
     DICT_EXCLUDE_FIELDS = ['email_registriert', 'zusammenfuegen']
 
 
@@ -1383,6 +1393,8 @@ class Lieferant(CustomModel):
         verbose_name_plural = "Lieferanten"
 
     objects = models.Manager()
+
+    admin_icon = "fas fa-truck"
 
 
 class Lieferungsposten(CustomModel):
@@ -1490,6 +1502,8 @@ class Lieferung(CustomModel):
 
     objects = models.Manager()
 
+    admin_icon = "fas fa-truck-ramp-box"
+
 
 class Notiz(CustomModel):
     """Model representing a note"""
@@ -1577,6 +1591,8 @@ class Notiz(CustomModel):
         verbose_name_plural = "Notizen"
 
     objects = models.Manager()
+
+    admin_icon = "fas fa-note-sticky"
 
 
 class Produktkategorie(CustomModel):
@@ -1856,6 +1872,8 @@ class Produkt(CustomModel):
 
     objects = models.Manager()
 
+    admin_icon = "fas fa-cubes"
+
 
 class Zahlungsempfaenger(CustomModel):
     """Model representing a payment receiver for the qr bill"""
@@ -1965,6 +1983,7 @@ class Zahlungsempfaenger(CustomModel):
 
     objects = models.Manager()
 
+    admin_icon = "fas fa-hand-holding-dollar"
 
 ######################
 
@@ -2109,13 +2128,17 @@ class Einstellung(SettingsBase):
         verbose_name = "Einstellung"
         verbose_name_plural = "Einstellungen"
 
+    objects = models.Manager()
+
+    admin_icon = "fas fa-cog"
+
 
 class Geheime_Einstellung(SettingsBase):
     """Model representing a hidden setting
-    
+
     Hidden settings should only be edited through code and are not
     meant to be seen by the user.
-    
+
     Example usage: WooCommerce authentication data"""
 
     @admin.display(description="Geheime Einstellung")

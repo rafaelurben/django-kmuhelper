@@ -44,6 +44,7 @@
         {{ block.super }}
     {% else %}
         {% kmuhelper_pagechooser_from_model_list app_list.0.models %}
+        <br>
     {% endif %}
 
     {% block pagelist %}

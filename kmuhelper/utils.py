@@ -9,6 +9,7 @@ from django.contrib import messages
 from django.core import mail
 from django.shortcuts import render
 from django.template.loader import get_template
+from django.urls import reverse
 
 ################
 
@@ -154,3 +155,29 @@ def modulo10rekursiv(strNummer):
     for num in strNummer:
         uebertrag = intTabelle[uebertrag][int(num)]
     return [0, 9, 8, 7, 6, 5, 4, 3, 2, 1][uebertrag]
+
+
+###############
+
+def custom_app_list(request, models, title, url):
+    "Get a custom app_list for the admin site"
+    return [{
+        'app_label': 'kmuhelper',
+        'app_url': url,
+        'has_module_perms': True,
+        'models': [
+            {
+                'add_url': reverse(f"admin:kmuhelper_{model._meta.model_name}_add"),
+                'admin_url': reverse(f"admin:kmuhelper_{model._meta.model_name}_changelist"),
+                'name': model._meta.verbose_name_plural,
+                'object_name': model._meta.model_name,
+                'perms': {
+                    'add': request.user.has_perm(f"kmuhelper.add_{model._meta.model_name}"),
+                    'change': request.user.has_perm(f"kmuhelper.change_{model._meta.model_name}"),
+                    'delete': request.user.has_perm(f"kmuhelper.delete_{model._meta.model_name}"),
+                    'view': request.user.has_perm(f"kmuhelper.view_{model._meta.model_name}")},
+                'view_only': False
+            } for model in models
+        ],
+        'name': title,
+    }]

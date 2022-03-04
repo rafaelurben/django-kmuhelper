@@ -6,7 +6,7 @@ from django.urls import reverse, reverse_lazy
 
 from kmuhelper.decorators import require_object, confirm_action
 from kmuhelper.emails.models import EMail, Attachment, EMailTemplate
-from kmuhelper.utils import render_error
+from kmuhelper.utils import render_error, custom_app_list
 
 #####
 
@@ -167,47 +167,7 @@ def emailtemplate_use(request, obj):
 def email_index(request):
     return render(request, 'admin/kmuhelper/_special/emails/app_index.html', {
         'app_label': 'kmuhelper',
-        'app_list': [{
-            'app_label': 'kmuhelper',
-            'app_url': reverse('kmuhelper:email-index'),
-            'has_module_perms': True,
-            'models': [
-                {
-                    'add_url': reverse("admin:kmuhelper_email_add"),
-                    'admin_url': reverse("admin:kmuhelper_email_changelist"),
-                    'name': "E-Mails",
-                    'perms': {
-                        'add': request.user.has_perm("kmuhelper.add_email"),
-                        'change': request.user.has_perm("kmuhelper.change_email"),
-                        'delete': request.user.has_perm("kmuhelper.delete_email"),
-                        'view': request.user.has_perm("kmuhelper.view_email")},
-                    'view_only': False
-                },
-                {
-                    'add_url': reverse("admin:kmuhelper_attachment_add"),
-                    'admin_url': reverse("admin:kmuhelper_attachment_changelist"),
-                    'name': "E-Mail-Anhänge",
-                    'perms': {
-                        'add': request.user.has_perm("kmuhelper.add_attachment"),
-                        'change': request.user.has_perm("kmuhelper.change_attachment"),
-                        'delete': request.user.has_perm("kmuhelper.delete_attachment"),
-                        'view': request.user.has_perm("kmuhelper.view_attachment")},
-                    'view_only': False
-                },
-                {
-                    'add_url': reverse("admin:kmuhelper_emailtemplate_add"),
-                    'admin_url': reverse("admin:kmuhelper_emailtemplate_changelist"),
-                    'name': "E-Mail-Vorlagen",
-                    'perms': {
-                        'add': request.user.has_perm("kmuhelper.add_emailtemplate"),
-                        'change': request.user.has_perm("kmuhelper.change_emailtemplate"),
-                        'delete': request.user.has_perm("kmuhelper.delete_emailtemplate"),
-                        'view': request.user.has_perm("kmuhelper.view_emailtemplate")},
-                    'view_only': False
-                },
-            ],
-            'name': 'KMUHelper E-Mails'
-        }],
+        'app_list': custom_app_list(request, [EMail, EMailTemplate, Attachment], "KMUHelper E-Mails", reverse('kmuhelper:email-index')),
         'has_permission': True,
         'is_nav_sidebar_enabled': False,
         'is_popup': False,

@@ -53,7 +53,7 @@ def kmuhelper_pagechooser_from_model_list(model_list):
             "subtitle": getattr(dbmodel, "admin_description", ""),
             "icon": getattr(dbmodel, "admin_icon", "fa-solid fa-circle-exclamation"),
         })
-    return {"griddata": griddata}
+    return {"griddata": griddata, "pagechooserclass": "smallboxes"}
 
 
 @register.inclusion_tag('kmuhelper/_includes/pagechooser.html', takes_context=False)
