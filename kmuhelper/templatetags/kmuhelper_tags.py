@@ -53,9 +53,9 @@ def kmuhelper_pagechooser_from_model_list(model_list):
             "subtitle": getattr(dbmodel, "admin_description", ""),
             "icon": getattr(dbmodel, "admin_icon", "fa-solid fa-circle-exclamation"),
         })
-    return {"griddata": griddata, "pagechooserclass": "smallboxes"}
+    return {"griddata": [griddata], "pagechooserclass": "smallboxes"}
 
 
 @register.inclusion_tag('kmuhelper/_includes/pagechooser.html', takes_context=False)
-def kmuhelper_pagechooser(griddata):
-    return {"griddata": griddata}
+def kmuhelper_pagechooser(griddata, pagechooserclass=""):
+    return {"griddata": griddata, "pagechooserclass": pagechooserclass}

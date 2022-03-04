@@ -1,9 +1,8 @@
 from django.contrib.auth.decorators import login_required, permission_required
-from django.urls import NoReverseMatch
+from django.urls import NoReverseMatch, reverse_lazy, reverse
 from django.shortcuts import render
 from django.template import TemplateDoesNotExist, TemplateSyntaxError
 from django.template.loader import get_template
-from django.urls import reverse_lazy
 
 from kmuhelper.utils import render_error
 
@@ -12,7 +11,51 @@ from kmuhelper.utils import render_error
 
 @login_required(login_url=reverse_lazy("admin:login"))
 def home(request):
-    return render(request, "kmuhelper/home.html", {"has_permission": True})
+    grid = [
+        [
+            {
+                "title": "Admin",
+                "subtitle": "Volle Kontrolle über die Hauptfunktionen",
+                "url": reverse("admin:app_list", kwargs={"app_label": "kmuhelper"}),
+                "icon": "fas fa-key",
+            },
+            {
+                "title": "E-Mails",
+                "subtitle": "Verwaltung und Erstellung von E-Mails",
+                "url": reverse("kmuhelper:email-index"),
+                "icon": "fas fa-envelope-open",
+            }
+        ],
+        [
+            {
+                "title": "App (Mobile)",
+                "subtitle": "Eingeschränkte Verwaltung von Daten in verschiedenen Arbeitsschritten",
+                "url": reverse("kmuhelper:app-main"),
+                "icon": "fas fa-mobile-alt",
+            },
+            {
+                "title": "App (Desktop)",
+                "subtitle": "Eingeschränkte Verwaltung von Daten in verschiedenen Arbeitsschritten",
+                "url": reverse("kmuhelper:app-index"),
+                "icon": "fas fa-desktop",
+            }
+        ],
+        [
+            {
+                "title": "Statistiken",
+                "subtitle": "Diagramme und co.",
+                "url": reverse("kmuhelper:stats"),
+                "icon": "fas fa-chart-pie",
+            },
+            {
+                "title": "Handbuch",
+                "subtitle": "Dokumentation zum KMUHelper",
+                "url": "https://rafaelurben.github.io/django-kmuhelper/manual/",
+                "icon": "fas fa-book",
+            }
+        ]
+    ]
+    return render(request, "kmuhelper/home.html", {"has_permission": True, "grid": grid})
 
 
 def error(request):
