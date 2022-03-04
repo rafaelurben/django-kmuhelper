@@ -13,38 +13,9 @@
 {% block extrastyle %}
     {{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'admin/kmuhelper/css/style.css' %}">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
-    <style>
-        #page-chooser a {
-            padding: 50px;
-            border-radius: 5px;
-            display: block;
-            color: white;
-            background-color: var(--kmuhelper-dark);
-            transition-duration: 0.5s;
-            text-decoration: none !important;
-        }
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/kmuhelper/css/pagechooser.css' %}">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.0.0/css/all.css">
 
-        #page-chooser a:hover {
-            background-color: var(--kmuhelper-darkest);
-        }
-
-        .center {
-            text-align: center;
-        }
-
-        .split {
-            display: grid;
-            grid-gap: 15px;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        }
-
-        @media screen and (max-width: 767px) {
-            .split {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
 {% endblock %}
 
 {% block extrahead %}
@@ -56,7 +27,7 @@
 {% block content %}
     <h1>Willkommen im KMUHelper!</h1>
 
-    <div id="page-chooser">
+    <div class="pagechooser fullwidthmobile">
         <div class="split">
             <a href="{% url 'admin:app_list' app_label='kmuhelper' %}" target="_top">
                 <div class="center">
