@@ -16,7 +16,7 @@ from kmuhelper.main.models import Bestellungsposten, Bestellung
 
 @login_required(login_url=reverse_lazy("admin:login"))
 def stats(request):
-    return render(request, "kmuhelper/stats/index.html", {})
+    return render(request, "kmuhelper/stats/index.html", {"has_permission": True})
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
