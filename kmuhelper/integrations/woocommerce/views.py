@@ -75,9 +75,9 @@ def wc_auth_end(request):
 def wc_auth_start(request):
     shopurl = settings.get_db_setting("wc-url", "Bestätigt")
 
-    if "Bestätigt" in shopurl:
+    if "Bestätigt" in shopurl or not shopurl:
         messages.error(
-            request, "Bitte gib zuerst eine gültige Url ein, bevor du WooCommerce neu verbinden kannst!")
+            request, "Bitte gib zuerst eine gültige Url ein, bevor du WooCommerce (neu) verbinden kannst!")
         return redirect(reverse('admin:kmuhelper_einstellung_changelist'))
 
     kmuhelperurl = request.get_host()
