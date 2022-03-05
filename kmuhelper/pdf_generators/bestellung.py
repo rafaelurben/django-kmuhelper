@@ -121,9 +121,9 @@ class _PDFOrderPriceTable(Table):
 
         showpaycond = settings.get_db_setting(
             "print-payment-conditions", False)
-        payconds = bestellung.paymentconditionsdict()
 
         if showpaycond:
+            payconds = bestellung.paymentconditionsdict()
             totaltext = _("Rechnungsbetrag, zahlbar netto innert %s Tagen") % payconds[0.0]["days"]
         else:
             totaltext = _("RECHNUNGSBETRAG")

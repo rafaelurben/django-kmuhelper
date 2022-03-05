@@ -1,6 +1,13 @@
 {% extends 'admin/kmuhelper/change_list.html' %}
 
-{% load static %}
+{% load static kmuhelper_tags %}
+
+{% block branding %}
+    <h1 id="site-name"><a target="_top" href="{% url 'kmuhelper:home' %}">KMUHelper</a> | <a target="_top" href="{% url 'admin:kmuhelper_einstellung_changelist' %}">Einstellungen</a></h1>
+{% endblock %}
+
+{% block breadcrumbs %}
+{% endblock %}
 
 {% block object-tools-items %}
     {% if perms.kmuhelper.change_einstellung %}

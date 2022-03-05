@@ -4,6 +4,7 @@ from kmuhelper.api import admin as apiadmin
 from kmuhelper.emails import admin as emailadmin
 from kmuhelper.main import admin as mainadmin
 from kmuhelper.app import admin as appadmin
+from kmuhelper.settings import admin as settingsadmin
 
 from kmuhelper.integrations.paymentimport import admin as paymentimportadmin
 
@@ -14,4 +15,5 @@ admin.site.site_url = None
 # List of all models and their corresponding admins
 
 modeladmins = appadmin.modeladmins + mainadmin.modeladmins + \
-    emailadmin.modeladmins + apiadmin.modeladmins + paymentimportadmin.modeladmins
+    emailadmin.modeladmins + apiadmin.modeladmins + paymentimportadmin.modeladmins + \
+        settingsadmin.modeladmins

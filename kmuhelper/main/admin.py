@@ -9,7 +9,7 @@ from kmuhelper.integrations.woocommerce import WooCommerce
 from kmuhelper.main import views
 from kmuhelper.main.models import (
     Ansprechpartner, Bestellung, Kategorie, Kosten, Kunde,
-    Lieferant, Lieferung, Notiz, Produkt, Zahlungsempfaenger, Einstellung
+    Lieferant, Lieferung, Notiz, Produkt, Zahlungsempfaenger
 )
 from kmuhelper.overrides import CustomModelAdmin, CustomTabularInline, CustomStackedInline
 
@@ -130,7 +130,6 @@ class BestellungInlineBestellungskostenAdd(CustomTabularInline):
         return False if (obj and obj.bezahlt) else super().has_add_permission(request, obj)
 
 
-
 @admin.register(Bestellung)
 class BestellungsAdmin(CustomModelAdmin):
     list_display = ('id', 'datum', 'kunde', 'status', 'zahlungsmethode',
@@ -191,7 +190,8 @@ class BestellungsAdmin(CustomModelAdmin):
                 'classes': ["collapse start-open"]}),
         ]
 
-    readonly_fields = ('html_notiz', 'name', 'trackinglink', 'summe', 'summe_mwst', 'summe_gesamt',)
+    readonly_fields = ('html_notiz', 'name', 'trackinglink',
+                       'summe', 'summe_mwst', 'summe_gesamt',)
 
     def get_additional_readonly_fields(self, request, obj=None):
         fields = []
@@ -499,6 +499,7 @@ class LieferungInlineProdukteAdd(CustomTabularInline):
     def has_add_permission(self, request, obj=None):
         return False if obj and obj.eingelagert else super().has_add_permission(request, obj)
 
+
 @admin.register(Lieferung)
 class LieferungenAdmin(CustomModelAdmin):
     list_display = ('name', 'datum', 'anzahlprodukte',
@@ -779,40 +780,6 @@ class ZahlungsempfaengerAdmin(CustomModelAdmin):
             messages.warning(request, "Ungültige UID!")
 
 
-# Einstellungen
-
-@admin.register(Einstellung)
-class EinstellungenAdmin(CustomModelAdmin):
-    list_display = ('name', 'inhalt')
-    ordering = ('name',)
-
-    search_fields = ['name', 'description', 'char',
-                     'text', 'inte', 'floa', 'url', 'email']
-
-    readonly_fields = ["id", "name", "description"]
-
-    hidden = True
-
-    def get_fields(self, request, obj=None):
-        return ['description'] + (
-            ['char'] if obj.typ == 'char' else
-            ['text'] if obj.typ == 'text' else
-            ['boo'] if obj.typ == 'bool' else
-            ['inte'] if obj.typ == 'int' else
-            ['floa'] if obj.typ == 'float' else
-            ['url'] if obj.typ == 'url' else
-            ['email'] if obj.typ == 'email' else
-            ['json'] if obj.typ == 'json' else []
-        )
-
-    # Permissions
-
-    NO_ADD = True
-    NO_DELETE = True
-
-
-#
-
 modeladmins = [
     (Ansprechpartner, AnsprechpartnerAdmin),
     (Bestellung, BestellungsAdmin),
@@ -824,5 +791,4 @@ modeladmins = [
     (Notiz, NotizenAdmin),
     (Produkt, ProduktAdmin),
     (Zahlungsempfaenger, ZahlungsempfaengerAdmin),
-    (Einstellung, EinstellungenAdmin),
 ]

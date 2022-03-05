@@ -24,7 +24,7 @@ def home(request):
                 "subtitle": "Verwaltung und Erstellung von E-Mails",
                 "url": reverse("kmuhelper:email-index"),
                 "icon": "fas fa-envelope-open",
-            }
+            },
         ],
         [
             {
@@ -38,7 +38,7 @@ def home(request):
                 "subtitle": "Eingeschränkte Verwaltung von Daten in verschiedenen Arbeitsschritten",
                 "url": reverse("kmuhelper:app-desktop"),
                 "icon": "fas fa-desktop",
-            }
+            },
         ],
         [
             {
@@ -48,11 +48,19 @@ def home(request):
                 "icon": "fas fa-chart-pie",
             },
             {
+                "title": "Einstellungen",
+                "subtitle": "Kleine Einstellungen für den KMUHelper",
+                "url": reverse("admin:kmuhelper_einstellung_changelist"),
+                "icon": "fas fa-cog",
+            },
+        ],
+        [
+            {
                 "title": "Handbuch",
                 "subtitle": "Dokumentation zum KMUHelper",
                 "url": "https://rafaelurben.github.io/django-kmuhelper/manual/",
                 "icon": "fas fa-book",
-            }
+            },
         ]
     ]
     return render(request, "kmuhelper/home.html", {"has_permission": True, "grid": grid})
