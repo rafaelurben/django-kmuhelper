@@ -2,6 +2,8 @@
 
 from django.db import models
 from django.contrib import admin
+from django.templatetags.static import static
+from django.utils.html import mark_safe, urlize
 
 from kmuhelper.overrides import CustomModel
 
@@ -32,44 +34,44 @@ class SettingsBase(CustomModel):
         choices=EINSTELLUNGSTYPEN,
     )
 
-    char = models.CharField(
+    content_char = models.CharField(
         verbose_name="Inhalt (Text)",
         max_length=250,
         default="",
         blank=True,
     )
-    text = models.TextField(
+    content_text = models.TextField(
         verbose_name="Inhalt (Mehrzeiliger Text)",
         default="",
         blank=True,
     )
-    boo = models.BooleanField(
+    content_bool = models.BooleanField(
         verbose_name="Inhalt (Wahrheitswert)",
         default=False,
         blank=True,
     )
-    inte = models.IntegerField(
+    content_int = models.IntegerField(
         verbose_name="Inhalt (Zahl)",
         default=0,
         blank=True,
     )
-    floa = models.FloatField(
+    content_float = models.FloatField(
         verbose_name="Inhalt (Fliesskommazahl)",
         default=0.0,
         blank=True,
     )
-    url = models.URLField(
+    content_url = models.URLField(
         verbose_name="Inhalt (Url)",
         default="",
         blank=True,
     )
-    email = models.EmailField(
+    content_email = models.EmailField(
         verbose_name="Inhalt (E-Mail)",
         default="",
         blank=True,
     )
 
-    json = models.JSONField(
+    content_json = models.JSONField(
         verbose_name="Inhalt (JSON)",
         default=dict,
         blank=True,
@@ -78,42 +80,21 @@ class SettingsBase(CustomModel):
 
     @property
     @admin.display(description="Inhalt")
-    def inhalt(self):
-        if self.typ == "char":
-            return self.char
-        if self.typ == "text":
-            return self.text
+    def content_display(self):
         if self.typ == "bool":
-            return self.boo
-        if self.typ == "int":
-            return self.inte
-        if self.typ == "float":
-            return self.floa
+            return mark_safe('<img src="'+static(f"admin/img/icon-{'yes' if self.content_bool else 'no'}.svg")+'" />')
         if self.typ == "url":
-            return self.url
-        if self.typ == "email":
-            return self.email
-        if self.typ == "json":
-            return self.json
+            return mark_safe(urlize(self.content_url))
+        return self.content
+    
+    @property
+    def content(self):
+        return getattr(self, f"content_{self.typ}", "ERROR! Unbekannter Einstellungstyp! Bitte kontaktiere den Entwickler!")
 
-    @inhalt.setter
-    def inhalt(self, var):
-        if self.typ == "char":
-            self.char = var
-        elif self.typ == "text":
-            self.text = var
-        elif self.typ == "bool":
-            self.boo = var
-        elif self.typ == "int":
-            self.inte = var
-        elif self.typ == "float":
-            self.floa = var
-        elif self.typ == "url":
-            self.url = var
-        elif self.typ == "email":
-            self.email = var
-        elif self.typ == "json":
-            self.json = var
+    @content.setter
+    def content(self, var):
+        if hasattr(self, f"content_{self.typ}"):
+            return setattr(self, f"content_{self.typ}", var)
 
     class Meta:
         abstract = True

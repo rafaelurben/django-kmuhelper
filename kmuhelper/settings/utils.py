@@ -43,9 +43,9 @@ def get_db_setting(settingid, default=None):
 
     try:
         setting = Einstellung.objects.get(id=settingid)
-        if setting.typ in ['char', 'text'] and setting.inhalt == "":
+        if setting.typ in ['char', 'text'] and setting.content == "":
             return default
-        return setting.inhalt
+        return setting.content
     except ObjectDoesNotExist:
         return default
 
@@ -54,7 +54,7 @@ def get_secret_db_setting(settingid, default=None):
     """Get a setting from the 'Geheime_Einstellung' model"""
 
     try:
-        return Geheime_Einstellung.objects.get(id=settingid).inhalt
+        return Geheime_Einstellung.objects.get(id=settingid).content
     except ObjectDoesNotExist:
         return default
 
@@ -66,7 +66,7 @@ def set_db_setting(settingid, content):
 
     try:
         obj = Einstellung.objects.get(id=settingid)
-        obj.inhalt = content
+        obj.content = content
         obj.save()
         return True
     except ObjectDoesNotExist:
@@ -78,7 +78,7 @@ def set_secret_db_setting(settingid, content):
 
     try:
         obj = Geheime_Einstellung.objects.get(id=settingid)
-        obj.inhalt = content
+        obj.content = content
         obj.save()
         return True
     except ObjectDoesNotExist:
