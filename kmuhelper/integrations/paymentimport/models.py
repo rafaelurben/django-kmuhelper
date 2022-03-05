@@ -94,6 +94,8 @@ class PaymentImport(CustomModel):
         verbose_name = "Zahlungsimport"
         verbose_name_plural = "Zahlungsimporte"
 
+    admin_icon = "fas fa-hand-holding-dollar"
+
 
 class PaymentImportEntry(models.Model):
     parent = models.ForeignKey(
