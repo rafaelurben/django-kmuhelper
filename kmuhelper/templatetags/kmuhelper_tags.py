@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.apps import apps
 
 from kmuhelper import settings
-from kmuhelper.integrations.woocommerce.utils import is_connected as is_woocommerce_connected
+from kmuhelper.modules.integrations.woocommerce.utils import is_connected as is_woocommerce_connected
 
 register = template.Library()
 

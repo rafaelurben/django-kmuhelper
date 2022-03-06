@@ -14,18 +14,18 @@ urlpatterns = [
                     views._templatetest, name="_templatetest"),
 
     # Main modules
-    path('',        include('kmuhelper.main')),
-    path('api/',    include('kmuhelper.api')),
-    path('app/',    include('kmuhelper.app')),
-    path('emails/', include('kmuhelper.emails')),
-    path('stats/',  include('kmuhelper.stats')),
+    path('',        include('kmuhelper.modules.main')),
+    path('api/',    include('kmuhelper.modules.api')),
+    path('app/',    include('kmuhelper.modules.app')),
+    path('emails/', include('kmuhelper.modules.emails')),
+    path('stats/',  include('kmuhelper.modules.stats')),
 
     # Deprecated urls
-    path('wc/',     include('kmuhelper.integrations.woocommerce')),
+    path('wc/',     include('kmuhelper.modules.integrations.woocommerce')),
 
     # Integrations
     path('integrations/woocommerce/',
-                    include('kmuhelper.integrations.woocommerce')),
+                    include('kmuhelper.modules.integrations.woocommerce')),
 
     # 404 Not found
     re_path('^.*$', views.error)
