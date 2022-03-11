@@ -718,19 +718,19 @@ class Bestellung(CustomModel):
         self.save()
         return self.email_lieferung
 
-    @admin.display(description="ToDo Notiz")
-    def html_todo_notiz(self):
+    @admin.display(description="🔗 Notiz")
+    def html_app_notiz(self):
         if hasattr(self, "notiz"):
-            link = reverse("admin:kmuhelper_todonotiz_change",
+            link = reverse("admin:kmuhelper_app_todo_change",
                            kwargs={"object_id": self.notiz.pk})
             text = "Notiz ansehen"
         else:
-            link = reverse("admin:kmuhelper_todonotiz_add") + \
+            link = reverse("admin:kmuhelper_app_todo_add") + \
                 '?from_bestellung='+str(self.pk)
             text = "Notiz hinzufügen"
         return format_html('<a target="_blank" href="{}">{}</a>', link, text)
 
-    @admin.display(description="Notiz")
+    @admin.display(description="🔗 Notiz")
     def html_notiz(self):
         if hasattr(self, "notiz"):
             link = reverse("admin:kmuhelper_notiz_change",
@@ -1288,19 +1288,19 @@ class Kunde(CustomModel):
         self.save()
         return self.email_registriert
 
-    @admin.display(description="ToDo Notiz")
-    def html_todo_notiz(self):
+    @admin.display(description="🔗 Notiz")
+    def html_app_notiz(self):
         if hasattr(self, "notiz"):
-            link = reverse("admin:kmuhelper_todonotiz_change",
+            link = reverse("admin:kmuhelper_app_todo_change",
                            kwargs={"object_id": self.notiz.pk})
             text = "Notiz ansehen"
         else:
-            link = reverse("admin:kmuhelper_todonotiz_add") + \
+            link = reverse("admin:kmuhelper_app_todo_add") + \
                 '?from_kunde='+str(self.pk)
             text = "Notiz hinzufügen"
         return format_html('<a target="_blank" href="{}">{}</a>', link, text)
 
-    @admin.display(description="Notiz")
+    @admin.display(description="🔗 Notiz")
     def html_notiz(self):
         if hasattr(self, "notiz"):
             link = reverse("admin:kmuhelper_notiz_change",
@@ -1468,19 +1468,19 @@ class Lieferung(CustomModel):
             return True
         return False
 
-    @admin.display(description="ToDo Notiz")
-    def html_todo_notiz(self):
+    @admin.display(description="🔗 Notiz")
+    def html_app_notiz(self):
         if hasattr(self, "notiz"):
-            link = reverse("admin:kmuhelper_todonotiz_change",
+            link = reverse("admin:kmuhelper_app_todo_change",
                            kwargs={"object_id": self.notiz.pk})
             text = "Notiz ansehen"
         else:
-            link = reverse("admin:kmuhelper_todonotiz_add") + \
+            link = reverse("admin:kmuhelper_app_todo_add") + \
                 '?from_lieferung='+str(self.pk)
             text = "Notiz hinzufügen"
         return format_html('<a target="_blank" href="{}">{}</a>', link, text)
 
-    @admin.display(description="Notiz")
+    @admin.display(description="🔗 Notiz")
     def html_notiz(self):
         if hasattr(self, "notiz"):
             link = reverse("admin:kmuhelper_notiz_change",
@@ -1562,7 +1562,7 @@ class Notiz(CustomModel):
         related_name="notiz",
     )
 
-    @admin.display(description="Notiz")
+    @admin.display(description="🔗 Notiz")
     def __str__(self):
         return f'{self.name} ({self.pk})'
 
@@ -1838,19 +1838,19 @@ class Produkt(CustomModel):
             self.mengenbezeichnung = "[:de]Tube[:fr]Tube[:it]Tubetto[:en]Tube[:]"
         super().save(*args, **kwargs)
 
-    @admin.display(description="ToDo Notiz")
-    def html_todo_notiz(self):
+    @admin.display(description="🔗 Notiz")
+    def html_app_notiz(self):
         if hasattr(self, "notiz"):
-            link = reverse("admin:kmuhelper_todonotiz_change",
+            link = reverse("admin:kmuhelper_app_todo_change",
                            kwargs={"object_id": self.notiz.pk})
             text = "Notiz ansehen"
         else:
-            link = reverse("admin:kmuhelper_todonotiz_add") + \
+            link = reverse("admin:kmuhelper_app_todo_add") + \
                 '?from_produkt='+str(self.pk)
             text = "Notiz hinzufügen"
         return format_html('<a target="_blank" href="{}">{}</a>', link, text)
 
-    @admin.display(description="Notiz")
+    @admin.display(description="🔗 Notiz")
     def html_notiz(self):
         if hasattr(self, "notiz"):
             link = reverse("admin:kmuhelper_notiz_change",

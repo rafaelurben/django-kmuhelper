@@ -4,7 +4,7 @@ from django.urls import reverse, reverse_lazy
 from django.views.decorators.clickjacking import xframe_options_sameorigin as allow_iframe
 
 from kmuhelper.utils import custom_app_list
-from kmuhelper.modules.app.models import ToDoNotiz, ToDoVersand, ToDoZahlungseingang, ToDoLagerbestand, ToDoLieferung
+from kmuhelper.modules.app.models import App_ToDo, App_Warenausgang, App_Zahlungseingang, App_Lagerbestand, App_Wareneingang
 
 #####
 
@@ -41,7 +41,7 @@ def app_mobile_manifest(request):
 def app_desktop(request):
     return render(request, 'admin/kmuhelper/_special/app/app_index.html', {
         'app_label': 'kmuhelper',
-        'app_list': custom_app_list(request, [ToDoNotiz, ToDoVersand, ToDoZahlungseingang, ToDoLagerbestand, ToDoLieferung], "KMUHelper App", reverse("kmuhelper:app-desktop")),
+        'app_list': custom_app_list(request, [App_ToDo, App_Lagerbestand, App_Warenausgang, App_Wareneingang, App_Zahlungseingang], "KMUHelper App", reverse("kmuhelper:app-desktop")),
         'has_permission': True,
         'is_nav_sidebar_enabled': False,
         'is_popup': False,

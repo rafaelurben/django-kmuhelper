@@ -6,13 +6,13 @@ from kmuhelper.modules.main.models import Notiz, Bestellung, Produkt, Lieferung
 #####
 
 
-class ToDoNotizManager(models.Manager):
+class App_ToDoManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(erledigt=False)
 
 
-class ToDoNotiz(Notiz):
-    objects = ToDoNotizManager()
+class App_ToDo(Notiz):
+    objects = App_ToDoManager()
 
     class Meta:
         proxy = True
@@ -23,13 +23,13 @@ class ToDoNotiz(Notiz):
     admin_title = "ToDo-Liste"
 
 
-class ToDoVersandManager(models.Manager):
+class App_WarenausgangManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(versendet=False)
 
 
-class ToDoVersand(Bestellung):
-    objects = ToDoVersandManager()
+class App_Warenausgang(Bestellung):
+    objects = App_WarenausgangManager()
 
     class Meta:
         proxy = True
@@ -41,13 +41,13 @@ class ToDoVersand(Bestellung):
     admin_icon = "fas fa-box-open"
 
 
-class ToDoZahlungseingangManager(models.Manager):
+class App_ZahlungseingangManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(bezahlt=False)
 
 
-class ToDoZahlungseingang(Bestellung):
-    objects = ToDoZahlungseingangManager()
+class App_Zahlungseingang(Bestellung):
+    objects = App_ZahlungseingangManager()
 
     class Meta:
         proxy = True
@@ -59,7 +59,7 @@ class ToDoZahlungseingang(Bestellung):
     admin_icon = "fas fa-hand-holding-dollar"
 
 
-class ToDoLagerbestand(Produkt):
+class App_Lagerbestand(Produkt):
     @admin.display(description="Preis")
     def preis(self, *args, **kwargs):
         return super().preis(*args, **kwargs)
@@ -77,13 +77,13 @@ class ToDoLagerbestand(Produkt):
     admin_title = "Lagerbestand"
 
 
-class ToDoLieferungsManager(models.Manager):
+class App_WareneingangsManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(eingelagert=False)
 
 
-class ToDoLieferung(Lieferung):
-    objects = ToDoLieferungsManager()
+class App_Wareneingang(Lieferung):
+    objects = App_WareneingangsManager()
 
     class Meta:
         proxy = True

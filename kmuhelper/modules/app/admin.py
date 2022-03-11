@@ -5,14 +5,14 @@ from django.urls import path
 from django.views.decorators.clickjacking import xframe_options_sameorigin as allow_iframe
 from django.views.generic import RedirectView
 
-from kmuhelper.modules.app.models import ToDoNotiz, ToDoVersand, ToDoZahlungseingang, ToDoLagerbestand, ToDoLieferung
+from kmuhelper.modules.app.models import App_ToDo, App_Warenausgang, App_Zahlungseingang, App_Lagerbestand, App_Wareneingang
 from kmuhelper.modules.main.admin import NotizenAdmin, BestellungsAdmin, LieferungenAdmin, ProduktAdmin
 from kmuhelper.overrides import CustomModelAdmin
 
 #######
 
 
-class ToDoAdminBase(CustomModelAdmin):
+class App_AdminBase(CustomModelAdmin):
     hidden = True
 
     # Permissions
@@ -54,18 +54,18 @@ class ToDoAdminBase(CustomModelAdmin):
 #
 
 
-@admin.register(ToDoNotiz)
-class ToDoNotizenAdmin(ToDoAdminBase, NotizenAdmin):
+@admin.register(App_ToDo)
+class App_ToDoenAdmin(App_AdminBase, NotizenAdmin):
     list_editable = ["priority", "erledigt"]
     list_filter = ["priority"]
 
     ordering = ["-priority", "erstellt_am"]
 
 
-@admin.register(ToDoVersand)
-class ToDoVersandAdmin(ToDoAdminBase, BestellungsAdmin):
+@admin.register(App_Warenausgang)
+class App_WarenausgangAdmin(App_AdminBase, BestellungsAdmin):
     list_display = ('id', 'info', 'trackingnummer',
-                    'versendet', 'status', 'html_todo_notiz')
+                    'versendet', 'status', 'html_app_notiz')
     list_editable = ("trackingnummer", "versendet", "status")
     list_filter = ('status', 'bezahlt')
 
@@ -74,10 +74,10 @@ class ToDoVersandAdmin(ToDoAdminBase, BestellungsAdmin):
     actions = ()
 
 
-@admin.register(ToDoZahlungseingang)
-class ToDoZahlungseingangAdmin(ToDoAdminBase, BestellungsAdmin):
+@admin.register(App_Zahlungseingang)
+class App_ZahlungseingangAdmin(App_AdminBase, BestellungsAdmin):
     list_display = ('id', 'info', 'bezahlt', 'status',
-                    'fix_summe', 'html_todo_notiz')
+                    'fix_summe', 'html_app_notiz')
     list_editable = ("bezahlt", "status")
     list_filter = ('status', 'versendet', 'zahlungsmethode')
 
@@ -86,28 +86,28 @@ class ToDoZahlungseingangAdmin(ToDoAdminBase, BestellungsAdmin):
     actions = ()
 
 
-@admin.register(ToDoLagerbestand)
-class ToDoLagerbestandAdmin(ToDoAdminBase, ProduktAdmin):
+@admin.register(App_Lagerbestand)
+class App_LagerbestandAdmin(App_AdminBase, ProduktAdmin):
     list_display = ('nr', 'clean_name', 'lagerbestand',
-                    'preis', 'bemerkung', 'html_todo_notiz')
+                    'preis', 'bemerkung', 'html_app_notiz')
     list_display_links = ('nr',)
     list_editable = ["lagerbestand"]
 
     actions = ["lagerbestand_zuruecksetzen"]
 
 
-@admin.register(ToDoLieferung)
-class ToDoLieferungenAdmin(ToDoAdminBase, LieferungenAdmin):
-    list_display = ('name', 'datum', 'anzahlprodukte', 'html_todo_notiz')
+@admin.register(App_Wareneingang)
+class App_WareneingangenAdmin(App_AdminBase, LieferungenAdmin):
+    list_display = ('name', 'datum', 'anzahlprodukte', 'html_app_notiz')
     list_filter = ()
 
 #
 
 
 modeladmins = [
-    (ToDoNotiz, ToDoNotizenAdmin),
-    (ToDoVersand, ToDoVersandAdmin),
-    (ToDoZahlungseingang, ToDoZahlungseingangAdmin),
-    (ToDoLagerbestand, ToDoLagerbestandAdmin),
-    (ToDoLieferung, ToDoLieferungenAdmin),
+    (App_ToDo, App_ToDoenAdmin),
+    (App_Warenausgang, App_WarenausgangAdmin),
+    (App_Zahlungseingang, App_ZahlungseingangAdmin),
+    (App_Lagerbestand, App_LagerbestandAdmin),
+    (App_Wareneingang, App_WareneingangenAdmin),
 ]
