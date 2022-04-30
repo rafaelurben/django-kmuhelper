@@ -506,7 +506,7 @@ class LieferungenAdmin(CustomModelAdmin):
                     'lieferant', 'eingelagert', 'html_notiz')
     list_filter = ("eingelagert", "lieferant", )
 
-    search_fields = ["name", "datum", "lieferant",
+    search_fields = ["name", "datum", "lieferant__name", "lieferant__kuerzel",
                      "notiz__name", "notiz__beschrieb"]
 
     readonly_fields = ["html_notiz"]
