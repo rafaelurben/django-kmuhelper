@@ -29,7 +29,7 @@ def versions(request):
     }
 
     packages = ["Django", "django-kmuhelper", "gunicorn", "requests",
-                "WooCommerce", "reportlab", "rich", "defusedxml", "django-multi-email-field"]
+                "WooCommerce", "reportlab", "rich", "defusedxml"]
 
     for package in packages:
         context["versions"][package] = package_version(package)
