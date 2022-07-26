@@ -1,8 +1,9 @@
 from django import template
 from django.urls import reverse
+from django.apps import apps
 
 from kmuhelper import settings
-from kmuhelper.integrations.woocommerce.utils import is_connected as is_woocommerce_connected
+from kmuhelper.modules.integrations.woocommerce.utils import is_connected as is_woocommerce_connected
 
 register = template.Library()
 
@@ -36,3 +37,25 @@ def kmuhelper_breadcrumbs(value, args=None):
                         1].split("</a>")[1::])
     value = f'<div id="breadcrumbs" class="breadcrumbs"><a href="{url}">{title}</a>' + value
     return value
+
+
+@register.inclusion_tag('kmuhelper/_includes/pagechooser.html', takes_context=False)
+def kmuhelper_pagechooser_from_model_list(model_list):
+    griddata = []
+    for model in model_list:
+        try:
+            dbmodel = apps.get_model('kmuhelper', model["object_name"])
+        except LookupError:
+            dbmodel = None
+        griddata.append({
+            "title": getattr(dbmodel, "admin_title", "") or model["name"],
+            "url": model["admin_url"],
+            "subtitle": getattr(dbmodel, "admin_description", ""),
+            "icon": getattr(dbmodel, "admin_icon", "fa-solid fa-circle-exclamation"),
+        })
+    return {"griddata": [griddata], "pagechooserclass": "smallboxes"}
+
+
+@register.inclusion_tag('kmuhelper/_includes/pagechooser.html', takes_context=False)
+def kmuhelper_pagechooser(griddata, pagechooserclass=""):
+    return {"griddata": griddata, "pagechooserclass": pagechooserclass}

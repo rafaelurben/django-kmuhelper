@@ -1,0 +1,44 @@
+/* Page chooser grid */
+
+.pagechooser a {
+    padding: 50px;
+    border-radius: 5px;
+    display: block;
+    color: white;
+    background-color: var(--kmuhelper-dark);
+    transition-duration: 0.5s;
+    text-decoration: none !important;
+}
+
+.pagechooser.smallboxes a {
+    padding: 20px;
+}
+
+.pagechooser a:hover {
+    background-color: var(--kmuhelper-darkest);
+}
+
+.pagechooser .center {
+    text-align: center;
+}
+
+.pagechooser .split {
+    display: grid;
+    grid-gap: 15px;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.pagechooser.smallboxes .split {
+    grid-gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(225px, 1fr));
+}
+
+.initialwidth {
+    width: initial !important;
+}
+
+@media screen and (max-width: 767px) {
+    .pagechooser.fullwidthmobile .split {
+        grid-template-columns: 1fr;
+    }
+}

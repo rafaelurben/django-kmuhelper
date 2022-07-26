@@ -29,6 +29,21 @@ ul.messagelist li:not(:last-child) {
     padding: 0 10px;
 }
 
+#pagelist a,
+#pageinfo a {
+    border-radius: 5px;
+    color: white !important;
+    background-color: var(--kmuhelper-dark);
+    transition-duration: 0.5s;
+    text-decoration: none !important;
+    padding: 2px 6px;
+}
+
+#pagelist a:hover,
+#pageinfo a:hover {
+    background-color: var(--kmuhelper-darkest);
+}
+
 /* Fix overlapping object-tools buttons */
 
 @media (min-width: 768px) {

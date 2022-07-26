@@ -1,6 +1,6 @@
 {% extends "admin/base.html" %}
 
-{% load static %}
+{% load static kmuhelper_tags %}
 
 {% block title %}KMUHelper{% endblock %}
 
@@ -13,38 +13,9 @@
 {% block extrastyle %}
     {{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'admin/kmuhelper/css/style.css' %}">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
-    <style>
-        #page-chooser a {
-            padding: 50px;
-            border-radius: 5px;
-            display: block;
-            color: white;
-            background-color: var(--kmuhelper-dark);
-            transition-duration: 0.5s;
-            text-decoration: none !important;
-        }
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/kmuhelper/css/pagechooser.css' %}">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.0.0/css/all.css">
 
-        #page-chooser a:hover {
-            background-color: var(--kmuhelper-darkest);
-        }
-
-        .center {
-            text-align: center;
-        }
-
-        .split {
-            display: grid;
-            grid-gap: 15px;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        }
-
-        @media screen and (max-width: 767px) {
-            .split {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
 {% endblock %}
 
 {% block extrahead %}
@@ -56,62 +27,5 @@
 {% block content %}
     <h1>Willkommen im KMUHelper!</h1>
 
-    <div id="page-chooser">
-        <div class="split">
-            <a href="{% url 'admin:app_list' app_label='kmuhelper' %}" target="_top">
-                <div class="center">
-                    <i class="fas fa-2x fa-fw fa-key"></i>
-                    <br><br>
-                    <h2>Admin</h2>
-                    <p>Volle Kontrolle über die Hauptfunktionen</p>
-                </div>
-            </a>
-            <a href="{% url 'kmuhelper:email-index' %}" target="_top">
-                <div class="center">
-                    <i class="fas fa-2x fa-fw fa-envelope-open"></i>
-                    <br><br>
-                    <h2>E-Mails</h2>
-                    <p>Verwaltung und Erstellung von E-Mails</p>
-                </div>
-            </a>
-        </div>
-        <br>
-        <div class="split">
-            <a href="{% url 'kmuhelper:app-main' %}#home" target="_top">
-                <div class="center">
-                    <i class="fas fa-2x fa-fw fa-mobile-alt"></i>
-                    <br><br>
-                    <h2>App V1 (App-Style)</h2>
-                    <p>Eingeschränkte Verwaltung von Daten in verschiedenen Arbeitsschritten</p>
-                </div>
-            </a>
-            <a href="{% url 'kmuhelper:app-index' %}" target="_top">
-                <div class="center">
-                    <i class="fas fa-2x fa-fw fa-desktop"></i>
-                    <br><br>
-                    <h2>App V2 (Admin-Style)</h2>
-                    <p>Eingeschränkte Verwaltung von Daten in verschiedenen Arbeitsschritten</p>
-                </div>
-            </a>
-        </div>
-        <br>
-        <div class="split">
-            <a href="{% url 'kmuhelper:stats' %}" target="_top">
-                <div class="center">
-                    <i class="fas fa-2x fa-fw fa-chart-pie"></i>
-                    <br><br>
-                    <h2>Statistiken</h2>
-                    <p>Diagramme und co.</p>
-                </div>
-            </a>
-            <a href="https://rafaelurben.github.io/django-kmuhelper/manual/" target="_top">
-                <div class="center">
-                    <i class="fas fa-2x fa-fw fa-book"></i>
-                    <br><br>
-                    <h2>Handbuch</h2>
-                    <p>Dokumentation zum KMUHelper</p>
-                </div>
-            </a>
-        </div>
-    </div>
+    {% kmuhelper_pagechooser grid "fullwidthmobile" %}
 {% endblock %}

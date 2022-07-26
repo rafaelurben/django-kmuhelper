@@ -58,7 +58,7 @@ class CustomModelAdmin(admin.ModelAdmin):
 
         actions = super().get_actions(request)
         if 'wc_update' in actions:
-            from kmuhelper.integrations.woocommerce.utils import is_connected
+            from kmuhelper.modules.integrations.woocommerce.utils import is_connected
             if not is_connected():
                 del actions['wc_update']
         return actions

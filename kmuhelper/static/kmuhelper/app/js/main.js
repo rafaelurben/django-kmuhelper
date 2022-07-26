@@ -1,18 +1,12 @@
 function loadPage() {
     const frame = document.getElementById("frame");
     const hash = window.location.hash.substr(1);
-    if (hash) {
-        const page = document.getElementById(hash);
-        if (page) {
-            frame.src = "about:blank";
-            setTimeout(function () {
-                frame.src = page.getAttribute("url");
-            }, 10);
-        } else {
-            frame.src = "error";
-        }
+    const page = document.getElementById(hash || "home");
+    if (page) {
+        frame.contentDocument.documentElement.innerHTML = ""; // clear current page
+        frame.src = page.getAttribute("url");
     } else {
-        window.location.hash = "home";
+        frame.src = "error";
     }
 }
 

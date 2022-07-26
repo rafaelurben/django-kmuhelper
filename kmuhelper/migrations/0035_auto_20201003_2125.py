@@ -3,11 +3,11 @@
 
 import django.core.validators
 from django.db import migrations, models
-import kmuhelper.main.models
+import kmuhelper.modules.main.models
 
 
 def resave_bestellungskosten(apps, schema_editor):
-    for k in kmuhelper.main.models.Bestellungskosten.objects.all():
+    for k in kmuhelper.modules.main.models.Bestellungskosten.objects.all():
         k.save()
 
 

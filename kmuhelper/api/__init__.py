@@ -1,1 +1,0 @@
-from kmuhelper.api.urls import urlpatterns

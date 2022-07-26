@@ -2,7 +2,7 @@
 
 import django.core.validators
 from django.db import migrations, models
-import kmuhelper.main.models
+import kmuhelper.modules.main.models
 
 
 class Migration(migrations.Migration):

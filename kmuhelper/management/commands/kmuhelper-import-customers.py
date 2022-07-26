@@ -2,7 +2,7 @@ import csv
 
 from django.core.management.base import BaseCommand, CommandError
 
-from kmuhelper.main.models import Kunde
+from kmuhelper.modules.main.models import Kunde
 from kmuhelper.utils import getfirstindex
 
 
