@@ -1,5 +1,5 @@
 {% extends "admin/app_index.html" %}
-{% load static %}
+{% load static i18n kmuhelper_tags %}
 
 {% block title %}KMUHelper Admin{% endblock %}
 
@@ -14,7 +14,8 @@
 {% block extrastyle %}
     {{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'admin/kmuhelper/css/style.css' %}">
-    <link rel="stylesheet" type="text/css" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/kmuhelper/css/pagechooser.css' %}">
+    <link rel="stylesheet" type="text/css" href="https://use.fontawesome.com/releases/v6.0.0/css/all.css">
 {% endblock %}
 
 {% block extrahead %}
@@ -26,20 +27,25 @@
 {% block breadcrumbs %}
 {% endblock %}
 
+{% block coltype %}initialwidth{% endblock %}
+
 {% block content %}
     {% block pageinfo %}
         <p id="pageinfo">
             In diesem Bereich hast du vollen Zugriff auf die Hauptfunktionen des KMUHelpers. Zusätzliche
             Funktionen befinden sich im <a href="{% url 'kmuhelper:email-index' %}">E-Mail-Bereich</a>, 
-            in der <a href="{% url 'kmuhelper:app-index' %}">KMUHelper App</a> sowie
+            in der <a href="{% url 'kmuhelper:app-desktop' %}">KMUHelper&nbsp;App</a> sowie
             in den <a href="{% url 'admin:kmuhelper_einstellung_changelist' %}">Einstellungen</a>.
         </p>
         <br>
     {% endblock %}
 
-    {{ block.super }}
-
-    <br>
+    {% if "old_design" in request.GET %}
+        {{ block.super }}
+    {% else %}
+        {% kmuhelper_pagechooser_from_model_list app_list.0.models %}
+        <br>
+    {% endif %}
 
     {% block pagelist %}
     {% endblock %}

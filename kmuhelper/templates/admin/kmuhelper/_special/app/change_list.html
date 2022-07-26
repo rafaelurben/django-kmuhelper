@@ -3,18 +3,18 @@
 {% load static %}
 
 {% block branding %}
-    <h1 id="site-name"><a target="_top" href="{% url 'kmuhelper:home' %}">KMUHelper</a> | <a id="app-link" target="_top" href="{% url 'kmuhelper:app-index' %}">App</a></h1>
+    <h1 id="site-name"><a target="_top" href="{% url 'kmuhelper:home' %}">KMUHelper</a> | <a id="app-link" target="_top" href="{% url 'kmuhelper:app-desktop' %}">App</a></h1>
 {% endblock %}
 
 {% block breadcrumbs %}
     <div id="breadcrumbs" class="breadcrumbs">
-        <a href="{% url 'kmuhelper:app-index' %}">KMUHelper App</a> &gt; {% block modulename %}{{ module_name }}{% endblock %}
+        <a href="{% url 'kmuhelper:app-desktop' %}">KMUHelper App</a> &gt; {% block modulename %}{{ module_name }}{% endblock %}
     </div>
 
     <script>
         if (window !== window.top) { 
             document.getElementById("breadcrumbs").style.display = "none";
-            document.getElementById("app-link").href = "{% url 'kmuhelper:app-main' %}";
+            document.getElementById("app-link").href = "{% url 'kmuhelper:app-mobile' %}";
         }
     </script>
 {% endblock %}

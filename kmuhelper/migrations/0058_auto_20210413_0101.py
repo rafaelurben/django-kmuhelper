@@ -2,7 +2,7 @@
 
 from django.db import migrations, models
 import django.db.models.deletion
-import kmuhelper.emails.models
+import kmuhelper.modules.emails.models
 import kmuhelper.external.multi_email_field.fields
 import uuid
 
@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('filename', models.CharField(max_length=50, verbose_name='Dateiname')),
-                ('file', models.FileField(upload_to=kmuhelper.emails.models.getfilepath, verbose_name='Datei')),
+                ('file', models.FileField(upload_to=kmuhelper.modules.emails.models.getfilepath, verbose_name='Datei')),
                 ('description', models.TextField(blank=True, default='', verbose_name='Beschreibung')),
                 ('autocreated', models.BooleanField(default=False, verbose_name='Automatisch generiert')),
                 ('token', models.UUIDField(default=uuid.uuid4, editable=False, verbose_name='Token')),

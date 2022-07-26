@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="de">
+
+    <head>
+        <title>KMUHelper App</title>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width,initial-scale=1.0">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="theme-color" content="#880044">
+
+        {% load static %}
+        <link rel="manifest" href="{% url 'kmuhelper:app-mobile-manifest' %}">
+        <link rel="shortcut icon" type="image/x-icon" href="{% static 'kmuhelper/favicon.ico' %}">
+        <link rel="apple-touch-icon" href="{% static 'kmuhelper/favicon.ico' %}">
+
+        <link rel="stylesheet" type="text/css" href="{% static "kmuhelper/app/css/main.css" %}">
+        <link rel="stylesheet" type="text/css" href="https://use.fontawesome.com/releases/v6.0.0/css/all.css">
+
+        <script src="{% static 'kmuhelper/app/js/main.js' %}"></script>
+        
+        <style>
+            {% comment %} #body {
+                background-image: url("{% static 'kmuhelper/images/loading.gif' %}");
+            } {% endcomment %}
+        </style>
+    </head>
+
+    <body>
+        <div id="body">
+            <iframe id="frame" name="frame" src="about:blank" seamless="seamless" onerror="window.location.hash='{% url 'kmuhelper:app-mobile-error' %}';" onload="checkFrame(this);"></iframe>
+        </div>
+
+        <div class="appbar">
+            <a href="#error" id="error" url="{% url 'kmuhelper:app-mobile-error' %}" class="item hidden">
+                <i class="fas fa-exclamation-triangle"></i>
+            </a>
+            {% if perms.kmuhelper %}
+            <a href="#home" id="home" url="{% url 'kmuhelper:app-mobile-home' %}" class="item">
+                <i class="fas fa-home"></i>
+            </a>
+            {% endif %}
+            {% if perms.kmuhelper.view_app_todo %}
+            <a href="#todo" id="todo" url="{% url 'admin:kmuhelper_app_todo_changelist' %}" class="item">
+                <i class="fas fa-clipboard-list"></i>
+            </a>
+            {% endif %}
+            {% if perms.kmuhelper.view_app_lagerbestand %}
+            <a href="#lagerbestand" id="lagerbestand" url="{% url 'admin:kmuhelper_app_lagerbestand_changelist' %}" class="item">
+                <i class="fas fa-warehouse"></i>
+            </a>
+            {% endif %}
+            {% if perms.kmuhelper.view_app_warenausgang %}
+            <a href="#warenausgang" id="warenausgang" url="{% url 'admin:kmuhelper_app_warenausgang_changelist' %}" class="item">
+                <i class="fas fa-shipping-fast"></i>
+            </a>
+            {% endif %}
+            {% if perms.kmuhelper.view_app_wareneingang %}
+            <a href="#wareneingang" id="wareneingang" url="{% url 'admin:kmuhelper_app_wareneingang_changelist' %}" class="item">
+                <i class="fas fa-truck-loading"></i>
+            </a>
+            {% endif %}
+            {% if perms.kmuhelper.view_app_zahlungseingang %}
+            <a href="#zahlungseingang" id="zahlungseingang" url="{% url 'admin:kmuhelper_app_zahlungseingang_changelist' %}" class="item">
+                <i class="fas fa-hand-holding-usd"></i>
+            </a>
+            {% endif %}
+            <a href="{% url 'admin:app_list' app_label='kmuhelper' %}" target="_blank" id="admin" class="item" rel="noopener">
+                <i class="fas fa-key"></i>
+            </a>
+        </div>
+
+    </body>
+
+</html>

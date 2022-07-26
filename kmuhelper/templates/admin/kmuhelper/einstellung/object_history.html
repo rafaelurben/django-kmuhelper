@@ -1,0 +1,11 @@
+{% extends 'admin/kmuhelper/object_history.html' %}
+
+{% load kmuhelper_tags %}
+
+{% block branding %}
+    <h1 id="site-name"><a target="_top" href="{% url 'kmuhelper:home' %}">KMUHelper</a> | <a target="_top" href="{% url 'admin:kmuhelper_einstellung_changelist' %}">Einstellungen</a></h1>
+{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super | kmuhelper_breadcrumbs:"KMUHelper|kmuhelper:home" | safe }}
+{% endblock %}

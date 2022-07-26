@@ -1,6 +1,7 @@
-import kmuhelper.main.models
-import kmuhelper.app.models
-import kmuhelper.emails.models
-import kmuhelper.api.models
+import kmuhelper.modules.main.models
+import kmuhelper.modules.app.models
+import kmuhelper.modules.emails.models
+import kmuhelper.modules.api.models
+import kmuhelper.modules.settings.models
 
-import kmuhelper.integrations.paymentimport.models
+import kmuhelper.modules.integrations.paymentimport.models
