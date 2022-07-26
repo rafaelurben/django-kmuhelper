@@ -27,7 +27,6 @@ settings.configure(
     ],
     INSTALLED_APPS=(
         'kmuhelper',
-        'multi_email_field',
 
         'django.contrib.admin',
         'django.contrib.auth',

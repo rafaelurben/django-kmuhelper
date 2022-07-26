@@ -5,5 +5,4 @@ WooCommerce==3.0.0
 reportlab==3.6.11
 rich==12.5.1
 packaging==21.3
-django-multi-email-field==0.6.2
 defusedxml==0.7.1
