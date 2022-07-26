@@ -3,7 +3,7 @@
 from django.db import migrations, models
 import django.db.models.deletion
 import kmuhelper.modules.emails.models
-import multi_email_field.fields
+import kmuhelper.external.multi_email_field.fields
 import uuid
 
 
@@ -38,17 +38,17 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='email',
             name='bcc',
-            field=multi_email_field.fields.MultiEmailField(blank=True, default='', verbose_name='BCC'),
+            field=kmuhelper.external.multi_email_field.fields.MultiEmailField(blank=True, default='', verbose_name='BCC'),
         ),
         migrations.AddField(
             model_name='email',
             name='cc',
-            field=multi_email_field.fields.MultiEmailField(blank=True, default='', verbose_name='CC'),
+            field=kmuhelper.external.multi_email_field.fields.MultiEmailField(blank=True, default='', verbose_name='CC'),
         ),
         migrations.AlterField(
             model_name='email',
             name='to',
-            field=multi_email_field.fields.MultiEmailField(default=[], verbose_name='Empfänger'),
+            field=kmuhelper.external.multi_email_field.fields.MultiEmailField(default=[], verbose_name='Empfänger'),
         ),
         migrations.CreateModel(
             name='EMailAttachment',

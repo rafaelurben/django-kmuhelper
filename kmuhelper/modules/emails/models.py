@@ -2,8 +2,6 @@ import uuid
 
 from rich import print
 
-from multi_email_field.fields import MultiEmailField
-
 from django.db import models
 from django.contrib import admin, messages
 from django.core import mail
@@ -14,6 +12,8 @@ from django.utils import timezone
 from django.utils.html import format_html
 from django.template import TemplateDoesNotExist, TemplateSyntaxError
 from django.template.loader import get_template
+
+from kmuhelper.external.multi_email_field.fields import MultiEmailField
 
 from kmuhelper import settings
 from kmuhelper.overrides import CustomModel
