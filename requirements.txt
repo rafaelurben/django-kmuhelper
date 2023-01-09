@@ -4,5 +4,5 @@ requests==2.28.1
 WooCommerce==3.0.0
 reportlab==3.6.12
 rich==13.0.0
-packaging==22.0
+packaging==23.0
 defusedxml==0.7.1
