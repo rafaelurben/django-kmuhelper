@@ -292,7 +292,10 @@ class _PDFOrderQrInvoice(Flowable):
 
         # - CdtrInf (Empfänger)
         # - - IBAN
-        ln(ze.qriban.replace(" ", ""))
+        if ze.mode == "QRR":
+            ln(ze.qriban.replace(" ", ""))
+        else:
+            ln(ze.iban.replace(" ", ""))
         # - - Cdtr
         # - - - AdrTp
         ln("K")
@@ -350,12 +353,15 @@ class _PDFOrderQrInvoice(Flowable):
 
         # - RmtIn
         # - - TP
-        ln("QRR")
+        ln(ze.mode)
         # - - Ref
-        ln(bestellung.referenznummer().replace(" ", ""))
+        if ze.mode == "QRR":
+            ln(bestellung.referenznummer().replace(" ", ""))
+        else:
+            ln()
         # - - AddInf
         # - - - Ustrd
-        ln(str(bestellung.datum.strftime("%d.%m.%Y")))
+        ln(bestellung.unstrukturierte_mitteilung())
         # - - - Trailer
         ln("EPD")
         # - - - StrdBkgInf
@@ -425,14 +431,15 @@ class _PDFOrderQrInvoice(Flowable):
         # Empfangsschein Angaben
         t = c.beginText(5*mm, 90*mm)
         titel(t, _("Konto / Zahlbar an"), True)
-        t.textLine(ze.qriban)
+        t.textLine(ze.qriban if ze.mode == "QRR" else ze.iban)
         t.textLine(ze.firmenname)
         t.textLine(ze.adresszeile1)
         t.textLine(ze.adresszeile2)
         t.moveCursor(0, 9)
-        titel(t, _("Referenz"), True)
-        t.textLine(referenznummer)
-        t.moveCursor(0, 9)
+        if ze.mode == "QRR":
+            titel(t, _("Referenz"), True)
+            t.textLine(referenznummer)
+            t.moveCursor(0, 9)
         titel(t, _("Zahlbar durch"), True)
         t.textLine((bestellung.rechnungsadresse_vorname+" "+bestellung.rechnungsadresse_nachname)
                    if not bestellung.rechnungsadresse_firma else bestellung.rechnungsadresse_firma)
@@ -444,16 +451,17 @@ class _PDFOrderQrInvoice(Flowable):
         # Zahlteil Angaben
         t = c.beginText(118*mm, 97*mm)
         titel(t, _("Konto / Zahlbar an"))
-        t.textLine(ze.qriban)
+        t.textLine(ze.qriban if ze.mode == "QRR" else ze.iban)
         t.textLine(ze.firmenname)
         t.textLine(ze.adresszeile1)
         t.textLine(ze.adresszeile2)
         t.moveCursor(0, 9)
-        titel(t, _("Referenz"))
-        t.textLine(referenznummer)
-        t.moveCursor(0, 9)
+        if ze.mode == "QRR":
+            titel(t, _("Referenz"))
+            t.textLine(referenznummer)
+            t.moveCursor(0, 9)
         titel(t, _("Zusätzliche Informationen"))
-        t.textLine(bestelldatum)
+        t.textLine(bestellung.unstrukturierte_mitteilung())
         t.textLine(rechnungsinformationen[0])
         t.textLine("/31/"+rechnungsinformationen[1])
         t.moveCursor(0, 9)
@@ -554,7 +562,8 @@ class _PDFOrderHeader(Flowable):
         t.textLine(_("Tel."))
         t.textLine(_("E-Mail"))
         t.textLine(_("Web"))
-        t.textLine(_("MwSt"))
+        if ze.firmenuid:
+            t.textLine(_("MwSt"))
         c.drawText(t)
 
         # Firmendaten: Inhalt
@@ -563,7 +572,8 @@ class _PDFOrderHeader(Flowable):
         t.textLine(bestellung.ansprechpartner.telefon)
         t.textLine(bestellung.ansprechpartner.email)
         t.textLine(ze.webseite)
-        t.textLine(ze.firmenuid)
+        if ze.firmenuid:
+            t.textLine(ze.firmenuid)
         c.drawText(t)
 
         # Rechnungsdaten: Texte

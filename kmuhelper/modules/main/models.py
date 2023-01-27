@@ -1,6 +1,8 @@
 from datetime import datetime
 from random import randint
 from rich import print
+import string
+
 
 from django.db import models
 from django.contrib import admin, messages
@@ -571,6 +573,11 @@ class Bestellung(CustomModel):
     def trackinglink(self):
         return f'https://www.post.ch/swisspost-tracking?formattedParcelCodes={self.trackingnummer}' if self.trackingnummer else None
 
+    def unstrukturierte_mitteilung(self):
+        if self.zahlungsempfaenger.mode == "QRR":
+            return str(self.datum.strftime("%d.%m.%Y"))
+        return "Referenznummer: "+str(self.id)
+
     def referenznummer(self):
         a = self.pkfill(22)+"0000"
         b = a+str(modulo10rekursiv(a))
@@ -580,12 +587,19 @@ class Bestellung(CustomModel):
 
     def rechnungsinformationen(self):
         date = (self.rechnungsdatum or self.datum).strftime("%y%m%d")
-        uid = self.zahlungsempfaenger.firmenuid.split("-")[1].replace(".", "")
+
+        output = f'//S1/10/{self.pk}/11/{date}'
+
+        if self.zahlungsempfaenger.firmenuid:
+            uid = self.zahlungsempfaenger.firmenuid.split("-")[1].replace(".", "")
+            output += f'/30/{uid}'
         kond = self.zahlungskonditionen
         mwstdict = self.mwstdict()
         mwststring = ";".join(
             f'{satz}:{mwstdict[satz]}' for satz in mwstdict)
-        return f'//S1/10/{self.pk}/11/{date}/30/{uid}/31/{date}/32/{mwststring}/40/{kond}'
+
+        output += f'/31/{date}/32/{mwststring}/40/{kond}'
+        return output
 
     def paymentconditionsdict(self):
         "Get the payment conditions as a dictionary"
@@ -1878,6 +1892,16 @@ class Produkt(CustomModel):
 class Zahlungsempfaenger(CustomModel):
     """Model representing a payment receiver for the qr bill"""
 
+    mode = models.CharField(
+        verbose_name="Modus",
+        max_length=15,
+        choices=[
+            ('QRR', "QR-Referenz"),
+            ('NON', "Ohne Referenz"),
+        ],
+        default='QRR'
+    )
+
     qriban = models.CharField(
         verbose_name="QR-IBAN",
         max_length=21+5,
@@ -1887,8 +1911,24 @@ class Zahlungsempfaenger(CustomModel):
                 'Bite benutze folgendes Format: (CH|LI)pp 3xxx xxxx xxxx xxxx x',
             ),
         ],
-        help_text="QR-IBAN mit Leerzeichen",
+        help_text="QR-IBAN mit Leerzeichen (Nur verwendet im Modus 'QR-Referenz')",
+        blank=True,
+        default="",
     )
+    iban = models.CharField(
+        verbose_name="IBAN",
+        max_length=21+5,
+        validators=[
+            RegexValidator(
+                r'^(CH|LI)[0-9]{2}\s[0-9]{4}\s[0-9]{4}\s[0-9]{4}\s[0-9]{4}\s[0-9]{1}$',
+                'Bite benutze folgendes Format: (CH|LI)pp 3xxx xxxx xxxx xxxx x',
+            ),
+        ],
+        help_text="IBAN mit Leerzeichen (Nur verwendet im Modus 'Ohne Referenz')",
+        blank=True,
+        default="",
+    )
+
     logourl = models.URLField(
         verbose_name="Logo (URL)",
         validators=[
@@ -1899,11 +1939,13 @@ class Zahlungsempfaenger(CustomModel):
             ),
         ],
         help_text="URL eines Bildes (.jpg/.png) - Wird auf die Rechnung gedruckt.",
+        blank=True,
+        default="",
     )
     firmenname = models.CharField(
         verbose_name="Firmennname",
         max_length=70,
-        help_text="Name der Firma",
+        help_text="Name der Firma oder des Empfängers",
     )
     firmenuid = models.CharField(
         verbose_name="Firmen-UID",
@@ -1915,6 +1957,8 @@ class Zahlungsempfaenger(CustomModel):
             )
         ],
         help_text="UID der Firma - Format: CHE-123.456.789 (Mehrwertsteuernummer)",
+        blank=True,
+        default="",
     )
     adresszeile1 = models.CharField(
         verbose_name="Strasse und Hausnummer oder 'Postfach'",
@@ -1948,20 +1992,26 @@ class Zahlungsempfaenger(CustomModel):
         help_text="Auf der Rechnung ersichtlich!",
     )
 
-    def has_valid_qr_iban(self):
-        import string
+    @classmethod
+    def _check_iban(cls, iban: str):
         try:
             b = ''
             for i in (0, 1):
-                a = str(self.qriban)[i].upper()
+                a = str(iban)[i].upper()
                 if a not in string.ascii_uppercase:
                     return False
                 b += str(ord(a)-55)
-            Nr = ''.join([z for z in str(self.qriban)
+            Nr = ''.join([z for z in str(iban)
                           [2:] if z in string.digits])
             return int(int(Nr[2:] + b + Nr[:2]) % 97) == 1
         except IndexError:
             return False
+
+    def has_valid_qr_iban(self):
+        return self._check_iban(self.qriban)
+
+    def has_valid_iban(self):
+        return self._check_iban(self.iban)
 
     def has_valid_uid(self):
         try:

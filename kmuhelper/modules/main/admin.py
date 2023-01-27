@@ -755,18 +755,25 @@ class ProduktAdmin(CustomModelAdmin):
 @admin.register(Zahlungsempfaenger)
 class ZahlungsempfaengerAdmin(CustomModelAdmin):
     fieldsets = [
-        ("Infos", {"fields": [
-            "qriban", "logourl", "firmenname", "firmenuid"]}),
-        ("Adresse", {"fields": [
-            "adresszeile1", "adresszeile2", "land"]}),
-        ("Daten", {"fields": [
-            "email", "telefon", "webseite"]})
+        ("Infos", {
+            "fields": ["firmenname", "firmenuid", "logourl", "webseite"]
+        }),
+        ("Adresse", {
+            "fields": ["adresszeile1", "adresszeile2", "land"]
+        }),
+        ("Zahlungsdetails", {
+            "fields": ["mode", "qriban", "iban"]
+        }),
+        ("Kontaktdaten", {
+            "fields": ["email", "telefon"],
+            "classes": ["collapse"]
+        })
     ]
 
-    list_display = ('firmenname', 'firmenuid', 'qriban')
-    list_filter = ('land',)
+    list_display = ('firmenname', 'firmenuid', 'mode', 'qriban', 'iban')
+    list_filter = ('mode',)
     search_fields = ['firmenname', 'adresszeile1',
-                     'adresszeile2', 'qriban', 'firmenuid']
+                     'adresszeile2', 'qriban', 'iban', 'firmenuid']
 
     save_on_top = True
 
@@ -774,10 +781,13 @@ class ZahlungsempfaengerAdmin(CustomModelAdmin):
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
-        if obj and not obj.has_valid_qr_iban():
-            messages.error(request, "Ungültige QR-IBAN!")
-        if obj and not obj.has_valid_uid():
-            messages.warning(request, "Ungültige UID!")
+        if obj:
+            if obj.mode == "QRR" and not obj.has_valid_qr_iban():
+                messages.error(request, "Ungültige QR-IBAN!")
+            if obj.mode == "NON" and not obj.has_valid_iban():
+                messages.error(request, "Ungültige IBAN!")
+            if obj.firmenuid and not obj.has_valid_uid():
+                messages.warning(request, "Ungültige UID!")
 
 
 modeladmins = [
