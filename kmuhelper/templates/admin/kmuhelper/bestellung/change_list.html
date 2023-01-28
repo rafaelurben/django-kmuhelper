@@ -52,13 +52,13 @@
                     data = json.orders_unpaid_sum;
                     elem.innerHTML = `
                         <tr>
-                            <td>Versendet: </td><td>${data.sent} CHF</td>
+                            <td>Versendet: </td><td style="text-align: right;">${data.sent} CHF</td>
                         </tr>
                         <tr>
-                            <td>In Bearbeitung: </td><td>${data.unsent} CHF</td>
+                            <td style="padding-right: 2em;">In Bearbeitung: </td><td style="text-align: right;">${data.unsent} CHF</td>
                         </tr>
                         <tr>
-                            <td>Gesamt: </td><td>${data.all} CHF</td>
+                            <td>Gesamt: </td><td style="text-align: right;">${data.all} CHF</td>
                         </tr>
                     `;
                 });

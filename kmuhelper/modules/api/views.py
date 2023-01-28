@@ -2,7 +2,7 @@ from django.db import models
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from kmuhelper.utils import package_version, python_version
+from kmuhelper.utils import package_version, python_version, formatprice
 from kmuhelper.modules.main.models import Bestellung
 from kmuhelper.modules.api.constants import ENDPOINT_NOT_FOUND, SUCCESSFULLY_CHANGED
 from kmuhelper.modules.api.decorators import require_object, api_read, api_write, api_readwrite
@@ -47,9 +47,9 @@ def orders_unpaid(request):
 
     context = {
         "orders_unpaid_sum": {
-            "unsent": round(sum_unsent, 2),
-            "sent": round(sum_sent, 2),
-            "all": round(sum_unsent, 2)+round(sum_sent, 2)
+            "unsent": formatprice(round(sum_unsent, 2)),
+            "sent": formatprice(round(sum_sent, 2)),
+            "all": formatprice(round(sum_sent+sum_unsent, 2))
         }
     }
     return JsonResponse(context)
