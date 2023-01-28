@@ -73,11 +73,11 @@ class _PDFOrderPriceTable(Table):
         for bk in bestellung.kosten.through.objects.filter(bestellung=bestellung):
             data.append((
                 "",
-                Paragraph(clean(bk.kosten.name, sprache)),
-                "1",
-                clean(bk.kosten.mengenbezeichnung, sprache),
-                formatprice(bk.kosten.preis),
-                formatprice(bk.kosten.preis)
+                Paragraph(clean(bk.name, sprache)),
+                "",
+                "",
+                "",
+                formatprice(bk.preis)
             ))
             h_kosten += 1
             if bk.rabatt:

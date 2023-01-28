@@ -95,16 +95,22 @@ class Ansprechpartner(CustomModel):
 
 
 class Bestellungskosten(CustomModel):
-    """Model representing the connection between 'Bestellung' and 'Kosten'"""
+    """Model representing costs for an order (e.g. shipping costs)"""
 
+    # Links to other models
     bestellung = models.ForeignKey(
         to='Bestellung',
         on_delete=models.CASCADE,
     )
     kosten = models.ForeignKey(
         to='Kosten',
-        on_delete=models.PROTECT,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        default=None,
     )
+
+    # Custom data printed on the invoice
     bemerkung = models.CharField(
         verbose_name="Bemerkung",
         default="",
@@ -113,45 +119,56 @@ class Bestellungskosten(CustomModel):
         help_text="Wird auf die Rechnung gedruckt.",
     )
 
-    rabatt = models.IntegerField(
+    rabatt = models.FloatField(
         verbose_name="Rabatt in %",
-        default=0,
+        default=0.0,
         validators=[
             MinValueValidator(0),
             MaxValueValidator(100),
         ],
     )
 
-    kostenpreis = models.FloatField(
+    # Data from Kosten
+    name = models.CharField(
+        verbose_name="Name",
+        max_length=500,
+        default="Zusätzliche Kosten",
+    )
+    preis = models.FloatField(
         verbose_name="Preis (exkl. MwSt)",
         default=0.0,
     )
+    mwstsatz = models.FloatField(
+        verbose_name="MwSt-Satz",
+        choices=constants.MWSTSETS,
+        default=7.7,
+    )
 
+    # Calculated data
     @admin.display(description="Zwischensumme (exkl. MwSt)")
     def zwischensumme(self):
-        return runden(self.kostenpreis*((100-self.rabatt)/100))
+        return runden(self.preis*((100-self.rabatt)/100))
 
     def zwischensumme_ohne_rabatt(self):
-        return runden(self.kostenpreis)
+        return runden(self.preis)
 
     def nur_rabatt(self):
-        return runden(self.kostenpreis*(self.rabatt/100))*-1
+        return runden(self.preis*(self.rabatt/100))*-1
 
-    @admin.display(description="MwSt-Satz", ordering="kosten__mwstsatz")
-    def mwstsatz(self):
-        return self.kosten.mwstsatz
-
-    @admin.display(description="Name", ordering="kosten__name")
-    def kosten_name(self):
-        return self.kosten.clean_name()
+    # Display methods
+    @admin.display(description="Name", ordering="name")
+    def clean_name(self):
+        return clean(self.name)
 
     @admin.display(description="Bestellungskosten")
     def __str__(self):
-        return f'({self.bestellung.pk}) -> 1x {self.kosten}'
+        return f'({self.pk}) -> {self.name}'
 
     def save(self, *args, **kwargs):
-        if not self.kostenpreis:
-            self.kostenpreis = runden(self.kosten.preis)
+        if self.pk is None and self.kosten is not None:
+            self.name = self.kosten.name
+            self.preis = self.kosten.preis
+            self.mwstsatz = self.kosten.mwstsatz
         super().save(*args, **kwargs)
 
     class Meta:
@@ -623,10 +640,10 @@ class Bestellung(CustomModel):
             else:
                 mwst[str(p.produkt.mwstsatz)] = p.zwischensumme()
         for k in self.kosten.through.objects.filter(bestellung=self):
-            if str(k.kosten.mwstsatz) in mwst:
-                mwst[str(k.kosten.mwstsatz)] += k.zwischensumme()
+            if str(k.mwstsatz) in mwst:
+                mwst[str(k.mwstsatz)] += k.zwischensumme()
             else:
-                mwst[str(k.kosten.mwstsatz)] = k.zwischensumme()
+                mwst[str(k.mwstsatz)] = k.zwischensumme()
         for s in mwst:
             mwst[s] = runden(mwst[s])
         return mwst
@@ -973,10 +990,6 @@ class Kosten(CustomModel):
         choices=constants.MWSTSETS,
         default=7.7,
     )
-
-    @property
-    def mengenbezeichnung(self):
-        return "[:de]Stück[:fr]Pièce[:it]Pezzo[:en]Piece[:]"
 
     @admin.display(description="Name", ordering="name")
     def clean_name(self):

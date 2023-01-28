@@ -13,9 +13,12 @@ ORDERSTATUS = [
 
 MWSTSETS = [
     (0.0, "0.0% (Mehrwertsteuerfrei)"),
-    (7.7, "7.7% (Normalsatz)"),
-    (3.7, "3.7% (Sondersatz für Beherbergungsdienstleistungen)"),
-    (2.5, "2.5% (Reduzierter Satz)")
+    (2.5, "2.5% (Bis 2023: Reduzierter Satz)"),
+    (2.6, "2.6% (Ab 2024: Reduzierter Satz)"),
+    (3.7, "3.7% (Bis 2023: Sondersatz für Beherbergung)"),
+    (3.8, "3.8% (Ab 2024: Sondersatz für Beherbergung)"),
+    (7.7, "7.7% (Bis 2023: Normalsatz)"),
+    (8.1, "8.1% (Ab 2024: Normalsatz)"),
 ]
 
 PAYMENTMETHODS = [

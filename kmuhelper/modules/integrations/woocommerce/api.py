@@ -513,15 +513,11 @@ class WooCommerce():
                 }
             )
         for item in order["shipping_lines"]:
-            price = float(item["total"])
-
-            neworder.kosten.add(
-                Kosten.objects.get_or_create(
-                    name=item["method_title"],
-                    preis=price,
-                    mwstsatz=(7.7 if float(item["total_tax"]) > 0 else 0)
-                )[0],
-                through_defaults={"kostenpreis": price}
+            neworder.kosten.through.objects.create(
+                bestellung=neworder,
+                name=item['method_title'],
+                preis=float(item["total"]),
+                mwstsatz=(7.7 if float(item["total_tax"]) > 0 else 0)
             )
         neworder.save()
         neworder.second_save()

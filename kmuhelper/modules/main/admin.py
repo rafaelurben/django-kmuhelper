@@ -87,38 +87,30 @@ class BestellungInlineBestellungskosten(CustomTabularInline):
     verbose_name_plural = "Bestellungskosten"
     extra = 0
 
-    fieldsets = [
-        (None, {'fields': ['kosten_name', 'bemerkung',
-                           'kostenpreis', 'rabatt', 'mwstsatz', 'zwischensumme']})
-    ]
+    fields = ('kosten', 'name', 'preis', 'rabatt', 'bemerkung', 'zwischensumme', 'mwstsatz')
 
-    readonly_fields = ('zwischensumme', 'mwstsatz', 'kosten_name',)
+    readonly_fields = ('kosten', 'zwischensumme',)
 
     def get_additional_readonly_fields(self, request, obj=None):
-        fields = ["kostenpreis"]
         if obj and obj.bezahlt:
-            fields += ["rabatt"]
-        return fields
+            return ['preis', 'mwstsatz', 'rabatt']
+        return []
 
     # Permissions
-
-    NO_ADD = True
 
     def has_delete_permission(self, request, obj=None):
         return False if (obj and obj.bezahlt) else super().has_delete_permission(request, obj)
 
 
-class BestellungInlineBestellungskostenAdd(CustomTabularInline):
+class BestellungInlineBestellungskostenImport(CustomTabularInline):
     model = Bestellung.kosten.through
     verbose_name = "Bestellungskosten"
-    verbose_name_plural = "Bestellungskosten hinzufügen"
+    verbose_name_plural = "Bestellungskosten importieren"
     extra = 0
 
     autocomplete_fields = ("kosten",)
 
-    fieldsets = [
-        (None, {'fields': ['kosten', 'bemerkung', 'rabatt']})
-    ]
+    fields = ('kosten', 'bemerkung', 'rabatt',)
 
     # Permissions
 
@@ -141,7 +133,7 @@ class BestellungsAdmin(CustomModelAdmin):
     ordering = ("versendet", "bezahlt", "-datum")
 
     inlines = [BestellungInlineBestellungsposten, BestellungInlineBestellungspostenAdd,
-               BestellungInlineBestellungskosten, BestellungInlineBestellungskostenAdd]
+               BestellungInlineBestellungskosten, BestellungInlineBestellungskostenImport]
 
     autocomplete_fields = ("kunde", "zahlungsempfaenger", "ansprechpartner", )
 
