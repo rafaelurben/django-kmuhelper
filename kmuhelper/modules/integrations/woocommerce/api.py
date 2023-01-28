@@ -5,7 +5,7 @@ from rich.progress import Progress
 
 from woocommerce import API as WCAPI
 
-from kmuhelper import settings
+from kmuhelper import settings, constants
 from kmuhelper.modules.main.models import Produkt, Kunde, Kategorie, Bestellung, Kosten
 from kmuhelper.utils import runden
 
@@ -517,7 +517,7 @@ class WooCommerce():
                 bestellung=neworder,
                 name=item['method_title'],
                 preis=float(item["total"]),
-                mwstsatz=(7.7 if float(item["total_tax"]) > 0 else 0)
+                mwstsatz=(constants.MWST_DEFAULT if float(item["total_tax"]) > 0 else 0)
             )
         neworder.save()
         neworder.second_save()

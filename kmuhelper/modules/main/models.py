@@ -141,7 +141,7 @@ class Bestellungskosten(CustomModel):
     mwstsatz = models.FloatField(
         verbose_name="MwSt-Satz",
         choices=constants.MWSTSETS,
-        default=7.7,
+        default=constants.MWST_DEFAULT,
     )
 
     # Calculated data
@@ -988,7 +988,7 @@ class Kosten(CustomModel):
     mwstsatz = models.FloatField(
         verbose_name="MwSt-Satz",
         choices=constants.MWSTSETS,
-        default=7.7,
+        default=constants.MWST_DEFAULT,
     )
 
     @admin.display(description="Name", ordering="name")
@@ -1680,7 +1680,7 @@ class Produkt(CustomModel):
     mwstsatz = models.FloatField(
         verbose_name='Mehrwertsteuersatz',
         choices=constants.MWSTSETS,
-        default=7.7,
+        default=constants.MWST_DEFAULT,
     )
 
     lagerbestand = models.IntegerField(

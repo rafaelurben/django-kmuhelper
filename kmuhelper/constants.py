@@ -20,6 +20,7 @@ MWSTSETS = [
     (7.7, "7.7% (Bis 2023: Normalsatz)"),
     (8.1, "8.1% (Ab 2024: Normalsatz)"),
 ]
+MWST_DEFAULT = 7.7
 
 PAYMENTMETHODS = [
     ("bacs", "Überweisung"),
