@@ -674,7 +674,7 @@ class Bestellung(CustomModel):
     def name(self):
         return (f'{self.datum.year}-' if self.datum and not isinstance(self.datum, str) else '') + \
                (f'{self.pkfill(6)}'+(f' (WC#{self.woocommerceid})' if self.woocommerceid else '')) + \
-               (f' - {self.kunde}' if self.kunde is not None else "Gast")
+               (f' - {self.kunde}' if self.kunde is not None else " Gast")
 
     @admin.display(description="Info")
     def info(self):
