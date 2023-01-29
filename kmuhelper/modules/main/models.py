@@ -16,7 +16,8 @@ from kmuhelper import settings, constants
 from kmuhelper.modules.emails.models import EMail, Attachment
 from kmuhelper.overrides import CustomModel
 from kmuhelper.pdf_generators import PDFOrder
-from kmuhelper.utils import runden, clean, formatprice, modulo10rekursiv, send_pdf
+from kmuhelper.utils import runden, formatprice, modulo10rekursiv, send_pdf
+from kmuhelper.translations import langselect
 
 
 def log(string, *args):
@@ -158,7 +159,7 @@ class Bestellungskosten(CustomModel):
     # Display methods
     @admin.display(description="Name", ordering="name")
     def clean_name(self):
-        return clean(self.name)
+        return langselect(self.name)
 
     @admin.display(description="Bestellungskosten")
     def __str__(self):
@@ -954,11 +955,11 @@ class Kategorie(CustomModel):
 
     @admin.display(description="Name", ordering="name")
     def clean_name(self):
-        return clean(self.name)
+        return langselect(self.name)
 
     @admin.display(description="Beschrieb", ordering="beschrieb")
     def clean_beschrieb(self):
-        return clean(self.beschrieb)
+        return langselect(self.beschrieb)
 
     @admin.display(description="Kategorie")
     def __str__(self):
@@ -993,7 +994,7 @@ class Kosten(CustomModel):
 
     @admin.display(description="Name", ordering="name")
     def clean_name(self):
-        return clean(self.name)
+        return langselect(self.name)
 
     @admin.display(description="Kosten")
     def __str__(self):
@@ -1670,7 +1671,7 @@ class Produkt(CustomModel):
     mengenbezeichnung = models.CharField(
         verbose_name='Mengenbezeichnung',
         max_length=100,
-        default="[:de]Stück[:fr]Pièce[:it]Pezzo[:en]Piece[:]",
+        default="Stück",
         blank=True,
     )
     verkaufspreis = models.FloatField(
@@ -1762,15 +1763,15 @@ class Produkt(CustomModel):
 
     @admin.display(description="Name", ordering="name")
     def clean_name(self, lang="de"):
-        return clean(self.name, lang)
+        return langselect(self.name, lang)
 
     @admin.display(description="Kurzbeschrieb", ordering="kurzbeschrieb")
     def clean_kurzbeschrieb(self, lang="de"):
-        return clean(self.kurzbeschrieb, lang)
+        return langselect(self.kurzbeschrieb, lang)
 
     @admin.display(description="Beschrieb", ordering="beschrieb")
     def clean_beschrieb(self, lang="de"):
-        return clean(self.beschrieb, lang)
+        return langselect(self.beschrieb, lang)
 
     @admin.display(description="In Aktion", boolean=True)
     def in_aktion(self, zeitpunkt: datetime = None):
@@ -1855,15 +1856,6 @@ class Produkt(CustomModel):
             messages.error(request, data["message"])
         elif data["stock_in_danger"]:
             messages.warning(request, data["message"])
-
-    def save(self, *args, **kwargs):
-        if self.mengenbezeichnung == "Stück":
-            self.mengenbezeichnung = "[:de]Stück[:fr]Pièce[:it]Pezzo[:en]Piece[:]"
-        elif self.mengenbezeichnung == "Flasche":
-            self.mengenbezeichnung = "[:de]Flasche[:fr]Bouteille[:it]Bottiglia[:en]Bottle[:]"
-        elif self.mengenbezeichnung == "Tube":
-            self.mengenbezeichnung = "[:de]Tube[:fr]Tube[:it]Tubetto[:en]Tube[:]"
-        super().save(*args, **kwargs)
 
     @admin.display(description="🔗 Notiz")
     def html_app_notiz(self):

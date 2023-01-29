@@ -7,7 +7,8 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.utils import timezone
 
-from kmuhelper.utils import clean, render_error
+from kmuhelper.utils import render_error
+from kmuhelper.translations import langselect
 from kmuhelper.modules.main.models import Bestellungsposten, Bestellung
 
 
@@ -105,9 +106,9 @@ def best_products(request):
 
     for bp in Bestellungsposten.objects.filter(bestellung__datum__gte=from_date, bestellung__datum__lte=to_date).order_by("produkt__name").values("produkt__name", "menge"):
         if bp["produkt__name"] in products:
-            products[clean(bp["produkt__name"])] += bp["menge"]
+            products[langselect(bp["produkt__name"])] += bp["menge"]
         else:
-            products[clean(bp["produkt__name"])] = bp["menge"]
+            products[langselect(bp["produkt__name"])] = bp["menge"]
 
     products = sorted(products.items(), key=lambda x: x[1], reverse=True)
     products = products[:max_count] if len(products) > max_count else products

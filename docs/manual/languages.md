@@ -10,12 +10,20 @@ Um auch Produkte und Mengenbezeichnungen zu übersetzen, wird der gleiche Syntax
 
 Beispiel: `[:de]Stück[:fr]Pièce[:it]Pezzo[:en]Piece[:]`
 
-Die Unterstützung für mehrere Sprachen existiert bisher nur bei folgenden Feldern:
+Die Unterstützung für mehrere Sprachen existiert bei folgenden Feldern:
 
 - Produkt: Name
 - Produkt: Beschreibung
 - Produkt: Mengenbezeichnung
 - Kosten: Name
+
+Auf Übersichtsseiten im Admin-Bereich wird ausschliesslich die Deutsche Bezeichnung angezeigt.
+
+## Automatische Übersetzung
+
+Folgende Mengenbezeichnungen werden bei exaktem Wortlaut automatisch übersetzt: Stück, Stunden, Einheiten, Flasche & Tube
+
+Folgende Kostenbezeichnungen werden bei exaktem Wortlaut automatisch übersetzt: Versandkosten
 
 ## Zurück
 

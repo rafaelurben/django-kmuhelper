@@ -1,7 +1,8 @@
 """PDF creator for invoices and delivery notes"""
 
 from kmuhelper import settings
-from kmuhelper.utils import clean, formatprice
+from kmuhelper.translations import autotranslate_mengenbezeichnung, autotranslate_kosten_name, langselect
+from kmuhelper.utils import formatprice
 from kmuhelper.pdf_generators._base import PDFGenerator
 
 from reportlab.platypus import Table, TableStyle, Paragraph, Spacer, TopPadder, Flowable
@@ -38,9 +39,9 @@ class _PDFOrderPriceTable(Table):
             zwsumohnerabatt = bp.zwischensumme_ohne_rabatt()
             data.append((
                 bp.produkt.artikelnummer,
-                Paragraph(clean(bp.produkt.name, sprache)),
+                Paragraph(langselect(bp.produkt.name, sprache)),
                 str(bp.menge),
-                clean(bp.produkt.mengenbezeichnung, sprache),
+                langselect(autotranslate_mengenbezeichnung(bp.produkt.mengenbezeichnung), sprache),
                 formatprice(bp.produktpreis),
                 formatprice(zwsumohnerabatt)
             ))
@@ -73,7 +74,7 @@ class _PDFOrderPriceTable(Table):
         for bk in bestellung.kosten.through.objects.filter(bestellung=bestellung):
             data.append((
                 "",
-                Paragraph(clean(bk.name, sprache)),
+                Paragraph(langselect(autotranslate_kosten_name(bk.name), sprache)),
                 "",
                 "",
                 "",
@@ -206,9 +207,9 @@ class _PDFOrderProductTable(Table):
         for bp in bestellung.produkte.through.objects.filter(bestellung=bestellung):
             data.append((
                 bp.produkt.artikelnummer,
-                Paragraph(clean(bp.produkt.name, sprache), style_default),
+                Paragraph(langselect(bp.produkt.name, sprache), style_default),
                 str(bp.menge),
-                clean(bp.produkt.mengenbezeichnung, sprache),
+                langselect(autotranslate_mengenbezeichnung(bp.produkt.mengenbezeichnung), sprache),
             ))
             if bp.bemerkung:
                 data.append((

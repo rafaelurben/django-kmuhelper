@@ -1,5 +1,16 @@
 """Utils for automatic translations of strings."""
 
+# qTranslate-X compatible translation functions
+
+def langselect(string, lang="de"):
+    if "[:"+lang+"]" in string:
+        return string.split("[:"+lang+"]")[1].split("[:")[0]
+    if "[:de]" in string:
+        return string.split("[:de]")[1].split("[:")[0]
+    return string
+
+# Autotranslations
+
 def autotranslate_mengenbezeichnung(mengenbezeichnung):
     match mengenbezeichnung:
         case "Stück":

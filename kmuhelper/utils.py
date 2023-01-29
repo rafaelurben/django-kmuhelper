@@ -91,13 +91,6 @@ def runden(preis, to=0.05):
     return float(formatprice(float(round(round(preis / to) * to, 2))))
 
 
-def clean(string, lang="de"):
-    if "[:"+lang+"]" in string:
-        return string.split("[:"+lang+"]")[1].split("[:")[0]
-    if "[:de]" in string:
-        return string.split("[:de]")[1].split("[:")[0]
-    return string
-
 ###############
 
 
