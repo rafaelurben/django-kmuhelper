@@ -17,7 +17,7 @@ from kmuhelper.modules.emails.models import EMail, Attachment
 from kmuhelper.overrides import CustomModel
 from kmuhelper.pdf_generators import PDFOrder
 from kmuhelper.utils import runden, formatprice, modulo10rekursiv, send_pdf
-from kmuhelper.translations import langselect
+from kmuhelper.translations import langselect, I18N_HELP_TEXT
 
 
 def log(string, *args):
@@ -134,6 +134,7 @@ class Bestellungskosten(CustomModel):
         verbose_name="Name",
         max_length=500,
         default="Zusätzliche Kosten",
+        help_text=I18N_HELP_TEXT,
     )
     preis = models.FloatField(
         verbose_name="Preis (exkl. MwSt)",
@@ -981,6 +982,7 @@ class Kosten(CustomModel):
         verbose_name="Name",
         max_length=500,
         default="Zusätzliche Kosten",
+        help_text=I18N_HELP_TEXT,
     )
     preis = models.FloatField(
         verbose_name="Preis (exkl. MwSt)",
@@ -1656,16 +1658,19 @@ class Produkt(CustomModel):
     name = models.CharField(
         verbose_name='Name',
         max_length=500,
+        help_text=I18N_HELP_TEXT,
     )
     kurzbeschrieb = models.TextField(
         verbose_name='Kurzbeschrieb',
         default="",
         blank=True,
+        help_text=I18N_HELP_TEXT,
     )
     beschrieb = models.TextField(
         verbose_name='Beschrieb',
         default="",
         blank=True,
+        help_text=I18N_HELP_TEXT,
     )
 
     mengenbezeichnung = models.CharField(
@@ -1673,6 +1678,7 @@ class Produkt(CustomModel):
         max_length=100,
         default="Stück",
         blank=True,
+        help_text=I18N_HELP_TEXT,
     )
     verkaufspreis = models.FloatField(
         verbose_name='Normalpreis in CHF (exkl. MwSt)',

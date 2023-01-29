@@ -1,5 +1,7 @@
 """Utils for automatic translations of strings."""
 
+I18N_HELP_TEXT = "Unterstützt i18n: '[:de]Deutsch[:fr]Français[:it]Italiano[:en]English[:]'"
+
 # qTranslate-X compatible translation functions
 
 def langselect(string, lang="de"):
