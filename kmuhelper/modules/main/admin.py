@@ -36,12 +36,9 @@ class BestellungInlineBestellungsposten(CustomTabularInline):
     verbose_name_plural = "Bestellungsposten"
     extra = 0
 
-    fieldsets = [
-        (None, {'fields': ['produkt', 'bemerkung', 'produktpreis',
-                           'menge', 'rabatt', 'mwstsatz', 'zwischensumme']})
-    ]
+    fields = ('produkt', 'bemerkung', 'produktpreis', 'menge', 'rabatt', 'zwischensumme_display', 'mwstsatz',)
 
-    readonly_fields = ('zwischensumme', 'mwstsatz', 'produkt',)
+    readonly_fields = ('zwischensumme_display', 'mwstsatz', 'produkt',)
 
     def get_additional_readonly_fields(self, request, obj=None):
         fields = ["produktpreis"]
@@ -87,9 +84,9 @@ class BestellungInlineBestellungskosten(CustomTabularInline):
     verbose_name_plural = "Bestellungskosten"
     extra = 0
 
-    fields = ('kosten', 'name', 'preis', 'rabatt', 'bemerkung', 'zwischensumme', 'mwstsatz')
+    fields = ('kosten', 'name', 'preis', 'rabatt', 'bemerkung', 'zwischensumme_display', 'mwstsatz')
 
-    readonly_fields = ('kosten', 'zwischensumme',)
+    readonly_fields = ('kosten', 'zwischensumme_display',)
 
     def get_additional_readonly_fields(self, request, obj=None):
         if obj and obj.bezahlt:
@@ -128,7 +125,7 @@ class BestellungInlineBestellungskostenImport(CustomTabularInline):
 @admin.register(Bestellung)
 class BestellungsAdmin(CustomModelAdmin):
     list_display = ('id', 'datum', 'kunde', 'status', 'zahlungsmethode',
-                    'versendet', 'bezahlt', 'fix_summe', 'html_notiz')
+                    'versendet', 'bezahlt', 'fix_summe_display', 'html_notiz')
     list_filter = ('status', 'bezahlt', 'versendet', 'zahlungsmethode', 'zahlungsempfaenger', 'ansprechpartner')
     search_fields = ['id', 'datum', 'notiz__name', 'notiz__beschrieb', 'kundennotiz',
                      'trackingnummer'] + constants.RECHNUNGSADRESSE_FIELDS + constants.LIEFERADRESSE_FIELDS

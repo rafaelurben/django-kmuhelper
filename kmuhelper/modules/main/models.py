@@ -147,7 +147,6 @@ class Bestellungskosten(CustomModel):
     )
 
     # Calculated data
-    @admin.display(description="Zwischensumme (exkl. MwSt)")
     def zwischensumme(self):
         return runden(self.preis*((100-self.rabatt)/100))
 
@@ -162,9 +161,15 @@ class Bestellungskosten(CustomModel):
     def clean_name(self):
         return langselect(self.name)
 
+    @admin.display(description="Zwischensumme (exkl. MwSt)")
+    def zwischensumme_display(self):
+        return formatprice(self.zwischensumme()) + " CHF"
+
     @admin.display(description="Bestellungskosten")
     def __str__(self):
-        return f'({self.pk}) -> {self.name}'
+        if self.kosten:
+            return f"({self.pk}) {self.clean_name()} ({self.kosten.pk})"
+        return f"({self.pk}) {self.clean_name()}"
 
     def save(self, *args, **kwargs):
         if self.pk is None and self.kosten is not None:
@@ -223,7 +228,7 @@ class Bestellungsposten(CustomModel):
         default=0.0,
     )
 
-    @admin.display(description="Zwischensumme (exkl. MwSt)")
+    # Calculated data
     def zwischensumme(self):
         return runden(self.produktpreis*self.menge*((100-self.rabatt)/100))
 
@@ -233,13 +238,18 @@ class Bestellungsposten(CustomModel):
     def nur_rabatt(self):
         return runden(self.produktpreis*self.menge*(self.rabatt/100))*-1
 
+    # Display methods
     @admin.display(description="MwSt-Satz")
     def mwstsatz(self):
         return formatprice(self.produkt.mwstsatz)
 
+    @admin.display(description="Zwischensumme (exkl. MwSt)")
+    def zwischensumme_display(self):
+        return formatprice(self.zwischensumme()) + " CHF"
+
     @admin.display(description="Bestellungsposten")
     def __str__(self):
-        return f'({self.bestellung.pk}) -> {self.menge}x {self.produkt}'
+        return f'({self.pk}) {self.menge}x {self.produkt.clean_name()} ({self.produkt.pk})'
 
     def save(self, *args, **kwargs):
         if not self.produktpreis:
@@ -671,6 +681,10 @@ class Bestellung(CustomModel):
     @admin.display(description="Summe in CHF")
     def summe_gesamt(self):
         return runden(self.summe()+self.summe_mwst())
+
+    @admin.display(description="Total", ordering="fix_summe")
+    def fix_summe_display(self):
+        return f'{formatprice(self.fix_summe)} CHF'
 
     @admin.display(description="Name")
     def name(self):
