@@ -7,6 +7,16 @@
     --link-selected-fg: var(--kmuhelper-light);
 }
 
+/* Price styling */
+
+.text-align-right,
+.field-fix_summe_display,
+.column-fix_summe_display,
+.field-zwischensumme_display,
+.column-zwischensumme_display {
+    text-align: end;
+}
+
 /* Optimize for more messages */
 
 ul.messagelist li:not(:last-child) {

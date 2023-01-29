@@ -660,7 +660,6 @@ class Bestellung(CustomModel):
             mwst[s] = runden(mwst[s])
         return mwst
 
-    @admin.display(description="Summe (exkl. MwSt) in CHF")
     def summe(self):
         summe = 0
         for i in self.produkte.through.objects.filter(bestellung=self):
@@ -669,7 +668,6 @@ class Bestellung(CustomModel):
             summe += i.zwischensumme()
         return runden(summe)
 
-    @admin.display(description="Summe (nur MwSt) in CHF")
     def summe_mwst(self):
         summe_mwst = 0
         mwstdict = self.mwstdict()
@@ -678,9 +676,12 @@ class Bestellung(CustomModel):
                                        * (float(mwstsatz)/100)))
         return runden(summe_mwst)
 
-    @admin.display(description="Summe in CHF")
     def summe_gesamt(self):
         return runden(self.summe()+self.summe_mwst())
+
+    @admin.display(description="Rechnungstotal")
+    def summeninfo(self):
+        return f'{formatprice(self.summe())} CHF + {formatprice(self.summe_mwst())} CHF MwSt = {formatprice(self.summe_gesamt())} CHF'
 
     @admin.display(description="Total", ordering="fix_summe")
     def fix_summe_display(self):
