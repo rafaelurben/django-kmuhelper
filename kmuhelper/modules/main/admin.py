@@ -98,6 +98,9 @@ class BestellungInlineBestellungskosten(CustomTabularInline):
 
     # Permissions
 
+    def has_add_permission(self, request, obj=None):
+        return False if (obj and obj.bezahlt) else super().has_add_permission(request, obj)
+
     def has_delete_permission(self, request, obj=None):
         return False if (obj and obj.bezahlt) else super().has_delete_permission(request, obj)
 
