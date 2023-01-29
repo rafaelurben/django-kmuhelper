@@ -295,7 +295,8 @@ class KundenAdminBestellungsInline(CustomTabularInline):
 
     ordering = ('-datum', )
 
-    fields = ('id', 'datum', 'fix_summe', 'versendet', 'bezahlt')
+    fields = ('pk', 'datum', 'fix_summe_display', 'versendet', 'bezahlt', 'bezahlt_nach_display')
+    readonly_fields = ('pk', 'bezahlt_nach_display', 'fix_summe_display')
 
     # Permissions
 

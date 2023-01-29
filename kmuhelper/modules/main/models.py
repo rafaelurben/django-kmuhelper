@@ -709,6 +709,14 @@ class Bestellung(CustomModel):
     def info(self):
         return f'{self.datum.strftime("%d.%m.%Y")} - '+((self.kunde.firma if self.kunde.firma else (f'{self.kunde.vorname} {self.kunde.nachname}')) if self.kunde else "Gast")
 
+    @admin.display(description="Bezahlt nach")
+    def bezahlt_nach_display(self):
+        if self.bezahlt_am is None:
+            return "-"
+        
+        daydiff = (self.bezahlt_am - self.rechnungsdatum).days
+        return f'{daydiff} Tag{"e" if daydiff != 1 else ""}'
+
     @admin.display(description="Bestellung")
     def __str__(self):
         return self.name()
