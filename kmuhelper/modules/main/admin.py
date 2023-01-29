@@ -144,15 +144,22 @@ class BestellungsAdmin(CustomModelAdmin):
     def get_fieldsets(self, request, obj=None):
         if obj:
             return [
-                ('Einstellungen', {'fields': [
-                    'zahlungsempfaenger', 'ansprechpartner']}),
+                ('Einstellungen', {
+                    'fields': ['zahlungsempfaenger', 'ansprechpartner']
+                }),
                 ('Infos', {'fields': ['name', 'datum', 'status']}),
-                ('Rechnungsoptionen', {'fields': [
-                    'rechnungstitel', 'rechnungstext', 'rechnungsdatum', 'zahlungskonditionen']}),
-                ('Lieferung', {'fields': ['versendet', 'trackingnummer']}),
-                ('Bezahlung', {'fields': [
-                    'bezahlt', 'zahlungsmethode', 'summeninfo']}),
                 ('Kunde', {'fields': ['kunde']}),
+                ('Lieferung', {'fields': [('versendet_am', 'versendet'), 'trackingnummer']}),
+                ('Bezahlungsoptionen', {
+                    'fields': ['zahlungsmethode', 'rechnungsdatum', 'zahlungskonditionen']
+                }),
+                ('Bezahlung', {
+                    'fields': ['summeninfo', ('bezahlt_am', 'bezahlt')]
+                }),
+                ('Rechnungsoptionen', {
+                    'fields': ['rechnungstitel', 'rechnungstext'],
+                    'classes': ["collapse"]
+                }),
                 ('Notizen & Texte', {
                     'fields': ['kundennotiz', 'html_notiz'],
                     'classes': ["collapse start-open"]}),
@@ -168,15 +175,14 @@ class BestellungsAdmin(CustomModelAdmin):
             ('Einstellungen', {'fields': [
                 'zahlungsempfaenger', 'ansprechpartner']}),
             ('Infos', {'fields': ['status']}),
-            ('Rechnungsoptionen', {'fields': [
-                'rechnungstitel', 'rechnungstext', 'rechnungsdatum', 'zahlungskonditionen']}),
-            ('Lieferung', {
-                'fields': ['trackingnummer'],
-                'classes': ["collapse"]}),
-            ('Bezahlung', {
-                'fields': ['zahlungsmethode'],
-                'classes': ["collapse start-open"]}),
             ('Kunde', {'fields': ['kunde']}),
+            ('Bezahlungsoptionen', {
+                'fields': ['zahlungsmethode', 'rechnungsdatum', 'zahlungskonditionen'],
+                'classes': ["collapse start-open"]}),
+            ('Rechnungsoptionen', {
+                'fields': ['rechnungstitel', 'rechnungstext'],
+                'classes': ["collapse"]
+            }),
             ('Notizen & Texte', {
                 'fields': ['kundennotiz'],
                 'classes': ["collapse start-open"]}),

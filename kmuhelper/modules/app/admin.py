@@ -64,9 +64,9 @@ class App_ToDoenAdmin(App_AdminBase, NotizenAdmin):
 
 @admin.register(App_Warenausgang)
 class App_WarenausgangAdmin(App_AdminBase, BestellungsAdmin):
-    list_display = ('id', 'info', 'trackingnummer',
-                    'versendet', 'status', 'html_app_notiz')
-    list_editable = ("trackingnummer", "versendet", "status")
+    list_display = ('id', 'info', 'status', 'versendet_am', 'versendet',
+                    'trackingnummer', 'html_app_notiz')
+    list_editable = ("versendet_am", "versendet", "status", "trackingnummer")
     list_filter = ('status', 'bezahlt')
 
     ordering = ("bezahlt", "-datum")
@@ -76,12 +76,12 @@ class App_WarenausgangAdmin(App_AdminBase, BestellungsAdmin):
 
 @admin.register(App_Zahlungseingang)
 class App_ZahlungseingangAdmin(App_AdminBase, BestellungsAdmin):
-    list_display = ('id', 'info', 'bezahlt', 'status',
+    list_display = ('id', 'info', 'status', 'bezahlt_am', 'bezahlt',
                     'fix_summe_display', 'html_app_notiz')
-    list_editable = ("bezahlt", "status")
+    list_editable = ("bezahlt_am", "bezahlt", "status")
     list_filter = ('status', 'versendet', 'zahlungsmethode')
 
-    ordering = ("versendet", "-rechnungsdatum")
+    ordering = ("status", "rechnungsdatum",)
 
     actions = ()
 

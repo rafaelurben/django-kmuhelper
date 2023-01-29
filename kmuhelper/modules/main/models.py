@@ -334,6 +334,12 @@ class Bestellung(CustomModel):
                   "der Bestellung nicht mehr bearbeitet werden! " +
                   "Ausserdem werden die Produkte aus dem Lagerbestand entfernt.",
     )
+    versendet_am = models.DateField(
+        verbose_name="Versendet am",
+        default=None,
+        blank=True,
+        null=True,
+    )
     trackingnummer = models.CharField(
         verbose_name="Trackingnummer",
         default="",
@@ -364,6 +370,12 @@ class Bestellung(CustomModel):
         default=False,
         help_text="Sobald eine Bestellung als bezahlt markiert wurde, können Teile " +
                   "der Bestellung nicht mehr bearbeitet werden!",
+    )
+    bezahlt_am = models.DateField(
+        verbose_name="Bezahlt am",
+        default=None,
+        blank=True,
+        null=True,
     )
 
     kundennotiz = models.TextField(
