@@ -2002,7 +2002,9 @@ class Zahlungsempfaenger(CustomModel):
     )
     webseite = models.URLField(
         verbose_name="Webseite",
-        help_text="Auf der Rechnung ersichtlich!",
+        default="",
+        blank=True,
+        help_text="Auf der Rechnung ersichtlich, sofern vorhanden!",
     )
 
     @classmethod

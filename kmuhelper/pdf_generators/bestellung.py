@@ -561,7 +561,8 @@ class _PDFOrderHeader(Flowable):
         t.setFont("Helvetica", 8)
         t.textLine(_("Tel."))
         t.textLine(_("E-Mail"))
-        t.textLine(_("Web"))
+        if ze.webseite:
+            t.textLine(_("Web"))
         if ze.firmenuid:
             t.textLine(_("MwSt"))
         c.drawText(t)
@@ -571,7 +572,8 @@ class _PDFOrderHeader(Flowable):
         t.setFont("Helvetica", 8)
         t.textLine(bestellung.ansprechpartner.telefon)
         t.textLine(bestellung.ansprechpartner.email)
-        t.textLine(ze.webseite)
+        if ze.webseite:
+            t.textLine(ze.webseite)
         if ze.firmenuid:
             t.textLine(ze.firmenuid)
         c.drawText(t)

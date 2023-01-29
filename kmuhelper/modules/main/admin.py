@@ -129,7 +129,7 @@ class BestellungInlineBestellungskostenImport(CustomTabularInline):
 class BestellungsAdmin(CustomModelAdmin):
     list_display = ('id', 'datum', 'kunde', 'status', 'zahlungsmethode',
                     'versendet', 'bezahlt', 'fix_summe', 'html_notiz')
-    list_filter = ('status', 'bezahlt', 'versendet', 'zahlungsmethode')
+    list_filter = ('status', 'bezahlt', 'versendet', 'zahlungsmethode', 'zahlungsempfaenger', 'ansprechpartner')
     search_fields = ['id', 'datum', 'notiz__name', 'notiz__beschrieb', 'kundennotiz',
                      'trackingnummer'] + constants.RECHNUNGSADRESSE_FIELDS + constants.LIEFERADRESSE_FIELDS
 
