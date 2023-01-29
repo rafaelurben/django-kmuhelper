@@ -8,7 +8,7 @@ from kmuhelper import constants
 from kmuhelper.modules.integrations.woocommerce import WooCommerce
 from kmuhelper.modules.main import views
 from kmuhelper.modules.main.models import (
-    Ansprechpartner, Bestellung, Kategorie, Kosten, Kunde,
+    Ansprechpartner, Bestellung, Produktkategorie, Kosten, Kunde,
     Lieferant, Lieferung, Notiz, Produkt, Zahlungsempfaenger
 )
 from kmuhelper.overrides import CustomModelAdmin, CustomTabularInline, CustomStackedInline
@@ -268,52 +268,6 @@ class BestellungsAdmin(CustomModelAdmin):
                  name='%s_%s_zu_lieferung' % info),
         ]
         return my_urls + urls
-
-
-class KategorienAdminProduktInline(CustomStackedInline):
-    model = Produkt.kategorien.through
-    verbose_name = "Produkt in dieser Kategorie"
-    verbose_name_plural = "Produkte in dieser Kategorie"
-    extra = 0
-
-    autocomplete_fields = ("produkt", )
-
-    # Permissions
-
-    NO_CHANGE = True
-
-
-@admin.register(Kategorie)
-class KategorienAdmin(CustomModelAdmin):
-    fieldsets = [
-        ('Infos', {'fields': ['name', 'beschrieb', 'bildlink']}),
-        ('Übergeordnete Kategorie', {'fields': ['uebergeordnete_kategorie']})
-    ]
-
-    list_display = ('clean_name', 'clean_beschrieb',
-                    'uebergeordnete_kategorie', 'bild', 'anzahl_produkte')
-    search_fields = ['name', 'beschrieb']
-
-    ordering = ("uebergeordnete_kategorie", "name")
-
-    inlines = [KategorienAdminProduktInline]
-
-    list_select_related = ("uebergeordnete_kategorie",)
-
-    autocomplete_fields = ("uebergeordnete_kategorie", )
-
-    # Actions
-
-    @admin.action(description="Kategorien von WooCommerce aktualisieren", permissions=["change"])
-    def wc_update(self, request, queryset):
-        result = WooCommerce.category_bulk_update(queryset.all())
-        messages.success(request, ((
-            '{} Kategorien' if result[0] != 1 else 'Eine Kategorie') + ' von WooCommerce aktualisiert!').format(result[0]))
-        if result[1]:
-            messages.error(request, ('Beim Import von ' + (
-                '{} Kategorien' if result[1] != 1 else 'einer Kategorie') + ' von WooCommerce ist ein Fehler aufgetreten!').format(result[1]))
-
-    actions = ["wc_update"]
 
 
 @admin.register(Kosten)
@@ -747,6 +701,52 @@ class ProduktAdmin(CustomModelAdmin):
             obj.show_stock_warning(request)
 
 
+class ProduktkategorienAdminProduktInline(CustomStackedInline):
+    model = Produkt.kategorien.through
+    verbose_name = "Produkt in dieser Kategorie"
+    verbose_name_plural = "Produkte in dieser Kategorie"
+    extra = 0
+
+    autocomplete_fields = ("produkt", )
+
+    # Permissions
+
+    NO_CHANGE = True
+
+
+@admin.register(Produktkategorie)
+class ProduktkategorienAdmin(CustomModelAdmin):
+    fieldsets = [
+        ('Infos', {'fields': ['name', 'beschrieb', 'bildlink']}),
+        ('Übergeordnete Kategorie', {'fields': ['uebergeordnete_kategorie']})
+    ]
+
+    list_display = ('clean_name', 'clean_beschrieb',
+                    'uebergeordnete_kategorie', 'bild', 'anzahl_produkte')
+    search_fields = ['name', 'beschrieb']
+
+    ordering = ("uebergeordnete_kategorie", "name")
+
+    inlines = [ProduktkategorienAdminProduktInline]
+
+    list_select_related = ("uebergeordnete_kategorie",)
+
+    autocomplete_fields = ("uebergeordnete_kategorie", )
+
+    # Actions
+
+    @admin.action(description="Kategorien von WooCommerce aktualisieren", permissions=["change"])
+    def wc_update(self, request, queryset):
+        result = WooCommerce.category_bulk_update(queryset.all())
+        messages.success(request, ((
+            '{} Kategorien' if result[0] != 1 else 'Eine Kategorie') + ' von WooCommerce aktualisiert!').format(result[0]))
+        if result[1]:
+            messages.error(request, ('Beim Import von ' + (
+                '{} Kategorien' if result[1] != 1 else 'einer Kategorie') + ' von WooCommerce ist ein Fehler aufgetreten!').format(result[1]))
+
+    actions = ["wc_update"]
+
+
 @admin.register(Zahlungsempfaenger)
 class ZahlungsempfaengerAdmin(CustomModelAdmin):
     fieldsets = [
@@ -788,7 +788,7 @@ class ZahlungsempfaengerAdmin(CustomModelAdmin):
 modeladmins = [
     (Ansprechpartner, AnsprechpartnerAdmin),
     (Bestellung, BestellungsAdmin),
-    (Kategorie, KategorienAdmin),
+    (Produktkategorie, ProduktkategorienAdmin),
     (Kosten, KostenAdmin),
     (Kunde, KundenAdmin),
     (Lieferant, LieferantenAdmin),

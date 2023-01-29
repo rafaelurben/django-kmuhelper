@@ -13,7 +13,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from kmuhelper import settings
 from kmuhelper.decorators import require_object
-from kmuhelper.modules.main.models import Produkt, Kunde, Kategorie, Bestellung
+from kmuhelper.modules.main.models import Produkt, Kunde, Produktkategorie, Bestellung
 from kmuhelper.modules.integrations.woocommerce.api import WooCommerce
 from kmuhelper.modules.integrations.woocommerce.utils import is_connected
 from kmuhelper.utils import render_error
@@ -177,7 +177,7 @@ def wc_update_customer(request, obj):
 
 @login_required(login_url=reverse_lazy("admin:login"))
 @permission_required("kmuhelper.change_kategorie")
-@require_object(Kategorie)
+@require_object(Produktkategorie)
 def wc_update_category(request, obj):
     if not is_connected():
         messages.error(

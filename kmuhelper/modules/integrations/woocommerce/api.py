@@ -6,7 +6,7 @@ from rich.progress import Progress
 from woocommerce import API as WCAPI
 
 from kmuhelper import settings, constants
-from kmuhelper.modules.main.models import Produkt, Kunde, Kategorie, Bestellung, Kosten
+from kmuhelper.modules.main.models import Produkt, Kunde, Produktkategorie, Bestellung, Kosten
 from kmuhelper.utils import runden
 
 
@@ -70,7 +70,7 @@ class WooCommerce():
         if product["manage_stock"]:
             newproduct.lagerbestand = product["stock_quantity"]
         for category in product["categories"]:
-            tup = Kategorie.objects.get_or_create(woocommerceid=category["id"])
+            tup = Produktkategorie.objects.get_or_create(woocommerceid=category["id"])
             if tup[1]:
                 cls.category_update(tup[0], api=wcapi)
             newproduct.kategorien.add(tup[0])
@@ -114,7 +114,7 @@ class WooCommerce():
         product.kategorien.clear()
         newcategories = []
         for category in newproduct["categories"]:
-            tup = Kategorie.objects.get_or_create(woocommerceid=category["id"])
+            tup = Produktkategorie.objects.get_or_create(woocommerceid=category["id"])
             if tup[1]:
                 cls.category_update(tup[0], api=wcapi)
             newcategories.append(tup[0])
@@ -350,7 +350,7 @@ class WooCommerce():
         category.bildlink = (
             newcategory["image"]["src"]) if newcategory["image"] else ""
         if newcategory["parent"]:
-            tup = Kategorie.objects.get_or_create(
+            tup = Produktkategorie.objects.get_or_create(
                 woocommerceid=newcategory["parent"])
             if tup[1]:
                 cls.category_update(tup[0], api=wcapi)
@@ -368,7 +368,7 @@ class WooCommerce():
             task_prepare = progress.add_task(
                 PREFIX + " [orange_red1]Kategoriendownload vorbereiten...", total=1)
 
-            excludeids = str([obj.woocommerceid for obj in Kategorie.objects.all().exclude(
+            excludeids = str([obj.woocommerceid for obj in Produktkategorie.objects.all().exclude(
                 woocommerceid=0)])[1:-1]
             categorylist = []
 
@@ -397,7 +397,7 @@ class WooCommerce():
                 task_process = progress.add_task(
                     PREFIX + " [cyan]Kategorien verarbeiten...", total=len(categorylist))
                 for category in categorylist:
-                    newcategory = Kategorie.objects.create(
+                    newcategory = Produktkategorie.objects.create(
                         name=preparestring(category["name"]),
                         beschrieb=preparestring(category["description"]),
                         bildlink=(category["image"]["src"]
@@ -415,7 +415,7 @@ class WooCommerce():
                 task_process2 = progress.add_task(
                     PREFIX + " [cyan]Kategorieabhängigkeiten verarbeiten...", total=len(categorieswithparents))
                 for tup in categorieswithparents:
-                    tup[0].uebergeordnete_kategorie = Kategorie.objects.get(
+                    tup[0].uebergeordnete_kategorie = Produktkategorie.objects.get(
                         woocommerceid=tup[1])
                     tup[0].save()
                     progress.update(task_process2, advance=1)

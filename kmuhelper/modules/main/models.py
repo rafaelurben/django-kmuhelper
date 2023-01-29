@@ -879,7 +879,7 @@ class Bestellung(CustomModel):
 #
 #     #kostenlose_lieferung = models.BooleanField("Kostenlose Lieferung", default=False, help_text="Wenn aktiviert, erlaube kostenlose Lieferung")
 #
-#     produktkategorien = models.ManyToManyField("Kategorie", verbose_name="Kategorie", verbose_name="Kategorien",help_text="Kategorien, auf welche der Gutschein angewendet werden kann.")
+#     produktkategorien = models.ManyToManyField("Produktkategorie", verbose_name="Kategorie", verbose_name="Kategorien",help_text="Kategorien, auf welche der Gutschein angewendet werden kann.")
 #     ausgeschlossene_produktkategorien = models.ManyToManyField("Kategorie", verbose_name="Ausgeschlossene Kategorie", verbose_name_plural="Ausgeschlossene Kategorie",help_text="Kategorien, auf welche der Gutschein nicht angewendet werden kann.")
 #
 #     nicht_kumulierbar_mit_aktion = models.BooleanField("Nicht kumulierbar mit Aktion", default=True, help_text="Aktivieren, damit der Gutschein nicht auf Produkte angewendet werden kann, welche in Aktion sind.")
@@ -912,67 +912,6 @@ class Bestellung(CustomModel):
 #
 #     objects = models.Manager()
 
-
-class Kategorie(CustomModel):
-    """Model representing a category for products"""
-
-    woocommerceid = models.IntegerField(
-        verbose_name="WooCommerce ID",
-        default=0,
-    )
-
-    name = models.CharField(
-        verbose_name="Name",
-        max_length=250,
-        default="",
-    )
-    beschrieb = models.TextField(
-        verbose_name="Beschrieb",
-        default="",
-        blank=True,
-    )
-    bildlink = models.URLField(
-        verbose_name="Bildlink",
-        blank=True,
-    )
-
-    uebergeordnete_kategorie = models.ForeignKey(
-        to='self',
-        verbose_name="Übergeordnete Kategorie",
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-    )
-
-    @admin.display(description="Bild", ordering="bildlink")
-    def bild(self):
-        if self.bildlink:
-            return format_html('<img src="{}" width="100px">', self.bildlink)
-        return ""
-
-    @admin.display(description="Anzahl Produkte")
-    def anzahl_produkte(self):
-        return self.produkte.count()
-
-    @admin.display(description="Name", ordering="name")
-    def clean_name(self):
-        return langselect(self.name)
-
-    @admin.display(description="Beschrieb", ordering="beschrieb")
-    def clean_beschrieb(self):
-        return langselect(self.beschrieb)
-
-    @admin.display(description="Kategorie")
-    def __str__(self):
-        return f'{self.clean_name()} ({self.pk})'
-
-    class Meta:
-        verbose_name = "Kategorie"
-        verbose_name_plural = "Kategorien"
-
-    objects = models.Manager()
-
-    admin_icon = "fas fa-folder-tree"
 
 
 class Kosten(CustomModel):
@@ -1625,23 +1564,6 @@ class Notiz(CustomModel):
     admin_icon = "fas fa-note-sticky"
 
 
-class Produktkategorie(CustomModel):
-    """Model representing the connection between 'Produkt' and 'Kategorie'"""
-
-    produkt = models.ForeignKey("Produkt", on_delete=models.CASCADE)
-    kategorie = models.ForeignKey("Kategorie", on_delete=models.CASCADE)
-
-    @admin.display(description="Produktkategorie")
-    def __str__(self):
-        return f'({self.kategorie.pk}) {self.kategorie.clean_name()} <-> {self.produkt}'
-
-    class Meta:
-        verbose_name = "Produktkategorie"
-        verbose_name_plural = "Produktkategorien"
-
-    objects = models.Manager()
-
-
 class Produkt(CustomModel):
     """Model representing a product"""
 
@@ -1760,8 +1682,8 @@ class Produkt(CustomModel):
     )
 
     kategorien = models.ManyToManyField(
-        to="Kategorie",
-        through="Produktkategorie",
+        to="Produktkategorie",
+        through="ProduktProduktkategorieVerbindung",
         through_fields=("produkt", "kategorie"),
         verbose_name="Kategorie",
         related_name="produkte",
@@ -1898,6 +1820,84 @@ class Produkt(CustomModel):
     objects = models.Manager()
 
     admin_icon = "fas fa-cubes"
+
+
+class Produktkategorie(CustomModel):
+    """Model representing a category for products"""
+
+    woocommerceid = models.IntegerField(
+        verbose_name="WooCommerce ID",
+        default=0,
+    )
+
+    name = models.CharField(
+        verbose_name="Name",
+        max_length=250,
+        default="",
+    )
+    beschrieb = models.TextField(
+        verbose_name="Beschrieb",
+        default="",
+        blank=True,
+    )
+    bildlink = models.URLField(
+        verbose_name="Bildlink",
+        blank=True,
+    )
+
+    uebergeordnete_kategorie = models.ForeignKey(
+        to='self',
+        verbose_name="Übergeordnete Kategorie",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
+
+    @admin.display(description="Bild", ordering="bildlink")
+    def bild(self):
+        if self.bildlink:
+            return format_html('<img src="{}" width="100px">', self.bildlink)
+        return ""
+
+    @admin.display(description="Anzahl Produkte")
+    def anzahl_produkte(self):
+        return self.produkte.count()
+
+    @admin.display(description="Name", ordering="name")
+    def clean_name(self):
+        return langselect(self.name)
+
+    @admin.display(description="Beschrieb", ordering="beschrieb")
+    def clean_beschrieb(self):
+        return langselect(self.beschrieb)
+
+    @admin.display(description="Kategorie")
+    def __str__(self):
+        return f'{self.clean_name()} ({self.pk})'
+
+    class Meta:
+        verbose_name = "Produktkategorie"
+        verbose_name_plural = "Produktkategorien"
+
+    objects = models.Manager()
+
+    admin_icon = "fas fa-folder-tree"
+
+class ProduktProduktkategorieVerbindung(CustomModel):
+    """Model representing the connection between 'Produkt' and 'Produktkategorie'"""
+
+    produkt = models.ForeignKey("Produkt", on_delete=models.CASCADE)
+    kategorie = models.ForeignKey("Produktkategorie", on_delete=models.CASCADE)
+
+    @admin.display(description="Produktkategorie")
+    def __str__(self):
+        return f'({self.kategorie.pk}) {self.kategorie.clean_name()} <-> {self.produkt}'
+
+    class Meta:
+        verbose_name = "Produkt-Kategorie-Verknüpfung"
+        verbose_name_plural = "Produkt-Kategorie-Verknüpfungen"
+
+    objects = models.Manager()
 
 
 class Zahlungsempfaenger(CustomModel):
