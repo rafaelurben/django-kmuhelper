@@ -141,6 +141,8 @@ class BestellungsAdmin(CustomModelAdmin):
 
     list_select_related = ["kunde", "notiz"]
 
+    date_hierarchy = "datum"
+
     def get_fieldsets(self, request, obj=None):
         if obj:
             return [
