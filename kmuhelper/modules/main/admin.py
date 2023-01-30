@@ -155,16 +155,6 @@ class BestellungsAdmin(CustomModelAdmin):
 
     date_hierarchy = "datum"
 
-    # Custom queryset
-    
-    def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        # Modify queryset only for changeform view
-        if request.resolver_match._func_path == 'django.contrib.admin.options.change_view':
-            qs = qs.select_related('kunde', 'notiz')
-            qs = qs.prefetch_related('produkte', 'kosten')
-        return qs
-
     def get_fieldsets(self, request, obj=None):
         if obj:
             return [
