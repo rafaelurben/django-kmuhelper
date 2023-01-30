@@ -715,7 +715,7 @@ class Bestellung(CustomModel):
             return "-"
         
         daydiff = (self.bezahlt_am - self.rechnungsdatum).days
-        return f'{daydiff} Tag{"e" if daydiff != 1 else ""}'
+        return f'{daydiff} Tag{"en" if daydiff != 1 else ""}'
 
     @admin.display(description="Bestellung")
     def __str__(self):
