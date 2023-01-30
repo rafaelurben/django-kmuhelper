@@ -20,10 +20,13 @@
 {% block content %}
     <h1>Willkommen in der KMUHelper-App!</h1>
     <p>
-        In dieser App hast du Zugriff auf bereits bekannt Seiten des <a href="{% url 'admin:app_list' app_label='kmuhelper' %}" target="_top">Adminbereichs</a>, 
-        jedoch auf eine etwas andere Art.
+        Diese App bietet dir im Vergleich zum
+        <a href="{% url 'admin:app_list' app_label='kmuhelper' %}" target="_top">Adminbereichs</a>
+        eine vereinfachte Ansicht, welche auf bestimmte Arbeitsschritte abgestimmt ist.
         <br>
-        Sie ist dazu gedacht, für bestimmte Arbeitsschritte eine einfache Massenverarbeitung zu ermöglichen.
+        Am besten fügst du diese Seite zum Startbildschirm deines Smartphones hinzu, um sie schnell zu erreichen.
+        <br>
+        Hier findest du eine Übersicht aller verfügbaren Seiten:
     </p>
     <h3>Seiten</h3>
     <ul style="padding-left: 16px;" id="pages">
