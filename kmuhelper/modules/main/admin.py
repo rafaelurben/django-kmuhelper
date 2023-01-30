@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from django.contrib import admin, messages
+from django.db.models import Count
 from django.urls import path
 from django.utils import timezone
 
@@ -300,6 +301,12 @@ class KundenAdminBestellungsInline(CustomTabularInline):
     fields = ('pk', 'datum', 'fix_summe_display', 'versendet', 'bezahlt', 'bezahlt_nach_display')
     readonly_fields = ('pk', 'bezahlt_nach_display', 'fix_summe_display')
 
+    # Custom queryset
+    
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.select_related('kunde')
+
     # Permissions
 
     NO_CHANGE = True
@@ -478,6 +485,8 @@ class LieferungenAdmin(CustomModelAdmin):
 
     save_on_top = True
 
+    list_select_related = ("lieferant", "notiz", )
+
     # Actions
 
     @admin.action(description="Lieferungen einlagern", permissions=["change"])
@@ -617,6 +626,12 @@ class ProduktInlineKategorienInline(CustomTabularInline):
 
     autocomplete_fields = ("kategorie", )
 
+    # Custom queryset
+    
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.select_related('kategorie', 'produkt')
+
     # Permissions
 
     NO_CHANGE = True
@@ -714,6 +729,12 @@ class ProduktkategorienAdminProduktInline(CustomStackedInline):
 
     autocomplete_fields = ("produkt", )
 
+    # Custom queryset
+    
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.select_related('kategorie', 'produkt')
+
     # Permissions
 
     NO_CHANGE = True
@@ -737,6 +758,12 @@ class ProduktkategorienAdmin(CustomModelAdmin):
     list_select_related = ("uebergeordnete_kategorie",)
 
     autocomplete_fields = ("uebergeordnete_kategorie", )
+
+    # Custom queryset
+    
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.annotate(anzahl_produkte=Count('produkte'))
 
     # Actions
 
