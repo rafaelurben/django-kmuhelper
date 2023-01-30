@@ -124,8 +124,8 @@ class _PDFOrderPriceTable(Table):
             "print-payment-conditions", False)
 
         if showpaycond:
-            payconds = bestellung.paymentconditionsdict()
-            totaltext = _("Rechnungsbetrag, zahlbar netto innert %s Tagen") % payconds[0.0]["days"]
+            payconds = bestellung.get_paymentconditions()
+            totaltext = _("Rechnungsbetrag, zahlbar netto innert %s Tagen") % payconds[-1]["days"]
         else:
             totaltext = _("RECHNUNGSBETRAG")
 
@@ -140,7 +140,7 @@ class _PDFOrderPriceTable(Table):
 
         h_paycond = 0
         if showpaycond:
-            for paycond in payconds.values():
+            for paycond in payconds:
                 if paycond["percent"] != 0.0:
                     data.append((
                         _("%(days)s Tage %(percent)s%% Skonto") % {"days": paycond["days"],

@@ -77,7 +77,7 @@ class App_WarenausgangAdmin(App_AdminBase, BestellungsAdmin):
 @admin.register(App_Zahlungseingang)
 class App_ZahlungseingangAdmin(App_AdminBase, BestellungsAdmin):
     list_display = ('id', 'info', 'status', 'bezahlt_am', 'bezahlt',
-                    'fix_summe_display', 'html_app_notiz')
+                    'fix_summe_display', 'paymentconditions_display', 'html_app_notiz')
     list_editable = ("bezahlt_am", "bezahlt", "status")
     list_filter = ('status', 'versendet', 'zahlungsmethode')
 

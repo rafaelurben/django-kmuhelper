@@ -156,7 +156,7 @@ class BestellungsAdmin(CustomModelAdmin):
                     'fields': ['zahlungsmethode', 'rechnungsdatum', 'zahlungskonditionen']
                 }),
                 ('Bezahlung', {
-                    'fields': ['summeninfo', ('bezahlt_am', 'bezahlt')]
+                    'fields': [('summeninfo', 'paymentconditions_display'), ('bezahlt_am', 'bezahlt')]
                 }),
                 ('Rechnungsoptionen', {
                     'fields': ['rechnungstitel', 'rechnungstext'],
@@ -190,7 +190,7 @@ class BestellungsAdmin(CustomModelAdmin):
                 'classes': ["collapse start-open"]}),
         ]
 
-    readonly_fields = ('html_notiz', 'name', 'trackinglink', 'summeninfo',)
+    readonly_fields = ('html_notiz', 'name', 'trackinglink', 'summeninfo', 'paymentconditions_display')
 
     def get_additional_readonly_fields(self, request, obj=None):
         fields = []

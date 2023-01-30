@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from random import randint
 from rich import print
 import string
@@ -642,17 +642,18 @@ class Bestellung(CustomModel):
         output += f'/31/{date}/32/{mwststring}/40/{kond}'
         return output
 
-    def paymentconditionsdict(self):
-        "Get the payment conditions as a dictionary"
-        data = {}
+    def get_paymentconditions(self):
+        "Get the payment conditions as a list of dictionaries"
+
+        data = []
         for pc in self.zahlungskonditionen.split(";"):
             percent, days = pc.split(":")
             percent, days = float(percent), int(days)
-            data[percent] = {
+            data.append({
                 "days": days,
                 "percent": percent,
                 "price": runden(self.fix_summe*(1-(percent/100))),
-            }
+            })
         return data
 
     def mwstdict(self):
@@ -716,6 +717,22 @@ class Bestellung(CustomModel):
         
         daydiff = (self.bezahlt_am - self.rechnungsdatum).days
         return f'{daydiff} Tag{"en" if daydiff != 1 else ""}'
+
+    @admin.display(description="Konditionen")
+    def paymentconditions_display(self):
+        "Get the payment conditions as a multiline string of values"
+
+        conditions = self.get_paymentconditions()
+        output = ""
+
+        for condition in conditions:
+            date = self.rechnungsdatum+timedelta(days=condition["days"])
+            datestr = date.strftime("%d.%m.%Y")
+            price = formatprice(condition["price"])
+            percent = condition["percent"]
+            output += f'{price} CHF bis {datestr} ({percent}%)<br>'
+
+        return mark_safe(output)
 
     @admin.display(description="Bestellung")
     def __str__(self):
