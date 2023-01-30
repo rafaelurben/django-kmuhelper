@@ -19,12 +19,12 @@
     </thead>
     <tbody>
         <tr>
-            <td>Betrag:</td>
-            <td>{{ entry.order.fix_summe }} CHF</td>
+            <td>Zahlungskonditionen:</td>
+            <td>{{ order.paymentconditions_display }}</td>
         </tr>
         <tr>
             <td>Rechnungsdatum:</td>
-            <td>{{ entry.order.rechnungsdatum }}</td>
+            <td>{{ order.rechnungsdatum }}</td>
         </tr>
     </tbody>
 </table>

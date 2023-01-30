@@ -76,7 +76,7 @@ class PaymentImport(CustomModel):
 
                     data['order'] = bestellung
 
-                    if bestellung.fix_summe == entry.amount and entry.currency == 'CHF':
+                    if entry.currency == 'CHF' and bestellung.is_correct_payment(entry.amount, entry.valuedate):
                         if bestellung.bezahlt:
                             context['alreadypaid'].append(data)
                         else:

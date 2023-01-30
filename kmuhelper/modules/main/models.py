@@ -651,9 +651,11 @@ class Bestellung(CustomModel):
             percent, days = float(percent), int(days)
             data.append({
                 "days": days,
+                "date": self.rechnungsdatum+timedelta(days=days),
                 "percent": percent,
                 "price": runden(self.fix_summe*(1-(percent/100))),
             })
+        data.sort(key=lambda x: x["percent"])
         return data
 
     def mwstdict(self):
@@ -726,13 +728,24 @@ class Bestellung(CustomModel):
         output = ""
 
         for condition in conditions:
-            date = self.rechnungsdatum+timedelta(days=condition["days"])
-            datestr = date.strftime("%d.%m.%Y")
+            datestr = condition["date"].strftime("%d.%m.%Y")
             price = formatprice(condition["price"])
             percent = condition["percent"]
             output += f'{price} CHF bis {datestr} ({percent}%)<br>'
 
         return mark_safe(output)
+
+    def is_correct_payment(self, amount: float, date: datetime):
+        "Check if a payment made on a certain date has the correct amount for this order"
+
+        if amount == self.fix_summe:
+            return True
+        
+        for condition in self.get_paymentconditions():
+            if amount == condition["price"] and date <= condition["date"]:
+                return True
+
+        return False
 
     @admin.display(description="Bestellung")
     def __str__(self):
