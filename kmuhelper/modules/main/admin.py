@@ -56,6 +56,11 @@ class BestellungInlineBestellungsposten(CustomTabularInline):
     def has_delete_permission(self, request, obj=None):
         return False if (obj and (obj.versendet or obj.bezahlt)) else super().has_delete_permission(request, obj)
 
+    # Custom queryset
+    
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.select_related('produkt')
 
 class BestellungInlineBestellungspostenAdd(CustomTabularInline):
     model = Bestellung.produkte.through
@@ -102,6 +107,12 @@ class BestellungInlineBestellungskosten(CustomTabularInline):
     def has_delete_permission(self, request, obj=None):
         return False if (obj and obj.bezahlt) else super().has_delete_permission(request, obj)
 
+    # Custom queryset
+    
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.select_related('kosten')
+
 
 class BestellungInlineBestellungskostenImport(CustomTabularInline):
     model = Bestellung.kosten.through
@@ -143,6 +154,16 @@ class BestellungsAdmin(CustomModelAdmin):
     list_select_related = ["kunde", "notiz"]
 
     date_hierarchy = "datum"
+
+    # Custom queryset
+    
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        # Modify queryset only for changeform view
+        if request.resolver_match._func_path == 'django.contrib.admin.options.change_view':
+            qs = qs.select_related('kunde', 'notiz')
+            qs = qs.prefetch_related('produkte', 'kosten')
+        return qs
 
     def get_fieldsets(self, request, obj=None):
         if obj:

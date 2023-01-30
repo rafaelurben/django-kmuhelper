@@ -659,12 +659,12 @@ class Bestellung(CustomModel):
     def mwstdict(self):
         "Get the VAT as a dictionary"
         mwst = {}
-        for p in self.produkte.through.objects.filter(bestellung=self):
+        for p in self.produkte.through.objects.filter(bestellung=self).select_related('produkt'):
             if str(p.produkt.mwstsatz) in mwst:
                 mwst[str(p.produkt.mwstsatz)] += p.zwischensumme()
             else:
                 mwst[str(p.produkt.mwstsatz)] = p.zwischensumme()
-        for k in self.kosten.through.objects.filter(bestellung=self):
+        for k in self.kosten.through.objects.filter(bestellung=self).select_related('kosten'):
             if str(k.mwstsatz) in mwst:
                 mwst[str(k.mwstsatz)] += k.zwischensumme()
             else:
@@ -675,9 +675,9 @@ class Bestellung(CustomModel):
 
     def summe(self):
         summe = 0
-        for i in self.produkte.through.objects.filter(bestellung=self):
+        for i in self.produkte.through.objects.filter(bestellung=self).select_related("produkt"):
             summe += i.zwischensumme()
-        for i in self.kosten.through.objects.filter(bestellung=self):
+        for i in self.kosten.through.objects.filter(bestellung=self).select_related("kosten"):
             summe += i.zwischensumme()
         return runden(summe)
 
