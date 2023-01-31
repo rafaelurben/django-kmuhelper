@@ -7,9 +7,17 @@
             <div>
                 <b>PDF generieren</b>
                 <hr>
-                <a href="{% url 'admin:kmuhelper_bestellung_pdf' object_id %}" target="_blank" rel="noopener">Rechnung (digital)</a>
-                <a href="{% url 'admin:kmuhelper_bestellung_pdf' object_id %}?druck" target="_blank" rel="noopener">Rechnung (druck)</a>
-                <a href="{% url 'admin:kmuhelper_bestellung_pdf' object_id %}?lieferschein" target="_blank" rel="noopener">Lieferschein</a>
+                <i>Rechnung</i>
+                <a href="{% url 'admin:kmuhelper_bestellung_pdf' object_id %}?mode=invoice" target="_blank" rel="noopener">Digital</a>
+                <a href="{% url 'admin:kmuhelper_bestellung_pdf' object_id %}?mode=invoice&print" target="_blank" rel="noopener">Druck</a>
+                <hr>
+                <i>Zahlungserinnerung</i>
+                <a href="{% url 'admin:kmuhelper_bestellung_pdf' object_id %}?mode=payment-reminder" target="_blank" rel="noopener">Digital</a>
+                <a href="{% url 'admin:kmuhelper_bestellung_pdf' object_id %}?mode=payment-reminder&print" target="_blank" rel="noopener">Druck</a>
+                <hr>
+                <i>Mehr</i>
+                <a href="{% url 'admin:kmuhelper_bestellung_pdf' object_id %}?mode=delivery-note" target="_blank" rel="noopener">Lieferschein</a>
+                <a href="{% url 'admin:kmuhelper_bestellung_pdf_form' object_id %}" target="_blank" rel="noopener">Benutzerdefiniert</a>
             </div>
         </li>
 

@@ -93,13 +93,15 @@ ul.messagelist li:not(:last-child) {
 }
 
 .object-tools .dropdown div a, 
-.object-tools .dropdown div b {
+.object-tools .dropdown div b,
+.object-tools .dropdown div i {
     width: calc(100% - 24px);
     display: block;
     padding: 6px 12px;
     background: none;
     border-radius: 0;
     color: black;
+    text-transform: none;
 }
 
 .object-tools .dropdown div a:not(.disabled):hover {
