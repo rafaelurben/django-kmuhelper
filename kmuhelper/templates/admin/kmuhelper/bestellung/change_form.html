@@ -1,5 +1,22 @@
 {% extends 'admin/kmuhelper/change_form.html' %}
 
+{% block extrahead %}
+{{ block.super }}
+
+<script>
+    function printURL(url) {
+        // Opens the URL in a new window and automatically prints it
+        var win = window.open(url, '_blank');
+
+        setTimeout(function() {
+            console.log(win);
+            win.print();
+        }, 1000);
+    }
+</script>
+
+{% endblock extrahead %}
+
 {% block object-tools-items %}
     {% if change %}
         <li class="dropdown">
@@ -9,11 +26,11 @@
                 <hr>
                 <i>Rechnung</i>
                 <a href="{% url 'admin:kmuhelper_bestellung_pdf' object_id %}?mode=invoice" target="_blank" rel="noopener">Digital</a>
-                <a href="{% url 'admin:kmuhelper_bestellung_pdf' object_id %}?mode=invoice&print" target="_blank" rel="noopener">Druck</a>
+                <a href="{% url 'admin:kmuhelper_bestellung_pdf' object_id %}?mode=invoice&print" target="_blank" onclick="printURL(this.href); return false">Druck</a>
                 <hr>
                 <i>Zahlungserinnerung</i>
                 <a href="{% url 'admin:kmuhelper_bestellung_pdf' object_id %}?mode=payment-reminder" target="_blank" rel="noopener">Digital</a>
-                <a href="{% url 'admin:kmuhelper_bestellung_pdf' object_id %}?mode=payment-reminder&print" target="_blank" rel="noopener">Druck</a>
+                <a href="{% url 'admin:kmuhelper_bestellung_pdf' object_id %}?mode=payment-reminder&print" target="_blank" onclick="printURL(this.href); return false">Druck</a>
                 <hr>
                 <i>Mehr</i>
                 <a href="{% url 'admin:kmuhelper_bestellung_pdf' object_id %}?mode=delivery-note" target="_blank" rel="noopener">Lieferschein</a>
