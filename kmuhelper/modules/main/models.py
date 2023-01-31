@@ -412,6 +412,24 @@ class Bestellung(CustomModel):
         default=defaultansprechpartner,
     )
 
+    # Rechnungsadresse
+
+    @property
+    def rechnungsadresse(self):
+        return {
+            'vorname': self.rechnungsadresse_vorname,
+            'nachname': self.rechnungsadresse_nachname,
+            'firma': self.rechnungsadresse_firma,
+            'adresszeile1': self.rechnungsadresse_adresszeile1,
+            'adresszeile2': self.rechnungsadresse_adresszeile2,
+            'plz': self.rechnungsadresse_plz,
+            'ort': self.rechnungsadresse_ort,
+            'kanton': self.rechnungsadresse_kanton,
+            'land': self.rechnungsadresse_land,
+            'email': self.rechnungsadresse_email,
+            'telefon': self.rechnungsadresse_telefon,
+        }
+
     rechnungsadresse_vorname = models.CharField(
         verbose_name="Vorname",
         max_length=250,
@@ -479,6 +497,24 @@ class Bestellung(CustomModel):
         blank=True,
     )
 
+    # Lieferadresse
+
+    @property
+    def lieferadresse(self):
+        return {
+            'vorname': self.lieferadresse_vorname,
+            'nachname': self.lieferadresse_nachname,
+            'firma': self.lieferadresse_firma,
+            'adresszeile1': self.lieferadresse_adresszeile1,
+            'adresszeile2': self.lieferadresse_adresszeile2,
+            'plz': self.lieferadresse_plz,
+            'ort': self.lieferadresse_ort,
+            'kanton': self.lieferadresse_kanton,
+            'land': self.lieferadresse_land,
+            'email': self.lieferadresse_email,
+            'telefon': self.lieferadresse_telefon,
+        }
+
     lieferadresse_vorname = models.CharField(
         verbose_name="Vorname",
         max_length=250,
@@ -543,6 +579,8 @@ class Bestellung(CustomModel):
         default="",
         blank=True,
     )
+
+    # Connections
 
     produkte = models.ManyToManyField(
         to='Produkt',
