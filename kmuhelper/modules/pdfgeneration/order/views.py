@@ -5,16 +5,35 @@ from kmuhelper.modules.main.models import Bestellung
 from kmuhelper.decorators import require_object
 from kmuhelper.utils import render_error
 
+from kmuhelper.modules.pdfgeneration.order.generator import PDFOrder
+
+# Private views
 
 @login_required(login_url=reverse_lazy("admin:login"))
 @permission_required("kmuhelper.view_bestellung")
 @require_object(Bestellung)
 def bestellung_pdf_ansehen(request, obj):
-    lieferschein = bool("lieferschein" in dict(request.GET))
-    digital = not bool("druck" in dict(request.GET))
-    pdf = obj.get_pdf(lieferschein=lieferschein, digital=digital)
-    return pdf
+    order = obj
+    is_print_version = 'print' in request.GET
+    is_download = 'download' in request.GET
 
+    match request.GET.get('mode', None):
+        case 'invoice':
+            filename = f'Rechnung zu Bestellung {str(order)}.pdf'
+            pdf = PDFOrder(order, add_cut_lines=not is_print_version)
+            return pdf.get_response(as_attachment=is_download, filename=filename)
+        case 'delivery-note':
+            filename = f'Lieferschein zu Bestellung {str(order)}.pdf'
+            pdf = PDFOrder(order, is_delivery_note=True)
+            return pdf.get_response(as_attachment=is_download, filename=filename)
+        case 'payment-reminder':
+            # TODO: Implement
+            return render_error(request, status=501, message="Diese Funktion ist noch nicht implementiert.")
+        case 'custom':
+            # TODO: Implement
+            return render_error(request, status=501, message="Diese Funktion ist noch nicht implementiert.")
+        case other:
+            return render_error(request, status=400, message="Ungültiger Modus: " + str(other))
 
 # Public views
 
@@ -24,6 +43,16 @@ def public_view_order(request, obj, order_key):
         return render_error(request, status=404,
                             message="Der Bestellungsschlüssel dieser Bestellung stimmt nicht überein.")
 
-    lieferschein = bool("lieferschein" in dict(request.GET))
-    digital = not bool("druck" in dict(request.GET))
-    return obj.get_pdf(lieferschein=lieferschein, digital=digital)
+    order = obj
+    is_download = 'download' in request.GET
+    is_delivery_note = bool("lieferschein" in dict(request.GET))
+    is_print_version = bool("druck" in dict(request.GET))
+    
+    if is_delivery_note:
+        filename = f'Lieferschein zu Bestellung {str(order)}.pdf'
+        pdf = PDFOrder(order, is_delivery_note=True)
+        return pdf.get_response(as_attachment=is_download, filename=filename)
+    else:
+        filename = f'Rechnung zu Bestellung {str(order)}.pdf'
+        pdf = PDFOrder(order, add_cut_lines=not is_print_version)
+        return pdf.get_response(as_attachment=is_download, filename=filename)

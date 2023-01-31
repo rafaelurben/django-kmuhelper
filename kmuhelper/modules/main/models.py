@@ -790,7 +790,7 @@ class Bestellung(CustomModel):
         return self.name()
 
     def get_pdf(self, lieferschein: bool = False, digital: bool = True):
-        return PDFOrder(self, lieferschein=lieferschein, digital=digital).get_response(as_attachment=False, filename=('Lieferschein' if lieferschein else 'Rechnung')+' zu Bestellung '+str(self)+'.pdf')
+        return PDFOrder(self, is_delivery_note=lieferschein, add_cut_lines=digital).get_response(filename=('Lieferschein' if lieferschein else 'Rechnung')+' zu Bestellung '+str(self)+'.pdf')
 
     def create_email_rechnung(self):
         context = {

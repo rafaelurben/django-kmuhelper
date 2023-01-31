@@ -632,37 +632,37 @@ class _PDFOrderHeader(Flowable):
 
 
 class PDFOrder(PDFGenerator):
-    def get_elements(self, bestellung, lieferschein=False, digital: bool = True):
-        bestellung.fix_summe = bestellung.summe_gesamt()
+    def get_elements(self, order, custom_title=None, custom_text=None, is_delivery_note=False, add_cut_lines=True):
+        order.fix_summe = order.summe_gesamt()
 
-        lang = bestellung.kunde.sprache if bestellung.kunde and bestellung.kunde.sprache else "de"
+        lang = order.kunde.sprache if order.kunde and order.kunde.sprache else "de"
 
         # Header
         elements = [
             _PDFOrderHeader.from_order(
-                bestellung, title=None, is_delivery_note=lieferschein),
+                order, title=custom_title, is_delivery_note=is_delivery_note),
             Spacer(1, 48*mm),
         ]
 
-        # Invoice text
-        if bestellung.rechnungstext:
+        # Custom text
+        if custom_text:
             elements += [
-                Paragraph(bestellung.rechnungstext.replace("\n", "\n<br />")),
+                Paragraph(order.rechnungstext.replace("\n", "\n<br />")),
                 Spacer(1, 10*mm),
             ]
 
         # Main body
-        if lieferschein:
+        if is_delivery_note:
             elements += [
-                _PDFOrderProductTable.from_order(bestellung, lang=lang)
+                _PDFOrderProductTable.from_order(order, lang=lang)
             ]
         else:
             elements += [
-                _PDFOrderPriceTable.from_order(bestellung, lang=lang),
+                _PDFOrderPriceTable.from_order(order, lang=lang),
                 Spacer(1, 65*mm),
                 TopPadder(
                     _PDFOrderQrInvoice.from_order(
-                        bestellung, add_cut_lines=digital
+                        order, add_cut_lines=add_cut_lines
                     )
                 ),
             ]
