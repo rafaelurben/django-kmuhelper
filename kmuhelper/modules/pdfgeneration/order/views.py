@@ -35,6 +35,14 @@ def bestellung_pdf_ansehen(request, obj):
         case other:
             return render_error(request, status=400, message="Ungültiger Modus: " + str(other))
 
+@login_required(login_url=reverse_lazy("admin:login"))
+@permission_required("kmuhelper.view_bestellung")
+@require_object(Bestellung)
+def bestellung_pdf_erstellen(request, obj):
+    # TODO: PDF form
+    
+    return render_error(request, status=501, message="Diese Funktion ist noch nicht implementiert.")
+
 # Public views
 
 @require_object(Bestellung, reverse_lazy("kmuhelper:info"), show_errorpage=True)
