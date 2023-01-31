@@ -3,7 +3,7 @@
 from kmuhelper import settings
 from kmuhelper.translations import autotranslate_mengenbezeichnung, autotranslate_kosten_name, langselect
 from kmuhelper.utils import formatprice
-from kmuhelper.pdf_generators._base import PDFGenerator
+from kmuhelper.modules.pdfgeneration.base import PDFGenerator
 
 from reportlab.platypus import Table, TableStyle, Paragraph, Spacer, TopPadder, Flowable
 from reportlab.lib.utils import ImageReader

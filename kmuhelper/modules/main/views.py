@@ -7,6 +7,10 @@ from kmuhelper.modules.main.models import Kunde, Lieferant, Lieferung, Bestellun
 from kmuhelper.decorators import confirm_action, require_object
 from kmuhelper.utils import render_error
 
+# Other views
+
+from kmuhelper.modules.pdfgeneration.order.views import bestellung_pdf_ansehen, public_view_order
+
 ###############
 
 # Create your views here.
@@ -55,16 +59,6 @@ def kunde_email_registriert(request, obj):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.view_bestellung")
-@require_object(Bestellung)
-def bestellung_pdf_ansehen(request, obj):
-    lieferschein = bool("lieferschein" in dict(request.GET))
-    digital = not bool("druck" in dict(request.GET))
-    pdf = obj.get_pdf(lieferschein=lieferschein, digital=digital)
-    return pdf
-
-
-@login_required(login_url=reverse_lazy("admin:login"))
 @permission_required(
     ["kmuhelper.add_email", "kmuhelper.view_bestellung", "kmuhelper.change_bestellung"]
 )
@@ -107,16 +101,3 @@ def bestellung_zu_lieferung(request, obj):
         request, "Bestellung wurde zu einer Lieferung kopiert!")
     return redirect(reverse("admin:kmuhelper_lieferung_change", args=[new.pk]))
 
-
-# Public views
-
-@require_object(Bestellung, reverse_lazy("kmuhelper:info"), show_errorpage=True)
-def public_view_order(request, obj, order_key):
-    lieferschein = bool("lieferschein" in dict(request.GET))
-    digital = not bool("druck" in dict(request.GET))
-
-    if str(obj.order_key) == order_key:
-        return obj.get_pdf(lieferschein=lieferschein, digital=digital)
-
-    return render_error(request, status=404,
-                        message="Der Bestellungsschlüssel dieser Bestellung stimmt nicht überein.")

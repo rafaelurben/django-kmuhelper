@@ -14,8 +14,8 @@ from django.urls import reverse
 
 from kmuhelper import settings, constants
 from kmuhelper.modules.emails.models import EMail, Attachment
+from kmuhelper.modules.pdfgeneration import PDFOrder
 from kmuhelper.overrides import CustomModel
-from kmuhelper.pdf_generators import PDFOrder
 from kmuhelper.utils import runden, formatprice, modulo10rekursiv, send_pdf
 from kmuhelper.translations import langselect, I18N_HELP_TEXT
 
