@@ -1,4 +1,6 @@
-"""Utils for automatic translations of strings."""
+"""Utils for translations"""
+
+from django.utils import translation
 
 I18N_HELP_TEXT = "Unterstützt i18n: '[:de]Deutsch[:fr]Français[:it]Italiano[:en]English[:]'"
 
@@ -32,3 +34,16 @@ def autotranslate_kosten_name(name):
         case "Versandkosten":
             return "[:de]Versandkosten[:fr]Frais d'envoi[:it]Spese di spedizione[:en]Delivery costs[:]"
     return name
+
+# Django translation functions
+
+class Language():
+    def __init__(self, language):
+        self.language = language
+
+    def __enter__(self):
+        self.cur_language = translation.get_language()
+        translation.activate(self.language)
+
+    def __exit__(self, type, value, traceback):
+        translation.activate(self.cur_language)
