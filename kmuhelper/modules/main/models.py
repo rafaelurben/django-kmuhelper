@@ -693,7 +693,7 @@ class Bestellung(CustomModel):
                 "percent": percent,
                 "price": runden(self.fix_summe*(1-(percent/100))),
             })
-        data.sort(key=lambda x: x["percent"])
+        data.sort(key=lambda x: x["date"])
         return data
 
     def mwstdict(self):
