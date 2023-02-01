@@ -23,7 +23,7 @@ class PDFOrderForm(forms.Form):
         label="Text",
         required=False,
         widget=forms.Textarea,
-        help_text="Dieser Text wird unterhalb des Titels angezeigt",
+        help_text="Dieser Text wird unterhalb des Titels angezeigt - Leer lassen für Standartwert der Vorlage",
     )
     language = forms.ChoiceField(
         label="Sprache",
@@ -35,12 +35,12 @@ class PDFOrderForm(forms.Form):
     do_print = forms.BooleanField(
         label="Druckversion?",
         required=False,
-        help_text="Wenn aktiviert, wird die PDF-Datei ohne Schnittmarken generiert"
+        help_text="Wenn aktiviert, wird die PDF-Datei ohne Schnittmarker generiert"
     )
     do_download = forms.BooleanField(
         label="Herunterladen?",
         required=False,
-        help_text="Datei automatisch heruntergeladen (dieses Verhalten kann je nach Browser varieren)"
+        help_text="Datei automatisch heruntergeladen (dieses Verhalten kann je nach Browser variieren)"
     )
 
     def get_url_params(self):
