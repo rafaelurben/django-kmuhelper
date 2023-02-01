@@ -615,8 +615,11 @@ class _PDFOrderHeader(Flowable):
         c.drawString(12*mm, 0*mm, self.title)
 
         c.setFont("Helvetica", 10)
-        if len(self.title) <= 20:
+        if len(self.title) <= 23:
             c.drawString(64*mm, 0*mm, f'{order.datum.year}-{order.pkfill(6)}' +
+                         (f' (Online #{order.woocommerceid})' if order.woocommerceid else ''))
+        else:
+            c.drawString(120*mm, 0*mm, f'{order.datum.year}-{order.pkfill(6)}' +
                          (f' (Online #{order.woocommerceid})' if order.woocommerceid else ''))
 
         c.restoreState()
