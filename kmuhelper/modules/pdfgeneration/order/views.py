@@ -34,17 +34,17 @@ def bestellung_pdf_ansehen(request, obj):
     # Get the language
     defaultlang = order.kunde.sprache if order.kunde and order.kunde.sprache else "de"
     lang = request.GET.get('language', defaultlang).lower()
-    if lang not in constants.LANGUAGES:
+    if lang not in dict(constants.LANGUAGES):
         lang = defaultlang
 
     with Language(lang):
         match request.GET.get('preset', 'invoice'):
             case 'invoice':
                 title = title or _("Rechnung")
-                pdf = PDFOrder(order, title, add_cut_lines=not is_print_version)
+                pdf = PDFOrder(order, title, text=text, add_cut_lines=not is_print_version)
             case 'delivery-note':
                 title = title or _("Lieferschein")
-                pdf = PDFOrder(order, title, is_delivery_note=True)
+                pdf = PDFOrder(order, title, text=text, is_delivery_note=True)
             case 'payment-reminder':
                 days_to_pay = 14
                 title = title or _("Zahlungserinnerung")
