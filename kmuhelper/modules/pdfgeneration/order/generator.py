@@ -630,7 +630,7 @@ class _PDFOrderHeader(Flowable):
 
 
 class PDFOrder(PDFGenerator):
-    def get_elements(self, order, title, *, text=None, is_delivery_note=False, add_cut_lines=True, show_payment_conditions=None):
+    def __init__(self, order, title, *, text=None, is_delivery_note=False, add_cut_lines=True, show_payment_conditions=None):
         order.fix_summe = order.summe_gesamt()
 
         lang = order.kunde.sprache if order.kunde and order.kunde.sprache else "de"
@@ -665,7 +665,5 @@ class PDFOrder(PDFGenerator):
                 ),
             ]
 
-        return elements
-
-    def get_language(self, bestellung, *args, **kwargs):
-        return bestellung.kunde.sprache if bestellung.kunde and bestellung.kunde.sprache else "de"
+        # Set the elements
+        self.elements = elements
