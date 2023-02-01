@@ -1,5 +1,7 @@
 """PDF creator for invoices and delivery notes"""
 
+from datetime import datetime
+
 from kmuhelper import settings
 from kmuhelper.translations import autotranslate_mengenbezeichnung, autotranslate_kosten_name, langselect
 from kmuhelper.utils import formatprice
@@ -522,7 +524,6 @@ class _PDFOrderHeader(Flowable):
 
     def draw_header(self):
         order = self.order
-        orderdate = str(order.datum.strftime("%d.%m.%Y"))
         ze = order.zahlungsempfaenger
 
         c = self.canv
@@ -572,23 +573,25 @@ class _PDFOrderHeader(Flowable):
         # Customer/Order info: Title
         t = c.beginText(12*mm, 27*mm)
         t.setFont("Helvetica", 12)
-        t.textLine(_("Ihr/e Ansprechpartner/in"))
         t.textLine(_("Ihre Kundennummer"))
-        t.textLine(_("Ihre Bestellung vom"))
-        if not self.is_delivery_note:
+        t.textLine(_("Bestellnummer"))
+        t.textLine(_("Bestelldatum"))
+        if self.is_delivery_note:
+            t.textLine(_("Datum"))
+        else:
             t.textLine(_("Rechnungsdatum"))
         c.drawText(t)
 
         # Customer/Order info: Content
         t = c.beginText(64*mm, 27*mm)
         t.setFont("Helvetica", 12)
-        t.textLine(order.ansprechpartner.name)
-        t.textLine(order.kunde.pkfill(6)
-                   if order.kunde else "n.a.")
-        t.textLine(orderdate)
-        if not self.is_delivery_note:
-            date = order.rechnungsdatum or order.datum
-            t.textLine(date.strftime("%d.%m.%Y"))
+        t.textLine(order.kunde.pkfill(9) if order.kunde else "-"*9)
+        t.textLine(order.pkfill(9))
+        t.textLine(order.datum.strftime("%d.%m.%Y"))
+        if self.is_delivery_note:
+            t.textLine(datetime.now().date().strftime("%d.%m.%Y"))
+        else:
+            t.textLine(order.rechnungsdatum.strftime("%d.%m.%Y"))
         c.drawText(t)
 
         # Customer address
@@ -610,7 +613,7 @@ class _PDFOrderHeader(Flowable):
 
         c.drawText(t)
 
-        # Title and order number
+        # Title and date
         c.setFont("Helvetica-Bold", 10)
         c.drawString(12*mm, 0*mm, self.title)
 
