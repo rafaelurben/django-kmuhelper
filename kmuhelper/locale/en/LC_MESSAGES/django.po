@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-08 21:02+0200\n"
+"POT-Creation-Date: 2023-02-01 01:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,128 +18,143 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: .\pdf_generators\bestellung.py:30 .\pdf_generators\bestellung.py:197
+#: .\kmuhelper\external\multi_email_field\forms.py:10
+msgid "Enter valid email addresses."
+msgstr "Enter valid email addresses."
+
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:31
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:195
 msgid "Art-Nr."
 msgstr "Item No."
 
-#: .\pdf_generators\bestellung.py:30 .\pdf_generators\bestellung.py:197
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:31
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:195
 msgid "Bezeichnung"
 msgstr "Name"
 
-#: .\pdf_generators\bestellung.py:30 .\pdf_generators\bestellung.py:197
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:31
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:195
 msgid "Anzahl"
 msgstr "Quantity"
 
-#: .\pdf_generators\bestellung.py:31 .\pdf_generators\bestellung.py:197
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:32
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:195
 msgid "Einheit"
 msgstr "Unit"
 
-#: .\pdf_generators\bestellung.py:31
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:32
 msgid "Preis"
 msgstr "Price"
 
-#: .\pdf_generators\bestellung.py:31
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:32
 msgid "Total"
 msgstr "Total"
 
-#: .\pdf_generators\bestellung.py:50 .\pdf_generators\bestellung.py:85
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:52
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:87
 msgid "Rabatt"
 msgstr "Discount"
 
-#: .\pdf_generators\bestellung.py:111 .\pdf_generators\bestellung.py:556
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:113
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:557
 msgid "MwSt"
 msgstr "VAT"
 
-#: .\pdf_generators\bestellung.py:126
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:129
 #, python-format
 msgid "Rechnungsbetrag, zahlbar netto innert %s Tagen"
 msgstr "Net amount, payable within %s days"
 
-#: .\pdf_generators\bestellung.py:128
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:131
 msgid "RECHNUNGSBETRAG"
 msgstr "INVOICE AMOUNT"
 
-#: .\pdf_generators\bestellung.py:144
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:147
 #, python-format
 msgid "%(days)s Tage %(percent)s%% Skonto"
 msgstr "%(days)s days %(percent)s%% discount"
 
-#: .\pdf_generators\bestellung.py:223
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:221
 msgid "ANZAHL PRODUKTE"
 msgstr "NUMBER OF PRODUCTS"
 
-#: .\pdf_generators\bestellung.py:414
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:417
 msgid "Vor der Einzahlung abzutrennen"
 msgstr "Separate before paying in"
 
-#: .\pdf_generators\bestellung.py:426 .\pdf_generators\bestellung.py:445
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:429
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:447
 msgid "Konto / Zahlbar an"
 msgstr "Account / Payable to"
 
-#: .\pdf_generators\bestellung.py:432 .\pdf_generators\bestellung.py:451
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:436
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:454
 msgid "Referenz"
 msgstr "Reference"
 
-#: .\pdf_generators\bestellung.py:435 .\pdf_generators\bestellung.py:459
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:439
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:462
 msgid "Zahlbar durch"
 msgstr "Payable by"
 
-#: .\pdf_generators\bestellung.py:454
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:457
 msgid "Zusätzliche Informationen"
 msgstr "Additional information"
 
-#: .\pdf_generators\bestellung.py:469
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:470
 msgid "Empfangsschein"
 msgstr "Receipt"
 
-#: .\pdf_generators\bestellung.py:470
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:471
 msgid "Zahlteil"
 msgstr "Payment part"
 
-#: .\pdf_generators\bestellung.py:473 .\pdf_generators\bestellung.py:482
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:474
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:483
 msgid "Währung"
 msgstr "Currency"
 
-#: .\pdf_generators\bestellung.py:474 .\pdf_generators\bestellung.py:483
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:475
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:484
 msgid "Betrag"
 msgstr "Amount"
 
-#: .\pdf_generators\bestellung.py:475
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:476
 msgid "Annahmestelle"
 msgstr "Acceptance point"
 
-#: .\pdf_generators\bestellung.py:553
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:552
 msgid "Tel."
 msgstr "Tel."
 
-#: .\pdf_generators\bestellung.py:554
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:553
 msgid "E-Mail"
 msgstr "E-Mail"
 
-#: .\pdf_generators\bestellung.py:555
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:555
 msgid "Web"
 msgstr "Web"
 
-#: .\pdf_generators\bestellung.py:571
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:574
 msgid "Ihr/e Ansprechpartner/in"
 msgstr "Your contact"
 
-#: .\pdf_generators\bestellung.py:572
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:575
 msgid "Ihre Kundennummer"
 msgstr "Your customer number"
 
-#: .\pdf_generators\bestellung.py:573
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:576
 msgid "Ihre Bestellung vom"
 msgstr "Date of your order"
 
-#: .\pdf_generators\bestellung.py:575
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:578
 msgid "Rechnungsdatum"
 msgstr "Invoice date"
 
-#: .\pdf_generators\bestellung.py:620
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:617
 msgid "LIEFERSCHEIN"
 msgstr "DELIVERY NOTE"
 
-#: .\pdf_generators\bestellung.py:623
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:619
 msgid "RECHNUNG"
 msgstr "INVOICE"
