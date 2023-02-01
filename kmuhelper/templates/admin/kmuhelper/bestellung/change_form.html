@@ -4,14 +4,29 @@
 {{ block.super }}
 
 <script>
-    function printURL(url) {
-        // Opens the URL in a new window and automatically prints it
-        var win = window.open(url, '_blank');
+    function openURL(url, doPrint) {
+        var $ = django.jQuery;
 
-        setTimeout(function() {
-            console.log(win);
-            win.print();
-        }, 1000);
+        // Check if the form has been changed
+        var formChanged = $('form').serialize() != window.initialData;
+        if (formChanged) {
+            if (!confirm('Achtung: Es liegen ungespeicherte Änderungen vor. Die PDF-Datei wird mit den aktuell gespeicherten Daten generiert. Trotzdem fortfahren?')) {
+                return false;
+            }
+        }
+    
+        // Open the URL in a new window
+        var win = window.open(url, '_blank');
+        
+        // (Try to) automatically print the document
+        if (doPrint) {
+            setTimeout(function() {
+                win.print();
+            }, 1000);
+        }
+
+        // Prevent the default action
+        return false;
     }
 </script>
 
@@ -25,12 +40,12 @@
                 <b>PDF generieren</b>
                 <hr>
                 <i>Rechnung</i>
-                <a href="{% url 'admin:kmuhelper_bestellung_pdf' object_id %}?preset=invoice" target="_blank" rel="noopener">Digital</a>
-                <a href="{% url 'admin:kmuhelper_bestellung_pdf' object_id %}?preset=invoice&print" target="_blank" onclick="printURL(this.href); return false">Druck</a>
+                <a href="{% url 'admin:kmuhelper_bestellung_pdf' object_id %}?preset=invoice" target="_blank" onclick="return openURL(this.href, false);" rel="noopener">Digital</a>
+                <a href="{% url 'admin:kmuhelper_bestellung_pdf' object_id %}?preset=invoice&print" target="_blank" onclick="return openURL(this.href, true);" rel="noopener">Druck</a>
                 <hr>
                 <i>Zahlungserinnerung</i>
-                <a href="{% url 'admin:kmuhelper_bestellung_pdf' object_id %}?preset=payment-reminder" target="_blank" rel="noopener">Digital</a>
-                <a href="{% url 'admin:kmuhelper_bestellung_pdf' object_id %}?preset=payment-reminder&print" target="_blank" onclick="printURL(this.href); return false">Druck</a>
+                <a href="{% url 'admin:kmuhelper_bestellung_pdf' object_id %}?preset=payment-reminder" target="_blank" onclick="return openURL(this.href, false);" rel="noopener">Digital</a>
+                <a href="{% url 'admin:kmuhelper_bestellung_pdf' object_id %}?preset=payment-reminder&print" target="_blank" onclick="return openURL(this.href, true);" rel="noopener">Druck</a>
                 <hr>
                 <i>Mehr</i>
                 <a href="{% url 'admin:kmuhelper_bestellung_pdf' object_id %}?preset=delivery-note" target="_blank" rel="noopener">Lieferschein</a>

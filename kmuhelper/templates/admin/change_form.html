@@ -5,7 +5,7 @@
         window.addEventListener("load", function () {
             var $ = django.jQuery;
 
-            var initialData = "";
+            window.initialData = "";
             var isSubmitting = false;
 
             $('form').submit(function (event) {
@@ -13,11 +13,11 @@
                 console.log("Form submitted...");
             })
 
-            initialData = $('form').serialize();
+            window.initialData = $('form').serialize();
 
             $(window).on('beforeunload', function () {
                 console.log("[Beforeunload] - Event triggered!");
-                var formChanged = $('form').serialize() != initialData;
+                var formChanged = $('form').serialize() != window.initialData;
                 console.log("[Beforeunload] - Form changed:", formChanged);
                 if (!isSubmitting && formChanged) {
                     console.log("[Beforeunload] - Unload prevented!");
