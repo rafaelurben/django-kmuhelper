@@ -1,7 +1,8 @@
 from datetime import datetime
 
 from django.contrib.auth.decorators import login_required, permission_required
-from django.urls import reverse_lazy
+from django.shortcuts import redirect, render
+from django.urls import reverse_lazy, reverse
 
 from django.utils import translation
 _ = translation.gettext
@@ -12,6 +13,7 @@ from kmuhelper.decorators import require_object
 from kmuhelper.utils import render_error
 from kmuhelper.translations import Language
 
+from kmuhelper.modules.pdfgeneration.order.forms import PDFOrderForm
 from kmuhelper.modules.pdfgeneration.order.generator import PDFOrder
 
 # Views
@@ -63,6 +65,23 @@ def bestellung_pdf_ansehen(request, obj):
 @permission_required("kmuhelper.view_bestellung")
 @require_object(Bestellung)
 def bestellung_pdf_erstellen(request, obj):
-    # TODO: PDF form
+    initial={
+        'language': obj.kunde.sprache if obj.kunde and obj.kunde.sprache else 'de',
+        'title': obj.rechnungstitel,
+        'text': obj.rechnungstext,
+    }
     
-    return render_error(request, status=501, message="Diese Funktion ist noch nicht implementiert.")
+    if request.method == 'POST':
+        form = PDFOrderForm(request.POST)
+        if form.is_valid():
+            form.update_order_settings(obj)
+            url = reverse('admin:kmuhelper_bestellung_pdf', args=[obj.id])
+            return redirect(url+form.get_url_params())
+    else:
+        form = PDFOrderForm(initial=initial)
+
+    return render(request, 'admin/kmuhelper/bestellung/pdf_form.html', {
+        'form': form,
+        'has_permission': True,
+        'original': obj,
+    })
