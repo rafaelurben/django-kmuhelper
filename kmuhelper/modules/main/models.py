@@ -915,9 +915,6 @@ class Bestellung(CustomModel):
             log("Keine E-Mail für Warnungen zum Lagerbestand festgelegt!")
         return None
 
-    def get_public_pdf_url(self):
-        return reverse('kmuhelper:public-view-order', args=(self.pk, self.order_key,))
-
     class Meta:
         verbose_name = "Bestellung"
         verbose_name_plural = "Bestellungen"

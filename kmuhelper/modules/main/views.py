@@ -9,7 +9,7 @@ from kmuhelper.utils import render_error
 
 # Other views
 
-from kmuhelper.modules.pdfgeneration.order.views import bestellung_pdf_ansehen, bestellung_pdf_erstellen, public_view_order
+from kmuhelper.modules.pdfgeneration.order.views import bestellung_pdf_ansehen, bestellung_pdf_erstellen
 
 ###############
 

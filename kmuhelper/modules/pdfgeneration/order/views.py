@@ -7,7 +7,7 @@ from kmuhelper.utils import render_error
 
 from kmuhelper.modules.pdfgeneration.order.generator import PDFOrder
 
-# Private views
+# Views
 
 @login_required(login_url=reverse_lazy("admin:login"))
 @permission_required("kmuhelper.view_bestellung")
@@ -42,25 +42,3 @@ def bestellung_pdf_erstellen(request, obj):
     # TODO: PDF form
     
     return render_error(request, status=501, message="Diese Funktion ist noch nicht implementiert.")
-
-# Public views
-
-@require_object(Bestellung, reverse_lazy("kmuhelper:info"), show_errorpage=True)
-def public_view_order(request, obj, order_key):
-    if not str(obj.order_key) == order_key:
-        return render_error(request, status=404,
-                            message="Der Bestellungsschlüssel dieser Bestellung stimmt nicht überein.")
-
-    order = obj
-    is_download = 'download' in request.GET
-    is_delivery_note = bool("lieferschein" in dict(request.GET))
-    is_print_version = bool("druck" in dict(request.GET))
-    
-    if is_delivery_note:
-        filename = f'Lieferschein zu Bestellung {str(order)}.pdf'
-        pdf = PDFOrder(order, is_delivery_note=True)
-        return pdf.get_response(as_attachment=is_download, filename=filename)
-    else:
-        filename = f'Rechnung zu Bestellung {str(order)}.pdf'
-        pdf = PDFOrder(order, add_cut_lines=not is_print_version)
-        return pdf.get_response(as_attachment=is_download, filename=filename)
