@@ -170,10 +170,6 @@ class BestellungsAdmin(CustomModelAdmin):
                 ('Bezahlung', {
                     'fields': [('summeninfo', 'paymentconditions_display'), ('bezahlt_am', 'bezahlt')]
                 }),
-                ('Rechnungsoptionen', {
-                    'fields': ['rechnungstitel', 'rechnungstext'],
-                    'classes': ["collapse"]
-                }),
                 ('Notizen & Texte', {
                     'fields': ['kundennotiz', 'html_notiz'],
                     'classes': ["collapse start-open"]}),
@@ -193,10 +189,6 @@ class BestellungsAdmin(CustomModelAdmin):
             ('Bezahlungsoptionen', {
                 'fields': ['zahlungsmethode', 'rechnungsdatum', 'zahlungskonditionen'],
                 'classes': ["collapse start-open"]}),
-            ('Rechnungsoptionen', {
-                'fields': ['rechnungstitel', 'rechnungstext'],
-                'classes': ["collapse"]
-            }),
             ('Notizen & Texte', {
                 'fields': ['kundennotiz'],
                 'classes': ["collapse start-open"]}),
