@@ -50,7 +50,10 @@ def bestellung_pdf_ansehen(request, obj):
             case 'payment-reminder':
                 days_to_pay = 14
                 title = title or _("Zahlungserinnerung")
-                text = text or _("Geschätzter Kunde\n\nVermutlich ist Ihnen entgangen, diese Rechnung innert der gewährten Frist zu begleichen.\nWir bitten Sie, dies innert %s Tagen nachzuholen.\n\nSollte sich Ihre Zahlung mit diesem Schreiben überkreuzen, so betrachten Sie dieses bitte als gegenstandslos.") % days_to_pay
+                text = text or _("Geschätzter Kunde\n\nVermutlich ist Ihnen entgangen, diese Rechnung vom %(original_date)s innert der gewährten Frist zu begleichen.\nWir bitten Sie, dies innert %(days)d Tagen nachzuholen.\n\nSollte sich Ihre Zahlung mit diesem Schreiben überkreuzen, so betrachten Sie dieses bitte als gegenstandslos.") % {
+                    'original_date': order.rechnungsdatum.strftime("%d.%m.%Y"),
+                    'days': days_to_pay,
+                }
                 # Temporarily replace the order's date and payment conditions
                 order.rechnungsdatum = datetime.now().date()
                 order.zahlungskonditionen = f"0:{days_to_pay}"

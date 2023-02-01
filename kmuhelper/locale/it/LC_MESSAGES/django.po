@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-01 17:03+0100\n"
+"POT-Creation-Date: 2023-02-01 19:39+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -155,34 +155,34 @@ msgstr "La Sua ordinazione del"
 msgid "Rechnungsdatum"
 msgstr "Data della fattura"
 
-#: .\kmuhelper\modules\pdfgeneration\order\views.py:44
+#: .\kmuhelper\modules\pdfgeneration\order\views.py:45
 msgid "Rechnung"
 msgstr "Fattura"
 
-#: .\kmuhelper\modules\pdfgeneration\order\views.py:47
+#: .\kmuhelper\modules\pdfgeneration\order\views.py:48
 msgid "Lieferschein"
 msgstr "Nota di consegna"
 
-#: .\kmuhelper\modules\pdfgeneration\order\views.py:51
+#: .\kmuhelper\modules\pdfgeneration\order\views.py:52
 msgid "Zahlungserinnerung"
 msgstr "Promemoria di pagamento"
 
-#: .\kmuhelper\modules\pdfgeneration\order\views.py:52
+#: .\kmuhelper\modules\pdfgeneration\order\views.py:53
 #, python-format
 msgid ""
 "Geschätzter Kunde\n"
 "\n"
-"Vermutlich ist Ihnen entgangen, diese Rechnung innert der gewährten Frist zu "
-"begleichen.\n"
-"Wir bitten Sie, dies innert %s Tagen nachzuholen.\n"
+"Vermutlich ist Ihnen entgangen, diese Rechnung vom %(original_date)s innert "
+"der gewährten Frist zu begleichen.\n"
+"Wir bitten Sie, dies innert %(days)d Tagen nachzuholen.\n"
 "\n"
 "Sollte sich Ihre Zahlung mit diesem Schreiben überkreuzen, so betrachten Sie "
 "dieses bitte als gegenstandslos."
 msgstr ""
 "Gentile Cliente\n"
 "\n"
-"Riteniamo che non abbiate pagato la fattura entro i termini previsti.\n"
-"Vi chiediamo gentilmente di farlo entro %s giorni.\n"
+"Riteniamo che non abbiate pagato questa fattura dell' %(original_date)s entro i termini previsti.\n"
+"Vi chiediamo gentilmente di farlo entro %(days)d giorni.\n"
 "\n"
 "Se il vostro pagamento dovesse incrociarsi con questa lettera, consideratela "
 "irrilevante."
