@@ -1,0 +1,61 @@
+{% extends 'admin/kmuhelper/base_site.html' %}
+
+{% load static %}
+
+{% block title %}PDF generieren | KMUHelper{% endblock %}
+
+{% block breadcrumbs %}
+    <div id="breadcrumbs" class="breadcrumbs">
+        <a href="{% url 'admin:app_list' app_label='kmuhelper' %}">KMUHelper Admin</a>
+        &rsaquo; <a href="{% url 'admin:kmuhelper_bestellung_changelist' %}">Bestellungen</a>
+        &rsaquo; <a href="{% url 'admin:kmuhelper_bestellung_change' object_id=original.pk %}">{{ original }}</a>
+        &rsaquo; PDF generieren
+    </div>
+{% endblock %}
+
+{% block extrahead %}
+    <link rel="stylesheet" href="{% static 'admin/css/forms.css' %}">
+{% endblock %}
+
+{% block content_title %}
+    <h1>PDF generieren</h1>
+{% endblock %}
+
+{% block content %}
+    <p>
+        Bestellung: {{ original }}
+    </p>
+
+    <br>
+
+    <form enctype="multipart/form-data" method="post" target="_blank">
+        {% csrf_token %}
+        <fieldset class="module aligned">
+            <h2>Optionen</h2>
+            {% for field in form %}
+                <div class="form-row field-{{ field.name }}">
+                    {{ field.errors }}
+                    <div{% if field.is_checkbox %} class="checkbox-row"{% endif %}>
+                        {% if field.is_checkbox %}
+                            {{ field }}{{ field.label_tag }}
+                        {% else %}
+                            {{ field.label_tag }}
+                            {% if field.is_readonly %}
+                                <div class="readonly">{{ field.contents }}</div>
+                            {% else %}
+                                {{ field }}
+                            {% endif %}
+                        {% endif %}
+                        {% if field.help_text %}
+                            <div class="help"{% if field.id_for_label %} id="{{ field.id_for_label }}_helptext"{% endif %}>
+                            {{ field.help_text|safe }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </fieldset>
+        {{ form.non_field_errors }}
+        <input type="submit" value="PDF generieren" />
+    </form>
+{% endblock %}

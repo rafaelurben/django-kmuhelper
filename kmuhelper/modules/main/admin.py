@@ -170,10 +170,6 @@ class BestellungsAdmin(CustomModelAdmin):
                 ('Bezahlung', {
                     'fields': [('summeninfo', 'paymentconditions_display'), ('bezahlt_am', 'bezahlt')]
                 }),
-                ('Rechnungsoptionen', {
-                    'fields': ['rechnungstitel', 'rechnungstext'],
-                    'classes': ["collapse"]
-                }),
                 ('Notizen & Texte', {
                     'fields': ['kundennotiz', 'html_notiz'],
                     'classes': ["collapse start-open"]}),
@@ -193,10 +189,6 @@ class BestellungsAdmin(CustomModelAdmin):
             ('Bezahlungsoptionen', {
                 'fields': ['zahlungsmethode', 'rechnungsdatum', 'zahlungskonditionen'],
                 'classes': ["collapse start-open"]}),
-            ('Rechnungsoptionen', {
-                'fields': ['rechnungstitel', 'rechnungstext'],
-                'classes': ["collapse"]
-            }),
             ('Notizen & Texte', {
                 'fields': ['kundennotiz'],
                 'classes': ["collapse start-open"]}),
@@ -274,6 +266,8 @@ class BestellungsAdmin(CustomModelAdmin):
         my_urls = [
             path('<path:object_id>/pdf/', self.admin_site.admin_view(views.bestellung_pdf_ansehen),
                  name='%s_%s_pdf' % info),
+            path('<path:object_id>/pdf/form', self.admin_site.admin_view(views.bestellung_pdf_erstellen),
+                 name='%s_%s_pdf_form' % info),
             path('<path:object_id>/email/rechnung/', self.admin_site.admin_view(views.bestellung_email_rechnung),
                  name='%s_%s_email_rechnung' % info),
             path('<path:object_id>/email/lieferung/', self.admin_site.admin_view(views.bestellung_email_lieferung),

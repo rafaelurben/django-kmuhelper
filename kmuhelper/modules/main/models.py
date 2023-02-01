@@ -14,11 +14,13 @@ from django.urls import reverse
 
 from kmuhelper import settings, constants
 from kmuhelper.modules.emails.models import EMail, Attachment
+from kmuhelper.modules.pdfgeneration import PDFOrder
 from kmuhelper.overrides import CustomModel
-from kmuhelper.pdf_generators import PDFOrder
 from kmuhelper.utils import runden, formatprice, modulo10rekursiv, send_pdf
 from kmuhelper.translations import langselect, I18N_HELP_TEXT
 
+from django.utils import translation
+_ = translation.gettext
 
 def log(string, *args):
     print("[deep_pink4][KMUHelper Main][/] -", string, *args)
@@ -412,6 +414,24 @@ class Bestellung(CustomModel):
         default=defaultansprechpartner,
     )
 
+    # Rechnungsadresse
+
+    @property
+    def rechnungsadresse(self):
+        return {
+            'vorname': self.rechnungsadresse_vorname,
+            'nachname': self.rechnungsadresse_nachname,
+            'firma': self.rechnungsadresse_firma,
+            'adresszeile1': self.rechnungsadresse_adresszeile1,
+            'adresszeile2': self.rechnungsadresse_adresszeile2,
+            'plz': self.rechnungsadresse_plz,
+            'ort': self.rechnungsadresse_ort,
+            'kanton': self.rechnungsadresse_kanton,
+            'land': self.rechnungsadresse_land,
+            'email': self.rechnungsadresse_email,
+            'telefon': self.rechnungsadresse_telefon,
+        }
+
     rechnungsadresse_vorname = models.CharField(
         verbose_name="Vorname",
         max_length=250,
@@ -479,6 +499,24 @@ class Bestellung(CustomModel):
         blank=True,
     )
 
+    # Lieferadresse
+
+    @property
+    def lieferadresse(self):
+        return {
+            'vorname': self.lieferadresse_vorname,
+            'nachname': self.lieferadresse_nachname,
+            'firma': self.lieferadresse_firma,
+            'adresszeile1': self.lieferadresse_adresszeile1,
+            'adresszeile2': self.lieferadresse_adresszeile2,
+            'plz': self.lieferadresse_plz,
+            'ort': self.lieferadresse_ort,
+            'kanton': self.lieferadresse_kanton,
+            'land': self.lieferadresse_land,
+            'email': self.lieferadresse_email,
+            'telefon': self.lieferadresse_telefon,
+        }
+
     lieferadresse_vorname = models.CharField(
         verbose_name="Vorname",
         max_length=250,
@@ -543,6 +581,8 @@ class Bestellung(CustomModel):
         default="",
         blank=True,
     )
+
+    # Connections
 
     produkte = models.ManyToManyField(
         to='Produkt',
@@ -617,7 +657,7 @@ class Bestellung(CustomModel):
     def unstrukturierte_mitteilung(self):
         if self.zahlungsempfaenger.mode == "QRR":
             return str(self.datum.strftime("%d.%m.%Y"))
-        return "Referenznummer: "+str(self.id)
+        return _("Referenznummer:")+" "+str(self.id)
 
     def referenznummer(self):
         a = self.pkfill(22)+"0000"
@@ -655,7 +695,7 @@ class Bestellung(CustomModel):
                 "percent": percent,
                 "price": runden(self.fix_summe*(1-(percent/100))),
             })
-        data.sort(key=lambda x: x["percent"])
+        data.sort(key=lambda x: x["date"])
         return data
 
     def mwstdict(self):
@@ -752,7 +792,7 @@ class Bestellung(CustomModel):
         return self.name()
 
     def get_pdf(self, lieferschein: bool = False, digital: bool = True):
-        return PDFOrder(self, lieferschein=lieferschein, digital=digital).get_response(as_attachment=False, filename=('Lieferschein' if lieferschein else 'Rechnung')+' zu Bestellung '+str(self)+'.pdf')
+        return PDFOrder(self, is_delivery_note=lieferschein, add_cut_lines=digital).get_response(filename=('Lieferschein' if lieferschein else 'Rechnung')+' zu Bestellung '+str(self)+'.pdf')
 
     def create_email_rechnung(self):
         context = {
@@ -876,9 +916,6 @@ class Bestellung(CustomModel):
         else:
             log("Keine E-Mail für Warnungen zum Lagerbestand festgelegt!")
         return None
-
-    def get_public_pdf_url(self):
-        return reverse('kmuhelper:public-view-order', args=(self.pk, self.order_key,))
 
     class Meta:
         verbose_name = "Bestellung"
