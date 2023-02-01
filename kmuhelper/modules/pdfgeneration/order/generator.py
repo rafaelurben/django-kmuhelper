@@ -128,7 +128,7 @@ class _PDFOrderPriceTable(Table):
             payconds = order.get_paymentconditions()
             totaltext = _("Rechnungsbetrag, zahlbar netto innert %s Tagen") % payconds[-1]["days"]
         else:
-            totaltext = _("RECHNUNGSBETRAG")
+            totaltext = _("Rechnungsbetrag")
 
         data.append((
             Paragraph(f"<b>{totaltext}</b>"),
@@ -218,7 +218,7 @@ class _PDFOrderProductTable(Table):
         # Total
 
         data.append((
-            _("ANZAHL PRODUKTE"),
+            _("Anzahl Produkte"),
             "",
             str(productcount),
             ""
@@ -374,7 +374,8 @@ class _PDFOrderQrInvoice(Flowable):
 
     def draw_qr_invoice(self):
         order = self.order
-        strdbkginf = order.rechnungsinformationen().split("/31/")
+        invoiceinfo = order.rechnungsinformationen()
+        strdbkginf = (invoiceinfo[:len(invoiceinfo)//2], invoiceinfo[len(invoiceinfo)//2:])
         ref = order.referenznummer()
         total = format(order.fix_summe, "08,.2f").replace(",", " ").lstrip(" 0")
         recv = order.zahlungsempfaenger
@@ -457,7 +458,7 @@ class _PDFOrderQrInvoice(Flowable):
         titel(t, _("Zusätzliche Informationen"))
         t.textLine(order.unstrukturierte_mitteilung())
         t.textLine(strdbkginf[0])
-        t.textLine("/31/"+strdbkginf[1])
+        t.textLine(strdbkginf[1])
         t.moveCursor(0, 9)
         titel(t, _("Zahlbar durch"))
         t.textLine(addr["firma"] or f"{addr['vorname']} {addr['nachname']}")
@@ -507,7 +508,7 @@ class _PDFOrderQrInvoice(Flowable):
 
 class _PDFOrderHeader(Flowable):
     @classmethod
-    def from_order(cls, order, title=None, is_delivery_note=False):
+    def from_order(cls, order, title, is_delivery_note=False):
         elem = cls()
         elem.width = 210
         elem.height = 75
@@ -515,7 +516,7 @@ class _PDFOrderHeader(Flowable):
         elem._fixedHeight = 75
         
         elem.order = order
-        elem.title = title
+        elem.title = str(title)
         elem.is_delivery_note = is_delivery_note
         return elem
 
@@ -611,16 +612,10 @@ class _PDFOrderHeader(Flowable):
 
         # Title and order number
         c.setFont("Helvetica-Bold", 10)
-        if self.title is not None:
-            title = self.title
-        elif self.is_delivery_note:
-            title = _("LIEFERSCHEIN")
-        else:
-            title = _("RECHNUNG")
-        c.drawString(12*mm, 0*mm, title)
+        c.drawString(12*mm, 0*mm, self.title)
 
         c.setFont("Helvetica", 10)
-        if len(title) <= 20:
+        if len(self.title) <= 20:
             c.drawString(64*mm, 0*mm, f'{order.datum.year}-{order.pkfill(6)}' +
                          (f' (Online #{order.woocommerceid})' if order.woocommerceid else ''))
 
@@ -632,7 +627,7 @@ class _PDFOrderHeader(Flowable):
 
 
 class PDFOrder(PDFGenerator):
-    def get_elements(self, order, custom_title=None, custom_text=None, is_delivery_note=False, add_cut_lines=True):
+    def get_elements(self, order, title, *, text=None, is_delivery_note=False, add_cut_lines=True, show_payment_conditions=None):
         order.fix_summe = order.summe_gesamt()
 
         lang = order.kunde.sprache if order.kunde and order.kunde.sprache else "de"
@@ -640,14 +635,14 @@ class PDFOrder(PDFGenerator):
         # Header
         elements = [
             _PDFOrderHeader.from_order(
-                order, title=custom_title, is_delivery_note=is_delivery_note),
+                order, title=title, is_delivery_note=is_delivery_note),
             Spacer(1, 48*mm),
         ]
 
         # Custom text
-        if custom_text:
+        if text:
             elements += [
-                Paragraph(order.rechnungstext.replace("\n", "\n<br />")),
+                Paragraph(text.replace("\n", "\n<br />")),
                 Spacer(1, 10*mm),
             ]
 
@@ -658,7 +653,7 @@ class PDFOrder(PDFGenerator):
             ]
         else:
             elements += [
-                _PDFOrderPriceTable.from_order(order, lang=lang),
+                _PDFOrderPriceTable.from_order(order, lang=lang, show_payment_conditions=show_payment_conditions),
                 Spacer(1, 65*mm),
                 TopPadder(
                     _PDFOrderQrInvoice.from_order(

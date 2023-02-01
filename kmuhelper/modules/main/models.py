@@ -19,6 +19,8 @@ from kmuhelper.overrides import CustomModel
 from kmuhelper.utils import runden, formatprice, modulo10rekursiv, send_pdf
 from kmuhelper.translations import langselect, I18N_HELP_TEXT
 
+from django.utils import translation
+_ = translation.gettext
 
 def log(string, *args):
     print("[deep_pink4][KMUHelper Main][/] -", string, *args)
@@ -655,7 +657,7 @@ class Bestellung(CustomModel):
     def unstrukturierte_mitteilung(self):
         if self.zahlungsempfaenger.mode == "QRR":
             return str(self.datum.strftime("%d.%m.%Y"))
-        return "Referenznummer: "+str(self.id)
+        return _("Referenznummer:")+" "+str(self.id)
 
     def referenznummer(self):
         a = self.pkfill(22)+"0000"

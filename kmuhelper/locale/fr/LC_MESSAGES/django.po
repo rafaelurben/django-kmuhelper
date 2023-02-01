@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-01 01:15+0100\n"
+"POT-Creation-Date: 2023-02-01 16:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,6 +21,10 @@ msgstr ""
 #: .\kmuhelper\external\multi_email_field\forms.py:10
 msgid "Enter valid email addresses."
 msgstr "Entrez des adresses électroniques valides."
+
+#: .\kmuhelper\modules\main\models.py:660
+msgid "Referenznummer:"
+msgstr "Numéro de référence :"
 
 #: .\kmuhelper\modules\pdfgeneration\order\generator.py:31
 #: .\kmuhelper\modules\pdfgeneration\order\generator.py:195
@@ -56,7 +60,7 @@ msgid "Rabatt"
 msgstr "Réduction"
 
 #: .\kmuhelper\modules\pdfgeneration\order\generator.py:113
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:557
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:558
 msgid "MwSt"
 msgstr "TVA"
 
@@ -66,8 +70,8 @@ msgid "Rechnungsbetrag, zahlbar netto innert %s Tagen"
 msgstr "Montant net, payable à %s jours"
 
 #: .\kmuhelper\modules\pdfgeneration\order\generator.py:131
-msgid "RECHNUNGSBETRAG"
-msgstr "MONTANT DE LA FACTURE"
+msgid "Rechnungsbetrag"
+msgstr "Montant de la facture"
 
 #: .\kmuhelper\modules\pdfgeneration\order\generator.py:147
 #, python-format
@@ -75,86 +79,110 @@ msgid "%(days)s Tage %(percent)s%% Skonto"
 msgstr "%(days)s jours %(percent)s%% de remise"
 
 #: .\kmuhelper\modules\pdfgeneration\order\generator.py:221
-msgid "ANZAHL PRODUKTE"
-msgstr "NOMBRE DES PRODUITS"
+msgid "Anzahl Produkte"
+msgstr "Nombre de produits"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:417
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:418
 msgid "Vor der Einzahlung abzutrennen"
 msgstr "A détacher avant le versement"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:429
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:447
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:430
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:448
 msgid "Konto / Zahlbar an"
 msgstr "Compte / Payable à"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:436
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:454
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:437
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:455
 msgid "Referenz"
 msgstr "Référence"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:439
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:462
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:440
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:463
 msgid "Zahlbar durch"
 msgstr "Payable par"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:457
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:458
 msgid "Zusätzliche Informationen"
 msgstr "Informations additionnelles"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:470
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:471
 msgid "Empfangsschein"
 msgstr "Récépissé"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:471
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:472
 msgid "Zahlteil"
 msgstr "Section paiement"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:474
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:483
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:475
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:484
 msgid "Währung"
 msgstr "Monnaie"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:475
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:484
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:476
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:485
 msgid "Betrag"
 msgstr "Montant"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:476
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:477
 msgid "Annahmestelle"
 msgstr "Point de dépôt"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:552
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:553
 msgid "Tel."
 msgstr "Tel."
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:553
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:554
 msgid "E-Mail"
 msgstr "E-Mail"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:555
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:556
 msgid "Web"
 msgstr "Web"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:574
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:575
 msgid "Ihr/e Ansprechpartner/in"
 msgstr "Votre interlocuteur"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:575
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:576
 msgid "Ihre Kundennummer"
 msgstr "Votre numéro de client"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:576
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:577
 msgid "Ihre Bestellung vom"
 msgstr "Votre commande du"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:578
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:579
 msgid "Rechnungsdatum"
 msgstr "Date de facture"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:617
-msgid "LIEFERSCHEIN"
-msgstr "BON DE LIVRAISON"
+#: .\kmuhelper\modules\pdfgeneration\order\views.py:35
+msgid "Rechnung"
+msgstr "Facture"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:619
-msgid "RECHNUNG"
-msgstr "FACTURE"
+#: .\kmuhelper\modules\pdfgeneration\order\views.py:38
+msgid "Lieferschein"
+msgstr "Bon de livraison"
+
+#: .\kmuhelper\modules\pdfgeneration\order\views.py:42
+msgid "Zahlungserinnerung"
+msgstr "Rappel de paiement"
+
+#: .\kmuhelper\modules\pdfgeneration\order\views.py:43
+#, python-format
+msgid ""
+"Geschätzter Kunde\n"
+"\n"
+"Vermutlich ist Ihnen entgangen, diese Rechnung innert der gewährten Frist zu "
+"begleichen.\n"
+"Wir bitten Sie, dies innert %s Tagen nachzuholen.\n"
+"\n"
+"Sollte sich Ihre Zahlung mit diesem Schreiben überkreuzen, so betrachten Sie "
+"dieses bitte als gegenstandslos."
+msgstr ""
+"Cher client\n"
+"\n"
+"Vous n'avez probablement pas réglé cette facture dans le délai imparti.\n"
+"Nous vous prions de bien vouloir le faire dans les %s jours.\n"
+"\n"
+"Si votre paiement devait se recouper avec cette lettre, veuillez considérer "
+"que celle-ci est sans objet."
