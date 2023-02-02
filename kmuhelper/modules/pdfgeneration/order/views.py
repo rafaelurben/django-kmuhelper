@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from django.contrib.admin.models import LogEntry, CHANGE
+from django.contrib.admin.options import get_content_type_for_model
 from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy, reverse
@@ -26,6 +28,7 @@ def bestellung_pdf_ansehen(request, obj):
     is_print_version = 'print' in request.GET
     is_download = 'download' in request.GET
 
+    preset = request.GET.get('preset', 'invoice')
     title = None
     text = None
 
@@ -40,7 +43,7 @@ def bestellung_pdf_ansehen(request, obj):
         lang = defaultlang
 
     with Language(lang):
-        match request.GET.get('preset', 'invoice'):
+        match preset:
             case 'invoice':
                 title = title or _("Rechnung")
                 pdf = PDFOrder(order, title, text=text, add_cut_lines=not is_print_version)
@@ -60,6 +63,16 @@ def bestellung_pdf_ansehen(request, obj):
                 pdf = PDFOrder(order, title, text=text, add_cut_lines=not is_print_version, show_payment_conditions=False)
             case other:
                 return render_error(request, status=400, message="Ungültige Vorlage: " + str(other))
+
+        # Log the action
+        LogEntry.objects.log_action(
+            user_id=request.user.id, 
+            content_type_id=get_content_type_for_model(obj).pk,
+            object_id=obj.pk,
+            object_repr=str(obj),
+            action_flag=CHANGE,
+            change_message=f'PDF "{title}" aus Vorlage "{preset}" erstellt mit Text: "{text}"' if text else f'PDF "{title}" aus Vorlage "{preset}" erstellt.',
+        )
 
         filename = f'{str(order)} - {title}.pdf'
         return pdf.get_response(as_attachment=is_download, filename=filename)
