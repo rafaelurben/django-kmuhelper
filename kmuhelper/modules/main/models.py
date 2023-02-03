@@ -16,7 +16,7 @@ from kmuhelper import settings, constants
 from kmuhelper.modules.emails.models import EMail, Attachment
 from kmuhelper.modules.pdfgeneration import PDFOrder
 from kmuhelper.overrides import CustomModel
-from kmuhelper.utils import runden, formatprice, modulo10rekursiv, send_pdf
+from kmuhelper.utils import runden, formatprice, modulo10rekursiv, send_pdf, faq
 from kmuhelper.translations import langselect, I18N_HELP_TEXT
 
 from django.utils import translation
@@ -317,10 +317,7 @@ class Bestellung(CustomModel):
             )
         ],
         max_length=16,
-        help_text="Skonto und Zahlungsfrist nach Syntaxdefinition von Swico.\n\n" +
-                  "Beispiel: '2:15;0:30' steht für 2% Skonto bei Zahlung innerhalb " +
-                  "von 15 Tagen und eine Zahlungsfrist von 30 Tagen.\n\n" +
-                  "Eine Zahlungsfrist MUSS vorhanden sein und am Schluss aufgeführt werden.",
+        help_text="Skonto und Zahlungsfrist -> "+faq('wie-funktionieren-zahlungskonditionen', 'Mehr erfahren'),
     )
 
     status = models.CharField(
@@ -332,9 +329,7 @@ class Bestellung(CustomModel):
     versendet = models.BooleanField(
         verbose_name="Versendet",
         default=False,
-        help_text="Sobald eine Bestellung als versendet markiert wurde, können Teile " +
-                  "der Bestellung nicht mehr bearbeitet werden! " +
-                  "Ausserdem werden die Produkte aus dem Lagerbestand entfernt.",
+        help_text='Mehr Infos -> '+faq('was-passiert-wenn-ich-eine-bestellung-als-bezahltversendet-markiere', 'FAQ'),
     )
     versendet_am = models.DateField(
         verbose_name="Versendet am",
@@ -370,8 +365,7 @@ class Bestellung(CustomModel):
     bezahlt = models.BooleanField(
         verbose_name="Bezahlt",
         default=False,
-        help_text="Sobald eine Bestellung als bezahlt markiert wurde, können Teile " +
-                  "der Bestellung nicht mehr bearbeitet werden!",
+        help_text='Mehr Infos -> '+faq('was-passiert-wenn-ich-eine-bestellung-als-bezahltversendet-markiere', 'FAQ'),
     )
     bezahlt_am = models.DateField(
         verbose_name="Bezahlt am",

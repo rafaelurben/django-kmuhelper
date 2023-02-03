@@ -1,5 +1,8 @@
 """Useful constants used in multiple places"""
 
+URL_MANUAL = "https://rafaelurben.github.io/django-kmuhelper/manual/"
+URL_FAQ = "https://rafaelurben.github.io/django-kmuhelper/manual/faq"
+
 ORDERSTATUS = [
     ("pending", "Zahlung ausstehend"),
     ("processing", "In Bearbeitung"),

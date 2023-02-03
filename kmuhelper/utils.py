@@ -11,6 +11,8 @@ from django.shortcuts import render
 from django.template.loader import get_template
 from django.urls import reverse
 
+from kmuhelper.constants import URL_FAQ
+
 ################
 
 def render_error(request, status:int=404, message:str=""):
@@ -174,3 +176,9 @@ def custom_app_list(request, models, title, url):
         ],
         'name': title,
     }]
+
+###############
+
+def faq(id="", text="FAQ"):
+    "Get a link to the FAQ page in the manual."
+    return f'<a href="{URL_FAQ}#{id}" target="_blank">{text}</a>'

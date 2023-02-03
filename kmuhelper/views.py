@@ -5,6 +5,7 @@ from django.template import TemplateDoesNotExist, TemplateSyntaxError
 from django.template.loader import get_template
 
 from kmuhelper.utils import render_error
+from kmuhelper.constants import URL_MANUAL
 
 # Create your views here.
 
@@ -58,7 +59,7 @@ def home(request):
             {
                 "title": "Handbuch",
                 "subtitle": "Dokumentation zum KMUHelper",
-                "url": "https://rafaelurben.github.io/django-kmuhelper/manual/",
+                "url": URL_MANUAL,
                 "icon": "fas fa-book",
             },
         ]
