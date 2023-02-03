@@ -3,7 +3,7 @@ import subprocess
 import requests
 
 from io import BytesIO
-from packaging.version import Version, InvalidVersion, parse as parse_version
+from packaging.version import Version, InvalidVersion
 
 from django.contrib import messages
 from django.core import mail
@@ -39,38 +39,36 @@ def _package_versions_pypi(project, testpypi=False, allow_prereleases=False):
             vs = Version(v)
             if not allow_prereleases and vs.is_prerelease:
                 continue
-            versions_safe.append(v)
+            versions_safe.append(vs)
         except (InvalidVersion):
             continue
-    return sorted(versions_safe, key=Version)
+    return sorted(versions_safe)
 
+def _package_version_local(package) -> Version:
+    cmd = [sys.executable, '-m', 'pip', 'show', '{}'.format(package)]
+    ver = str(subprocess.run(cmd, capture_output=True, text=True))
+    ver = ver[ver.find('Version:')+8:]
+    ver = ver[:ver.find('\\n')].replace(' ', '')
+    try:
+        return Version(ver)
+    except (InvalidVersion):
+        return None
 
 def package_version(package, testpypi=False):
     all_versions = _package_versions_pypi(package, testpypi)
+    latest_version = all_versions[-1] if all_versions else None
+    current_version = _package_version_local(package)
+    
+    if latest_version and current_version:
+        uptodate = latest_version <= current_version
+    else:
+        uptodate = None
 
-    latest_version = all_versions[-1]
-
-    # cmd = [sys.executable, '-m', 'pip', 'install', '{}==random'.format(package)]
-
-    # if testpypi:
-    #     cmd.insert(4, "https://test.pypi.org/simple/")
-    #     cmd.insert(4, "-i")
-
-    # latest_version = str(subprocess.run(cmd, capture_output=True, text=True))
-    # latest_version = latest_version[latest_version.find('(from versions:')+15:]
-    # latest_version = latest_version[:latest_version.find(')')]
-    # latest_version = latest_version.replace(' ','').split(',')[-1]
-
-    current_version = str(subprocess.run(
-        [sys.executable, '-m', 'pip', 'show', '{}'.format(package)], capture_output=True, text=True))
-    current_version = current_version[current_version.find('Version:')+8:]
-    current_version = current_version[:current_version.find(
-        '\\n')].replace(' ', '')
     return {
         # "all":      all_versions,
-        "latest":    latest_version,
-        "current":   current_version,
-        "uptodate":  parse_version(latest_version) <= parse_version(current_version),
+        "latest":    str(latest_version),
+        "current":   str(current_version),
+        "uptodate":  uptodate,
     }
 
 ################
