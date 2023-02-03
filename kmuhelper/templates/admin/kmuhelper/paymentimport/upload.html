@@ -29,20 +29,5 @@
 
     <br>
 
-    <form enctype="multipart/form-data" method="post">
-        {% csrf_token %}
-        <fieldset class="module aligned">
-            <h2>Dateiupload</h2>
-            <div class="form-row field-file {% if form.file.errors %}errors{% endif %}">
-                {{ form.file.errors }}
-                <div>
-                    <label class="required" for="id_file">{{ form.file.label }}:</label>
-                    <input type="file" name="file" required="" id="id_file" />
-                    <div class="help">{{ form.file.help_text }}</div>
-                </div>
-            </div>
-        </fieldset>
-        {{ form.non_field_errors }}
-        <input type="submit" value="Hochladen" />
-    </form>
+    {% include 'kmuhelper/_includes/form.html' with submit_text="Hochladen" %}
 {% endblock %}

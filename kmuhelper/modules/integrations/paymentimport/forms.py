@@ -19,6 +19,14 @@ def log(string, *args):
 class CamtUploadForm(forms.Form):
     """Form for uploading and processing camt.054.001.02 files"""
 
+    # Fieldsets
+
+    fieldsets = [
+        {'fields': ['file'], 'name': "Dateiupload"}
+    ]
+
+    # Fields
+
     file = forms.FileField(
         label="XML-Datei",
         help_text="Die Datei muss nach dem camt.053.001.04 Standard aufgebaut sein und "

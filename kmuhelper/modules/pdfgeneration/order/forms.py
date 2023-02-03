@@ -3,6 +3,18 @@ from django import forms
 from kmuhelper import constants
 
 class PDFOrderForm(forms.Form):
+    
+    # Fieldsets
+
+    fieldsets = [
+        {'fields': ['preset']},
+        {'fields': ['title', 'text', 'language'], 'name': 'Text & Sprache'},
+        {'fields': ['do_print'], 'name': 'Optionen'},
+        {'fields': ['do_download'], 'name': 'Ausgabe'},
+    ]
+
+    # Fields
+
     preset = forms.ChoiceField(
         label="Vorlage",
         choices=(
@@ -17,13 +29,13 @@ class PDFOrderForm(forms.Form):
         label="Titel",
         required=False,
         max_length=32,
-        help_text="Z. B. 'Rechnung' oder 'Lieferschein' - Leer lassen für Standartwert der Vorlage",
+        help_text="Z. B. 'Rechnung' oder 'Lieferschein' - Leer lassen für Standardwert der Vorlage",
     )
     text = forms.CharField(
         label="Text",
         required=False,
         widget=forms.Textarea,
-        help_text="Dieser Text wird unterhalb des Titels angezeigt - Leer lassen für Standartwert der Vorlage",
+        help_text="Dieser Text wird unterhalb des Titels angezeigt - Leer lassen für Standardwert der Vorlage",
     )
     language = forms.ChoiceField(
         label="Sprache",
