@@ -1,0 +1,14 @@
+{% load utiltags %}
+
+<fieldset class="module aligned {{ fieldset.classes }}">
+    {% if fieldset.name %}<h2>{{ fieldset.name }}</h2>{% endif %}
+    {% if fieldset.description %}
+        <div class="description">{{ fieldset.description|safe }}</div>
+    {% endif %}
+
+    {% for fieldname in fieldset.fields %}
+        {% with field=form|get:fieldname %}
+            {% include 'kmuhelper/_includes/form_field.html' %}
+        {% endwith %}
+    {% endfor %}
+</fieldset>
