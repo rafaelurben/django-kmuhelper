@@ -29,14 +29,16 @@ def python_version():
     return str(sys.version.split(" ")[0])
 
 
-def _package_versions_pypi(project, testpypi=False):
+def _package_versions_pypi(project, testpypi=False, allow_prereleases=False):
     url = "https://"+("test." if testpypi else "") + \
         "pypi.org/pypi/"+project+"/json"
     versions = requests.get(url).json()["releases"].keys()
     versions_safe = []
     for v in versions:
         try:
-            Version(v)
+            vs = Version(v)
+            if not allow_prereleases and vs.is_prerelease:
+                continue
             versions_safe.append(v)
         except (InvalidVersion):
             continue
