@@ -21,6 +21,7 @@
 
 {% block extrahead %}
     {{ block.super }}
-    
-    <script src="{% static 'admin/js/changelist_saveontop.js' %}"></script>
+
+    {% comment %} Load the changelist save on top script {% endcomment %}
+    <script src="{% static 'admin/kmuhelper/js/changelist_saveontop.js' %}"></script>
 {% endblock %}
