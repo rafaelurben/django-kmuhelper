@@ -16,6 +16,10 @@ Falls Sie irgendwelche Fragen haben, können Sie mich sehr gerne [kontaktieren](
 
 Die Entwicklung und Unterhaltung des KMUHelper benötigt sehr viel Zeit, deshalb bin ich sehr auf [Unterstützung](https://rafaelurben.ch/kmuhelper/unterstützen) angewiesen.
 
+## Häufig gestellte Fragen
+
+Häufig gestellte Fragen und Antworten finden Sie [hier](faq.md).
+
 ## Inhalt
 
 - [Einrichtung](setup.md)
