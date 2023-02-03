@@ -9,14 +9,13 @@ register = template.Library()
 
 ##########
 
-
-@register.simple_tag(takes_context=True, name="kmuhelper_woocommerce_connected")
-def kmuhelper_woocommerce_connected(context=None):
+@register.simple_tag(name="kmuhelper_woocommerce_connected")
+def kmuhelper_woocommerce_connected():
     return is_woocommerce_connected()
 
 
-@register.simple_tag(takes_context=True, name="kmuhelper_email_show_buttons")
-def kmuhelper_email_show_buttons(context=None):
+@register.simple_tag(name="kmuhelper_email_show_buttons")
+def kmuhelper_email_show_buttons():
     show = bool(settings.get_db_setting("email-show-buttons"))
     return show
 
