@@ -45,3 +45,6 @@ home:
                 storage:
                     title: Lagerverwaltung
                     url: /manual/storage
+                faq:
+                    title: Häufig gestellte Fragen
+                    url: /manual/faq
