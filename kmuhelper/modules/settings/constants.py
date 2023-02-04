@@ -1,3 +1,5 @@
+from kmuhelper.utils import faq
+
 SETTINGS = {
     "wc-url": {
         "typ": "url",
@@ -7,9 +9,10 @@ SETTINGS = {
     "email-stock-warning-receiver": {
         "typ": "email",
         "name": "E-Mail-Adresse für Warnungen zum Lagerbestand",
-        "description": "E-Mail-Adresse für E-Mails zu durch " +
-                       "Bestellungsimport hervorgerufenem, geringem Lagerbestand.\n\n" +
-                       "Leer lassen, um diese E-Mails zu deaktivieren."
+        "description": "Wenn durch den Import von Bestellungen der Lagerbestand-Soll-Wert unterschritten wird, " +
+                       "wird eine Warnung an diese E-Mail-Adresse gesendet.\n\n" +
+                       "Leer lassen, um diese E-Mails zu deaktivieren.\n\n" +
+                       "Bemerkung: Entsteht die Unterschreitung durch eine manuelle Aktion, wird eine Warnung direkt angezeigt."
     },
     "email-show-buttons": {
         "typ": "bool",
@@ -19,17 +22,15 @@ SETTINGS = {
     "email-signature": {
         "typ": "text",
         "name": "E-Mail-Signatur",
-        "description": "Standardsignatur bei E-Mails"
+        "description": "Standardsignatur für E-Mails"
     },
     "default-payment-conditions": {
         "typ": "char",
         "name": "Standardzahlungskonditionen",
-        "description": "Standardwert für neue Bestellungen.\n" +
-                       "Skonto und Zahlungsfrist nach Syntaxdefinition von Swico.\n\n" +
-                       "Beispiel: '2:15;0:30' steht für 2% Skonto bei Zahlung innerhalb " +
-                       "von 15 Tagen und eine Zahlungsfrist von 30 Tagen.\n\n" +
-                       "Eine Zahlungsfrist MUSS vorhanden sein und am Schluss aufgeführt werden.\n\n" +
-                       "Wenn leer gelassen, wird '0:30' als Standard verwendet."
+        "description": "Standardwert der Zahlungskonditionen für neue Bestellungen. " +
+                       "Wenn leer gelassen, wird '0:30' als Standard verwendet.\n\n"
+                       "Weitere Informationen zu Zahlungskonditionen befinden sich " +
+                       faq('wie-funktionieren-zahlungskonditionen', 'hier')
     },
     "print-payment-conditions": {
         "typ": "bool",
@@ -37,7 +38,9 @@ SETTINGS = {
         "description": "Wenn aktiviert, werden die Zahlungskonditionen bei Rechnungen " +
                        "in menschenlesbarer Form unter dem Rechnungstotal gedruckt.\n\n" +
                        "Die Zahlungskonditionen werden unabhängig von dieser Einstellung " +
-                       "immer auch in manschinenlesbarer Form im QR-Code integriert."
+                       "immer auch in manschinenlesbarer Form im QR-Code integriert.\n\n" +
+                       "Weitere Informationen zu Zahlungskonditionen befinden sich " +
+                       faq('wie-funktionieren-zahlungskonditionen', 'hier')
     },
 }
 

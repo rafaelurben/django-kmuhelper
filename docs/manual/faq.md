@@ -20,8 +20,10 @@ Die dadurch gesperrten Felder können durch Anhängen von `?unlock` an die URL w
 
 ### Wie funktionieren Zahlungskonditionen?
 
-Im Feld "Zahlungskonditionen" können Zahlungskonditionen für die Bestellung angegeben werden. Die Zahlungskonditionen besagen, in wie vielen Tagen eine Rechnung bezahlt werden muss und bis nach wie vielen Tagen Skonto gewährt wird. Die Zahlungskonditionen werden, sofern in den Einstellungen aktiviert, auf der Rechnung angezeigt.
+Im Feld "Zahlungskonditionen" können Zahlungskonditionen für die Bestellung angegeben werden. Die Zahlungskonditionen besagen, in wie vielen Tagen eine Rechnung bezahlt werden muss und bis nach wie vielen Tagen Skonto gewährt wird. Die Zahlungskonditionen werden in die QR-Rechnung integriert und, sofern in den Einstellungen aktiviert, auf der Rechnung angezeigt.
 
 Syntax: `Skonto in Prozent:Tage;Skonto in Prozent:Tage;...;0:Zahlungsfrist in Tagen`
 
 Beispiel: `2:10;1:20;0:30` bedeutet, dass 2% Skonto gewährt wird, wenn die Rechnung innerhalb von 10 Tagen bezahlt wird. 1% Skonto wird gewährt, wenn die Rechnung innerhalb von 20 Tagen bezahlt wird. Die Zahlungsfrist beträgt 30 Tage.
+
+Eine Zahlungsfrist **muss** vorhanden sein und am Schluss aufgeführt werden. Der Standardwert beträgt `0:30`, also 30 Tage Zahlungsfrist.
