@@ -1,5 +1,6 @@
 "Models for KMUHelper settings"
 
+from django import forms
 from django.db import models
 from django.contrib import admin
 from django.templatetags.static import static
@@ -95,6 +96,29 @@ class SettingsBase(CustomModel):
     def content(self, var):
         if hasattr(self, f"content_{self.typ}"):
             return setattr(self, f"content_{self.typ}", var)
+
+    def get_field(self):
+        "Get the corresponding form field for this setting"
+
+        opt = {'label': self.name, 'required': False, 'help_text': self.description, 'initial': self.content}
+
+        if self.typ == "char":
+            return forms.CharField(**opt)
+        if self.typ == "text":
+            return forms.CharField(widget=forms.Textarea, **opt)
+        if self.typ == "bool":
+            return forms.BooleanField(**opt)
+        if self.typ == "int":
+            return forms.IntegerField(**opt)
+        if self.typ == "float":
+            return forms.FloatField(**opt)
+        if self.typ == "url":
+            return forms.URLField(**opt)
+        if self.typ == "email":
+            return forms.EmailField(**opt)
+        if self.typ == "json":
+            return forms.JSONField(**opt)
+        raise ValueError("Unknown setting type! Can't get field!")
 
     class Meta:
         abstract = True

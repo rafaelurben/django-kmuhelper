@@ -41,6 +41,24 @@ SETTINGS = {
     },
 }
 
+SETTINGS_FIELDSETS = [
+    {
+        'name': 'Zahlungskonditionen',
+        'fields': ['default-payment-conditions', 'print-payment-conditions'],
+        'classes': 'wide',
+    },
+    {
+        'name': 'E-Mails',
+        'fields': ['email-show-buttons', 'email-signature', 'email-stock-warning-receiver'],
+        'classes': 'wide',
+    },
+    {
+        'name': 'WooCommerce-Integration',
+        'fields': ['wc-url'],
+        'classes': 'wide',
+    },
+]
+
 SECRET_SETTINGS = {
     "wc-consumer_key": {"typ": "char"},
     "wc-consumer_secret": {"typ": "char"},

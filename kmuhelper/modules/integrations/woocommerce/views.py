@@ -67,7 +67,7 @@ def wc_auth_end(request):
         messages.success(request, "WooCommerce erfolgreich verbunden!")
     else:
         messages.error(request, "WooCommerce konnte nicht verbunden werden!")
-    return redirect(reverse('admin:kmuhelper_einstellung_changelist'))
+    return redirect(reverse('kmuhelper:settings'))
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
@@ -78,7 +78,7 @@ def wc_auth_start(request):
     if "Bestätigt" in shopurl or not shopurl:
         messages.error(
             request, "Bitte gib zuerst eine gültige Url ein, bevor du WooCommerce (neu) verbinden kannst!")
-        return redirect(reverse('admin:kmuhelper_einstellung_changelist'))
+        return redirect(reverse('kmuhelper:settings'))
 
     kmuhelperurl = request.get_host()
     params = {

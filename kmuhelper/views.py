@@ -50,8 +50,8 @@ def home(request):
             },
             {
                 "title": "Einstellungen",
-                "subtitle": "Kleine Einstellungen für den KMUHelper",
-                "url": reverse("admin:kmuhelper_einstellung_changelist"),
+                "subtitle": "Einstellungen für den KMUHelper",
+                "url": reverse("kmuhelper:settings"),
                 "icon": "fas fa-cog",
             },
         ],

@@ -7,6 +7,19 @@
     --link-selected-fg: var(--kmuhelper-light);
 }
 
+/* Help text preserve lines */
+
+form div.help {
+    white-space: pre-line;
+}
+
+/* Margin fix for textarea */
+
+form .wide textarea + p.help,
+form .wide textarea + div.help {
+    margin-left: 200px;
+}
+
 /* Price styling */
 
 .text-align-right,

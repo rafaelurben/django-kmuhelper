@@ -14,11 +14,12 @@ urlpatterns = [
                     views._templatetest, name="_templatetest"),
 
     # Main modules
-    path('',        include('kmuhelper.modules.main')),
-    path('api/',    include('kmuhelper.modules.api')),
-    path('app/',    include('kmuhelper.modules.app')),
-    path('emails/', include('kmuhelper.modules.emails')),
-    path('stats/',  include('kmuhelper.modules.stats')),
+    path('',            include('kmuhelper.modules.main')),
+    path('api/',        include('kmuhelper.modules.api')),
+    path('app/',        include('kmuhelper.modules.app')),
+    path('emails/',     include('kmuhelper.modules.emails')),
+    path('stats/',      include('kmuhelper.modules.stats')),
+    path('settings/',   include('kmuhelper.modules.settings')),
 
     # Deprecated urls
     path('wc/',     include('kmuhelper.modules.integrations.woocommerce')),
