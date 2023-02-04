@@ -8,3 +8,16 @@
 
 {% block breadcrumbs %}
 {% endblock %}
+
+{% block content %}
+    {{ block.super }}
+
+    <div style="margin-top: 2em;">
+        <i>
+            <a href="{% url 'kmuhelper:build-info' %}">Build-Info</a> anzeigen
+        </i> |
+        <i>
+            Zur <a href="{% url 'kmuhelper:settings' %}">neuen Ansicht</a> wechseln
+        </i>
+    </div>
+{% endblock %}
