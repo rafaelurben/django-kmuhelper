@@ -13,13 +13,13 @@ AUTH_USER_MODEL = djangoconfig.AUTH_USER_MODEL
 def setup_settings():
     """Setup the database settings"""
 
-    for setting in SETTINGS:
+    for key, value in SETTINGS.items():
         Einstellung.objects.update_or_create(
-            id=setting, defaults=SETTINGS[setting])
+            id=key, defaults={'typ': value['typ']})
 
-    for secretsetting in SECRET_SETTINGS:
+    for key, value in SECRET_SETTINGS.items():
         Geheime_Einstellung.objects.update_or_create(
-            id=secretsetting, defaults=SECRET_SETTINGS[secretsetting])
+            id=key, defaults={'typ': value['typ']})
 
 
 # File settings

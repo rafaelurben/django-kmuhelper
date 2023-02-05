@@ -7,6 +7,7 @@ from django.templatetags.static import static
 from django.utils.html import mark_safe, urlize
 
 from kmuhelper.overrides import CustomModel
+from kmuhelper.modules.settings.constants import SETTINGS
 
 EINSTELLUNGSTYPEN = [
     ("char", "Text"),
@@ -87,7 +88,7 @@ class SettingsBase(CustomModel):
         if self.typ == "url":
             return mark_safe(urlize(self.content_url))
         return self.content
-    
+
     @property
     def content(self):
         return getattr(self, f"content_{self.typ}", "ERROR! Unbekannter Einstellungstyp! Bitte kontaktiere den Entwickler!")
@@ -97,10 +98,38 @@ class SettingsBase(CustomModel):
         if hasattr(self, f"content_{self.typ}"):
             return setattr(self, f"content_{self.typ}", var)
 
+    class Meta:
+        abstract = True
+
+    objects = models.Manager()
+
+
+class Einstellung(SettingsBase):
+    """Model representing an editable setting"""
+
+    @property
+    def info(self):
+        "Get the info dict for this setting"
+        return SETTINGS.get(self.id, {})
+
+    @property
+    @admin.display(description="Einstellung")
+    def name(self):
+        s = self.info.get("name", "(unbekannte Einstellung)")
+        return mark_safe(s)
+
+    @property
+    @admin.display(description="Beschreibung")
+    def description(self):
+        s = self.info.get("description", "(unbekannte Einstellung)")
+        s = s.replace("\n", "<br />")
+        return mark_safe(s)
+
     def get_field(self):
         "Get the corresponding form field for this setting"
 
-        opt = {'label': self.name, 'required': False, 'help_text': self.description, 'initial': self.content}
+        opt = {'label': self.name, 'required': False,
+               'help_text': self.description, 'initial': self.content}
 
         if self.typ == "char":
             return forms.CharField(**opt)
@@ -119,26 +148,6 @@ class SettingsBase(CustomModel):
         if self.typ == "json":
             return forms.JSONField(**opt)
         raise ValueError("Unknown setting type! Can't get field!")
-
-    class Meta:
-        abstract = True
-
-    objects = models.Manager()
-
-
-class Einstellung(SettingsBase):
-    """Model representing an editable setting"""
-
-    name = models.CharField(
-        verbose_name="Name",
-        max_length=200,
-    )
-
-    description = models.TextField(
-        verbose_name="Beschreibung",
-        blank=True,
-        default="",
-    )
 
     @admin.display(description="Einstellung")
     def __str__(self):
@@ -163,7 +172,7 @@ class Geheime_Einstellung(SettingsBase):
 
     @admin.display(description="Geheime Einstellung")
     def __str__(self):
-        return self.id
+        return str(self.id)
 
     class Meta:
         verbose_name = "Geheime Einstellung"

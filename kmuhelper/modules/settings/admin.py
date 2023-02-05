@@ -7,9 +7,9 @@ from kmuhelper.overrides import CustomModelAdmin
 @admin.register(models.Einstellung)
 class EinstellungenAdmin(CustomModelAdmin):
     list_display = ('name', 'content_display')
-    ordering = ('name',)
+    ordering = ('id',)
 
-    search_fields = ['name', 'description']
+    search_fields = []
 
     readonly_fields = ["id", "name", "description"]
 
