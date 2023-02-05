@@ -46,10 +46,12 @@ def bestellung_pdf_ansehen(request, obj):
         match preset:
             case 'invoice':
                 title = title or _("Rechnung")
-                pdf = PDFOrder(order, title, text=text, add_cut_lines=not is_print_version)
+                pdf = PDFOrder(order, title, text=text, lang=lang,
+                               add_cut_lines=not is_print_version)
             case 'delivery-note':
                 title = title or _("Lieferschein")
-                pdf = PDFOrder(order, title, text=text, is_delivery_note=True)
+                pdf = PDFOrder(order, title, text=text, lang=lang,
+                               is_delivery_note=True)
             case 'payment-reminder':
                 days_to_pay = 14
                 title = title or _("Zahlungserinnerung")
@@ -60,7 +62,8 @@ def bestellung_pdf_ansehen(request, obj):
                 # Temporarily replace the order's date and payment conditions
                 order.rechnungsdatum = datetime.now().date()
                 order.zahlungskonditionen = f"0:{days_to_pay}"
-                pdf = PDFOrder(order, title, text=text, add_cut_lines=not is_print_version, show_payment_conditions=False)
+                pdf = PDFOrder(order, title, text=text, lang=lang,
+                               add_cut_lines=not is_print_version, show_payment_conditions=False)
             case other:
                 return render_error(request, status=400, message="Ungültige Vorlage: " + str(other))
 

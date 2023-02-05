@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-01 21:17+0100\n"
+"POT-Creation-Date: 2023-02-05 14:13+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,156 +22,186 @@ msgstr ""
 msgid "Enter valid email addresses."
 msgstr "Inserire indirizzi e-mail validi."
 
-#: .\kmuhelper\modules\main\models.py:660
+#: .\kmuhelper\modules\main\models.py:654
 msgid "Referenznummer:"
 msgstr "Numero di riferimento:"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:33
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:197
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:32
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:204
+msgctxt "Text on generated order PDF"
 msgid "Art-Nr."
 msgstr "Articolo n."
 
 #: .\kmuhelper\modules\pdfgeneration\order\generator.py:33
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:197
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:205
+msgctxt "Text on generated order PDF"
 msgid "Bezeichnung"
 msgstr "Denominazione"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:33
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:197
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:34
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:206
+msgctxt "Text on generated order PDF"
 msgid "Anzahl"
 msgstr "Quantità"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:34
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:197
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:35
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:207
+msgctxt "Text on generated order PDF"
 msgid "Einheit"
 msgstr "Unità"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:34
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:36
+msgctxt "Text on generated order PDF"
 msgid "Preis"
 msgstr "Prezzo"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:34
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:37
+msgctxt "Text on generated order PDF"
 msgid "Total"
 msgstr "Totale"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:54
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:89
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:58
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:93
+msgctxt "Text on generated order PDF"
 msgid "Rabatt"
 msgstr "Sconto"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:115
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:559
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:119
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:572
+msgctxt "Text on generated order PDF"
 msgid "MwSt"
 msgstr "IVA"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:131
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:136
 #, python-format
+msgctxt "Text on generated order PDF"
 msgid "Rechnungsbetrag, zahlbar netto innert %s Tagen"
 msgstr "Importo netto, pagabile entro %s giorni"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:133
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:138
+msgctxt "Text on generated order PDF"
 msgid "Rechnungsbetrag"
 msgstr "Importo della fattura"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:149
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:154
 #, python-format
+msgctxt "Text on generated order PDF"
 msgid "%(days)s Tage %(percent)s%% Skonto"
 msgstr "%(days)s giorni %(percent)s%% di sconto"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:223
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:234
+msgctxt "Text on generated order PDF"
 msgid "Anzahl Produkte"
 msgstr "Numero di prodotti"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:420
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:433
+msgctxt "QR-Invoice / fixed by SIX group style guide"
 msgid "Vor der Einzahlung abzutrennen"
 msgstr "Da staccare prima del versamento"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:432
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:450
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:445
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:463
+msgctxt "QR-Invoice / fixed by SIX group style guide"
 msgid "Konto / Zahlbar an"
 msgstr "Conto / Pagabile a"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:439
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:457
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:452
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:470
+msgctxt "QR-Invoice / fixed by SIX group style guide"
 msgid "Referenz"
 msgstr "Riferimento"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:442
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:465
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:455
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:478
+msgctxt "QR-Invoice / fixed by SIX group style guide"
 msgid "Zahlbar durch"
 msgstr "Pagabile da"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:460
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:473
+msgctxt "QR-Invoice / fixed by SIX group style guide"
 msgid "Zusätzliche Informationen"
 msgstr "Informazioni aggiuntive"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:473
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:486
+msgctxt "QR-Invoice / fixed by SIX group style guide"
 msgid "Empfangsschein"
 msgstr "Ricevuta"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:474
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:487
+msgctxt "QR-Invoice / fixed by SIX group style guide"
 msgid "Zahlteil"
 msgstr "Sezione pagamento"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:477
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:486
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:490
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:499
+msgctxt "QR-Invoice / fixed by SIX group style guide"
 msgid "Währung"
 msgstr "Valuta"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:478
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:487
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:491
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:500
+msgctxt "QR-Invoice / fixed by SIX group style guide"
 msgid "Betrag"
 msgstr "Importo"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:479
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:492
+msgctxt "QR-Invoice / fixed by SIX group style guide"
 msgid "Annahmestelle"
 msgstr "Punto di accettazione"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:554
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:567
+msgctxt "Text on generated order PDF"
 msgid "Tel."
 msgstr "Tel."
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:555
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:568
+msgctxt "Text on generated order PDF"
 msgid "E-Mail"
 msgstr "E-Mail"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:557
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:570
+msgctxt "Text on generated order PDF"
 msgid "Web"
 msgstr "Web"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:576
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:589
+msgctxt "Text on generated order PDF"
 msgid "Ihre Kundennummer"
 msgstr "Il Suo codice cliente"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:577
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:590
+msgctxt "Text on generated order PDF"
 msgid "Bestellnummer"
 msgstr "Numero d'ordine"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:578
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:591
+msgctxt "Text on generated order PDF"
 msgid "Bestelldatum"
 msgstr "Data dell'ordine"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:580
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:593
+msgctxt "Text on generated order PDF"
 msgid "Datum"
 msgstr "Data"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:582
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:595
+msgctxt "Text on generated order PDF"
 msgid "Rechnungsdatum"
 msgstr "Data della fattura"
 
-#: .\kmuhelper\modules\pdfgeneration\order\views.py:45
+#: .\kmuhelper\modules\pdfgeneration\order\views.py:48
 msgid "Rechnung"
 msgstr "Fattura"
 
-#: .\kmuhelper\modules\pdfgeneration\order\views.py:48
+#: .\kmuhelper\modules\pdfgeneration\order\views.py:52
 msgid "Lieferschein"
 msgstr "Nota di consegna"
 
-#: .\kmuhelper\modules\pdfgeneration\order\views.py:52
+#: .\kmuhelper\modules\pdfgeneration\order\views.py:57
 msgid "Zahlungserinnerung"
 msgstr "Promemoria di pagamento"
 
-#: .\kmuhelper\modules\pdfgeneration\order\views.py:53
+#: .\kmuhelper\modules\pdfgeneration\order\views.py:58
 #, python-format
 msgid ""
 "Geschätzter Kunde\n"
