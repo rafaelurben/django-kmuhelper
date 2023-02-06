@@ -81,7 +81,7 @@
                             <a href="#" class="disabled">Rechnungsemail</a>
                         {% endif %}
                         <hr>
-                        {% if original.addr_shipping_email and original.versendet %}
+                        {% if original.addr_shipping_email and original.is_shipped %}
                             {% if original.email_lieferung and perms.kmuhelper.view_email %}
                                 <a href="{% url 'admin:kmuhelper_email_change' original.email_lieferung.pk %}">Lieferungsemail ansehen</a>
                             {% endif %}
@@ -105,7 +105,7 @@
             </li>
         {% endif %}
 
-        {% if perms.kmuhelper.add_lieferung and original.versendet %}
+        {% if perms.kmuhelper.add_lieferung and original.is_shipped %}
             <li>
                 <attr title="Die Produkte dieser Bestellung zu einer Lieferung kopieren">
                     <a href="{% url 'admin:kmuhelper_bestellung_zu_lieferung' object_id %}" rel="noopener">Rücksendung</a>
@@ -113,11 +113,11 @@
             </li>
         {% endif %}
         
-        {% if original.trackingnummer %}
-            <li><a target="_blank" href="{{ original.trackinglink }}" rel="noopener">Tracking</a></li>
+        {% if original.tracking_number %}
+            <li><a target="_blank" href="{{ original.tracking_link }}" rel="noopener">Tracking</a></li>
         {% endif %}
 
-        {% if not original.versendet %}
+        {% if not original.is_shipped %}
             <li><a href="#id_addr_shipping_first_name" onclick="copyform();">Rechnungsadresse -> Lieferadresse</a></li>
             <script>
                 function copyform(){

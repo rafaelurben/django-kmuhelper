@@ -31,19 +31,19 @@ def stats_products_price(request):
         from_date = timezone.make_aware(datetime.datetime.strptime(
             str(request.GET.get("from")), "%Y-%m-%d"))
     except (ValueError, IndexError):
-        from_date = Bestellung.objects.order_by("datum").first().datum
+        from_date = Bestellung.objects.order_by("date").first().date
 
     try:
         to_date = timezone.make_aware(datetime.datetime.strptime(
             str(request.GET.get("to")), "%Y-%m-%d"))
     except (ValueError, IndexError):
-        to_date = Bestellung.objects.order_by("datum").last().datum
+        to_date = Bestellung.objects.order_by("date").last().date
 
     products_sold = {}
 
-    for bp in Bestellungsposten.objects.filter(bestellung__datum__gte=from_date, bestellung__datum__lte=to_date).order_by("bestellung__datum").values("bestellung__datum", "menge"):
-        d = datetime.date(year=bp["bestellung__datum"].year,
-                          month=bp["bestellung__datum"].month, day=1).isoformat()
+    for bp in Bestellungsposten.objects.filter(bestellung__date__gte=from_date, bestellung__date__lte=to_date).order_by("bestellung__date").values("bestellung__date", "menge"):
+        d = datetime.date(year=bp["bestellung__date"].year,
+                          month=bp["bestellung__date"].month, day=1).isoformat()
         if d in products_sold:
             products_sold[d] += bp["menge"]
         else:
@@ -55,13 +55,13 @@ def stats_products_price(request):
 
     money_income = {}
 
-    for b in Bestellung.objects.filter(datum__gte=from_date, datum__lte=to_date).order_by("datum").values("datum", "fix_summe"):
-        d = datetime.date(year=b["datum"].year,
-                          month=b["datum"].month, day=1).isoformat()
+    for b in Bestellung.objects.filter(date__gte=from_date, date__lte=to_date).order_by("date").values("date", "cached_sum"):
+        d = datetime.date(year=b["date"].year,
+                          month=b["date"].month, day=1).isoformat()
         if d in money_income:
-            money_income[d] += b["fix_summe"]
+            money_income[d] += b["cached_sum"]
         else:
-            money_income[d] = b["fix_summe"]
+            money_income[d] = b["cached_sum"]
 
     money_income = [{"date": date, "y": money_income[date]}
                     for date in money_income]
@@ -94,17 +94,17 @@ def best_products(request):
         from_date = timezone.make_aware(datetime.datetime.strptime(
             str(request.GET.get("from")), "%Y-%m-%d"))
     except (ValueError, IndexError):
-        from_date = Bestellung.objects.order_by("datum").first().datum
+        from_date = Bestellung.objects.order_by("date").first().date
 
     try:
         to_date=timezone.make_aware(datetime.datetime.strptime(
             str(request.GET.get("to")), "%Y-%m-%d"))
     except (ValueError, IndexError):
-        to_date = Bestellung.objects.order_by("datum").last().datum
+        to_date = Bestellung.objects.order_by("date").last().date
 
     products = {}
 
-    for bp in Bestellungsposten.objects.filter(bestellung__datum__gte=from_date, bestellung__datum__lte=to_date).order_by("produkt__name").values("produkt__name", "menge"):
+    for bp in Bestellungsposten.objects.filter(bestellung__date__gte=from_date, bestellung__date__lte=to_date).order_by("produkt__name").values("produkt__name", "menge"):
         if bp["produkt__name"] in products:
             products[langselect(bp["produkt__name"])] += bp["menge"]
         else:

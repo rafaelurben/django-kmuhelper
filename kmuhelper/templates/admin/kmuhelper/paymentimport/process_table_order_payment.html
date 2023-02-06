@@ -10,7 +10,7 @@
             </th>
             <th>
                 <abbr title="Hier klicken, um die Bestellung als bezahlt zu markieren">
-                    <a class="button markpaid{% if order.bezahlt %} success{% endif %}" 
+                    <a class="button markpaid{% if order.is_paid %} success{% endif %}" 
                         url="{% url 'kmuhelper:api-orders-set-paid' order.pk %}">
                         Bezahlt
                     </a>
@@ -23,13 +23,13 @@
             <td>Betrag:</td>
             <td>{{ payment.amount }} {{ payment.currency }}</td>
             <td>Zahlungskonditionen:</td>
-            <td>{{ order.paymentconditions_display }}</td>
+            <td>{{ order.display_payment_conditions }}</td>
         </tr>
         <tr>
             <td>Valuta:</td>
             <td>{{ payment.valuedate }}</td>
             <td>Rechnungsdatum:</td>
-            <td>{{ order.rechnungsdatum }}</td>
+            <td>{{ order.invoice_date }}</td>
         </tr>
         <tr>
             <td>Name:</td>

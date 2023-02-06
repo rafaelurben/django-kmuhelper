@@ -31,7 +31,7 @@ class Command(BaseCommand):
                 indexrow, ["Vorname"])
             index_last_name = getfirstindex(
                 indexrow, ["Name", "Nachname"])
-            index_sprache = getfirstindex(
+            index_language = getfirstindex(
                 indexrow, ["Sprache", "SPRACHE"])
 
             index_company = getfirstindex(
@@ -63,11 +63,11 @@ class Command(BaseCommand):
                 email = row[index_email] if index_email is not None else ""
                 first_name = row[index_first_name] if index_first_name is not None else ""
                 last_name = row[index_last_name] if index_last_name is not None else ""
-                sprache = ("de" if row[index_sprache].upper() in ["D", "DE", "DEUTSCH"] else
-                           ("fr" if row[index_sprache].upper() in ["F", "FR", "FRANZÖSISCH"] else
-                            ("it" if row[index_sprache].upper() in ["I", "IT", "ITALIENISCH"] else
-                             ("en" if row[index_sprache].upper() in ["E", "EN", "ENGLISCH"] else
-                              "de")))) if index_sprache is not None else "de"
+                language = ("de" if row[index_language].upper() in ["D", "DE", "DEUTSCH"] else
+                           ("fr" if row[index_language].upper() in ["F", "FR", "FRANZÖSISCH"] else
+                            ("it" if row[index_language].upper() in ["I", "IT", "ITALIENISCH"] else
+                             ("en" if row[index_language].upper() in ["E", "EN", "ENGLISCH"] else
+                              "de")))) if index_language is not None else "de"
 
                 company = row[index_company] if index_company is not None else ""
                 address_1 = row[index_strasse] if index_strasse is not None else ""
@@ -78,7 +78,7 @@ class Command(BaseCommand):
                 phone = row[index_phone] if index_phone is not None else ""
 
                 notiz = row[index_notiz] if index_notiz is not None else ""
-                webseite = row[index_web] if index_web is not None else ""
+                website = row[index_web] if index_web is not None else ""
 
                 oldwithid = Kunde.objects.filter(pk=objid).exists()
                 oldwithemail = Kunde.objects.filter(
@@ -103,7 +103,7 @@ class Command(BaseCommand):
                         first_name=first_name,
                         last_name=last_name,
                         company=company,
-                        sprache=sprache,
+                        language=language,
 
                         addr_billing_first_name=first_name,
                         addr_billing_last_name=last_name,
@@ -127,7 +127,7 @@ class Command(BaseCommand):
                         addr_shipping_postcode=postcode,
                         addr_shipping_country=country,
 
-                        webseite=webseite,
+                        website=website,
                         notiz=notiz
                     )
                 elif oldwithidandemail:
@@ -158,7 +158,7 @@ class Command(BaseCommand):
                         old.save()
                         new = old
                         old = Kunde.objects.get(objid=oldid)
-                        new.zusammenfuegen = old
+                        new.combine_with = old
                         new.save()
                         self.stdout.write(
                             self.style.SUCCESS("ID aktualisiert!"))

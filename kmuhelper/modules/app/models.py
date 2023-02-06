@@ -25,7 +25,7 @@ class App_ToDo(Notiz):
 
 class App_WarenausgangManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(versendet=False)
+        return super().get_queryset().filter(is_shipped=False)
 
 
 class App_Warenausgang(Bestellung):
@@ -43,7 +43,7 @@ class App_Warenausgang(Bestellung):
 
 class App_ZahlungseingangManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(bezahlt=False)
+        return super().get_queryset().filter(is_paid=False)
 
 
 class App_Zahlungseingang(Bestellung):

@@ -25,6 +25,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='bestellung',
             name='zahlungskonditionen',
-            field=models.CharField(default=kmuhelper.modules.main.models.defaultzahlungskonditionen, help_text='Skonto und Zahlungsfrist -> <a href="https://rafaelurben.github.io/django-kmuhelper/manual/faq#wie-funktionieren-zahlungskonditionen" target="_blank">Mehr erfahren</a>', max_length=16, validators=[django.core.validators.RegexValidator('^([0-9]+(\\.[0-9]+)?:[0-9]+;)*0:[0-9]+$', "Bitte benutze folgendes Format: 'p:d;p:d' - p = Skonto in %; d = Tage")], verbose_name='Zahlungskonditionen'),
+            field=models.CharField(default=kmuhelper.modules.main.models.default_payment_conditions, help_text='Skonto und Zahlungsfrist -> <a href="https://rafaelurben.github.io/django-kmuhelper/manual/faq#wie-funktionieren-zahlungskonditionen" target="_blank">Mehr erfahren</a>', max_length=16, validators=[django.core.validators.RegexValidator('^([0-9]+(\\.[0-9]+)?:[0-9]+;)*0:[0-9]+$', "Bitte benutze folgendes Format: 'p:d;p:d' - p = Skonto in %; d = Tage")], verbose_name='Zahlungskonditionen'),
         ),
     ]

@@ -33,11 +33,11 @@ def bestellung_pdf_ansehen(request, obj):
     text = None
 
     if 'custom' in request.GET:
-        title = order.rechnungstitel
-        text = order.rechnungstext
+        title = order.pdf_title
+        text = order.pdf_text
 
     # Get the language
-    defaultlang = order.kunde.sprache if order.kunde and order.kunde.sprache else "de"
+    defaultlang = order.kunde.language if order.kunde and order.kunde.language else "de"
     lang = request.GET.get('language', defaultlang).lower()
     if lang not in dict(constants.LANGUAGES):
         lang = defaultlang
@@ -56,12 +56,12 @@ def bestellung_pdf_ansehen(request, obj):
                 days_to_pay = 14
                 title = title or _("Zahlungserinnerung")
                 text = text or _("Geschätzter Kunde\n\nVermutlich ist Ihnen entgangen, diese Rechnung vom %(original_date)s innert der gewährten Frist zu begleichen.\nWir bitten Sie, dies innert %(days)d Tagen nachzuholen.\n\nSollte sich Ihre Zahlung mit diesem Schreiben überkreuzen, so betrachten Sie dieses bitte als gegenstandslos.") % {
-                    'original_date': order.rechnungsdatum.strftime("%d.%m.%Y"),
+                    'original_date': order.invoice_date.strftime("%d.%m.%Y"),
                     'days': days_to_pay,
                 }
                 # Temporarily replace the order's date and payment conditions
-                order.rechnungsdatum = datetime.now().date()
-                order.zahlungskonditionen = f"0:{days_to_pay}"
+                order.invoice_date = datetime.now().date()
+                order.payment_conditions = f"0:{days_to_pay}"
                 pdf = PDFOrder(order, title, text=text, lang=lang,
                                add_cut_lines=not is_print_version, show_payment_conditions=False)
             case other:
@@ -85,9 +85,9 @@ def bestellung_pdf_ansehen(request, obj):
 @require_object(Bestellung)
 def bestellung_pdf_erstellen(request, obj):
     initial={
-        'language': obj.kunde.sprache if obj.kunde and obj.kunde.sprache else 'de',
-        'title': obj.rechnungstitel,
-        'text': obj.rechnungstext,
+        'language': obj.kunde.language if obj.kunde and obj.kunde.language else 'de',
+        'title': obj.pdf_title,
+        'text': obj.pdf_text,
     }
     
     if request.method == 'POST':

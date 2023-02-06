@@ -451,14 +451,14 @@ class WooCommerce():
             woocommerceid=order["id"],
 
             status=order["status"],
-            versendet=(True if order["status"] == "completed" else False),
+            is_shipped=(True if order["status"] == "completed" else False),
 
             ausgelagert=(True if order["status"] == "completed" else False),
 
-            zahlungsmethode=order["payment_method"],
-            bezahlt=(True if order["date_paid"] else False),
+            payment_method=order["payment_method"],
+            is_paid=(True if order["date_paid"] else False),
 
-            kundennotiz=order["customer_note"],
+            customer_note=order["customer_note"],
 
             order_key=order["order_key"],
 
@@ -484,7 +484,7 @@ class WooCommerce():
             addr_shipping_postcode=order["shipping"]["postcode"],
             addr_shipping_country=order["shipping"]["country"]
         )
-        neworder.datum = order["date_created_gmt"] + "+00:00"
+        neworder.date = order["date_created_gmt"] + "+00:00"
         if order["customer_id"]:
             kunde = Kunde.objects.get_or_create(
                 woocommerceid=int(order["customer_id"]))
@@ -542,9 +542,9 @@ class WooCommerce():
             return order
 
         if neworder["date_paid"]:
-            order.bezahlt = True
+            order.is_paid = True
         order.status = neworder["status"]
-        order.kundennotiz = neworder["customer_note"]
+        order.customer_note = neworder["customer_note"]
 
         order.addr_billing_first_name = neworder["billing"]["first_name"]
         order.addr_billing_last_name = neworder["billing"]["last_name"]

@@ -37,15 +37,15 @@ class BestellungInlineBestellungsposten(CustomTabularInline):
     verbose_name_plural = "Bestellungsposten"
     extra = 0
 
-    fields = ('produkt', 'bemerkung', 'produktpreis', 'menge', 'rabatt', 'zwischensumme_display', 'mwstsatz',)
+    fields = ('produkt', 'note', 'produktpreis', 'menge', 'rabatt', 'display_zwischensumme', 'mwstsatz',)
 
-    readonly_fields = ('zwischensumme_display', 'mwstsatz', 'produkt',)
+    readonly_fields = ('display_zwischensumme', 'mwstsatz', 'produkt',)
 
     def get_additional_readonly_fields(self, request, obj=None):
         fields = ["produktpreis"]
-        if obj and (obj.versendet or obj.bezahlt):
+        if obj and (obj.is_shipped or obj.is_paid):
             fields += ["menge"]
-        if obj and obj.bezahlt:
+        if obj and obj.is_paid:
             fields += ["rabatt"]
         return fields
 
@@ -54,7 +54,7 @@ class BestellungInlineBestellungsposten(CustomTabularInline):
     NO_ADD = True
 
     def has_delete_permission(self, request, obj=None):
-        return False if (obj and (obj.versendet or obj.bezahlt)) else super().has_delete_permission(request, obj)
+        return False if (obj and (obj.is_shipped or obj.is_paid)) else super().has_delete_permission(request, obj)
 
     # Custom queryset
     
@@ -71,7 +71,7 @@ class BestellungInlineBestellungspostenAdd(CustomTabularInline):
     autocomplete_fields = ("produkt",)
 
     fieldsets = [
-        (None, {'fields': ['produkt', 'bemerkung', 'menge', 'rabatt']})
+        (None, {'fields': ['produkt', 'note', 'menge', 'rabatt']})
     ]
 
     # Permissions
@@ -81,7 +81,7 @@ class BestellungInlineBestellungspostenAdd(CustomTabularInline):
     NO_VIEW = True
 
     def has_add_permission(self, request, obj=None):
-        return False if (obj and (obj.versendet or obj.bezahlt)) else super().has_add_permission(request, obj)
+        return False if (obj and (obj.is_shipped or obj.is_paid)) else super().has_add_permission(request, obj)
 
 
 class BestellungInlineBestellungskosten(CustomTabularInline):
@@ -90,22 +90,22 @@ class BestellungInlineBestellungskosten(CustomTabularInline):
     verbose_name_plural = "Bestellungskosten"
     extra = 0
 
-    fields = ('kosten', 'name', 'preis', 'rabatt', 'bemerkung', 'zwischensumme_display', 'mwstsatz')
+    fields = ('kosten', 'name', 'preis', 'rabatt', 'note', 'display_zwischensumme', 'mwstsatz')
 
-    readonly_fields = ('kosten', 'zwischensumme_display',)
+    readonly_fields = ('kosten', 'display_zwischensumme',)
 
     def get_additional_readonly_fields(self, request, obj=None):
-        if obj and obj.bezahlt:
+        if obj and obj.is_paid:
             return ['preis', 'mwstsatz', 'rabatt']
         return []
 
     # Permissions
 
     def has_add_permission(self, request, obj=None):
-        return False if (obj and obj.bezahlt) else super().has_add_permission(request, obj)
+        return False if (obj and obj.is_paid) else super().has_add_permission(request, obj)
 
     def has_delete_permission(self, request, obj=None):
-        return False if (obj and obj.bezahlt) else super().has_delete_permission(request, obj)
+        return False if (obj and obj.is_paid) else super().has_delete_permission(request, obj)
 
     # Custom queryset
     
@@ -122,7 +122,7 @@ class BestellungInlineBestellungskostenImport(CustomTabularInline):
 
     autocomplete_fields = ("kosten",)
 
-    fields = ('kosten', 'bemerkung', 'rabatt',)
+    fields = ('kosten', 'note', 'rabatt',)
 
     # Permissions
 
@@ -131,18 +131,18 @@ class BestellungInlineBestellungskostenImport(CustomTabularInline):
     NO_VIEW = True
 
     def has_add_permission(self, request, obj=None):
-        return False if (obj and obj.bezahlt) else super().has_add_permission(request, obj)
+        return False if (obj and obj.is_paid) else super().has_add_permission(request, obj)
 
 
 @admin.register(Bestellung)
 class BestellungsAdmin(CustomModelAdmin):
-    list_display = ('id', 'datum', 'kunde', 'status', 'zahlungsmethode',
-                    'versendet', 'bezahlt', 'fix_summe_display', 'html_notiz')
-    list_filter = ('status', 'bezahlt', 'versendet', 'zahlungsmethode', 'zahlungsempfaenger', 'ansprechpartner')
-    search_fields = ['id', 'datum', 'notiz__name', 'notiz__beschrieb', 'kundennotiz',
-                     'trackingnummer'] + constants.ADDR_BILLING_FIELDS + constants.ADDR_SHIPPING_FIELDS
+    list_display = ('id', 'date', 'kunde', 'status', 'payment_method',
+                    'is_shipped', 'is_paid', 'display_cached_sum', 'html_notiz')
+    list_filter = ('status', 'is_paid', 'is_shipped', 'payment_method', 'zahlungsempfaenger', 'ansprechpartner')
+    search_fields = ['id', 'date', 'notiz__name', 'notiz__beschrieb', 'customer_note',
+                     'tracking_number'] + constants.ADDR_BILLING_FIELDS + constants.ADDR_SHIPPING_FIELDS
 
-    ordering = ("versendet", "bezahlt", "-datum")
+    ordering = ("is_shipped", "is_paid", "-date")
 
     inlines = [BestellungInlineBestellungsposten, BestellungInlineBestellungspostenAdd,
                BestellungInlineBestellungskosten, BestellungInlineBestellungskostenImport]
@@ -153,7 +153,7 @@ class BestellungsAdmin(CustomModelAdmin):
 
     list_select_related = ["kunde", "notiz"]
 
-    date_hierarchy = "datum"
+    date_hierarchy = "date"
 
     def get_fieldsets(self, request, obj=None):
         if obj:
@@ -161,23 +161,23 @@ class BestellungsAdmin(CustomModelAdmin):
                 ('Einstellungen', {
                     'fields': ['zahlungsempfaenger', 'ansprechpartner']
                 }),
-                ('Infos', {'fields': ['name', 'datum', 'status']}),
+                ('Infos', {'fields': ['name', 'date', 'status']}),
                 ('Kunde', {'fields': ['kunde']}),
-                ('Lieferung', {'fields': [('versendet_am', 'versendet'), 'trackingnummer']}),
+                ('Lieferung', {'fields': [('shipped_on', 'is_shipped'), 'tracking_number']}),
                 ('Bezahlungsoptionen', {
-                    'fields': ['zahlungsmethode', 'rechnungsdatum', 'zahlungskonditionen']
+                    'fields': ['payment_method', 'invoice_date', 'payment_conditions']
                 }),
                 ('Bezahlung', {
-                    'fields': [('summeninfo', 'paymentconditions_display'), ('bezahlt_am', 'bezahlt')]
+                    'fields': [('summeninfo', 'display_payment_conditions'), ('paid_on', 'is_paid')]
                 }),
                 ('Notizen & Texte', {
-                    'fields': ['kundennotiz', 'html_notiz'],
+                    'fields': ['customer_note', 'html_notiz'],
                     'classes': ["collapse start-open"]}),
                 ('Rechnungsadresse', {
-                    'fields': constants.ADDR_BILLING_FIELDS if obj.bezahlt else constants.ADDR_BILLING_FIELDS_CATEGORIZED,
+                    'fields': constants.ADDR_BILLING_FIELDS if obj.is_paid else constants.ADDR_BILLING_FIELDS_CATEGORIZED,
                     'classes': ["collapse default-open"]}),
                 ('Lieferadresse', {
-                    'fields': constants.ADDR_SHIPPING_FIELDS if obj.versendet else constants.ADDR_SHIPPING_FIELDS_CATEGORIZED,
+                    'fields': constants.ADDR_SHIPPING_FIELDS if obj.is_shipped else constants.ADDR_SHIPPING_FIELDS_CATEGORIZED,
                     'classes': ["collapse start-open"]})
             ]
 
@@ -187,40 +187,40 @@ class BestellungsAdmin(CustomModelAdmin):
             ('Infos', {'fields': ['status']}),
             ('Kunde', {'fields': ['kunde']}),
             ('Bezahlungsoptionen', {
-                'fields': ['zahlungsmethode', 'rechnungsdatum', 'zahlungskonditionen'],
+                'fields': ['payment_method', 'invoice_date', 'payment_conditions'],
                 'classes': ["collapse start-open"]}),
             ('Notizen & Texte', {
-                'fields': ['kundennotiz'],
+                'fields': ['customer_note'],
                 'classes': ["collapse start-open"]}),
         ]
 
-    readonly_fields = ('html_notiz', 'name', 'trackinglink', 'summeninfo', 'paymentconditions_display')
+    readonly_fields = ('html_notiz', 'name', 'tracking_link', 'summeninfo', 'display_payment_conditions')
 
     def get_additional_readonly_fields(self, request, obj=None):
         fields = []
         if obj:
-            if obj.versendet:
-                fields += ['versendet'] + \
+            if obj.is_shipped:
+                fields += ['is_shipped'] + \
                     constants.ADDR_SHIPPING_FIELDS_WITHOUT_CONTACT
-            if obj.bezahlt:
-                fields += ['bezahlt', 'zahlungsmethode', 'rechnungsdatum', 'rechnungstitel',
-                           'rechnungstext', 'zahlungskonditionen'] + constants.ADDR_BILLING_FIELDS_WITHOUT_CONTACT
+            if obj.is_paid:
+                fields += ['is_paid', 'payment_method', 'invoice_date', 'payment_conditions'] + \
+                    constants.ADDR_BILLING_FIELDS_WITHOUT_CONTACT
             if obj.woocommerceid:
-                fields += ["kundennotiz"]
+                fields += ["customer_note"]
         return fields
 
     # Actions
 
     @admin.action(description="Als bezahlt markieren", permissions=["change"])
-    def als_bezahlt_markieren(self, request, queryset):
+    def mark_as_paid(self, request, queryset):
         successcount = 0
         errorcount = 0
         for bestellung in queryset.all():
-            if bestellung.bezahlt:
+            if bestellung.is_paid:
                 errorcount += 1
             else:
-                bestellung.bezahlt = True
-                if bestellung.versendet:
+                bestellung.is_paid = True
+                if bestellung.is_shipped:
                     bestellung.status = "completed"
                 bestellung.save()
                 successcount += 1
@@ -239,7 +239,7 @@ class BestellungsAdmin(CustomModelAdmin):
             messages.error(request, ('Beim Import von ' + (
                 '{} Bestellungen' if result[1] != 1 else 'einer Bestellung') + ' von WooCommerce ist ein Fehler aufgetreten!').format(result[1]))
 
-    actions = [als_bezahlt_markieren, wc_update]
+    actions = [mark_as_paid, wc_update]
 
     # Save
 
@@ -301,10 +301,10 @@ class KundenAdminBestellungsInline(CustomTabularInline):
 
     show_change_link = True
 
-    ordering = ('-datum', )
+    ordering = ('-date', )
 
-    fields = ('pk', 'datum', 'fix_summe_display', 'versendet', 'bezahlt', 'bezahlt_nach_display')
-    readonly_fields = ('pk', 'bezahlt_nach_display', 'fix_summe_display')
+    fields = ('pk', 'date', 'display_cached_sum', 'is_shipped', 'is_paid', 'display_paid_after')
+    readonly_fields = ('pk', 'display_paid_after', 'display_cached_sum')
 
     # Custom queryset
     
@@ -324,7 +324,7 @@ class KundenAdmin(CustomModelAdmin):
     def get_fieldsets(self, request, obj=None):
         default = [
             ('Infos', {'fields': [
-                'first_name', 'last_name', 'company', 'email', 'sprache']}),
+                'first_name', 'last_name', 'company', 'email', 'language']}),
             ('Rechnungsadresse', {
                 'fields': constants.ADDR_BILLING_FIELDS_CATEGORIZED}),
             ('Lieferadresse', {
@@ -336,30 +336,30 @@ class KundenAdmin(CustomModelAdmin):
             return default + [
                 ('Diverses', {
                     'fields': [
-                        'webseite', 'bemerkung', 'html_notiz'
+                        'website', 'note', 'html_notiz'
                     ]}),
                 ('Erweitert', {
                     'fields': [
-                        'zusammenfuegen'
+                        'combine_with'
                     ], 'classes': ["collapse"]})
             ]
 
         return default + [
-            ('Diverses', {'fields': ['webseite', 'bemerkung']})
+            ('Diverses', {'fields': ['website', 'note']})
         ]
 
     ordering = ('addr_billing_postcode', 'company', 'last_name', 'first_name')
 
     list_display = ('id', 'company', 'last_name', 'first_name', 'addr_billing_postcode',
                     'addr_billing_city', 'email', 'avatar', 'html_notiz')
-    search_fields = ['id', 'last_name', 'first_name', 'company', 'email', 'username', 'webseite',
+    search_fields = ['id', 'last_name', 'first_name', 'company', 'email', 'username', 'website',
                      'notiz__name', 'notiz__beschrieb'] + constants.ADDR_BILLING_FIELDS + constants.ADDR_SHIPPING_FIELDS
 
     readonly_fields = ["html_notiz"]
 
     list_select_related = ["notiz"]
 
-    autocomplete_fields = ["zusammenfuegen"]
+    autocomplete_fields = ["combine_with"]
 
     inlines = [KundenAdminBestellungsInline]
 
@@ -395,8 +395,8 @@ class KundenAdmin(CustomModelAdmin):
 @admin.register(Lieferant)
 class LieferantenAdmin(CustomModelAdmin):
     fieldsets = [
-        ('Infos', {'fields': ['kuerzel', 'name']}),
-        ('Firma', {'fields': ['webseite', 'phone', 'email']}),
+        ('Infos', {'fields': ['abbreviation', 'name']}),
+        ('Firma', {'fields': ['website', 'phone', 'email']}),
         ('Texte', {
             'fields': ['adresse', 'notiz'],
             'classes': ["collapse"]}),
@@ -406,10 +406,10 @@ class LieferantenAdmin(CustomModelAdmin):
             ], 'classes': ["collapse"]})
     ]
 
-    ordering = ('kuerzel',)
+    ordering = ('abbreviation',)
 
-    list_display = ('kuerzel', 'name', 'notiz')
-    search_fields = ['kuerzel', 'name', 'adresse', 'notiz']
+    list_display = ('abbreviation', 'name', 'notiz')
+    search_fields = ['abbreviation', 'name', 'adresse', 'notiz']
 
     # Views
 
@@ -468,18 +468,18 @@ class LieferungInlineProdukteAdd(CustomTabularInline):
 
 @admin.register(Lieferung)
 class LieferungenAdmin(CustomModelAdmin):
-    list_display = ('name', 'datum', 'anzahlprodukte',
+    list_display = ('name', 'date', 'anzahlprodukte',
                     'lieferant', 'eingelagert', 'html_notiz')
     list_filter = ("eingelagert", "lieferant", )
 
-    search_fields = ["name", "datum", "lieferant__name", "lieferant__kuerzel",
+    search_fields = ["name", "date", "lieferant__name", "lieferant__abbreviation",
                      "notiz__name", "notiz__beschrieb"]
 
     readonly_fields = ["html_notiz"]
 
     autocomplete_fields = ("lieferant", )
 
-    ordering = ('-datum',)
+    ordering = ('-date',)
 
     fieldsets = [
         ('Infos', {'fields': ['name', 'html_notiz']}),
@@ -666,7 +666,7 @@ class ProduktAdmin(CustomModelAdmin):
                 ], 'classes': ["collapse"]}),
             ('Bemerkung / Notiz', {
                 'fields': [
-                    'bemerkung', 'html_notiz'] if obj else ['bemerkung'],
+                    'note', 'html_notiz'] if obj else ['note'],
                 'classes': ["collapse start-open"]})
         ]
 
@@ -677,7 +677,7 @@ class ProduktAdmin(CustomModelAdmin):
     list_display_links = ('artikelnummer', 'in_aktion',)
     list_filter = ('lieferant', 'kategorien', 'lagerbestand')
     search_fields = ['artikelnummer', 'name', 'kurzbeschrieb',
-                     'beschrieb', 'bemerkung', 'notiz__name', 'notiz__beschrieb']
+                     'beschrieb', 'note', 'notiz__name', 'notiz__beschrieb']
 
     readonly_fields = ["html_notiz"]
 
@@ -788,7 +788,7 @@ class ProduktkategorienAdmin(CustomModelAdmin):
 class ZahlungsempfaengerAdmin(CustomModelAdmin):
     fieldsets = [
         ("Infos", {
-            "fields": ["firmenname", "firmenuid", "logourl", "webseite"]
+            "fields": ["firmenname", "firmenuid", "logourl", "website"]
         }),
         ("Adresse", {
             "fields": ["address_1", "address_2", "country"]

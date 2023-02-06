@@ -64,24 +64,24 @@ class App_ToDoenAdmin(App_AdminBase, NotizenAdmin):
 
 @admin.register(App_Warenausgang)
 class App_WarenausgangAdmin(App_AdminBase, BestellungsAdmin):
-    list_display = ('id', 'info', 'status', 'versendet_am', 'versendet',
-                    'trackingnummer', 'html_app_notiz')
-    list_editable = ("versendet_am", "versendet", "status", "trackingnummer")
-    list_filter = ('status', 'bezahlt')
+    list_display = ('id', 'info', 'status', 'shipped_on', 'is_shipped',
+                    'tracking_number', 'html_app_notiz')
+    list_editable = ("shipped_on", "is_shipped", "status", "tracking_number")
+    list_filter = ('status', 'is_paid')
 
-    ordering = ("bezahlt", "-datum")
+    ordering = ("is_paid", "-date")
 
     actions = ()
 
 
 @admin.register(App_Zahlungseingang)
 class App_ZahlungseingangAdmin(App_AdminBase, BestellungsAdmin):
-    list_display = ('id', 'info', 'status', 'bezahlt_am', 'bezahlt',
-                    'fix_summe_display', 'paymentconditions_display', 'html_app_notiz')
-    list_editable = ("bezahlt_am", "bezahlt", "status")
-    list_filter = ('status', 'versendet', 'zahlungsmethode')
+    list_display = ('id', 'info', 'status', 'paid_on', 'is_paid',
+                    'display_cached_sum', 'display_payment_conditions', 'html_app_notiz')
+    list_editable = ("paid_on", "is_paid", "status")
+    list_filter = ('status', 'is_shipped', 'payment_method')
 
-    ordering = ("status", "rechnungsdatum",)
+    ordering = ("status", "invoice_date",)
 
     actions = ()
 
@@ -89,7 +89,7 @@ class App_ZahlungseingangAdmin(App_AdminBase, BestellungsAdmin):
 @admin.register(App_Lagerbestand)
 class App_LagerbestandAdmin(App_AdminBase, ProduktAdmin):
     list_display = ('nr', 'clean_name', 'lagerbestand',
-                    'preis', 'bemerkung', 'html_app_notiz')
+                    'preis', 'note', 'html_app_notiz')
     list_display_links = ('nr',)
     list_editable = ["lagerbestand"]
 
@@ -98,7 +98,7 @@ class App_LagerbestandAdmin(App_AdminBase, ProduktAdmin):
 
 @admin.register(App_Wareneingang)
 class App_WareneingangenAdmin(App_AdminBase, LieferungenAdmin):
-    list_display = ('name', 'datum', 'anzahlprodukte', 'html_app_notiz')
+    list_display = ('name', 'date', 'anzahlprodukte', 'html_app_notiz')
     list_filter = ()
 
 #

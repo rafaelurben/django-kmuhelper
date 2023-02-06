@@ -62,10 +62,10 @@ class _PDFOrderPriceTable(Table):
                     formatprice(bp.nur_rabatt())
                 ))
                 h_products += 1
-            if bp.bemerkung:
+            if bp.note:
                 data.append((
                     "",
-                    Paragraph(f"- <b>{bp.bemerkung}</b>"),
+                    Paragraph(f"- <b>{bp.note}</b>"),
                     "",
                     "",
                     "",
@@ -97,10 +97,10 @@ class _PDFOrderPriceTable(Table):
                     formatprice(bk.nur_rabatt())
                 ))
                 h_costs += 1
-            if bk.bemerkung:
+            if bk.note:
                 data.append((
                     "",
-                    Paragraph(f"- <b>{bk.bemerkung}</b>"),
+                    Paragraph(f"- <b>{bk.note}</b>"),
                     "",
                     "",
                     "",
@@ -131,7 +131,7 @@ class _PDFOrderPriceTable(Table):
                 "print-payment-conditions", False)
 
         if show_payment_conditions:
-            payconds = order.get_paymentconditions()
+            payconds = order.get_payment_conditions_data()
             totaltext = pgettext(
                 'Text on generated order PDF', "Rechnungsbetrag, zahlbar netto innert %s Tagen") % payconds[-1]["days"]
         else:
@@ -143,7 +143,7 @@ class _PDFOrderPriceTable(Table):
             "",
             "CHF",
             "",
-            formatprice(order.fix_summe),
+            formatprice(order.cached_sum),
         ))
 
         h_paycond = 0
@@ -218,10 +218,10 @@ class _PDFOrderProductTable(Table):
                 langselect(autotranslate_mengenbezeichnung(
                     bp.produkt.mengenbezeichnung), lang),
             ))
-            if bp.bemerkung:
+            if bp.note:
                 data.append((
                     "",
-                    Paragraph(f"- <b>{bp.bemerkung}</b>"),
+                    Paragraph(f"- <b>{bp.note}</b>"),
                     "",
                     ""
                 ))
@@ -341,7 +341,7 @@ class _PDFOrderQrInvoice(Flowable):
 
         # - CcyAmt
         # - - Amt
-        ln(formatprice(order.fix_summe))
+        ln(formatprice(order.cached_sum))
         # - - Ccy
         ln("CHF")
 
@@ -391,7 +391,7 @@ class _PDFOrderQrInvoice(Flowable):
         strdbkginf = (invoiceinfo[:len(invoiceinfo)//2],
                       invoiceinfo[len(invoiceinfo)//2:])
         ref = order.referenznummer()
-        total = format(order.fix_summe, "08,.2f").replace(
+        total = format(order.cached_sum, "08,.2f").replace(
             ",", " ").lstrip(" 0")
         recv = order.zahlungsempfaenger
         addr = order.addr_billing
@@ -566,7 +566,7 @@ class _PDFOrderHeader(Flowable):
         t.setFont("Helvetica", 8)
         t.textLine(pgettext('Text on generated order PDF', "Tel."))
         t.textLine(pgettext('Text on generated order PDF', "E-Mail"))
-        if ze.webseite:
+        if ze.website:
             t.textLine(pgettext('Text on generated order PDF', "Web"))
         if ze.firmenuid:
             t.textLine(pgettext('Text on generated order PDF', "MwSt"))
@@ -577,8 +577,8 @@ class _PDFOrderHeader(Flowable):
         t.setFont("Helvetica", 8)
         t.textLine(order.ansprechpartner.phone)
         t.textLine(order.ansprechpartner.email)
-        if ze.webseite:
-            t.textLine(ze.webseite)
+        if ze.website:
+            t.textLine(ze.website)
         if ze.firmenuid:
             t.textLine(ze.firmenuid)
         c.drawText(t)
@@ -600,11 +600,11 @@ class _PDFOrderHeader(Flowable):
         t.setFont("Helvetica", 12)
         t.textLine(order.kunde.pkfill(9) if order.kunde else "-"*9)
         t.textLine(order.pkfill(9))
-        t.textLine(order.datum.strftime("%d.%m.%Y"))
+        t.textLine(order.date.strftime("%d.%m.%Y"))
         if self.is_delivery_note:
             t.textLine(datetime.now().date().strftime("%d.%m.%Y"))
         else:
-            t.textLine(order.rechnungsdatum.strftime("%d.%m.%Y"))
+            t.textLine(order.invoice_date.strftime("%d.%m.%Y"))
         c.drawText(t)
 
         # Customer address
@@ -632,10 +632,10 @@ class _PDFOrderHeader(Flowable):
 
         c.setFont("Helvetica", 10)
         if len(self.title) <= 23:
-            c.drawString(64*mm, 0*mm, f'{order.datum.year}-{order.pkfill(6)}' +
+            c.drawString(64*mm, 0*mm, f'{order.date.year}-{order.pkfill(6)}' +
                          (f' (Online #{order.woocommerceid})' if order.woocommerceid else ''))
         else:
-            c.drawString(120*mm, 0*mm, f'{order.datum.year}-{order.pkfill(6)}' +
+            c.drawString(120*mm, 0*mm, f'{order.date.year}-{order.pkfill(6)}' +
                          (f' (Online #{order.woocommerceid})' if order.woocommerceid else ''))
 
         c.restoreState()
@@ -647,9 +647,9 @@ class _PDFOrderHeader(Flowable):
 
 class PDFOrder(PDFGenerator):
     def __init__(self, order, title, *, text=None, lang=None, is_delivery_note=False, add_cut_lines=True, show_payment_conditions=None):
-        order.fix_summe = order.summe_gesamt()
+        order.cached_sum = order.summe_gesamt()
 
-        lang = lang or (order.kunde.sprache if order.kunde and order.kunde.sprache else "de")
+        lang = lang or (order.kunde.language if order.kunde and order.kunde.language else "de")
 
         # Header
         elements = [

@@ -48,7 +48,7 @@ def defaultorderkey():
     return "kh-"+str(randint(10000000, 99999999))
 
 
-def defaultzahlungskonditionen():
+def default_payment_conditions():
     return settings.get_db_setting("default-payment-conditions", "0:30")
 
 # GUTSCHEINTYPEN = [
@@ -114,7 +114,7 @@ class Bestellungskosten(CustomModel):
     )
 
     # Custom data printed on the invoice
-    bemerkung = models.CharField(
+    note = models.CharField(
         verbose_name="Bemerkung",
         default="",
         max_length=250,
@@ -164,7 +164,7 @@ class Bestellungskosten(CustomModel):
         return langselect(self.name)
 
     @admin.display(description="Zwischensumme (exkl. MwSt)")
-    def zwischensumme_display(self):
+    def display_zwischensumme(self):
         return formatprice(self.zwischensumme()) + " CHF"
 
     @admin.display(description="Bestellungskosten")
@@ -204,7 +204,7 @@ class Bestellungsposten(CustomModel):
         to='Produkt',
         on_delete=models.PROTECT,
     )
-    bemerkung = models.CharField(
+    note = models.CharField(
         verbose_name="Bemerkung",
         default="",
         max_length=250,
@@ -246,7 +246,7 @@ class Bestellungsposten(CustomModel):
         return formatprice(self.produkt.mwstsatz)
 
     @admin.display(description="Zwischensumme (exkl. MwSt)")
-    def zwischensumme_display(self):
+    def display_zwischensumme(self):
         return formatprice(self.zwischensumme()) + " CHF"
 
     @admin.display(description="Bestellungsposten")
@@ -279,26 +279,26 @@ class Bestellung(CustomModel):
         default=0,
     )
 
-    datum = models.DateTimeField(
+    date = models.DateTimeField(
         verbose_name="Datum",
         default=timezone.now,
     )
 
-    rechnungsdatum = models.DateField(
+    invoice_date = models.DateField(
         verbose_name="Rechnungsdatum",
         default=None,
         blank=True,
         null=True,
         help_text="Datum der Rechnung. Wird auch als Startpunkt für die Zahlungskonditionen verwendet.",
     )
-    rechnungstitel = models.CharField(
+    pdf_title = models.CharField(
         verbose_name="Rechnungstitel",
         default="",
         blank=True,
         max_length=32,
         help_text="Titel der Rechnung. Leer lassen für 'RECHNUNG'",
     )
-    rechnungstext = models.TextField(
+    pdf_text = models.TextField(
         verbose_name="Rechnungstext",
         default="",
         blank=True,
@@ -307,9 +307,9 @@ class Bestellung(CustomModel):
             "<abbr title='<b>Fett</b><u>Unterstrichen</u><i>Kursiv</i>'>XML markup</abbr>."
         ),
     )
-    zahlungskonditionen = models.CharField(
+    payment_conditions = models.CharField(
         verbose_name="Zahlungskonditionen",
-        default=defaultzahlungskonditionen,
+        default=default_payment_conditions,
         validators=[
             RegexValidator(
                 "^([0-9]+(\.[0-9]+)?:[0-9]+;)*0:[0-9]+$",
@@ -326,18 +326,18 @@ class Bestellung(CustomModel):
         default='processing',
         choices=constants.ORDERSTATUS,
     )
-    versendet = models.BooleanField(
+    is_shipped = models.BooleanField(
         verbose_name="Versendet",
         default=False,
         help_text='Mehr Infos -> '+faq('was-passiert-wenn-ich-eine-bestellung-als-bezahltversendet-markiere', 'FAQ'),
     )
-    versendet_am = models.DateField(
+    shipped_on = models.DateField(
         verbose_name="Versendet am",
         default=None,
         blank=True,
         null=True,
     )
-    trackingnummer = models.CharField(
+    tracking_number = models.CharField(
         verbose_name="Trackingnummer",
         default="",
         blank=True,
@@ -356,25 +356,25 @@ class Bestellung(CustomModel):
         default=False,
     )
 
-    zahlungsmethode = models.CharField(
+    payment_method = models.CharField(
         verbose_name="Zahlungsmethode",
         max_length=7,
         default="cod",
         choices=constants.PAYMENTMETHODS,
     )
-    bezahlt = models.BooleanField(
+    is_paid = models.BooleanField(
         verbose_name="Bezahlt",
         default=False,
         help_text='Mehr Infos -> '+faq('was-passiert-wenn-ich-eine-bestellung-als-bezahltversendet-markiere', 'FAQ'),
     )
-    bezahlt_am = models.DateField(
+    paid_on = models.DateField(
         verbose_name="Bezahlt am",
         default=None,
         blank=True,
         null=True,
     )
 
-    kundennotiz = models.TextField(
+    customer_note = models.TextField(
         verbose_name="Kundennotiz",
         default="",
         blank=True,
@@ -408,7 +408,7 @@ class Bestellung(CustomModel):
         default=defaultansprechpartner,
     )
 
-    # Rechnungsadresse
+    # Billing address
 
     @property
     def addr_billing(self):
@@ -493,7 +493,7 @@ class Bestellung(CustomModel):
         blank=True,
     )
 
-    # Lieferadresse
+    # Shipping address
 
     @property
     def addr_shipping(self):
@@ -605,7 +605,7 @@ class Bestellung(CustomModel):
         related_name='+',
     )
 
-    fix_summe = models.FloatField(
+    cached_sum = models.FloatField(
         verbose_name="Summe in CHF",
         default=0.0,
     )
@@ -626,8 +626,8 @@ class Bestellung(CustomModel):
     def second_save(self, *args, **kwargs):
         "This HAS to be called after all related models have been saved."
 
-        self.fix_summe = self.summe_gesamt()
-        if self.versendet and (not self.ausgelagert):
+        self.cached_sum = self.summe_gesamt()
+        if self.is_shipped and (not self.ausgelagert):
             for i in self.produkte.through.objects.filter(bestellung=self):
                 i.produkt.lagerbestand -= i.menge
                 i.produkt.save()
@@ -639,18 +639,18 @@ class Bestellung(CustomModel):
         if not self.pk and not self.woocommerceid and self.kunde:
             self.import_customer_data()
 
-        if self.rechnungsdatum is None:
-            self.rechnungsdatum = timezone.now()
+        if self.invoice_date is None:
+            self.invoice_date = timezone.now()
 
         super().save(*args, **kwargs)
 
-    @admin.display(description="Trackinglink", ordering="trackingnummer")
-    def trackinglink(self):
-        return f'https://www.post.ch/swisspost-tracking?formattedParcelCodes={self.trackingnummer}' if self.trackingnummer else None
+    @admin.display(description="Trackinglink", ordering="tracking_number")
+    def tracking_link(self):
+        return f'https://www.post.ch/swisspost-tracking?formattedParcelCodes={self.tracking_number}' if self.tracking_number else None
 
     def unstrukturierte_mitteilung(self):
         if self.zahlungsempfaenger.mode == "QRR":
-            return str(self.datum.strftime("%d.%m.%Y"))
+            return str(self.date.strftime("%d.%m.%Y"))
         return _("Referenznummer:")+" "+str(self.id)
 
     def referenznummer(self):
@@ -661,33 +661,33 @@ class Bestellung(CustomModel):
         return c
 
     def rechnungsinformationen(self):
-        date = (self.rechnungsdatum or self.datum).strftime("%y%m%d")
+        date = (self.invoice_date or self.date).strftime("%y%m%d")
 
         output = f'//S1/10/{self.pk}/11/{date}'
 
         if self.zahlungsempfaenger.firmenuid:
             uid = self.zahlungsempfaenger.firmenuid.split("-")[1].replace(".", "")
             output += f'/30/{uid}'
-        kond = self.zahlungskonditionen
+        cond = self.payment_conditions
         mwstdict = self.mwstdict()
         mwststring = ";".join(
             f'{satz}:{mwstdict[satz]}' for satz in mwstdict)
 
-        output += f'/31/{date}/32/{mwststring}/40/{kond}'
+        output += f'/31/{date}/32/{mwststring}/40/{cond}'
         return output
 
-    def get_paymentconditions(self):
+    def get_payment_conditions_data(self):
         "Get the payment conditions as a list of dictionaries"
 
         data = []
-        for pc in self.zahlungskonditionen.split(";"):
+        for pc in self.payment_conditions.split(";"):
             percent, days = pc.split(":")
             percent, days = float(percent), int(days)
             data.append({
                 "days": days,
-                "date": self.rechnungsdatum+timedelta(days=days),
+                "date": self.invoice_date+timedelta(days=days),
                 "percent": percent,
-                "price": runden(self.fix_summe*(1-(percent/100))),
+                "price": runden(self.cached_sum*(1-(percent/100))),
             })
         data.sort(key=lambda x: x["date"])
         return data
@@ -732,33 +732,33 @@ class Bestellung(CustomModel):
     def summeninfo(self):
         return f'{formatprice(self.summe())} CHF + {formatprice(self.summe_mwst())} CHF MwSt = {formatprice(self.summe_gesamt())} CHF'
 
-    @admin.display(description="Total", ordering="fix_summe")
-    def fix_summe_display(self):
-        return f'{formatprice(self.fix_summe)} CHF'
+    @admin.display(description="Total", ordering="cached_sum")
+    def display_cached_sum(self):
+        return f'{formatprice(self.cached_sum)} CHF'
 
     @admin.display(description="Name")
     def name(self):
-        return (f'{self.datum.year}-' if self.datum and not isinstance(self.datum, str) else '') + \
+        return (f'{self.date.year}-' if self.date and not isinstance(self.date, str) else '') + \
                (f'{self.pkfill(6)}'+(f' (WC#{self.woocommerceid})' if self.woocommerceid else '')) + \
                (f' - {self.kunde}' if self.kunde is not None else " Gast")
 
     @admin.display(description="Info")
     def info(self):
-        return f'{self.datum.strftime("%d.%m.%Y")} - '+((self.kunde.company if self.kunde.company else (f'{self.kunde.first_name} {self.kunde.last_name}')) if self.kunde else "Gast")
+        return f'{self.date.strftime("%d.%m.%Y")} - '+((self.kunde.company if self.kunde.company else (f'{self.kunde.first_name} {self.kunde.last_name}')) if self.kunde else "Gast")
 
     @admin.display(description="Bezahlt nach")
-    def bezahlt_nach_display(self):
-        if self.bezahlt_am is None:
+    def display_paid_after(self):
+        if self.paid_on is None:
             return "-"
         
-        daydiff = (self.bezahlt_am - self.rechnungsdatum).days
+        daydiff = (self.paid_on - self.invoice_date).days
         return f'{daydiff} Tag{"en" if daydiff != 1 else ""}'
 
     @admin.display(description="Konditionen")
-    def paymentconditions_display(self):
+    def display_payment_conditions(self):
         "Get the payment conditions as a multiline string of values"
 
-        conditions = self.get_paymentconditions()
+        conditions = self.get_payment_conditions_data()
         output = ""
 
         for condition in conditions:
@@ -772,10 +772,10 @@ class Bestellung(CustomModel):
     def is_correct_payment(self, amount: float, date: datetime):
         "Check if a payment made on a certain date has the correct amount for this order"
 
-        if amount == self.fix_summe:
+        if amount == self.cached_sum:
             return True
         
-        for condition in self.get_paymentconditions():
+        for condition in self.get_payment_conditions_data():
             if amount == condition["price"] and date <= condition["date"]:
                 return True
 
@@ -790,8 +790,8 @@ class Bestellung(CustomModel):
 
     def create_email_rechnung(self):
         context = {
-            "trackinglink": str(self.trackinglink()),
-            "trackingdata": bool(self.trackingnummer and self.versendet),
+            "tracking_link": str(self.tracking_link()),
+            "trackingdata": bool(self.tracking_number and self.is_shipped),
             "id": str(self.id),
             "woocommerceid": str(self.woocommerceid),
             "woocommercedata": bool(self.woocommerceid),
@@ -812,8 +812,7 @@ class Bestellung(CustomModel):
         self.email_rechnung.add_attachments(
             Attachment.objects.create_from_binary(
                 filename=filename,
-                content=PDFOrder(self, lieferschein=False,
-                                 digital=True).get_pdf()
+                content=PDFOrder(self).get_pdf()
             )
         )
 
@@ -822,8 +821,8 @@ class Bestellung(CustomModel):
 
     def create_email_lieferung(self):
         context = {
-            "trackinglink": str(self.trackinglink()),
-            "trackingdata": bool(self.trackinglink() and self.versendet),
+            "tracking_link": str(self.tracking_link()),
+            "trackingdata": bool(self.tracking_link() and self.is_shipped),
             "id": str(self.id),
             "woocommerceid": str(self.woocommerceid),
             "woocommercedata": bool(self.woocommerceid),
@@ -842,8 +841,7 @@ class Bestellung(CustomModel):
         self.email_lieferung.add_attachments(
             Attachment.objects.create_from_binary(
                 filename=filename,
-                content=PDFOrder(self, lieferschein=True,
-                                 digital=True).get_pdf()
+                content=PDFOrder(self, is_delivery_note=True).get_pdf()
             )
         )
 
@@ -921,11 +919,11 @@ class Bestellung(CustomModel):
             zahlungsempfaenger=self.zahlungsempfaenger,
             ansprechpartner=self.ansprechpartner,
 
-            rechnungstitel=self.rechnungstitel,
-            rechnungstext=self.rechnungstext,
-            zahlungskonditionen=self.zahlungskonditionen,
+            pdf_title=self.pdf_title,
+            pdf_text=self.pdf_text,
+            payment_conditions=self.payment_conditions,
 
-            kundennotiz=f"Kopie aus Bestellung #{self.pk}\n--------------------------------\n{self.kundennotiz}",
+            customer_note=f"Kopie aus Bestellung #{self.pk}\n--------------------------------\n{self.customer_note}",
         )
 
         for field in constants.ADDR_SHIPPING_FIELDS+constants.ADDR_BILLING_FIELDS:
@@ -953,7 +951,7 @@ class Bestellung(CustomModel):
 
     DICT_EXCLUDE_FIELDS = ['produkte', 'kosten', 'email_rechnung', 'email_lieferung', 'kunde',
                            'ansprechpartner', 'zahlungsempfaenger', 'ausgelagert',
-                           'versendet', 'bezahlt', 'zahlungsmethode', 'order_key']
+                           'is_shipped', 'is_paid', 'payment_method', 'order_key']
 
 
 # class Gutschein(CustomModel):
@@ -1089,7 +1087,7 @@ class Kunde(CustomModel):
         blank=True,
         editable=False,
     )
-    sprache = models.CharField(
+    language = models.CharField(
         verbose_name="Sprache",
         default="de",
         choices=constants.LANGUAGES,
@@ -1228,7 +1226,7 @@ class Kunde(CustomModel):
         blank=True,
     )
 
-    zusammenfuegen = models.ForeignKey(
+    combine_with = models.ForeignKey(
         to='self',
         verbose_name="Zusammenfügen mit",
         on_delete=models.SET_NULL,
@@ -1236,12 +1234,12 @@ class Kunde(CustomModel):
         null=True,
         help_text="Dies kann nicht widerrufen werden! Werte im aktuellen Kunden werden bevorzugt.",
     )
-    webseite = models.URLField(
+    website = models.URLField(
         verbose_name="Webseite",
         default="",
         blank=True,
     )
-    bemerkung = models.TextField(
+    note = models.TextField(
         verbose_name="Bemerkung",
         default="",
         blank=True,
@@ -1280,55 +1278,55 @@ class Kunde(CustomModel):
         verbose_name_plural = "Kunden"
 
     def save(self, *args, **kwargs):
-        if self.zusammenfuegen:
-            self.woocommerceid = self.woocommerceid or self.zusammenfuegen.woocommerceid
+        if self.combine_with:
+            self.woocommerceid = self.woocommerceid or self.combine_with.woocommerceid
 
-            self.email = self.email or self.zusammenfuegen.email
-            self.first_name = self.first_name or self.zusammenfuegen.first_name
-            self.last_name = self.last_name or self.zusammenfuegen.last_name
-            self.company = self.company or self.zusammenfuegen.company
-            self.username = self.username or self.zusammenfuegen.username
-            self.avatar_url = self.avatar_url or self.zusammenfuegen.avatar_url
-            self.sprache = self.sprache if self.sprache != "de" else self.zusammenfuegen.sprache
+            self.email = self.email or self.combine_with.email
+            self.first_name = self.first_name or self.combine_with.first_name
+            self.last_name = self.last_name or self.combine_with.last_name
+            self.company = self.company or self.combine_with.company
+            self.username = self.username or self.combine_with.username
+            self.avatar_url = self.avatar_url or self.combine_with.avatar_url
+            self.language = self.language if self.language != "de" else self.combine_with.language
 
-            self.addr_billing_first_name = self.addr_billing_first_name or self.zusammenfuegen.addr_billing_first_name
-            self.addr_billing_last_name = self.addr_billing_last_name or self.zusammenfuegen.addr_billing_last_name
-            self.addr_billing_company = self.addr_billing_company or self.zusammenfuegen.addr_billing_company
-            self.addr_billing_address_1 = self.addr_billing_address_1 or self.zusammenfuegen.addr_billing_address_1
-            self.addr_billing_address_2 = self.addr_billing_address_2 or self.zusammenfuegen.addr_billing_address_2
-            self.addr_billing_city = self.addr_billing_city or self.zusammenfuegen.addr_billing_city
-            self.addr_billing_state = self.addr_billing_state or self.zusammenfuegen.addr_billing_state
-            self.addr_billing_postcode = self.addr_billing_postcode or self.zusammenfuegen.addr_billing_postcode
-            self.addr_billing_country = self.addr_billing_country or self.zusammenfuegen.addr_billing_country
-            self.addr_billing_email = self.addr_billing_email or self.zusammenfuegen.addr_billing_email
-            self.addr_billing_phone = self.addr_billing_phone or self.zusammenfuegen.addr_billing_phone
+            self.addr_billing_first_name = self.addr_billing_first_name or self.combine_with.addr_billing_first_name
+            self.addr_billing_last_name = self.addr_billing_last_name or self.combine_with.addr_billing_last_name
+            self.addr_billing_company = self.addr_billing_company or self.combine_with.addr_billing_company
+            self.addr_billing_address_1 = self.addr_billing_address_1 or self.combine_with.addr_billing_address_1
+            self.addr_billing_address_2 = self.addr_billing_address_2 or self.combine_with.addr_billing_address_2
+            self.addr_billing_city = self.addr_billing_city or self.combine_with.addr_billing_city
+            self.addr_billing_state = self.addr_billing_state or self.combine_with.addr_billing_state
+            self.addr_billing_postcode = self.addr_billing_postcode or self.combine_with.addr_billing_postcode
+            self.addr_billing_country = self.addr_billing_country or self.combine_with.addr_billing_country
+            self.addr_billing_email = self.addr_billing_email or self.combine_with.addr_billing_email
+            self.addr_billing_phone = self.addr_billing_phone or self.combine_with.addr_billing_phone
 
-            self.addr_shipping_first_name = self.addr_shipping_first_name or self.zusammenfuegen.addr_shipping_first_name
-            self.addr_shipping_last_name = self.addr_shipping_last_name or self.zusammenfuegen.addr_shipping_last_name
-            self.addr_shipping_company = self.addr_shipping_company or self.zusammenfuegen.addr_shipping_company
-            self.addr_shipping_address_1 = self.addr_shipping_address_1 or self.zusammenfuegen.addr_shipping_address_1
-            self.addr_shipping_address_2 = self.addr_shipping_address_2 or self.zusammenfuegen.addr_shipping_address_2
-            self.addr_shipping_city = self.addr_shipping_city or self.zusammenfuegen.addr_shipping_city
-            self.addr_shipping_state = self.addr_shipping_state or self.zusammenfuegen.addr_shipping_state
-            self.addr_shipping_postcode = self.addr_shipping_postcode or self.zusammenfuegen.addr_shipping_postcode
-            self.addr_shipping_country = self.addr_shipping_country or self.zusammenfuegen.addr_shipping_country
-            self.addr_shipping_email = self.addr_shipping_email or self.zusammenfuegen.addr_shipping_email
-            self.addr_shipping_phone = self.addr_shipping_phone or self.zusammenfuegen.addr_shipping_phone
+            self.addr_shipping_first_name = self.addr_shipping_first_name or self.combine_with.addr_shipping_first_name
+            self.addr_shipping_last_name = self.addr_shipping_last_name or self.combine_with.addr_shipping_last_name
+            self.addr_shipping_company = self.addr_shipping_company or self.combine_with.addr_shipping_company
+            self.addr_shipping_address_1 = self.addr_shipping_address_1 or self.combine_with.addr_shipping_address_1
+            self.addr_shipping_address_2 = self.addr_shipping_address_2 or self.combine_with.addr_shipping_address_2
+            self.addr_shipping_city = self.addr_shipping_city or self.combine_with.addr_shipping_city
+            self.addr_shipping_state = self.addr_shipping_state or self.combine_with.addr_shipping_state
+            self.addr_shipping_postcode = self.addr_shipping_postcode or self.combine_with.addr_shipping_postcode
+            self.addr_shipping_country = self.addr_shipping_country or self.combine_with.addr_shipping_country
+            self.addr_shipping_email = self.addr_shipping_email or self.combine_with.addr_shipping_email
+            self.addr_shipping_phone = self.addr_shipping_phone or self.combine_with.addr_shipping_phone
 
-            self.webseite = self.webseite or self.zusammenfuegen.webseite
-            self.bemerkung = self.bemerkung+"\n"+self.zusammenfuegen.bemerkung
+            self.website = self.website or self.combine_with.website
+            self.note = self.note+"\n"+self.combine_with.note
 
-            for bestellung in self.zusammenfuegen.bestellungen.all():
+            for bestellung in self.combine_with.bestellungen.all():
                 bestellung.kunde = self
                 bestellung.save()
 
-            if getattr(self.zusammenfuegen, 'notiz', False):
-                notiz = self.zusammenfuegen.notiz
+            if getattr(self.combine_with, 'notiz', False):
+                notiz = self.combine_with.notiz
                 notiz.kunde = None if getattr(self, 'notiz', False) else self
                 notiz.save()
 
-            self.zusammenfuegen.delete()
-            self.zusammenfuegen = None
+            self.combine_with.delete()
+            self.combine_with = None
         super().save(*args, **kwargs)
 
     def create_email_registriert(self):
@@ -1381,13 +1379,13 @@ class Kunde(CustomModel):
 
     admin_icon = "fas fa-users"
 
-    DICT_EXCLUDE_FIELDS = ['email_registriert', 'zusammenfuegen']
+    DICT_EXCLUDE_FIELDS = ['email_registriert', 'combine_with']
 
 
 class Lieferant(CustomModel):
     """Model representing a supplier (used only for categorizing)"""
 
-    kuerzel = models.CharField(
+    abbreviation = models.CharField(
         verbose_name="Kürzel",
         max_length=5,
     )
@@ -1396,7 +1394,7 @@ class Lieferant(CustomModel):
         max_length=50,
     )
 
-    webseite = models.URLField(
+    website = models.URLField(
         verbose_name="Webseite",
         blank=True,
     )
@@ -1497,7 +1495,7 @@ class Lieferung(CustomModel):
         max_length=50,
         default=defaultlieferungsname,
     )
-    datum = models.DateField(
+    date = models.DateField(
         verbose_name="Erfasst am",
         auto_now_add=True,
     )
@@ -1717,7 +1715,7 @@ class Produkt(CustomModel):
         default=1,
     )
 
-    bemerkung = models.TextField(
+    note = models.TextField(
         verbose_name='Bemerkung',
         default="",
         blank=True,
@@ -1817,7 +1815,7 @@ class Produkt(CustomModel):
 
     def get_reserved_stock(self):
         n = 0
-        for bp in Bestellungsposten.objects.filter(bestellung__versendet=False, produkt__id=self.id):
+        for bp in Bestellungsposten.objects.filter(bestellung__is_shipped=False, produkt__id=self.id):
             n += bp.menge
         return n
 
@@ -2094,7 +2092,7 @@ class Zahlungsempfaenger(CustomModel):
         blank=True,
         help_text="Nicht auf der Rechnung ersichtlich",
     )
-    webseite = models.URLField(
+    website = models.URLField(
         verbose_name="Webseite",
         default="",
         blank=True,

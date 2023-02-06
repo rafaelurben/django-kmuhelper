@@ -40,10 +40,10 @@ def versions(request):
 def orders_unpaid(request):
     """Get sums of currently unpaid orders."""
 
-    sum_unsent = Bestellung.objects.filter(bezahlt=False, versendet=False).aggregate(
-        models.Sum('fix_summe'))["fix_summe__sum"] or 0
-    sum_sent = Bestellung.objects.filter(bezahlt=False, versendet=True).aggregate(
-        models.Sum('fix_summe'))["fix_summe__sum"] or 0
+    sum_unsent = Bestellung.objects.filter(is_paid=False, is_shipped=False).aggregate(
+        models.Sum('cached_sum'))["cached_sum__sum"] or 0
+    sum_sent = Bestellung.objects.filter(is_paid=False, is_shipped=True).aggregate(
+        models.Sum('cached_sum'))["cached_sum__sum"] or 0
 
     context = {
         "orders_unpaid_sum": {
@@ -61,9 +61,9 @@ def orders_unpaid(request):
 def orders_set_paid(request, obj):
     """Set an order as paid"""
 
-    if not obj.bezahlt:
-        obj.bezahlt = True
-        if obj.versendet and obj.status == 'pending':
+    if not obj.is_paid:
+        obj.is_paid = True
+        if obj.is_shipped and obj.status == 'pending':
             obj.status = 'completed'
         obj.save()
     return SUCCESSFULLY_CHANGED

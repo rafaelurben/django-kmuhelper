@@ -23,10 +23,10 @@ form .wide textarea + div.help {
 /* Price styling */
 
 .text-align-right,
-.field-fix_summe_display,
-.column-fix_summe_display,
-.field-zwischensumme_display,
-.column-zwischensumme_display {
+.field-display_cached_sum,
+.column-display_cached_sum,
+.field-display_zwischensumme,
+.column-display_zwischensumme {
     text-align: end;
 }
 

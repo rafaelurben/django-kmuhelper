@@ -64,6 +64,6 @@ class PDFOrderForm(forms.Form):
         return result
         
     def update_order_settings(self, order):
-        order.rechnungstitel = self.cleaned_data['title']
-        order.rechnungstext = self.cleaned_data['text']
+        order.pdf_title = self.cleaned_data['title']
+        order.pdf_text = self.cleaned_data['text']
         order.save()
