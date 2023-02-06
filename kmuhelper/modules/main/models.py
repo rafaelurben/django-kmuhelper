@@ -74,7 +74,7 @@ class Ansprechpartner(CustomModel):
         max_length=50,
         help_text="Auf Rechnung ersichtlich!",
     )
-    telefon = models.CharField(
+    phone = models.CharField(
         verbose_name="Telefon",
         max_length=50,
         help_text="Auf Rechnung ersichtlich!",
@@ -411,82 +411,82 @@ class Bestellung(CustomModel):
     # Rechnungsadresse
 
     @property
-    def rechnungsadresse(self):
+    def addr_billing(self):
         return {
-            'vorname': self.rechnungsadresse_vorname,
-            'nachname': self.rechnungsadresse_nachname,
-            'firma': self.rechnungsadresse_firma,
-            'adresszeile1': self.rechnungsadresse_adresszeile1,
-            'adresszeile2': self.rechnungsadresse_adresszeile2,
-            'plz': self.rechnungsadresse_plz,
-            'ort': self.rechnungsadresse_ort,
-            'kanton': self.rechnungsadresse_kanton,
-            'land': self.rechnungsadresse_land,
-            'email': self.rechnungsadresse_email,
-            'telefon': self.rechnungsadresse_telefon,
+            'first_name': self.addr_billing_first_name,
+            'last_name': self.addr_billing_last_name,
+            'company': self.addr_billing_company,
+            'address_1': self.addr_billing_address_1,
+            'address_2': self.addr_billing_address_2,
+            'postcode': self.addr_billing_postcode,
+            'city': self.addr_billing_city,
+            'state': self.addr_billing_state,
+            'country': self.addr_billing_country,
+            'email': self.addr_billing_email,
+            'phone': self.addr_billing_phone,
         }
 
-    rechnungsadresse_vorname = models.CharField(
+    addr_billing_first_name = models.CharField(
         verbose_name="Vorname",
         max_length=250,
         default="",
         blank=True,
     )
-    rechnungsadresse_nachname = models.CharField(
+    addr_billing_last_name = models.CharField(
         verbose_name="Nachname",
         max_length=250,
         default="",
         blank=True,
     )
-    rechnungsadresse_firma = models.CharField(
+    addr_billing_company = models.CharField(
         verbose_name="Firma",
         max_length=250,
         default="",
         blank=True,
     )
-    rechnungsadresse_adresszeile1 = models.CharField(
+    addr_billing_address_1 = models.CharField(
         verbose_name="Adresszeile 1",
         max_length=250,
         default="",
         blank=True,
         help_text="Strasse und Hausnummer oder 'Postfach'",
     )
-    rechnungsadresse_adresszeile2 = models.CharField(
+    addr_billing_address_2 = models.CharField(
         verbose_name="Adresszeile 2",
         max_length=250,
         default="",
         blank=True,
         help_text="Wird in QR-Rechnung NICHT verwendet!",
     )
-    rechnungsadresse_ort = models.CharField(
+    addr_billing_city = models.CharField(
         verbose_name="Ort",
         max_length=250,
         default="",
         blank=True,
     )
-    rechnungsadresse_kanton = models.CharField(
+    addr_billing_state = models.CharField(
         verbose_name="Kanton",
         max_length=50,
         default="",
         blank=True,
     )
-    rechnungsadresse_plz = models.CharField(
+    addr_billing_postcode = models.CharField(
         verbose_name="Postleitzahl",
         max_length=50,
         default="",
         blank=True,
     )
-    rechnungsadresse_land = models.CharField(
+    addr_billing_country = models.CharField(
         verbose_name="Land",
         max_length=2,
         default="CH",
         choices=constants.COUNTRIES,
     )
-    rechnungsadresse_email = models.EmailField(
+    addr_billing_email = models.EmailField(
         verbose_name="E-Mail Adresse",
         blank=True,
     )
-    rechnungsadresse_telefon = models.CharField(
+    addr_billing_phone = models.CharField(
         verbose_name="Telefon",
         max_length=50,
         default="",
@@ -496,80 +496,80 @@ class Bestellung(CustomModel):
     # Lieferadresse
 
     @property
-    def lieferadresse(self):
+    def addr_shipping(self):
         return {
-            'vorname': self.lieferadresse_vorname,
-            'nachname': self.lieferadresse_nachname,
-            'firma': self.lieferadresse_firma,
-            'adresszeile1': self.lieferadresse_adresszeile1,
-            'adresszeile2': self.lieferadresse_adresszeile2,
-            'plz': self.lieferadresse_plz,
-            'ort': self.lieferadresse_ort,
-            'kanton': self.lieferadresse_kanton,
-            'land': self.lieferadresse_land,
-            'email': self.lieferadresse_email,
-            'telefon': self.lieferadresse_telefon,
+            'first_name': self.addr_shipping_first_name,
+            'last_name': self.addr_shipping_last_name,
+            'company': self.addr_shipping_company,
+            'address_1': self.addr_shipping_address_1,
+            'address_2': self.addr_shipping_address_2,
+            'postcode': self.addr_shipping_postcode,
+            'city': self.addr_shipping_city,
+            'state': self.addr_shipping_state,
+            'country': self.addr_shipping_country,
+            'email': self.addr_shipping_email,
+            'phone': self.addr_shipping_phone,
         }
 
-    lieferadresse_vorname = models.CharField(
+    addr_shipping_first_name = models.CharField(
         verbose_name="Vorname",
         max_length=250,
         default="",
         blank=True,
     )
-    lieferadresse_nachname = models.CharField(
+    addr_shipping_last_name = models.CharField(
         verbose_name="Nachname",
         max_length=250,
         default="",
         blank=True,
     )
-    lieferadresse_firma = models.CharField(
+    addr_shipping_company = models.CharField(
         verbose_name="Firma",
         max_length=250,
         default="",
         blank=True,
     )
-    lieferadresse_adresszeile1 = models.CharField(
+    addr_shipping_address_1 = models.CharField(
         verbose_name="Adresszeile 1",
         max_length=250,
         default="",
         blank=True,
     )
-    lieferadresse_adresszeile2 = models.CharField(
+    addr_shipping_address_2 = models.CharField(
         verbose_name="Adresszeile 2",
         max_length=250,
         default="",
         blank=True,
     )
-    lieferadresse_ort = models.CharField(
+    addr_shipping_city = models.CharField(
         verbose_name="Ort",
         max_length=250,
         default="",
         blank=True,
     )
-    lieferadresse_kanton = models.CharField(
+    addr_shipping_state = models.CharField(
         verbose_name="Kanton",
         max_length=50,
         default="",
         blank=True,
     )
-    lieferadresse_plz = models.CharField(
+    addr_shipping_postcode = models.CharField(
         verbose_name="Postleitzahl",
         max_length=50,
         default="",
         blank=True,
     )
-    lieferadresse_land = models.CharField(
+    addr_shipping_country = models.CharField(
         verbose_name="Land",
         max_length=2,
         default="CH",
         choices=constants.COUNTRIES,
     )
-    lieferadresse_email = models.EmailField(
+    addr_shipping_email = models.EmailField(
         verbose_name="E-Mail Adresse",
         blank=True,
     )
-    lieferadresse_telefon = models.CharField(
+    addr_shipping_phone = models.CharField(
         verbose_name="Telefon",
         max_length=50,
         default="",
@@ -620,7 +620,7 @@ class Bestellung(CustomModel):
     def import_customer_data(self):
         "Copy the customer data from the customer into the order"
 
-        for field in constants.LIEFERADRESSE_FIELDS+constants.RECHNUNGSADRESSE_FIELDS:
+        for field in constants.ADDR_SHIPPING_FIELDS+constants.ADDR_BILLING_FIELDS:
             setattr(self, field, getattr(self.kunde, field))
 
     def second_save(self, *args, **kwargs):
@@ -744,7 +744,7 @@ class Bestellung(CustomModel):
 
     @admin.display(description="Info")
     def info(self):
-        return f'{self.datum.strftime("%d.%m.%Y")} - '+((self.kunde.firma if self.kunde.firma else (f'{self.kunde.vorname} {self.kunde.nachname}')) if self.kunde else "Gast")
+        return f'{self.datum.strftime("%d.%m.%Y")} - '+((self.kunde.company if self.kunde.company else (f'{self.kunde.first_name} {self.kunde.last_name}')) if self.kunde else "Gast")
 
     @admin.display(description="Bezahlt nach")
     def bezahlt_nach_display(self):
@@ -800,7 +800,7 @@ class Bestellung(CustomModel):
         self.email_rechnung = EMail.objects.create(
             subject=f"Ihre Rechnung Nr. { self.id }"+(
                 f' (Online #{self.woocommerceid})' if self.woocommerceid else ''),
-            to=self.rechnungsadresse_email,
+            to=self.addr_billing_email,
             html_template="bestellung_rechnung.html",
             html_context=context,
             notes=f"Diese E-Mail wurde automatisch aus Bestellung #{self.pk} generiert.",
@@ -831,7 +831,7 @@ class Bestellung(CustomModel):
 
         self.email_lieferung = EMail.objects.create(
             subject=f"Ihre Lieferung Nr. { self.id }",
-            to=self.lieferadresse_email,
+            to=self.addr_shipping_email,
             html_template="bestellung_lieferung.html",
             html_context=context,
             notes=f"Diese E-Mail wurde automatisch aus Bestellung #{self.pk} generiert.",
@@ -928,7 +928,7 @@ class Bestellung(CustomModel):
             kundennotiz=f"Kopie aus Bestellung #{self.pk}\n--------------------------------\n{self.kundennotiz}",
         )
 
-        for field in constants.LIEFERADRESSE_FIELDS+constants.RECHNUNGSADRESSE_FIELDS:
+        for field in constants.ADDR_SHIPPING_FIELDS+constants.ADDR_BILLING_FIELDS:
             setattr(new, field, getattr(self, field))
 
         for bp in self.produkte.through.objects.filter(bestellung=self):
@@ -1060,25 +1060,25 @@ class Kunde(CustomModel):
         verbose_name="E-Mail Adresse",
         blank=True,
     )
-    vorname = models.CharField(
+    first_name = models.CharField(
         verbose_name="Vorname",
         max_length=250,
         default="",
         blank=True,
     )
-    nachname = models.CharField(
+    last_name = models.CharField(
         verbose_name="Nachname",
         max_length=250,
         default="",
         blank=True,
     )
-    firma = models.CharField(
+    company = models.CharField(
         verbose_name="Firma",
         max_length=250,
         default="",
         blank=True,
     )
-    benutzername = models.CharField(
+    username = models.CharField(
         verbose_name="Benutzername",
         max_length=50,
         default="",
@@ -1096,132 +1096,132 @@ class Kunde(CustomModel):
         max_length=2,
     )
 
-    rechnungsadresse_vorname = models.CharField(
+    addr_billing_first_name = models.CharField(
         verbose_name="Vorname",
         max_length=250,
         default="",
         blank=True,
     )
-    rechnungsadresse_nachname = models.CharField(
+    addr_billing_last_name = models.CharField(
         verbose_name="Nachname",
         max_length=250,
         default="",
         blank=True,
     )
-    rechnungsadresse_firma = models.CharField(
+    addr_billing_company = models.CharField(
         verbose_name="Firma",
         max_length=250,
         default="",
         blank=True,
     )
-    rechnungsadresse_adresszeile1 = models.CharField(
+    addr_billing_address_1 = models.CharField(
         verbose_name="Adresszeile 1",
         max_length=250,
         default="",
         blank=True,
         help_text='Strasse und Hausnummer oder "Postfach"',
     )
-    rechnungsadresse_adresszeile2 = models.CharField(
+    addr_billing_address_2 = models.CharField(
         verbose_name="Adresszeile 2",
         max_length=250,
         default="",
         blank=True,
         help_text="Wird in QR-Rechnung NICHT verwendet!",
     )
-    rechnungsadresse_ort = models.CharField(
+    addr_billing_city = models.CharField(
         verbose_name="Ort",
         max_length=250,
         default="",
         blank=True,
     )
-    rechnungsadresse_kanton = models.CharField(
+    addr_billing_state = models.CharField(
         verbose_name="Kanton",
         max_length=50,
         default="",
         blank=True,
     )
-    rechnungsadresse_plz = models.CharField(
+    addr_billing_postcode = models.CharField(
         verbose_name="Postleitzahl",
         max_length=50,
         default="",
         blank=True,
     )
-    rechnungsadresse_land = models.CharField(
+    addr_billing_country = models.CharField(
         verbose_name="Land",
         max_length=2,
         default="CH",
         choices=constants.COUNTRIES,
     )
-    rechnungsadresse_email = models.EmailField(
+    addr_billing_email = models.EmailField(
         verbose_name="E-Mail Adresse",
         blank=True,
     )
-    rechnungsadresse_telefon = models.CharField(
+    addr_billing_phone = models.CharField(
         verbose_name="Telefon",
         max_length=50,
         default="",
         blank=True,
     )
 
-    lieferadresse_vorname = models.CharField(
+    addr_shipping_first_name = models.CharField(
         verbose_name="Vorname",
         max_length=250,
         default="",
         blank=True,
     )
-    lieferadresse_nachname = models.CharField(
+    addr_shipping_last_name = models.CharField(
         verbose_name="Nachname",
         max_length=250,
         default="",
         blank=True,
     )
-    lieferadresse_firma = models.CharField(
+    addr_shipping_company = models.CharField(
         verbose_name="Firma",
         max_length=250,
         default="",
         blank=True,
     )
-    lieferadresse_adresszeile1 = models.CharField(
+    addr_shipping_address_1 = models.CharField(
         verbose_name="Adresszeile 1",
         max_length=250,
         default="",
         blank=True,
     )
-    lieferadresse_adresszeile2 = models.CharField(
+    addr_shipping_address_2 = models.CharField(
         verbose_name="Adresszeile 2",
         max_length=250,
         default="",
         blank=True,
     )
-    lieferadresse_ort = models.CharField(
+    addr_shipping_city = models.CharField(
         verbose_name="Ort",
         max_length=250,
         default="",
         blank=True,
     )
-    lieferadresse_kanton = models.CharField(
+    addr_shipping_state = models.CharField(
         verbose_name="Kanton",
         max_length=50,
         default="",
         blank=True,
     )
-    lieferadresse_plz = models.CharField(
+    addr_shipping_postcode = models.CharField(
         verbose_name="Postleitzahl",
         max_length=50,
         default="",
         blank=True,
     )
-    lieferadresse_land = models.CharField(
+    addr_shipping_country = models.CharField(
         verbose_name="Land",
         max_length=2,
         default="CH",
         choices=constants.COUNTRIES,
     )
-    lieferadresse_email = models.EmailField(
+    addr_shipping_email = models.EmailField(
         verbose_name="E-Mail Adresse",
         blank=True,
     )
-    lieferadresse_telefon = models.CharField(
+    addr_shipping_phone = models.CharField(
         verbose_name="Telefon",
         max_length=50,
         default="",
@@ -1265,14 +1265,14 @@ class Kunde(CustomModel):
         s = f'{self.pkfill(8)} '
         if self.woocommerceid:
             s += f'(WC#{self.woocommerceid}) '
-        if self.vorname:
-            s += f'{self.vorname} '
-        if self.nachname:
-            s += f'{self.nachname} '
-        if self.firma:
-            s += f'{self.firma} '
-        if self.rechnungsadresse_plz and self.rechnungsadresse_ort:
-            s += f'({self.rechnungsadresse_plz} {self.rechnungsadresse_ort})'
+        if self.first_name:
+            s += f'{self.first_name} '
+        if self.last_name:
+            s += f'{self.last_name} '
+        if self.company:
+            s += f'{self.company} '
+        if self.addr_billing_postcode and self.addr_billing_city:
+            s += f'({self.addr_billing_postcode} {self.addr_billing_city})'
         return s
 
     class Meta:
@@ -1284,36 +1284,36 @@ class Kunde(CustomModel):
             self.woocommerceid = self.woocommerceid or self.zusammenfuegen.woocommerceid
 
             self.email = self.email or self.zusammenfuegen.email
-            self.vorname = self.vorname or self.zusammenfuegen.vorname
-            self.nachname = self.nachname or self.zusammenfuegen.nachname
-            self.firma = self.firma or self.zusammenfuegen.firma
-            self.benutzername = self.benutzername or self.zusammenfuegen.benutzername
+            self.first_name = self.first_name or self.zusammenfuegen.first_name
+            self.last_name = self.last_name or self.zusammenfuegen.last_name
+            self.company = self.company or self.zusammenfuegen.company
+            self.username = self.username or self.zusammenfuegen.username
             self.avatar_url = self.avatar_url or self.zusammenfuegen.avatar_url
             self.sprache = self.sprache if self.sprache != "de" else self.zusammenfuegen.sprache
 
-            self.rechnungsadresse_vorname = self.rechnungsadresse_vorname or self.zusammenfuegen.rechnungsadresse_vorname
-            self.rechnungsadresse_nachname = self.rechnungsadresse_nachname or self.zusammenfuegen.rechnungsadresse_nachname
-            self.rechnungsadresse_firma = self.rechnungsadresse_firma or self.zusammenfuegen.rechnungsadresse_firma
-            self.rechnungsadresse_adresszeile1 = self.rechnungsadresse_adresszeile1 or self.zusammenfuegen.rechnungsadresse_adresszeile1
-            self.rechnungsadresse_adresszeile2 = self.rechnungsadresse_adresszeile2 or self.zusammenfuegen.rechnungsadresse_adresszeile2
-            self.rechnungsadresse_ort = self.rechnungsadresse_ort or self.zusammenfuegen.rechnungsadresse_ort
-            self.rechnungsadresse_kanton = self.rechnungsadresse_kanton or self.zusammenfuegen.rechnungsadresse_kanton
-            self.rechnungsadresse_plz = self.rechnungsadresse_plz or self.zusammenfuegen.rechnungsadresse_plz
-            self.rechnungsadresse_land = self.rechnungsadresse_land or self.zusammenfuegen.rechnungsadresse_land
-            self.rechnungsadresse_email = self.rechnungsadresse_email or self.zusammenfuegen.rechnungsadresse_email
-            self.rechnungsadresse_telefon = self.rechnungsadresse_telefon or self.zusammenfuegen.rechnungsadresse_telefon
+            self.addr_billing_first_name = self.addr_billing_first_name or self.zusammenfuegen.addr_billing_first_name
+            self.addr_billing_last_name = self.addr_billing_last_name or self.zusammenfuegen.addr_billing_last_name
+            self.addr_billing_company = self.addr_billing_company or self.zusammenfuegen.addr_billing_company
+            self.addr_billing_address_1 = self.addr_billing_address_1 or self.zusammenfuegen.addr_billing_address_1
+            self.addr_billing_address_2 = self.addr_billing_address_2 or self.zusammenfuegen.addr_billing_address_2
+            self.addr_billing_city = self.addr_billing_city or self.zusammenfuegen.addr_billing_city
+            self.addr_billing_state = self.addr_billing_state or self.zusammenfuegen.addr_billing_state
+            self.addr_billing_postcode = self.addr_billing_postcode or self.zusammenfuegen.addr_billing_postcode
+            self.addr_billing_country = self.addr_billing_country or self.zusammenfuegen.addr_billing_country
+            self.addr_billing_email = self.addr_billing_email or self.zusammenfuegen.addr_billing_email
+            self.addr_billing_phone = self.addr_billing_phone or self.zusammenfuegen.addr_billing_phone
 
-            self.lieferadresse_vorname = self.lieferadresse_vorname or self.zusammenfuegen.lieferadresse_vorname
-            self.lieferadresse_nachname = self.lieferadresse_nachname or self.zusammenfuegen.lieferadresse_nachname
-            self.lieferadresse_firma = self.lieferadresse_firma or self.zusammenfuegen.lieferadresse_firma
-            self.lieferadresse_adresszeile1 = self.lieferadresse_adresszeile1 or self.zusammenfuegen.lieferadresse_adresszeile1
-            self.lieferadresse_adresszeile2 = self.lieferadresse_adresszeile2 or self.zusammenfuegen.lieferadresse_adresszeile2
-            self.lieferadresse_ort = self.lieferadresse_ort or self.zusammenfuegen.lieferadresse_ort
-            self.lieferadresse_kanton = self.lieferadresse_kanton or self.zusammenfuegen.lieferadresse_kanton
-            self.lieferadresse_plz = self.lieferadresse_plz or self.zusammenfuegen.lieferadresse_plz
-            self.lieferadresse_land = self.lieferadresse_land or self.zusammenfuegen.lieferadresse_land
-            self.lieferadresse_email = self.lieferadresse_email or self.zusammenfuegen.lieferadresse_email
-            self.lieferadresse_telefon = self.lieferadresse_telefon or self.zusammenfuegen.lieferadresse_telefon
+            self.addr_shipping_first_name = self.addr_shipping_first_name or self.zusammenfuegen.addr_shipping_first_name
+            self.addr_shipping_last_name = self.addr_shipping_last_name or self.zusammenfuegen.addr_shipping_last_name
+            self.addr_shipping_company = self.addr_shipping_company or self.zusammenfuegen.addr_shipping_company
+            self.addr_shipping_address_1 = self.addr_shipping_address_1 or self.zusammenfuegen.addr_shipping_address_1
+            self.addr_shipping_address_2 = self.addr_shipping_address_2 or self.zusammenfuegen.addr_shipping_address_2
+            self.addr_shipping_city = self.addr_shipping_city or self.zusammenfuegen.addr_shipping_city
+            self.addr_shipping_state = self.addr_shipping_state or self.zusammenfuegen.addr_shipping_state
+            self.addr_shipping_postcode = self.addr_shipping_postcode or self.zusammenfuegen.addr_shipping_postcode
+            self.addr_shipping_country = self.addr_shipping_country or self.zusammenfuegen.addr_shipping_country
+            self.addr_shipping_email = self.addr_shipping_email or self.zusammenfuegen.addr_shipping_email
+            self.addr_shipping_phone = self.addr_shipping_phone or self.zusammenfuegen.addr_shipping_phone
 
             self.webseite = self.webseite or self.zusammenfuegen.webseite
             self.bemerkung = self.bemerkung+"\n"+self.zusammenfuegen.bemerkung
@@ -1335,9 +1335,9 @@ class Kunde(CustomModel):
         context = {
             "kunde": {
                 "id": self.pk,
-                "vorname": self.vorname,
-                "nachname": self.nachname,
-                "firma": self.firma,
+                "first_name": self.first_name,
+                "last_name": self.last_name,
+                "company": self.company,
                 "email": self.email,
             }
         }
@@ -1400,7 +1400,7 @@ class Lieferant(CustomModel):
         verbose_name="Webseite",
         blank=True,
     )
-    telefon = models.CharField(
+    phone = models.CharField(
         verbose_name="Telefon",
         max_length=50,
         default="",
@@ -2067,15 +2067,15 @@ class Zahlungsempfaenger(CustomModel):
         blank=True,
         default="",
     )
-    adresszeile1 = models.CharField(
+    address_1 = models.CharField(
         verbose_name="Strasse und Hausnummer oder 'Postfach'",
         max_length=70,
     )
-    adresszeile2 = models.CharField(
+    address_2 = models.CharField(
         verbose_name="PLZ und Ort",
         max_length=70,
     )
-    land = models.CharField(
+    country = models.CharField(
         verbose_name="Land",
         max_length=2,
         choices=constants.COUNTRIES,
@@ -2087,7 +2087,7 @@ class Zahlungsempfaenger(CustomModel):
         blank=True,
         help_text="Nicht auf der Rechnung ersichtlich",
     )
-    telefon = models.CharField(
+    phone = models.CharField(
         verbose_name="Telefon",
         max_length=70,
         default="",

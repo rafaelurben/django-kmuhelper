@@ -286,7 +286,7 @@ class _PDFOrderQrInvoice(Flowable):
     def get_swiss_qr_payload(self):
         order = self.order
         recv = order.zahlungsempfaenger
-        addr = order.rechnungsadresse
+        addr = order.addr_billing
         qrpayload = []
 
         def ln(text=""):
@@ -313,15 +313,15 @@ class _PDFOrderQrInvoice(Flowable):
         # - - - Name
         ln(recv.firmenname)
         # - - - StrtNmOrAdrLine1
-        ln(recv.adresszeile1)
+        ln(recv.address_1)
         # - - - BldgNbOrAdrLine2
-        ln(recv.adresszeile2)
+        ln(recv.address_2)
         # - - - PstCd
         ln()
         # - - - TwnNm
         ln()
         # - - - Ctry (2-stelliger Landescode gemäss ISO 3166-1)
-        ln(recv.land)
+        ln(recv.country)
 
         # - UltmtCdtr (Entgültiger Zahlungsempfänger)
         # - - AdrTp
@@ -349,17 +349,17 @@ class _PDFOrderQrInvoice(Flowable):
         # - - AdrTp
         ln("K")
         # - - Name
-        ln(addr["firma"] or f"{addr['vorname']} {addr['nachname']}")
+        ln(addr["company"] or f"{addr['first_name']} {addr['last_name']}")
         # - - StrtNmOrAdrLine1
-        ln(addr["adresszeile1"])
+        ln(addr["address_1"])
         # - - BldgNbOrAdrLine2
-        ln(addr["plz"]+" "+addr["ort"])
+        ln(addr["postcode"]+" "+addr["city"])
         # - - PstCd
         ln()
         # - - TwnNm
         ln()
         # - - Ctry (2-stelliger Landescode gemäss ISO 3166-1)
-        ln(addr["land"])
+        ln(addr["country"])
 
         # - RmtIn
         # - - TP
@@ -394,7 +394,7 @@ class _PDFOrderQrInvoice(Flowable):
         total = format(order.fix_summe, "08,.2f").replace(
             ",", " ").lstrip(" 0")
         recv = order.zahlungsempfaenger
-        addr = order.rechnungsadresse
+        addr = order.addr_billing
 
         c = self.canv
         c.saveState()
@@ -445,17 +445,17 @@ class _PDFOrderQrInvoice(Flowable):
         titel(t, pgettext('QR-Invoice / fixed by SIX group style guide', "Konto / Zahlbar an"), True)
         t.textLine(recv.qriban if recv.mode == "QRR" else recv.iban)
         t.textLine(recv.firmenname)
-        t.textLine(recv.adresszeile1)
-        t.textLine(recv.adresszeile2)
+        t.textLine(recv.address_1)
+        t.textLine(recv.address_2)
         t.moveCursor(0, 9)
         if recv.mode == "QRR":
             titel(t, pgettext('QR-Invoice / fixed by SIX group style guide', "Referenz"), True)
             t.textLine(ref)
             t.moveCursor(0, 9)
         titel(t, pgettext('QR-Invoice / fixed by SIX group style guide', "Zahlbar durch"), True)
-        t.textLine(addr["firma"] or f"{addr['vorname']} {addr['nachname']}")
-        t.textLine(addr["adresszeile1"])
-        t.textLine(f"{addr['plz']} {addr['ort']}")
+        t.textLine(addr["company"] or f"{addr['first_name']} {addr['last_name']}")
+        t.textLine(addr["address_1"])
+        t.textLine(f"{addr['postcode']} {addr['city']}")
         c.drawText(t)
 
         # Zahlteil Angaben
@@ -463,8 +463,8 @@ class _PDFOrderQrInvoice(Flowable):
         titel(t, pgettext('QR-Invoice / fixed by SIX group style guide', "Konto / Zahlbar an"))
         t.textLine(recv.qriban if recv.mode == "QRR" else recv.iban)
         t.textLine(recv.firmenname)
-        t.textLine(recv.adresszeile1)
-        t.textLine(recv.adresszeile2)
+        t.textLine(recv.address_1)
+        t.textLine(recv.address_2)
         t.moveCursor(0, 9)
         if recv.mode == "QRR":
             titel(t, pgettext('QR-Invoice / fixed by SIX group style guide', "Referenz"))
@@ -476,9 +476,9 @@ class _PDFOrderQrInvoice(Flowable):
         t.textLine(strdbkginf[1])
         t.moveCursor(0, 9)
         titel(t, pgettext('QR-Invoice / fixed by SIX group style guide', "Zahlbar durch"))
-        t.textLine(addr["firma"] or f"{addr['vorname']} {addr['nachname']}")
-        t.textLine(addr["adresszeile1"])
-        t.textLine(f"{addr['plz']} {addr['ort']}")
+        t.textLine(addr["company"] or f"{addr['first_name']} {addr['last_name']}")
+        t.textLine(addr["address_1"])
+        t.textLine(f"{addr['postcode']} {addr['city']}")
         c.drawText(t)
 
         # Texte
@@ -554,11 +554,11 @@ class _PDFOrderHeader(Flowable):
         # Company address
         t = c.beginText(12*mm, 57*mm)
         t.setFont("Helvetica", 10)
-        t.textLine(ze.adresszeile1)
-        if ze.land == "CH":
-            t.textLine(ze.adresszeile2)
+        t.textLine(ze.address_1)
+        if ze.country == "CH":
+            t.textLine(ze.address_2)
         else:
-            t.textLine(f"{ze.land}-{ze.adresszeile2}")
+            t.textLine(f"{ze.country}-{ze.address_2}")
         c.drawText(t)
 
         # Company info: Title
@@ -575,7 +575,7 @@ class _PDFOrderHeader(Flowable):
         # Company info: Content
         t = c.beginText(24*mm, 46*mm)
         t.setFont("Helvetica", 8)
-        t.textLine(order.ansprechpartner.telefon)
+        t.textLine(order.ansprechpartner.phone)
         t.textLine(order.ansprechpartner.email)
         if ze.webseite:
             t.textLine(ze.webseite)
@@ -611,18 +611,18 @@ class _PDFOrderHeader(Flowable):
         t = c.beginText(120*mm, 27*mm)
         t.setFont("Helvetica", 12)
         if self.is_delivery_note:
-            addr = order.lieferadresse
+            addr = order.addr_shipping
         else:
-            addr = order.rechnungsadresse
+            addr = order.addr_billing
 
-        if addr["firma"]:
-            t.textLine(addr["firma"])
-        if addr["vorname"] or addr["nachname"]:
-            t.textLine(f'{addr["vorname"]} {addr["nachname"]}'.strip())
-        t.textLine(addr["adresszeile1"])
-        if addr["adresszeile2"]:
-            t.textLine(addr["adresszeile2"])
-        t.textLine(f'{addr["plz"]} {addr["ort"]}'.strip())
+        if addr["company"]:
+            t.textLine(addr["company"])
+        if addr["first_name"] or addr["last_name"]:
+            t.textLine(f'{addr["first_name"]} {addr["last_name"]}'.strip())
+        t.textLine(addr["address_1"])
+        if addr["address_2"]:
+            t.textLine(addr["address_2"])
+        t.textLine(f'{addr["postcode"]} {addr["city"]}'.strip())
 
         c.drawText(t)
 

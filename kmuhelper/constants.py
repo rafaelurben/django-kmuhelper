@@ -44,56 +44,56 @@ LANGUAGES = [
     ("en", "Englisch [EN]")
 ]
 
-RECHNUNGSADRESSE_FIELDS_WITHOUT_CONTACT = [
-    'rechnungsadresse_vorname', 'rechnungsadresse_nachname',
-    'rechnungsadresse_firma',
-    'rechnungsadresse_adresszeile1', 'rechnungsadresse_adresszeile2',
-    'rechnungsadresse_plz', 'rechnungsadresse_ort',
-    'rechnungsadresse_kanton', 'rechnungsadresse_land',
+ADDR_BILLING_FIELDS_WITHOUT_CONTACT = [
+    'addr_billing_first_name', 'addr_billing_last_name',
+    'addr_billing_company',
+    'addr_billing_address_1', 'addr_billing_address_2',
+    'addr_billing_postcode', 'addr_billing_city',
+    'addr_billing_state', 'addr_billing_country',
 ]
 
-RECHNUNGSADRESSE_FIELDS = [
-    'rechnungsadresse_vorname', 'rechnungsadresse_nachname',
-    'rechnungsadresse_firma',
-    'rechnungsadresse_adresszeile1', 'rechnungsadresse_adresszeile2',
-    'rechnungsadresse_plz', 'rechnungsadresse_ort',
-    'rechnungsadresse_kanton', 'rechnungsadresse_land',
-    'rechnungsadresse_email', 'rechnungsadresse_telefon'
+ADDR_BILLING_FIELDS = [
+    'addr_billing_first_name', 'addr_billing_last_name',
+    'addr_billing_company',
+    'addr_billing_address_1', 'addr_billing_address_2',
+    'addr_billing_postcode', 'addr_billing_city',
+    'addr_billing_state', 'addr_billing_country',
+    'addr_billing_email', 'addr_billing_phone'
 ]
 
-RECHNUNGSADRESSE_FIELDS_CATEGORIZED = [
-    ('rechnungsadresse_vorname', 'rechnungsadresse_nachname'),
-    'rechnungsadresse_firma',
-    ('rechnungsadresse_adresszeile1',
-     'rechnungsadresse_adresszeile2'),
-    ('rechnungsadresse_plz', 'rechnungsadresse_ort'),
-    ('rechnungsadresse_kanton', 'rechnungsadresse_land'),
-    ('rechnungsadresse_email', 'rechnungsadresse_telefon')
+ADDR_BILLING_FIELDS_CATEGORIZED = [
+    ('addr_billing_first_name', 'addr_billing_last_name'),
+    'addr_billing_company',
+    ('addr_billing_address_1',
+     'addr_billing_address_2'),
+    ('addr_billing_postcode', 'addr_billing_city'),
+    ('addr_billing_state', 'addr_billing_country'),
+    ('addr_billing_email', 'addr_billing_phone')
 ]
 
-LIEFERADRESSE_FIELDS_WITHOUT_CONTACT = [
-    'lieferadresse_vorname', 'lieferadresse_nachname',
-    'lieferadresse_firma',
-    'lieferadresse_adresszeile1', 'lieferadresse_adresszeile2',
-    'lieferadresse_plz', 'lieferadresse_ort',
-    'lieferadresse_kanton', 'lieferadresse_land',
+ADDR_SHIPPING_FIELDS_WITHOUT_CONTACT = [
+    'addr_shipping_first_name', 'addr_shipping_last_name',
+    'addr_shipping_company',
+    'addr_shipping_address_1', 'addr_shipping_address_2',
+    'addr_shipping_postcode', 'addr_shipping_city',
+    'addr_shipping_state', 'addr_shipping_country',
 ]
 
-LIEFERADRESSE_FIELDS = [
-    'lieferadresse_vorname', 'lieferadresse_nachname',
-    'lieferadresse_firma',
-    'lieferadresse_adresszeile1', 'lieferadresse_adresszeile2',
-    'lieferadresse_plz', 'lieferadresse_ort',
-    'lieferadresse_kanton', 'lieferadresse_land',
-    'lieferadresse_email', 'lieferadresse_telefon'
+ADDR_SHIPPING_FIELDS = [
+    'addr_shipping_first_name', 'addr_shipping_last_name',
+    'addr_shipping_company',
+    'addr_shipping_address_1', 'addr_shipping_address_2',
+    'addr_shipping_postcode', 'addr_shipping_city',
+    'addr_shipping_state', 'addr_shipping_country',
+    'addr_shipping_email', 'addr_shipping_phone'
 ]
 
-LIEFERADRESSE_FIELDS_CATEGORIZED = [
-    ('lieferadresse_vorname', 'lieferadresse_nachname'),
-    'lieferadresse_firma',
-    ('lieferadresse_adresszeile1',
-     'lieferadresse_adresszeile2'),
-    ('lieferadresse_plz', 'lieferadresse_ort'),
-    ('lieferadresse_kanton', 'lieferadresse_land'),
-    ('lieferadresse_email', 'lieferadresse_telefon')
+ADDR_SHIPPING_FIELDS_CATEGORIZED = [
+    ('addr_shipping_first_name', 'addr_shipping_last_name'),
+    'addr_shipping_company',
+    ('addr_shipping_address_1',
+     'addr_shipping_address_2'),
+    ('addr_shipping_postcode', 'addr_shipping_city'),
+    ('addr_shipping_state', 'addr_shipping_country'),
+    ('addr_shipping_email', 'addr_shipping_phone')
 ]

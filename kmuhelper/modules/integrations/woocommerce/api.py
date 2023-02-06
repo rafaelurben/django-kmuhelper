@@ -192,35 +192,35 @@ class WooCommerce():
             woocommerceid=customer["id"],
 
             email=customer["email"],
-            vorname=customer["first_name"],
-            nachname=customer["last_name"],
-            firma=customer["billing"]["company"],
-            benutzername=customer["username"],
+            first_name=customer["first_name"],
+            last_name=customer["last_name"],
+            company=customer["billing"]["company"],
+            username=customer["username"],
             avatar_url=customer["avatar_url"],
 
-            rechnungsadresse_vorname=customer["billing"]["first_name"],
-            rechnungsadresse_nachname=customer["billing"]["last_name"],
-            rechnungsadresse_firma=customer["billing"]["company"],
-            rechnungsadresse_adresszeile1=customer["billing"]["address_1"],
-            rechnungsadresse_adresszeile2=customer["billing"]["address_2"],
-            rechnungsadresse_ort=customer["billing"]["city"],
-            rechnungsadresse_kanton=customer["billing"]["state"],
-            rechnungsadresse_plz=customer["billing"]["postcode"],
-            rechnungsadresse_land=customer["billing"]["country"],
-            rechnungsadresse_email=customer["billing"]["email"],
-            rechnungsadresse_telefon=customer["billing"]["phone"],
+            addr_billing_first_name=customer["billing"]["first_name"],
+            addr_billing_last_name=customer["billing"]["last_name"],
+            addr_billing_company=customer["billing"]["company"],
+            addr_billing_address_1=customer["billing"]["address_1"],
+            addr_billing_address_2=customer["billing"]["address_2"],
+            addr_billing_city=customer["billing"]["city"],
+            addr_billing_state=customer["billing"]["state"],
+            addr_billing_postcode=customer["billing"]["postcode"],
+            addr_billing_country=customer["billing"]["country"],
+            addr_billing_email=customer["billing"]["email"],
+            addr_billing_phone=customer["billing"]["phone"],
 
-            lieferadresse_vorname=customer["shipping"]["first_name"],
-            lieferadresse_nachname=customer["shipping"]["last_name"],
-            lieferadresse_firma=customer["shipping"]["company"],
-            lieferadresse_adresszeile1=customer["shipping"]["address_1"],
-            lieferadresse_adresszeile2=customer["shipping"]["address_2"],
-            lieferadresse_ort=customer["shipping"]["city"],
-            lieferadresse_kanton=customer["shipping"]["state"],
-            lieferadresse_plz=customer["shipping"]["postcode"],
-            lieferadresse_land=customer["shipping"]["country"],
-            lieferadresse_email="",
-            lieferadresse_telefon="",
+            addr_shipping_first_name=customer["shipping"]["first_name"],
+            addr_shipping_last_name=customer["shipping"]["last_name"],
+            addr_shipping_company=customer["shipping"]["company"],
+            addr_shipping_address_1=customer["shipping"]["address_1"],
+            addr_shipping_address_2=customer["shipping"]["address_2"],
+            addr_shipping_city=customer["shipping"]["city"],
+            addr_shipping_state=customer["shipping"]["state"],
+            addr_shipping_postcode=customer["shipping"]["postcode"],
+            addr_shipping_country=customer["shipping"]["country"],
+            addr_shipping_email="",
+            addr_shipping_phone="",
         )
         log("Kunde erstellt:", str(newcustomer))
         return newcustomer
@@ -240,33 +240,33 @@ class WooCommerce():
             return customer
 
         customer.email = newcustomer["email"]
-        customer.vorname = newcustomer["first_name"]
-        customer.nachname = newcustomer["last_name"]
-        customer.firma = newcustomer["billing"]["company"] if newcustomer["billing"]["company"] else customer.firma
-        customer.benutzername = newcustomer["username"]
+        customer.first_name = newcustomer["first_name"]
+        customer.last_name = newcustomer["last_name"]
+        customer.company = newcustomer["billing"]["company"] if newcustomer["billing"]["company"] else customer.company
+        customer.username = newcustomer["username"]
         customer.avatar_url = newcustomer["avatar_url"]
 
-        customer.rechnungsadresse_vorname = newcustomer["billing"]["first_name"]
-        customer.rechnungsadresse_nachname = newcustomer["billing"]["last_name"]
-        customer.rechnungsadresse_firma = newcustomer["billing"]["company"]
-        customer.rechnungsadresse_adresszeile1 = newcustomer["billing"]["address_1"]
-        customer.rechnungsadresse_adresszeile2 = newcustomer["billing"]["address_2"]
-        customer.rechnungsadresse_ort = newcustomer["billing"]["city"]
-        customer.rechnungsadresse_kanton = newcustomer["billing"]["state"]
-        customer.rechnungsadresse_plz = newcustomer["billing"]["postcode"]
-        customer.rechnungsadresse_land = newcustomer["billing"]["country"]
-        customer.rechnungsadresse_email = newcustomer["billing"]["email"]
-        customer.rechnungsadresse_telefon = newcustomer["billing"]["phone"]
+        customer.addr_billing_first_name = newcustomer["billing"]["first_name"]
+        customer.addr_billing_last_name = newcustomer["billing"]["last_name"]
+        customer.addr_billing_company = newcustomer["billing"]["company"]
+        customer.addr_billing_address_1 = newcustomer["billing"]["address_1"]
+        customer.addr_billing_address_2 = newcustomer["billing"]["address_2"]
+        customer.addr_billing_city = newcustomer["billing"]["city"]
+        customer.addr_billing_state = newcustomer["billing"]["state"]
+        customer.addr_billing_postcode = newcustomer["billing"]["postcode"]
+        customer.addr_billing_country = newcustomer["billing"]["country"]
+        customer.addr_billing_email = newcustomer["billing"]["email"]
+        customer.addr_billing_phone = newcustomer["billing"]["phone"]
 
-        customer.lieferadresse_vorname = newcustomer["shipping"]["first_name"]
-        customer.lieferadresse_nachname = newcustomer["shipping"]["last_name"]
-        customer.lieferadresse_firma = newcustomer["shipping"]["company"]
-        customer.lieferadresse_adresszeile1 = newcustomer["shipping"]["address_1"]
-        customer.lieferadresse_adresszeile2 = newcustomer["shipping"]["address_2"]
-        customer.lieferadresse_ort = newcustomer["shipping"]["city"]
-        customer.lieferadresse_kanton = newcustomer["shipping"]["state"]
-        customer.lieferadresse_plz = newcustomer["shipping"]["postcode"]
-        customer.lieferadresse_land = newcustomer["shipping"]["country"]
+        customer.addr_shipping_first_name = newcustomer["shipping"]["first_name"]
+        customer.addr_shipping_last_name = newcustomer["shipping"]["last_name"]
+        customer.addr_shipping_company = newcustomer["shipping"]["company"]
+        customer.addr_shipping_address_1 = newcustomer["shipping"]["address_1"]
+        customer.addr_shipping_address_2 = newcustomer["shipping"]["address_2"]
+        customer.addr_shipping_city = newcustomer["shipping"]["city"]
+        customer.addr_shipping_state = newcustomer["shipping"]["state"]
+        customer.addr_shipping_postcode = newcustomer["shipping"]["postcode"]
+        customer.addr_shipping_country = newcustomer["shipping"]["country"]
         customer.save()
         log("Kunde aktualisiert:", str(customer))
         return customer
@@ -462,27 +462,27 @@ class WooCommerce():
 
             order_key=order["order_key"],
 
-            rechnungsadresse_vorname=order["billing"]["first_name"],
-            rechnungsadresse_nachname=order["billing"]["last_name"],
-            rechnungsadresse_firma=order["billing"]["company"],
-            rechnungsadresse_adresszeile1=order["billing"]["address_1"],
-            rechnungsadresse_adresszeile2=order["billing"]["address_2"],
-            rechnungsadresse_ort=order["billing"]["city"],
-            rechnungsadresse_kanton=order["billing"]["state"],
-            rechnungsadresse_plz=order["billing"]["postcode"],
-            rechnungsadresse_land=order["billing"]["country"],
-            rechnungsadresse_email=order["billing"]["email"],
-            rechnungsadresse_telefon=order["billing"]["phone"],
+            addr_billing_first_name=order["billing"]["first_name"],
+            addr_billing_last_name=order["billing"]["last_name"],
+            addr_billing_company=order["billing"]["company"],
+            addr_billing_address_1=order["billing"]["address_1"],
+            addr_billing_address_2=order["billing"]["address_2"],
+            addr_billing_city=order["billing"]["city"],
+            addr_billing_state=order["billing"]["state"],
+            addr_billing_postcode=order["billing"]["postcode"],
+            addr_billing_country=order["billing"]["country"],
+            addr_billing_email=order["billing"]["email"],
+            addr_billing_phone=order["billing"]["phone"],
 
-            lieferadresse_vorname=order["shipping"]["first_name"],
-            lieferadresse_nachname=order["shipping"]["last_name"],
-            lieferadresse_firma=order["shipping"]["company"],
-            lieferadresse_adresszeile1=order["shipping"]["address_1"],
-            lieferadresse_adresszeile2=order["shipping"]["address_2"],
-            lieferadresse_ort=order["shipping"]["city"],
-            lieferadresse_kanton=order["shipping"]["state"],
-            lieferadresse_plz=order["shipping"]["postcode"],
-            lieferadresse_land=order["shipping"]["country"]
+            addr_shipping_first_name=order["shipping"]["first_name"],
+            addr_shipping_last_name=order["shipping"]["last_name"],
+            addr_shipping_company=order["shipping"]["company"],
+            addr_shipping_address_1=order["shipping"]["address_1"],
+            addr_shipping_address_2=order["shipping"]["address_2"],
+            addr_shipping_city=order["shipping"]["city"],
+            addr_shipping_state=order["shipping"]["state"],
+            addr_shipping_postcode=order["shipping"]["postcode"],
+            addr_shipping_country=order["shipping"]["country"]
         )
         neworder.datum = order["date_created_gmt"] + "+00:00"
         if order["customer_id"]:
@@ -494,8 +494,8 @@ class WooCommerce():
                 kunde = kunde[0]
 
             neworder.kunde = kunde
-            neworder.lieferadresse_email = kunde.lieferadresse_email
-            neworder.lieferadresse_telefon = kunde.lieferadresse_telefon
+            neworder.addr_shipping_email = kunde.addr_shipping_email
+            neworder.addr_shipping_phone = kunde.addr_shipping_phone
 
         for item in order["line_items"]:
             product = Produkt.objects.get_or_create(
@@ -546,27 +546,27 @@ class WooCommerce():
         order.status = neworder["status"]
         order.kundennotiz = neworder["customer_note"]
 
-        order.rechnungsadresse_vorname = neworder["billing"]["first_name"]
-        order.rechnungsadresse_nachname = neworder["billing"]["last_name"]
-        order.rechnungsadresse_firma = neworder["billing"]["company"]
-        order.rechnungsadresse_adresszeile1 = neworder["billing"]["address_1"]
-        order.rechnungsadresse_adresszeile2 = neworder["billing"]["address_2"]
-        order.rechnungsadresse_ort = neworder["billing"]["city"]
-        order.rechnungsadresse_kanton = neworder["billing"]["state"]
-        order.rechnungsadresse_plz = neworder["billing"]["postcode"]
-        order.rechnungsadresse_land = neworder["billing"]["country"]
-        order.rechnungsadresse_email = neworder["billing"]["email"]
-        order.rechnungsadresse_telefon = neworder["billing"]["phone"]
+        order.addr_billing_first_name = neworder["billing"]["first_name"]
+        order.addr_billing_last_name = neworder["billing"]["last_name"]
+        order.addr_billing_company = neworder["billing"]["company"]
+        order.addr_billing_address_1 = neworder["billing"]["address_1"]
+        order.addr_billing_address_2 = neworder["billing"]["address_2"]
+        order.addr_billing_city = neworder["billing"]["city"]
+        order.addr_billing_state = neworder["billing"]["state"]
+        order.addr_billing_postcode = neworder["billing"]["postcode"]
+        order.addr_billing_country = neworder["billing"]["country"]
+        order.addr_billing_email = neworder["billing"]["email"]
+        order.addr_billing_phone = neworder["billing"]["phone"]
 
-        order.lieferadresse_vorname = neworder["shipping"]["first_name"]
-        order.lieferadresse_nachname = neworder["shipping"]["last_name"]
-        order.lieferadresse_firma = neworder["shipping"]["company"]
-        order.lieferadresse_adresszeile1 = neworder["shipping"]["address_1"]
-        order.lieferadresse_adresszeile2 = neworder["shipping"]["address_2"]
-        order.lieferadresse_ort = neworder["shipping"]["city"]
-        order.lieferadresse_kanton = neworder["shipping"]["state"]
-        order.lieferadresse_plz = neworder["shipping"]["postcode"]
-        order.lieferadresse_land = neworder["shipping"]["country"]
+        order.addr_shipping_first_name = neworder["shipping"]["first_name"]
+        order.addr_shipping_last_name = neworder["shipping"]["last_name"]
+        order.addr_shipping_company = neworder["shipping"]["company"]
+        order.addr_shipping_address_1 = neworder["shipping"]["address_1"]
+        order.addr_shipping_address_2 = neworder["shipping"]["address_2"]
+        order.addr_shipping_city = neworder["shipping"]["city"]
+        order.addr_shipping_state = neworder["shipping"]["state"]
+        order.addr_shipping_postcode = neworder["shipping"]["postcode"]
+        order.addr_shipping_country = neworder["shipping"]["country"]
         order.save()
         log("Bestellung aktualisiert: ", str(order))
         return order

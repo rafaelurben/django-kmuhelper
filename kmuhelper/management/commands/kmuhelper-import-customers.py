@@ -27,27 +27,27 @@ class Command(BaseCommand):
 
             index_email = getfirstindex(
                 indexrow, ["Email", "E-Mail", "EMail", "EMAIL"])
-            index_vorname = getfirstindex(
+            index_first_name = getfirstindex(
                 indexrow, ["Vorname"])
-            index_nachname = getfirstindex(
+            index_last_name = getfirstindex(
                 indexrow, ["Name", "Nachname"])
             index_sprache = getfirstindex(
                 indexrow, ["Sprache", "SPRACHE"])
 
-            index_firma = getfirstindex(
+            index_company = getfirstindex(
                 indexrow, ["Firma"])
             index_strasse = getfirstindex(
                 indexrow, ["Strasse"])
-            index_ort = getfirstindex(
+            index_city = getfirstindex(
                 indexrow, ["Ort"])
-            index_plz = getfirstindex(
+            index_postcode = getfirstindex(
                 indexrow, ["PLZ", "Plz", "Postleitzahl"])
-            index_land = getfirstindex(
+            index_country = getfirstindex(
                 indexrow, ["Land"])
-            index_telefon = getfirstindex(
+            index_phone = getfirstindex(
                 indexrow, ["Telefon", "Telefon1"])
 
-            index_adresszeile2 = getfirstindex(
+            index_address_2 = getfirstindex(
                 indexrow, ["Adresszeile2", "Zusatz"])
 
             index_notiz = getfirstindex(
@@ -61,21 +61,21 @@ class Command(BaseCommand):
                 objid = row[index_id] if index_id is not None else None
 
                 email = row[index_email] if index_email is not None else ""
-                vorname = row[index_vorname] if index_vorname is not None else ""
-                nachname = row[index_nachname] if index_nachname is not None else ""
+                first_name = row[index_first_name] if index_first_name is not None else ""
+                last_name = row[index_last_name] if index_last_name is not None else ""
                 sprache = ("de" if row[index_sprache].upper() in ["D", "DE", "DEUTSCH"] else
                            ("fr" if row[index_sprache].upper() in ["F", "FR", "FRANZÖSISCH"] else
                             ("it" if row[index_sprache].upper() in ["I", "IT", "ITALIENISCH"] else
                              ("en" if row[index_sprache].upper() in ["E", "EN", "ENGLISCH"] else
                               "de")))) if index_sprache is not None else "de"
 
-                firma = row[index_firma] if index_firma is not None else ""
-                adresszeile1 = row[index_strasse] if index_strasse is not None else ""
-                adresszeile2 = row[index_adresszeile2] if index_adresszeile2 is not None else ""
-                ort = row[index_ort] if index_ort is not None else ""
-                plz = row[index_plz] if index_plz is not None else ""
-                land = row[index_land] if index_land is not None else ""
-                telefon = row[index_telefon] if index_telefon is not None else ""
+                company = row[index_company] if index_company is not None else ""
+                address_1 = row[index_strasse] if index_strasse is not None else ""
+                address_2 = row[index_address_2] if index_address_2 is not None else ""
+                city = row[index_city] if index_city is not None else ""
+                postcode = row[index_postcode] if index_postcode is not None else ""
+                country = row[index_country] if index_country is not None else ""
+                phone = row[index_phone] if index_phone is not None else ""
 
                 notiz = row[index_notiz] if index_notiz is not None else ""
                 webseite = row[index_web] if index_web is not None else ""
@@ -92,40 +92,40 @@ class Command(BaseCommand):
                     self.stdout.write(self.style.SUCCESS("Kunden erstellen:" +
                                                          "\n  ID:         " + str(objid) +
                                                          "\n  E-Mail:     " + email +
-                                                         "\n  Vorname:    " + vorname +
-                                                         "\n  Nachname:   " + nachname +
-                                                         "\n  Firma:      " + firma
+                                                         "\n  Vorname:    " + first_name +
+                                                         "\n  Nachname:   " + last_name +
+                                                         "\n  Firma:      " + company
                                                          ))
                     Kunde.objects.create(
                         pk=objid,
 
                         email=email,
-                        vorname=vorname,
-                        nachname=nachname,
-                        firma=firma,
+                        first_name=first_name,
+                        last_name=last_name,
+                        company=company,
                         sprache=sprache,
 
-                        rechnungsadresse_vorname=vorname,
-                        rechnungsadresse_nachname=nachname,
-                        rechnungsadresse_firma=firma,
-                        rechnungsadresse_adresszeile1=adresszeile1,
-                        rechnungsadresse_adresszeile2=adresszeile2,
-                        rechnungsadresse_ort=ort,
-                        #rechnungsadresse_kanton = "",
-                        rechnungsadresse_plz=plz,
-                        rechnungsadresse_land=land,
-                        rechnungsadresse_email=email,
-                        rechnungsadresse_telefon=telefon,
+                        addr_billing_first_name=first_name,
+                        addr_billing_last_name=last_name,
+                        addr_billing_company=company,
+                        addr_billing_address_1=address_1,
+                        addr_billing_address_2=address_2,
+                        addr_billing_city=city,
+                        #addr_billing_state = "",
+                        addr_billing_postcode=postcode,
+                        addr_billing_country=country,
+                        addr_billing_email=email,
+                        addr_billing_phone=phone,
 
-                        lieferadresse_vorname=vorname,
-                        lieferadresse_nachname=nachname,
-                        lieferadresse_firma=firma,
-                        lieferadresse_adresszeile1=adresszeile1,
-                        lieferadresse_adresszeile2=adresszeile2,
-                        lieferadresse_ort=ort,
-                        #lieferadresse_kanton = "",
-                        lieferadresse_plz=plz,
-                        lieferadresse_land=land,
+                        addr_shipping_first_name=first_name,
+                        addr_shipping_last_name=last_name,
+                        addr_shipping_company=company,
+                        addr_shipping_address_1=address_1,
+                        addr_shipping_address_2=address_2,
+                        addr_shipping_city=city,
+                        #addr_shipping_state = "",
+                        addr_shipping_postcode=postcode,
+                        addr_shipping_country=country,
 
                         webseite=webseite,
                         notiz=notiz
@@ -134,23 +134,23 @@ class Command(BaseCommand):
                     self.stdout.write(self.style.SUCCESS("Kunde existiert bereits!" +
                                                          "\n  ID:         " + str(objid) +
                                                          "\n  E-Mail:     " + email +
-                                                         "\n  Vorname:    " + vorname +
-                                                         "\n  Nachname:   " + nachname +
-                                                         "\n  Firma:      " + firma
+                                                         "\n  Vorname:    " + first_name +
+                                                         "\n  Nachname:   " + last_name +
+                                                         "\n  Firma:      " + company
                                                          ))
                 elif oldwithemail and not oldwithid:
                     old = Kunde.objects.get(email=email)
                     self.stdout.write(self.style.SUCCESS("Kunde mit der E-Mail '"+email+"' existiert bereits, jedoch ist die ID unterschiedlich!" +
                                                          "\n  KMUHelper-Daten:" +
                                                          "\n    ID:       " + str(old.pk) +
-                                                         "\n    Vorname:  " + old.vorname +
-                                                         "\n    Nachname: " + old.nachname +
-                                                         "\n    Firma:    " + old.rechnungsadresse_firma +
+                                                         "\n    Vorname:  " + old.first_name +
+                                                         "\n    Nachname: " + old.last_name +
+                                                         "\n    Firma:    " + old.addr_billing_company +
                                                          "\n  CSV Daten:" +
                                                          "\n    ID:       " + str(objid) +
-                                                         "\n    Vorname:  " + vorname +
-                                                         "\n    Nachname: " + nachname +
-                                                         "\n    Firma:    " + firma
+                                                         "\n    Vorname:  " + first_name +
+                                                         "\n    Nachname: " + last_name +
+                                                         "\n    Firma:    " + company
                                                          ))
                     if input("ID aus der CSV-Datei verwenden? [y/n] ").lower() in ["y", "yes", "j", "ja", "aktualisieren"]:
                         oldid = old.pk
@@ -167,14 +167,14 @@ class Command(BaseCommand):
                     self.stdout.write(self.style.SUCCESS("Kunde mit der ID '"+str(objid)+"' existiert bereits, jedoch ist die E-Mail unterschiedlich!" +
                                                          "\n  KMUHelper-Daten:" +
                                                          "\n    E-Mail:   " + old.email +
-                                                         "\n    Vorname:  " + old.vorname +
-                                                         "\n    Nachname: " + old.nachname +
-                                                         "\n    Firma:    " + old.rechnungsadresse_firma +
+                                                         "\n    Vorname:  " + old.first_name +
+                                                         "\n    Nachname: " + old.last_name +
+                                                         "\n    Firma:    " + old.addr_billing_company +
                                                          "\n  CSV Daten:" +
                                                          "\n    E-Mail:   " + email +
-                                                         "\n    Vorname:  " + vorname +
-                                                         "\n    Nachname: " + nachname +
-                                                         "\n    Firma:    " + firma
+                                                         "\n    Vorname:  " + first_name +
+                                                         "\n    Nachname: " + last_name +
+                                                         "\n    Firma:    " + company
                                                          ))
                     if input("E-Mail aus der CSV-Datei verwenden? [y/n] ").lower() in ["y", "yes", "j", "ja", "aktualisieren"]:
                         old.email = email
