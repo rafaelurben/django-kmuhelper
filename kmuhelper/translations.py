@@ -15,8 +15,8 @@ def langselect(string, lang="de"):
 
 # Autotranslations
 
-def autotranslate_mengenbezeichnung(mengenbezeichnung):
-    match mengenbezeichnung:
+def autotranslate_quantity_description(quantity_description):
+    match quantity_description:
         case "Stück":
             return "[:de]Stück[:fr]Pièce[:it]Pezzo[:en]Piece[:]"
         case "Stunden":
@@ -27,7 +27,7 @@ def autotranslate_mengenbezeichnung(mengenbezeichnung):
             return "[:de]Flasche[:fr]Bouteille[:it]Bottiglia[:en]Bottle[:]"
         case "Tube":
             return "[:de]Tube[:fr]Tube[:it]Tubetto[:en]Tube[:]"
-    return mengenbezeichnung
+    return quantity_description
 
 def autotranslate_kosten_name(name):
     match name:

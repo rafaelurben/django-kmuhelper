@@ -14,7 +14,7 @@ ORDERSTATUS = [
     ("trash", "Gelöscht")
 ]
 
-MWSTSETS = [
+VAT_RATES = [
     (0.0, "0.0% (Mehrwertsteuerfrei)"),
     (2.5, "2.5% (Bis 2023: Reduzierter Satz)"),
     (2.6, "2.6% (Ab 2024: Reduzierter Satz)"),
@@ -23,7 +23,7 @@ MWSTSETS = [
     (7.7, "7.7% (Bis 2023: Normalsatz)"),
     (8.1, "8.1% (Ab 2024: Normalsatz)"),
 ]
-MWST_DEFAULT = 7.7
+VAT_RATE_DEFAULT = 7.7
 
 PAYMENTMETHODS = [
     ("bacs", "Überweisung"),

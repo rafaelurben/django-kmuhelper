@@ -3,7 +3,7 @@
 from datetime import datetime
 
 from kmuhelper import settings
-from kmuhelper.translations import autotranslate_mengenbezeichnung, autotranslate_kosten_name, langselect
+from kmuhelper.translations import autotranslate_quantity_description, autotranslate_kosten_name, langselect
 from kmuhelper.utils import formatprice
 from kmuhelper.modules.pdfgeneration.base import PDFGenerator
 
@@ -41,25 +41,25 @@ class _PDFOrderPriceTable(Table):
         h_products = 0
 
         for bp in order.produkte.through.objects.filter(bestellung=order):
-            zwsumohnerabatt = bp.zwischensumme_ohne_rabatt()
+            subtotal_without_discount = bp.calc_subtotal_without_discount()
             data.append((
-                bp.produkt.artikelnummer,
+                bp.produkt.article_number,
                 Paragraph(langselect(bp.produkt.name, lang)),
-                str(bp.menge),
-                langselect(autotranslate_mengenbezeichnung(
-                    bp.produkt.mengenbezeichnung), lang),
-                formatprice(bp.produktpreis),
-                formatprice(zwsumohnerabatt)
+                str(bp.quantity),
+                langselect(autotranslate_quantity_description(
+                    bp.produkt.quantity_description), lang),
+                formatprice(bp.product_price),
+                formatprice(subtotal_without_discount)
             ))
             h_products += 1
-            if bp.rabatt:
+            if bp.discount:
                 data.append((
                     "",
                     "- "+pgettext('Text on generated order PDF', "Rabatt"),
-                    str(bp.rabatt),
+                    str(bp.discount),
                     "%",
-                    formatprice(zwsumohnerabatt),
-                    formatprice(bp.nur_rabatt())
+                    formatprice(subtotal_without_discount),
+                    formatprice(bp.calc_discount())
                 ))
                 h_products += 1
             if bp.note:
@@ -84,17 +84,17 @@ class _PDFOrderPriceTable(Table):
                 "",
                 "",
                 "",
-                formatprice(bk.preis)
+                formatprice(bk.price)
             ))
             h_costs += 1
-            if bk.rabatt:
+            if bk.discount:
                 data.append((
                     "",
                     "- "+pgettext('Text on generated order PDF', "Rabatt"),
-                    str(bk.rabatt),
+                    str(bk.discount),
                     "%",
-                    formatprice(bk.zwischensumme_ohne_rabatt()),
-                    formatprice(bk.nur_rabatt())
+                    formatprice(bk.calc_subtotal_without_discount()),
+                    formatprice(bk.calc_discount())
                 ))
                 h_costs += 1
             if bk.note:
@@ -112,15 +112,15 @@ class _PDFOrderPriceTable(Table):
 
         h_vat = 0
 
-        mwstdict = dict(order.mwstdict())
-        for mwstsatz in mwstdict:
+        vat_dict = dict(order.get_vat_dict())
+        for vat_rate in vat_dict:
             data.append((
                 "",
                 pgettext('Text on generated order PDF', "MwSt"),
-                mwstsatz,
+                vat_rate,
                 "%",
-                formatprice(float(mwstdict[mwstsatz])),
-                formatprice(float(mwstdict[mwstsatz]*(float(mwstsatz)/100)))
+                formatprice(float(vat_dict[vat_rate])),
+                formatprice(float(vat_dict[vat_rate]*(float(vat_rate)/100)))
             ))
             h_vat += 1
 
@@ -212,11 +212,11 @@ class _PDFOrderProductTable(Table):
 
         for bp in order.produkte.through.objects.filter(bestellung=order):
             data.append((
-                bp.produkt.artikelnummer,
+                bp.produkt.article_number,
                 Paragraph(langselect(bp.produkt.name, lang)),
-                str(bp.menge),
-                langselect(autotranslate_mengenbezeichnung(
-                    bp.produkt.mengenbezeichnung), lang),
+                str(bp.quantity),
+                langselect(autotranslate_quantity_description(
+                    bp.produkt.quantity_description), lang),
             ))
             if bp.note:
                 data.append((
@@ -226,7 +226,7 @@ class _PDFOrderProductTable(Table):
                     ""
                 ))
 
-            productcount += bp.menge
+            productcount += bp.quantity
 
         # Total
 
@@ -647,7 +647,7 @@ class _PDFOrderHeader(Flowable):
 
 class PDFOrder(PDFGenerator):
     def __init__(self, order, title, *, text=None, lang=None, is_delivery_note=False, add_cut_lines=True, show_payment_conditions=None):
-        order.cached_sum = order.summe_gesamt()
+        order.cached_sum = order.calc_total()
 
         lang = lang or (order.kunde.language if order.kunde and order.kunde.language else "de")
 

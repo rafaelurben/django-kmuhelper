@@ -25,8 +25,8 @@ form .wide textarea + div.help {
 .text-align-right,
 .field-display_cached_sum,
 .column-display_cached_sum,
-.field-display_zwischensumme,
-.column-display_zwischensumme {
+.field-display_subtotal,
+.column-display_subtotal {
     text-align: end;
 }
 

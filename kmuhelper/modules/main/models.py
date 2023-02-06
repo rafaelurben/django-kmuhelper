@@ -122,7 +122,7 @@ class Bestellungskosten(CustomModel):
         help_text="Wird auf die Rechnung gedruckt.",
     )
 
-    rabatt = models.FloatField(
+    discount = models.FloatField(
         verbose_name="Rabatt in %",
         default=0.0,
         validators=[
@@ -138,25 +138,25 @@ class Bestellungskosten(CustomModel):
         default="Zusätzliche Kosten",
         help_text=I18N_HELP_TEXT,
     )
-    preis = models.FloatField(
+    price = models.FloatField(
         verbose_name="Preis (exkl. MwSt)",
         default=0.0,
     )
-    mwstsatz = models.FloatField(
+    vat_rate = models.FloatField(
         verbose_name="MwSt-Satz",
-        choices=constants.MWSTSETS,
-        default=constants.MWST_DEFAULT,
+        choices=constants.VAT_RATES,
+        default=constants.VAT_RATE_DEFAULT,
     )
 
     # Calculated data
-    def zwischensumme(self):
-        return runden(self.preis*((100-self.rabatt)/100))
+    def calc_subtotal(self):
+        return runden(self.price*((100-self.discount)/100))
 
-    def zwischensumme_ohne_rabatt(self):
-        return runden(self.preis)
+    def calc_subtotal_without_discount(self):
+        return runden(self.price)
 
-    def nur_rabatt(self):
-        return runden(self.preis*(self.rabatt/100))*-1
+    def calc_discount(self):
+        return runden(self.price*(self.discount/100))*-1
 
     # Display methods
     @admin.display(description="Name", ordering="name")
@@ -164,8 +164,8 @@ class Bestellungskosten(CustomModel):
         return langselect(self.name)
 
     @admin.display(description="Zwischensumme (exkl. MwSt)")
-    def display_zwischensumme(self):
-        return formatprice(self.zwischensumme()) + " CHF"
+    def display_subtotal(self):
+        return formatprice(self.calc_subtotal()) + " CHF"
 
     @admin.display(description="Bestellungskosten")
     def __str__(self):
@@ -176,8 +176,8 @@ class Bestellungskosten(CustomModel):
     def save(self, *args, **kwargs):
         if self.pk is None and self.kosten is not None:
             self.name = self.kosten.name
-            self.preis = self.kosten.preis
-            self.mwstsatz = self.kosten.mwstsatz
+            self.price = self.kosten.price
+            self.vat_rate = self.kosten.vat_rate
         super().save(*args, **kwargs)
 
     class Meta:
@@ -212,11 +212,11 @@ class Bestellungsposten(CustomModel):
         help_text="Wird auf die Rechnung gedruckt.",
     )
 
-    menge = models.IntegerField(
+    quantity = models.IntegerField(
         verbose_name="Menge",
         default=1,
     )
-    rabatt = models.IntegerField(
+    discount = models.IntegerField(
         verbose_name="Rabatt in %",
         default=0,
         validators=[
@@ -225,37 +225,37 @@ class Bestellungsposten(CustomModel):
         ],
     )
 
-    produktpreis = models.FloatField(
+    product_price = models.FloatField(
         verbose_name="Produktpreis (exkl. MwSt)",
         default=0.0,
     )
 
     # Calculated data
-    def zwischensumme(self):
-        return runden(self.produktpreis*self.menge*((100-self.rabatt)/100))
+    def calc_subtotal(self):
+        return runden(self.product_price*self.quantity*((100-self.discount)/100))
 
-    def zwischensumme_ohne_rabatt(self):
-        return runden(self.produktpreis*self.menge)
+    def calc_subtotal_without_discount(self):
+        return runden(self.product_price*self.quantity)
 
-    def nur_rabatt(self):
-        return runden(self.produktpreis*self.menge*(self.rabatt/100))*-1
+    def calc_discount(self):
+        return runden(self.product_price*self.quantity*(self.discount/100))*-1
 
     # Display methods
     @admin.display(description="MwSt-Satz")
-    def mwstsatz(self):
-        return formatprice(self.produkt.mwstsatz)
+    def display_vat_rate(self):
+        return formatprice(self.produkt.vat_rate)
 
     @admin.display(description="Zwischensumme (exkl. MwSt)")
-    def display_zwischensumme(self):
-        return formatprice(self.zwischensumme()) + " CHF"
+    def display_subtotal(self):
+        return formatprice(self.calc_subtotal()) + " CHF"
 
     @admin.display(description="Bestellungsposten")
     def __str__(self):
-        return f'({self.pk}) {self.menge}x {self.produkt.clean_name()} ({self.produkt.pk})'
+        return f'({self.pk}) {self.quantity}x {self.produkt.clean_name()} ({self.produkt.pk})'
 
     def save(self, *args, **kwargs):
-        if not self.produktpreis:
-            self.produktpreis = runden(self.produkt.preis())
+        if not self.product_price:
+            self.product_price = runden(self.produkt.get_current_price())
         super().save(*args, **kwargs)
 
     class Meta:
@@ -626,10 +626,10 @@ class Bestellung(CustomModel):
     def second_save(self, *args, **kwargs):
         "This HAS to be called after all related models have been saved."
 
-        self.cached_sum = self.summe_gesamt()
+        self.cached_sum = self.calc_total()
         if self.is_shipped and (not self.ausgelagert):
             for i in self.produkte.through.objects.filter(bestellung=self):
-                i.produkt.lagerbestand -= i.menge
+                i.produkt.lagerbestand -= i.quantity
                 i.produkt.save()
             self.ausgelagert = True
 
@@ -669,11 +669,11 @@ class Bestellung(CustomModel):
             uid = self.zahlungsempfaenger.firmenuid.split("-")[1].replace(".", "")
             output += f'/30/{uid}'
         cond = self.payment_conditions
-        mwstdict = self.mwstdict()
-        mwststring = ";".join(
-            f'{satz}:{mwstdict[satz]}' for satz in mwstdict)
+        vat_dict = self.get_vat_dict()
+        var_str = ";".join(
+            f'{rate}:{vat_dict[rate]}' for rate in vat_dict)
 
-        output += f'/31/{date}/32/{mwststring}/40/{cond}'
+        output += f'/31/{date}/32/{var_str}/40/{cond}'
         return output
 
     def get_payment_conditions_data(self):
@@ -692,45 +692,45 @@ class Bestellung(CustomModel):
         data.sort(key=lambda x: x["date"])
         return data
 
-    def mwstdict(self):
+    def get_vat_dict(self):
         "Get the VAT as a dictionary"
-        mwst = {}
+        vat_dict = {}
         for p in self.produkte.through.objects.filter(bestellung=self).select_related('produkt'):
-            if str(p.produkt.mwstsatz) in mwst:
-                mwst[str(p.produkt.mwstsatz)] += p.zwischensumme()
+            if str(p.produkt.vat_rate) in vat_dict:
+                vat_dict[str(p.produkt.vat_rate)] += p.calc_subtotal()
             else:
-                mwst[str(p.produkt.mwstsatz)] = p.zwischensumme()
+                vat_dict[str(p.produkt.vat_rate)] = p.calc_subtotal()
         for k in self.kosten.through.objects.filter(bestellung=self).select_related('kosten'):
-            if str(k.mwstsatz) in mwst:
-                mwst[str(k.mwstsatz)] += k.zwischensumme()
+            if str(k.vat_rate) in vat_dict:
+                vat_dict[str(k.vat_rate)] += k.calc_subtotal()
             else:
-                mwst[str(k.mwstsatz)] = k.zwischensumme()
-        for s in mwst:
-            mwst[s] = runden(mwst[s])
-        return mwst
+                vat_dict[str(k.vat_rate)] = k.calc_subtotal()
+        for s in vat_dict:
+            vat_dict[s] = runden(vat_dict[s])
+        return vat_dict
 
-    def summe(self):
-        summe = 0
+    def calc_total_without_vat(self):
+        total = 0
         for i in self.produkte.through.objects.filter(bestellung=self).select_related("produkt"):
-            summe += i.zwischensumme()
+            total += i.calc_subtotal()
         for i in self.kosten.through.objects.filter(bestellung=self).select_related("kosten"):
-            summe += i.zwischensumme()
-        return runden(summe)
+            total += i.calc_subtotal()
+        return runden(total)
 
-    def summe_mwst(self):
-        summe_mwst = 0
-        mwstdict = self.mwstdict()
-        for mwstsatz in mwstdict:
-            summe_mwst += runden(float(mwstdict[mwstsatz]
-                                       * (float(mwstsatz)/100)))
-        return runden(summe_mwst)
+    def calc_total_vat(self):
+        total_vat = 0
+        vat_dict = self.get_vat_dict()
+        for vat_rate in vat_dict:
+            total_vat += runden(float(vat_dict[vat_rate]
+                                       * (float(vat_rate)/100)))
+        return runden(total_vat)
 
-    def summe_gesamt(self):
-        return runden(self.summe()+self.summe_mwst())
+    def calc_total(self):
+        return runden(self.calc_total_without_vat()+self.calc_total_vat())
 
     @admin.display(description="Rechnungstotal")
-    def summeninfo(self):
-        return f'{formatprice(self.summe())} CHF + {formatprice(self.summe_mwst())} CHF MwSt = {formatprice(self.summe_gesamt())} CHF'
+    def display_total_breakdown(self):
+        return f'{formatprice(self.calc_total_without_vat())} CHF + {formatprice(self.calc_total_vat())} CHF MwSt = {formatprice(self.calc_total())} CHF'
 
     @admin.display(description="Total", ordering="cached_sum")
     def display_cached_sum(self):
@@ -941,7 +941,7 @@ class Bestellung(CustomModel):
             name=f"Rücksendung von Bestellung #{self.pk}"
         )
         for lp in self.produkte.through.objects.filter(bestellung=self):
-            new.produkte.add(lp.produkt, through_defaults={"menge": lp.menge})
+            new.produkte.add(lp.produkt, through_defaults={"quantity": lp.quantity})
         new.save()
         return new
 
@@ -958,9 +958,9 @@ class Bestellung(CustomModel):
 #     woocommerceid = models.IntegerField('WooCommerce ID', default=0)
 #
 #     code = models.CharField("Gutscheincode", max_length=25)
-#     menge = models.FloatField("Menge (Preis oder Anzahl Prozent)")
+#     amount = models.FloatField("Menge (Preis oder Anzahl Prozent)")
 #     typ = models.CharField("Gutscheintyp", max_length=14, choices=GUTSCHEINTYPEN)
-#     beschrieb = models.TextField("Beschrieb",default="",blank=True)
+#     description = models.TextField("Beschrieb",default="",blank=True)
 #     #datum_bis = models.DateField("Gültig bis", blank=True, null=True)
 #     #nicht_kumulierbar = models.BooleanField("Nicht kumulierbar", default=True, help_text="Aktivieren, damit der Gutschein nicht kumuliert werden kann.")
 #
@@ -984,7 +984,7 @@ class Bestellung(CustomModel):
 #     #benutzt_von = models.ManyToManyField("Kunde")
 #
 #     def gueltig_fuer_bestellung(self, bestellung):
-#         if ((self.mindestbetrag <= bestellung.summe_gesamt()) and (self.maximalbetrag == 0.0 or (self.maximalbetrag >= bestellung.summe_gesamt()))):
+#         if ((self.mindestbetrag <= bestellung.calc_total()) and (self.maximalbetrag == 0.0 or (self.maximalbetrag >= bestellung.calc_total()))):
 #             return True
 #         else:
 #             return False
@@ -992,7 +992,7 @@ class Bestellung(CustomModel):
 #     def wert_fuer_bestellung(self, bestellung):
 #         if self.gueltig_fuer_bestellung(bestellung):
 #             if self.typ == "fixed_cart":
-#                 return self.menge
+#                 return self.amount
 #             elif self.typ == "fixed_product":
 #                 pass
 #             elif self.typ == "percent":
@@ -1017,14 +1017,14 @@ class Kosten(CustomModel):
         default="Zusätzliche Kosten",
         help_text=I18N_HELP_TEXT,
     )
-    preis = models.FloatField(
+    price = models.FloatField(
         verbose_name="Preis (exkl. MwSt)",
         default=0.0,
     )
-    mwstsatz = models.FloatField(
+    vat_rate = models.FloatField(
         verbose_name="MwSt-Satz",
-        choices=constants.MWSTSETS,
-        default=constants.MWST_DEFAULT,
+        choices=constants.VAT_RATES,
+        default=constants.VAT_RATE_DEFAULT,
     )
 
     @admin.display(description="Name", ordering="name")
@@ -1033,8 +1033,8 @@ class Kosten(CustomModel):
 
     @admin.display(description="Kosten")
     def __str__(self):
-        return f'{ self.clean_name() } ({ self.preis } CHF' + \
-            (f' + {self.mwstsatz}% MwSt' if self.mwstsatz else '') + \
+        return f'{ self.clean_name() } ({ self.price } CHF' + \
+            (f' + {self.vat_rate}% MwSt' if self.vat_rate else '') + \
             f') ({self.pk})'
 
     class Meta:
@@ -1471,14 +1471,14 @@ class Lieferungsposten(CustomModel):
         to="Produkt",
         on_delete=models.PROTECT,
     )
-    menge = models.IntegerField(
+    quantity = models.IntegerField(
         verbose_name="Menge",
         default=1,
     )
 
     @admin.display(description="Lieferungsposten")
     def __str__(self):
-        return f'({self.lieferung.pk}) -> {self.menge}x {self.produkt}'
+        return f'({self.lieferung.pk}) -> {self.quantity}x {self.produkt}'
 
     class Meta:
         verbose_name = "Lieferungsposten"
@@ -1519,12 +1519,12 @@ class Lieferung(CustomModel):
 
     @admin.display(description="Anzahl Produklte")
     def anzahlprodukte(self):
-        return self.produkte.through.objects.filter(lieferung=self).aggregate(models.Sum('menge'))["menge__sum"]
+        return self.produkte.through.objects.filter(lieferung=self).aggregate(models.Sum('quantity'))["quantity__sum"]
 
     def einlagern(self):
         if not self.eingelagert:
             for i in self.produkte.through.objects.filter(lieferung=self):
-                i.produkt.lagerbestand += i.menge
+                i.produkt.lagerbestand += i.quantity
                 i.produkt.save()
             self.eingelagert = True
             self.save()
@@ -1575,7 +1575,7 @@ class Notiz(CustomModel):
         verbose_name="Name",
         max_length=50,
     )
-    beschrieb = models.TextField(
+    description = models.TextField(
         verbose_name="Beschrieb",
         default="",
         blank=True,
@@ -1661,7 +1661,7 @@ class Notiz(CustomModel):
 class Produkt(CustomModel):
     """Model representing a product"""
 
-    artikelnummer = models.CharField(
+    article_number = models.CharField(
         verbose_name="Artikelnummer",
         max_length=25,
     )
@@ -1676,34 +1676,34 @@ class Produkt(CustomModel):
         max_length=500,
         help_text=I18N_HELP_TEXT,
     )
-    kurzbeschrieb = models.TextField(
+    short_description = models.TextField(
         verbose_name='Kurzbeschrieb',
         default="",
         blank=True,
         help_text=I18N_HELP_TEXT,
     )
-    beschrieb = models.TextField(
+    description = models.TextField(
         verbose_name='Beschrieb',
         default="",
         blank=True,
         help_text=I18N_HELP_TEXT,
     )
 
-    mengenbezeichnung = models.CharField(
+    quantity_description = models.CharField(
         verbose_name='Mengenbezeichnung',
         max_length=100,
         default="Stück",
         blank=True,
         help_text=I18N_HELP_TEXT,
     )
-    verkaufspreis = models.FloatField(
+    selling_price = models.FloatField(
         verbose_name='Normalpreis in CHF (exkl. MwSt)',
         default=0,
     )
-    mwstsatz = models.FloatField(
+    vat_rate = models.FloatField(
         verbose_name='Mehrwertsteuersatz',
-        choices=constants.MWSTSETS,
-        default=constants.MWST_DEFAULT,
+        choices=constants.VAT_RATES,
+        default=constants.VAT_RATE_DEFAULT,
     )
 
     lagerbestand = models.IntegerField(
@@ -1738,13 +1738,13 @@ class Produkt(CustomModel):
         null=True,
     )
 
-    datenblattlink = models.CharField(
+    datasheet_url = models.CharField(
         verbose_name='Datenblattlink',
         max_length=500,
         default="",
         blank=True,
     )
-    bildlink = models.URLField(
+    image_url = models.URLField(
         verbose_name='Bildlink',
         default="",
         blank=True,
@@ -1763,7 +1763,7 @@ class Produkt(CustomModel):
         blank=True,
         max_length=20,
     )
-    lieferant_artikelnummer = models.CharField(
+    lieferant_article_number = models.CharField(
         verbose_name="Lieferantenartikelnummer",
         default="",
         blank=True,
@@ -1787,13 +1787,13 @@ class Produkt(CustomModel):
     def clean_name(self, lang="de"):
         return langselect(self.name, lang)
 
-    @admin.display(description="Kurzbeschrieb", ordering="kurzbeschrieb")
-    def clean_kurzbeschrieb(self, lang="de"):
-        return langselect(self.kurzbeschrieb, lang)
+    @admin.display(description="Kurzbeschrieb", ordering="short_description")
+    def clean_short_description(self, lang="de"):
+        return langselect(self.short_description, lang)
 
-    @admin.display(description="Beschrieb", ordering="beschrieb")
-    def clean_beschrieb(self, lang="de"):
-        return langselect(self.beschrieb, lang)
+    @admin.display(description="Beschrieb", ordering="description")
+    def clean_description(self, lang="de"):
+        return langselect(self.description, lang)
 
     @admin.display(description="In Aktion", boolean=True)
     def in_aktion(self, zeitpunkt: datetime = None):
@@ -1803,26 +1803,26 @@ class Produkt(CustomModel):
         return False
 
     @admin.display(description="Aktueller Preis in CHF (exkl. MwSt)")
-    def preis(self, zeitpunkt: datetime = None):
+    def get_current_price(self, zeitpunkt: datetime = None):
         zp = zeitpunkt or timezone.now()
-        return self.aktion_preis if self.in_aktion(zp) else self.verkaufspreis
+        return self.aktion_preis if self.in_aktion(zp) else self.selling_price
 
-    @admin.display(description="Bild", ordering="bildlink")
-    def bild(self):
-        if self.bildlink:
-            return format_html('<img src="{}" width="100px">', self.bildlink)
+    @admin.display(description="Bild", ordering="image_url")
+    def html_image(self):
+        if self.image_url:
+            return format_html('<img src="{}" width="100px">', self.image_url)
         return ""
 
     def get_reserved_stock(self):
         n = 0
         for bp in Bestellungsposten.objects.filter(bestellung__is_shipped=False, produkt__id=self.id):
-            n += bp.menge
+            n += bp.quantity
         return n
 
     def get_incoming_stock(self):
         n = 0
         for lp in Lieferungsposten.objects.filter(lieferung__eingelagert=False, produkt__id=self.id):
-            n += lp.menge
+            n += lp.quantity
         return n
 
     def get_stock_data(self, includemessage=False):
@@ -1830,7 +1830,7 @@ class Produkt(CustomModel):
 
         p_id = self.id
         p_name = self.clean_name()
-        p_artikelnummer = self.artikelnummer
+        p_article_number = self.article_number
 
         n_current = self.lagerbestand
         n_going = self.get_reserved_stock()
@@ -1840,7 +1840,7 @@ class Produkt(CustomModel):
         data = {
             "product": {
                 "id": p_id,
-                "artikelnummer": p_artikelnummer,
+                "article_number": p_article_number,
                 "name": p_name,
             },
             "stock": {
@@ -1860,7 +1860,7 @@ class Produkt(CustomModel):
                 f'admin:kmuhelper_produkt_change', args=[self.pk])
             adminlink = format_html('<a href="{}">{}</a>', adminurl, p_name)
 
-            formatdata = (adminlink, p_artikelnummer, stockstring)
+            formatdata = (adminlink, p_article_number, stockstring)
 
             if data["stock_overbooked"]:
                 data["message"] = format_html(
@@ -1905,7 +1905,7 @@ class Produkt(CustomModel):
 
     @admin.display(description="Produkt")
     def __str__(self):
-        return f'{self.artikelnummer} - {self.clean_name()} ({self.pk})'
+        return f'{self.article_number} - {self.clean_name()} ({self.pk})'
 
     class Meta:
         verbose_name = "Produkt"
@@ -1929,12 +1929,12 @@ class Produktkategorie(CustomModel):
         max_length=250,
         default="",
     )
-    beschrieb = models.TextField(
+    description = models.TextField(
         verbose_name="Beschrieb",
         default="",
         blank=True,
     )
-    bildlink = models.URLField(
+    image_url = models.URLField(
         verbose_name="Bildlink",
         blank=True,
     )
@@ -1947,10 +1947,10 @@ class Produktkategorie(CustomModel):
         null=True,
     )
 
-    @admin.display(description="Bild", ordering="bildlink")
-    def bild(self):
-        if self.bildlink:
-            return format_html('<img src="{}" width="100px">', self.bildlink)
+    @admin.display(description="Bild", ordering="image_url")
+    def html_image(self):
+        if self.image_url:
+            return format_html('<img src="{}" width="100px">', self.image_url)
         return ""
 
     @admin.display(description="Anzahl Produkte")
@@ -1961,9 +1961,9 @@ class Produktkategorie(CustomModel):
     def clean_name(self):
         return langselect(self.name)
 
-    @admin.display(description="Beschrieb", ordering="beschrieb")
-    def clean_beschrieb(self):
-        return langselect(self.beschrieb)
+    @admin.display(description="Beschrieb", ordering="description")
+    def clean_description(self):
+        return langselect(self.description)
 
     @admin.display(description="Kategorie")
     def __str__(self):

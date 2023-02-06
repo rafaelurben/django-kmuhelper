@@ -41,13 +41,13 @@ def stats_products_price(request):
 
     products_sold = {}
 
-    for bp in Bestellungsposten.objects.filter(bestellung__date__gte=from_date, bestellung__date__lte=to_date).order_by("bestellung__date").values("bestellung__date", "menge"):
+    for bp in Bestellungsposten.objects.filter(bestellung__date__gte=from_date, bestellung__date__lte=to_date).order_by("bestellung__date").values("bestellung__date", "quantity"):
         d = datetime.date(year=bp["bestellung__date"].year,
                           month=bp["bestellung__date"].month, day=1).isoformat()
         if d in products_sold:
-            products_sold[d] += bp["menge"]
+            products_sold[d] += bp["quantity"]
         else:
-            products_sold[d] = bp["menge"]
+            products_sold[d] = bp["quantity"]
 
     products_sold = [{"date": date, "y": products_sold[date]}
                      for date in products_sold]
@@ -104,11 +104,11 @@ def best_products(request):
 
     products = {}
 
-    for bp in Bestellungsposten.objects.filter(bestellung__date__gte=from_date, bestellung__date__lte=to_date).order_by("produkt__name").values("produkt__name", "menge"):
+    for bp in Bestellungsposten.objects.filter(bestellung__date__gte=from_date, bestellung__date__lte=to_date).order_by("produkt__name").values("produkt__name", "quantity"):
         if bp["produkt__name"] in products:
-            products[langselect(bp["produkt__name"])] += bp["menge"]
+            products[langselect(bp["produkt__name"])] += bp["quantity"]
         else:
-            products[langselect(bp["produkt__name"])] = bp["menge"]
+            products[langselect(bp["produkt__name"])] = bp["quantity"]
 
     products = sorted(products.items(), key=lambda x: x[1], reverse=True)
     products = products[:max_count] if len(products) > max_count else products

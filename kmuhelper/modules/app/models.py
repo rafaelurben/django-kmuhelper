@@ -61,12 +61,12 @@ class App_Zahlungseingang(Bestellung):
 
 class App_Lagerbestand(Produkt):
     @admin.display(description="Preis")
-    def preis(self, *args, **kwargs):
-        return super().preis(*args, **kwargs)
+    def get_current_price(self, *args, **kwargs):
+        return super().get_current_price(*args, **kwargs)
 
-    @admin.display(description="Nr.", ordering="artikelnummer")
+    @admin.display(description="Nr.", ordering="article_number")
     def nr(self):
-        return self.artikelnummer
+        return self.article_number
 
     class Meta:
         proxy = True

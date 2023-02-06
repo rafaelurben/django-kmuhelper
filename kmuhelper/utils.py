@@ -82,15 +82,15 @@ def getfirstindex(data: list, search: list):
     return None
 
 
-def formatprice(preis):
+def formatprice(price):
     """Format a float to exactly 2 decimal places"""
-    return "{:.2f}".format(float(preis))
+    return "{:.2f}".format(float(price))
 
 
-def runden(preis, to=0.05):
+def runden(price, to=0.05):
     """Round a float to .05 or any other value"""
     # Note: formatprice is used because of floating point approximation
-    return float(formatprice(float(round(round(preis / to) * to, 2))))
+    return float(formatprice(float(round(round(price / to) * to, 2))))
 
 
 ###############

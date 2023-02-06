@@ -37,16 +37,16 @@ class BestellungInlineBestellungsposten(CustomTabularInline):
     verbose_name_plural = "Bestellungsposten"
     extra = 0
 
-    fields = ('produkt', 'note', 'produktpreis', 'menge', 'rabatt', 'display_zwischensumme', 'mwstsatz',)
+    fields = ('produkt', 'note', 'product_price', 'quantity', 'discount', 'display_subtotal', 'display_vat_rate',)
 
-    readonly_fields = ('display_zwischensumme', 'mwstsatz', 'produkt',)
+    readonly_fields = ('display_subtotal', 'display_vat_rate', 'produkt',)
 
     def get_additional_readonly_fields(self, request, obj=None):
-        fields = ["produktpreis"]
+        fields = ["product_price"]
         if obj and (obj.is_shipped or obj.is_paid):
-            fields += ["menge"]
+            fields += ["quantity"]
         if obj and obj.is_paid:
-            fields += ["rabatt"]
+            fields += ["discount"]
         return fields
 
     # Permissions
@@ -71,7 +71,7 @@ class BestellungInlineBestellungspostenAdd(CustomTabularInline):
     autocomplete_fields = ("produkt",)
 
     fieldsets = [
-        (None, {'fields': ['produkt', 'note', 'menge', 'rabatt']})
+        (None, {'fields': ['produkt', 'note', 'quantity', 'discount']})
     ]
 
     # Permissions
@@ -90,13 +90,13 @@ class BestellungInlineBestellungskosten(CustomTabularInline):
     verbose_name_plural = "Bestellungskosten"
     extra = 0
 
-    fields = ('kosten', 'name', 'preis', 'rabatt', 'note', 'display_zwischensumme', 'mwstsatz')
+    fields = ('kosten', 'name', 'price', 'discount', 'note', 'display_subtotal', 'vat_rate')
 
-    readonly_fields = ('kosten', 'display_zwischensumme',)
+    readonly_fields = ('kosten', 'display_subtotal',)
 
     def get_additional_readonly_fields(self, request, obj=None):
         if obj and obj.is_paid:
-            return ['preis', 'mwstsatz', 'rabatt']
+            return ['price', 'vat_rate', 'discount']
         return []
 
     # Permissions
@@ -122,7 +122,7 @@ class BestellungInlineBestellungskostenImport(CustomTabularInline):
 
     autocomplete_fields = ("kosten",)
 
-    fields = ('kosten', 'note', 'rabatt',)
+    fields = ('kosten', 'note', 'discount',)
 
     # Permissions
 
@@ -139,7 +139,7 @@ class BestellungsAdmin(CustomModelAdmin):
     list_display = ('id', 'date', 'kunde', 'status', 'payment_method',
                     'is_shipped', 'is_paid', 'display_cached_sum', 'html_notiz')
     list_filter = ('status', 'is_paid', 'is_shipped', 'payment_method', 'zahlungsempfaenger', 'ansprechpartner')
-    search_fields = ['id', 'date', 'notiz__name', 'notiz__beschrieb', 'customer_note',
+    search_fields = ['id', 'date', 'notiz__name', 'notiz__description', 'customer_note',
                      'tracking_number'] + constants.ADDR_BILLING_FIELDS + constants.ADDR_SHIPPING_FIELDS
 
     ordering = ("is_shipped", "is_paid", "-date")
@@ -168,7 +168,7 @@ class BestellungsAdmin(CustomModelAdmin):
                     'fields': ['payment_method', 'invoice_date', 'payment_conditions']
                 }),
                 ('Bezahlung', {
-                    'fields': [('summeninfo', 'display_payment_conditions'), ('paid_on', 'is_paid')]
+                    'fields': [('display_total_breakdown', 'display_payment_conditions'), ('paid_on', 'is_paid')]
                 }),
                 ('Notizen & Texte', {
                     'fields': ['customer_note', 'html_notiz'],
@@ -194,7 +194,7 @@ class BestellungsAdmin(CustomModelAdmin):
                 'classes': ["collapse start-open"]}),
         ]
 
-    readonly_fields = ('html_notiz', 'name', 'tracking_link', 'summeninfo', 'display_payment_conditions')
+    readonly_fields = ('html_notiz', 'name', 'tracking_link', 'display_total_breakdown', 'display_payment_conditions')
 
     def get_additional_readonly_fields(self, request, obj=None):
         fields = []
@@ -282,14 +282,14 @@ class BestellungsAdmin(CustomModelAdmin):
 
 @admin.register(Kosten)
 class KostenAdmin(CustomModelAdmin):
-    list_display = ["clean_name", "preis", "mwstsatz"]
+    list_display = ["clean_name", "price", "vat_rate"]
 
-    search_fields = ('name', 'preis')
+    search_fields = ('name', 'price')
 
-    ordering = ('preis', 'mwstsatz',)
+    ordering = ('price', 'vat_rate',)
 
     fieldsets = [
-        (None, {"fields": ("name", "preis", "mwstsatz")})
+        (None, {"fields": ("name", "price", "vat_rate")})
     ]
 
 
@@ -353,7 +353,7 @@ class KundenAdmin(CustomModelAdmin):
     list_display = ('id', 'company', 'last_name', 'first_name', 'addr_billing_postcode',
                     'addr_billing_city', 'email', 'avatar', 'html_notiz')
     search_fields = ['id', 'last_name', 'first_name', 'company', 'email', 'username', 'website',
-                     'notiz__name', 'notiz__beschrieb'] + constants.ADDR_BILLING_FIELDS + constants.ADDR_SHIPPING_FIELDS
+                     'notiz__name', 'notiz__description'] + constants.ADDR_BILLING_FIELDS + constants.ADDR_SHIPPING_FIELDS
 
     readonly_fields = ["html_notiz"]
 
@@ -433,7 +433,7 @@ class LieferungInlineProdukte(CustomTabularInline):
 
     readonly_fields = ("produkt",)
 
-    fields = ("produkt", "menge",)
+    fields = ("produkt", "quantity",)
 
     # Permissions
 
@@ -454,7 +454,7 @@ class LieferungInlineProdukteAdd(CustomTabularInline):
 
     autocomplete_fields = ("produkt",)
 
-    fields = ("produkt", "menge",)
+    fields = ("produkt", "quantity",)
 
     # Permissions
 
@@ -473,7 +473,7 @@ class LieferungenAdmin(CustomModelAdmin):
     list_filter = ("eingelagert", "lieferant", )
 
     search_fields = ["name", "date", "lieferant__name", "lieferant__abbreviation",
-                     "notiz__name", "notiz__beschrieb"]
+                     "notiz__name", "notiz__description"]
 
     readonly_fields = ["html_notiz"]
 
@@ -527,51 +527,51 @@ class LieferungenAdmin(CustomModelAdmin):
 
 @admin.register(Notiz)
 class NotizenAdmin(CustomModelAdmin):
-    list_display = ["name", "beschrieb", "priority", "erledigt", "erstellt_am"]
+    list_display = ["name", "description", "priority", "erledigt", "erstellt_am"]
     list_filter = ["erledigt", "priority"]
 
     readonly_fields = ["links"]
 
     ordering = ["erledigt", "-priority", "erstellt_am"]
 
-    search_fields = ("name", "beschrieb")
+    search_fields = ("name", "description")
 
     def get_fieldsets(self, request, obj=None):
         if obj:
             return [
-                ("Infos", {"fields": ["name", "beschrieb"]}),
+                ("Infos", {"fields": ["name", "description"]}),
                 ("Daten", {"fields": ["erledigt", "priority"]}),
                 ("Verknüpfungen", {"fields": ["links"]}),
             ]
 
         return [
-            ("Infos", {"fields": ["name", "beschrieb"]}),
+            ("Infos", {"fields": ["name", "description"]}),
             ("Daten", {"fields": ["erledigt", "priority"]}),
         ]
 
     def get_form(self, request, obj=None, change=False, **kwargs):
         form = super().get_form(request, obj, change, **kwargs)
         if obj is None:
-            form.base_fields['beschrieb'].initial = ""
+            form.base_fields['description'].initial = ""
             if "from_bestellung" in request.GET:
                 form.base_fields['name'].initial = 'Bestellung #' + \
                     request.GET.get("from_bestellung")
-                form.base_fields['beschrieb'].initial += '\n\n[Bestellung #' + \
+                form.base_fields['description'].initial += '\n\n[Bestellung #' + \
                     request.GET.get("from_bestellung") + "]"
             if "from_produkt" in request.GET:
                 form.base_fields['name'].initial = 'Produkt #' + \
                     request.GET.get("from_produkt")
-                form.base_fields['beschrieb'].initial += '\n\n[Produkt #' + \
+                form.base_fields['description'].initial += '\n\n[Produkt #' + \
                     request.GET.get("from_produkt") + "]"
             if "from_kunde" in request.GET:
                 form.base_fields['name'].initial = 'Kunde #' + \
                     request.GET.get("from_kunde")
-                form.base_fields['beschrieb'].initial += '\n\n[Kunde #' + \
+                form.base_fields['description'].initial += '\n\n[Kunde #' + \
                     request.GET.get("from_kunde") + "]"
             if "from_lieferung" in request.GET:
                 form.base_fields['name'].initial = 'Lieferung #' + \
                     request.GET.get("from_lieferung")
-                form.base_fields['beschrieb'].initial += '\n\n[Lieferung #' + \
+                form.base_fields['description'].initial += '\n\n[Lieferung #' + \
                     request.GET.get("from_lieferung") + "]"
         return form
 
@@ -646,15 +646,15 @@ class ProduktInlineKategorienInline(CustomTabularInline):
 class ProduktAdmin(CustomModelAdmin):
     def get_fieldsets(self, request, obj=None):
         return [
-            ('Infos', {'fields': ['artikelnummer', 'name']}),
+            ('Infos', {'fields': ['article_number', 'name']}),
             ('Beschrieb', {
-                'fields': ['kurzbeschrieb', 'beschrieb'],
+                'fields': ['short_description', 'description'],
                 'classes': ["collapse start-open"]}),
             ('Daten', {'fields': [
-                'mengenbezeichnung', 'verkaufspreis', 'mwstsatz', 'lagerbestand', 'soll_lagerbestand']}),
+                'quantity_description', 'selling_price', 'vat_rate', 'lagerbestand', 'soll_lagerbestand']}),
             ('Lieferant', {
                 'fields': [
-                    'lieferant', 'lieferant_preis', 'lieferant_artikelnummer', 'lieferant_url'
+                    'lieferant', 'lieferant_preis', 'lieferant_article_number', 'lieferant_url'
                 ], 'classes': ["collapse start-open"]}),
             ('Aktion', {
                 'fields': [
@@ -662,7 +662,7 @@ class ProduktAdmin(CustomModelAdmin):
                 ], 'classes': ["collapse start-open"]}),
             ('Links', {
                 'fields': [
-                    'datenblattlink', 'bildlink'
+                    'datasheet_url', 'image_url'
                 ], 'classes': ["collapse"]}),
             ('Bemerkung / Notiz', {
                 'fields': [
@@ -670,14 +670,14 @@ class ProduktAdmin(CustomModelAdmin):
                 'classes': ["collapse start-open"]})
         ]
 
-    ordering = ('artikelnummer', 'name')
+    ordering = ('article_number', 'name')
 
-    list_display = ('artikelnummer', 'clean_name', 'clean_kurzbeschrieb',
-                    'clean_beschrieb', 'preis', 'in_aktion', 'lagerbestand', 'bild', 'html_notiz')
-    list_display_links = ('artikelnummer', 'in_aktion',)
+    list_display = ('article_number', 'clean_name', 'clean_short_description',
+                    'clean_description', 'get_current_price', 'in_aktion', 'lagerbestand', 'html_image', 'html_notiz')
+    list_display_links = ('article_number', 'in_aktion',)
     list_filter = ('lieferant', 'kategorien', 'lagerbestand')
-    search_fields = ['artikelnummer', 'name', 'kurzbeschrieb',
-                     'beschrieb', 'note', 'notiz__name', 'notiz__beschrieb']
+    search_fields = ['article_number', 'name', 'short_description',
+                     'description', 'note', 'notiz__name', 'notiz__description']
 
     readonly_fields = ["html_notiz"]
 
@@ -748,13 +748,13 @@ class ProduktkategorienAdminProduktInline(CustomStackedInline):
 @admin.register(Produktkategorie)
 class ProduktkategorienAdmin(CustomModelAdmin):
     fieldsets = [
-        ('Infos', {'fields': ['name', 'beschrieb', 'bildlink']}),
+        ('Infos', {'fields': ['name', 'description', 'image_url']}),
         ('Übergeordnete Kategorie', {'fields': ['uebergeordnete_kategorie']})
     ]
 
-    list_display = ('clean_name', 'clean_beschrieb',
-                    'uebergeordnete_kategorie', 'bild', 'anzahl_produkte')
-    search_fields = ['name', 'beschrieb']
+    list_display = ('clean_name', 'clean_description',
+                    'uebergeordnete_kategorie', 'html_image', 'anzahl_produkte')
+    search_fields = ['name', 'description']
 
     ordering = ("uebergeordnete_kategorie", "name")
 

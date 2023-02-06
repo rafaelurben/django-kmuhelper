@@ -89,7 +89,7 @@ class App_ZahlungseingangAdmin(App_AdminBase, BestellungsAdmin):
 @admin.register(App_Lagerbestand)
 class App_LagerbestandAdmin(App_AdminBase, ProduktAdmin):
     list_display = ('nr', 'clean_name', 'lagerbestand',
-                    'preis', 'note', 'html_app_notiz')
+                    'get_current_price', 'note', 'html_app_notiz')
     list_display_links = ('nr',)
     list_editable = ["lagerbestand"]
 

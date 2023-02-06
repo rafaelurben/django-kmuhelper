@@ -47,18 +47,18 @@ class WooCommerce():
         wcapi = api or cls.get_api()
 
         try:
-            verkaufspreis = float(product["price"])
+            selling_price = float(product["price"])
         except ValueError:
-            verkaufspreis = 0.0
+            selling_price = 0.0
 
         newproduct = Produkt.objects.create(
             woocommerceid=product["id"],
-            artikelnummer=product["sku"],
+            article_number=product["sku"],
             name=preparestring(product["name"]),
-            kurzbeschrieb=preparestring(product["short_description"]),
-            beschrieb=preparestring(product["description"]),
-            verkaufspreis=verkaufspreis,
-            bildlink=(product["images"][0]["src"]) if len(
+            short_description=preparestring(product["short_description"]),
+            description=preparestring(product["description"]),
+            selling_price=selling_price,
+            image_url=(product["images"][0]["src"]) if len(
                 product["images"]) > 0 else "",
             aktion_von=(product["date_on_sale_from_gmt"] +
                         "+00:00" if product["date_on_sale_from"] else None),
@@ -87,7 +87,7 @@ class WooCommerce():
             newproduct = wcapi.get(f'products/{product.woocommerceid}').json()
 
         try:
-            product.verkaufspreis = float(newproduct["price"])
+            product.selling_price = float(newproduct["price"])
         except ValueError:
             pass
         except KeyError:
@@ -98,11 +98,11 @@ class WooCommerce():
                 product.save()
                 return product
 
-        product.artikelnummer = newproduct["sku"]
+        product.article_number = newproduct["sku"]
         product.name = preparestring(newproduct["name"])
-        product.kurzbeschrieb = preparestring(newproduct["short_description"])
-        product.beschrieb = preparestring(newproduct["description"])
-        product.bildlink = (newproduct["images"][0]["src"]) if len(
+        product.short_description = preparestring(newproduct["short_description"])
+        product.description = preparestring(newproduct["description"])
+        product.image_url = (newproduct["images"][0]["src"]) if len(
             newproduct["images"]) > 0 else ""
         if newproduct["date_on_sale_from_gmt"]:
             product.aktion_von = newproduct["date_on_sale_from_gmt"] + "+00:00"
@@ -346,8 +346,8 @@ class WooCommerce():
             return category
 
         category.name = preparestring(newcategory["name"])
-        category.beschrieb = preparestring(newcategory["description"])
-        category.bildlink = (
+        category.description = preparestring(newcategory["description"])
+        category.image_url = (
             newcategory["image"]["src"]) if newcategory["image"] else ""
         if newcategory["parent"]:
             tup = Produktkategorie.objects.get_or_create(
@@ -399,8 +399,8 @@ class WooCommerce():
                 for category in categorylist:
                     newcategory = Produktkategorie.objects.create(
                         name=preparestring(category["name"]),
-                        beschrieb=preparestring(category["description"]),
-                        bildlink=(category["image"]["src"]
+                        description=preparestring(category["description"]),
+                        image_url=(category["image"]["src"]
                                   ) if category["image"] else "",
                         woocommerceid=category["id"]
                     )
@@ -508,16 +508,16 @@ class WooCommerce():
             neworder.produkte.add(
                 product, 
                 through_defaults={
-                    "menge": int(item["quantity"]),
-                    "produktpreis": runden(float(item["price"]))
+                    "quantity": int(item["quantity"]),
+                    "product_price": runden(float(item["price"]))
                 }
             )
         for item in order["shipping_lines"]:
             neworder.kosten.through.objects.create(
                 bestellung=neworder,
                 name=item['method_title'],
-                preis=float(item["total"]),
-                mwstsatz=(constants.MWST_DEFAULT if float(item["total_tax"]) > 0 else 0)
+                price=float(item["total"]),
+                vat_rate=(constants.VAT_RATE_DEFAULT if float(item["total_tax"]) > 0 else 0)
             )
         neworder.save()
         neworder.second_save()
