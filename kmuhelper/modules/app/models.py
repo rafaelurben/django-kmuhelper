@@ -79,7 +79,7 @@ class App_Lagerbestand(Produkt):
 
 class App_WareneingangsManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(eingelagert=False)
+        return super().get_queryset().filter(is_added_to_stock=False)
 
 
 class App_Wareneingang(Lieferung):

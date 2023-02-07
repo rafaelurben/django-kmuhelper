@@ -9,7 +9,7 @@ from kmuhelper.utils import render_error
 
 # Other views
 
-from kmuhelper.modules.pdfgeneration.order.views import bestellung_pdf_ansehen, bestellung_pdf_erstellen
+from kmuhelper.modules.pdfgeneration.order.views import order_view_pdf, order_create_pdf_form
 
 ###############
 
@@ -63,8 +63,8 @@ def kunde_email_registriert(request, obj):
     ["kmuhelper.add_email", "kmuhelper.view_bestellung", "kmuhelper.change_bestellung"]
 )
 @require_object(Bestellung)
-def bestellung_email_rechnung(request, obj):
-    mail = obj.create_email_rechnung()
+def create_order_email_invoice(request, obj):
+    mail = obj.create_email_invoice()
     messages.success(request, "E-Mail wurde generiert!")
     return redirect(reverse("admin:kmuhelper_email_change", args=[mail.pk]))
 
@@ -74,8 +74,8 @@ def bestellung_email_rechnung(request, obj):
     ["kmuhelper.add_email", "kmuhelper.view_bestellung", "kmuhelper.change_bestellung"]
 )
 @require_object(Bestellung)
-def bestellung_email_lieferung(request, obj):
-    mail = obj.create_email_lieferung()
+def create_order_email_shipped(request, obj):
+    mail = obj.create_email_shipped()
     messages.success(request, "E-Mail wurde generiert!")
     return redirect(reverse("admin:kmuhelper_email_change", args=[mail.pk]))
 
@@ -84,7 +84,7 @@ def bestellung_email_lieferung(request, obj):
 @permission_required("kmuhelper.add_bestellung")
 @require_object(Bestellung)
 @confirm_action("Bestellung duplizieren")
-def bestellung_duplizieren(request, obj):
+def duplicate_order(request, obj):
     new = obj.duplicate()
     messages.success(
         request, "Bestellung wurde dupliziert! HINWEIS: Dies ist die neu erstellte Bestellung!")
@@ -95,8 +95,8 @@ def bestellung_duplizieren(request, obj):
 @permission_required("kmuhelper.add_lieferung")
 @require_object(Bestellung)
 @confirm_action("Bestellung zu Lieferung kopieren")
-def bestellung_zu_lieferung(request, obj):
-    new = obj.zu_lieferung()
+def copy_order_to_delivery(request, obj):
+    new = obj.copy_to_delivery()
     messages.success(
         request, "Bestellung wurde zu einer Lieferung kopiert!")
     return redirect(reverse("admin:kmuhelper_lieferung_change", args=[new.pk]))

@@ -23,7 +23,7 @@ from kmuhelper.modules.pdfgeneration.order.generator import PDFOrder
 @login_required(login_url=reverse_lazy("admin:login"))
 @permission_required("kmuhelper.view_bestellung")
 @require_object(Bestellung)
-def bestellung_pdf_ansehen(request, obj):
+def order_view_pdf(request, obj):
     order = obj
     is_print_version = 'print' in request.GET
     is_download = 'download' in request.GET
@@ -83,7 +83,7 @@ def bestellung_pdf_ansehen(request, obj):
 @login_required(login_url=reverse_lazy("admin:login"))
 @permission_required("kmuhelper.view_bestellung")
 @require_object(Bestellung)
-def bestellung_pdf_erstellen(request, obj):
+def order_create_pdf_form(request, obj):
     initial={
         'language': obj.kunde.language if obj.kunde and obj.kunde.language else 'de',
         'title': obj.pdf_title,

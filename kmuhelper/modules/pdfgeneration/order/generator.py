@@ -40,7 +40,7 @@ class _PDFOrderPriceTable(Table):
 
         h_products = 0
 
-        for bp in order.produkte.through.objects.filter(bestellung=order):
+        for bp in order.products.through.objects.filter(bestellung=order):
             subtotal_without_discount = bp.calc_subtotal_without_discount()
             data.append((
                 bp.produkt.article_number,
@@ -210,7 +210,7 @@ class _PDFOrderProductTable(Table):
 
         # Products
 
-        for bp in order.produkte.through.objects.filter(bestellung=order):
+        for bp in order.products.through.objects.filter(bestellung=order):
             data.append((
                 bp.produkt.article_number,
                 Paragraph(langselect(bp.produkt.name, lang)),
@@ -311,7 +311,7 @@ class _PDFOrderQrInvoice(Flowable):
         # - - - AdrTp
         ln("K")
         # - - - Name
-        ln(recv.firmenname)
+        ln(recv.name)
         # - - - StrtNmOrAdrLine1
         ln(recv.address_1)
         # - - - BldgNbOrAdrLine2
@@ -444,7 +444,7 @@ class _PDFOrderQrInvoice(Flowable):
         t = c.beginText(5*mm, 90*mm)
         titel(t, pgettext('QR-Invoice / fixed by SIX group style guide', "Konto / Zahlbar an"), True)
         t.textLine(recv.qriban if recv.mode == "QRR" else recv.iban)
-        t.textLine(recv.firmenname)
+        t.textLine(recv.name)
         t.textLine(recv.address_1)
         t.textLine(recv.address_2)
         t.moveCursor(0, 9)
@@ -462,7 +462,7 @@ class _PDFOrderQrInvoice(Flowable):
         t = c.beginText(118*mm, 97*mm)
         titel(t, pgettext('QR-Invoice / fixed by SIX group style guide', "Konto / Zahlbar an"))
         t.textLine(recv.qriban if recv.mode == "QRR" else recv.iban)
-        t.textLine(recv.firmenname)
+        t.textLine(recv.name)
         t.textLine(recv.address_1)
         t.textLine(recv.address_2)
         t.moveCursor(0, 9)
@@ -549,7 +549,7 @@ class _PDFOrderHeader(Flowable):
 
         # Company name
         c.setFont("Helvetica-Bold", 14)
-        c.drawString(12*mm, 64*mm, ze.firmenname)
+        c.drawString(12*mm, 64*mm, ze.name)
 
         # Company address
         t = c.beginText(12*mm, 57*mm)
@@ -568,7 +568,7 @@ class _PDFOrderHeader(Flowable):
         t.textLine(pgettext('Text on generated order PDF', "E-Mail"))
         if ze.website:
             t.textLine(pgettext('Text on generated order PDF', "Web"))
-        if ze.firmenuid:
+        if ze.swiss_uid:
             t.textLine(pgettext('Text on generated order PDF', "MwSt"))
         c.drawText(t)
 
@@ -579,8 +579,8 @@ class _PDFOrderHeader(Flowable):
         t.textLine(order.ansprechpartner.email)
         if ze.website:
             t.textLine(ze.website)
-        if ze.firmenuid:
-            t.textLine(ze.firmenuid)
+        if ze.swiss_uid:
+            t.textLine(ze.swiss_uid)
         c.drawText(t)
 
         # Customer/Order info: Title

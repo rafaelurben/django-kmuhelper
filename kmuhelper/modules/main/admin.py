@@ -32,7 +32,7 @@ class AnsprechpartnerAdmin(CustomModelAdmin):
 
 
 class BestellungInlineBestellungsposten(CustomTabularInline):
-    model = Bestellung.produkte.through
+    model = Bestellung.products.through
     verbose_name = "Bestellungsposten"
     verbose_name_plural = "Bestellungsposten"
     extra = 0
@@ -63,7 +63,7 @@ class BestellungInlineBestellungsposten(CustomTabularInline):
         return qs.select_related('produkt')
 
 class BestellungInlineBestellungspostenAdd(CustomTabularInline):
-    model = Bestellung.produkte.through
+    model = Bestellung.products.through
     verbose_name = "Bestellungsposten"
     verbose_name_plural = "Bestellungsposten hinzufügen"
     extra = 0
@@ -248,7 +248,7 @@ class BestellungsAdmin(CustomModelAdmin):
 
         # stock warnings
         if obj:
-            for product in obj.produkte.all():
+            for product in obj.products.all():
                 product.show_stock_warning(request)
 
     def save_related(self, request, form, formsets, change):
@@ -264,18 +264,18 @@ class BestellungsAdmin(CustomModelAdmin):
         urls = super().get_urls()
 
         my_urls = [
-            path('<path:object_id>/pdf/', self.admin_site.admin_view(views.bestellung_pdf_ansehen),
+            path('<path:object_id>/pdf/', self.admin_site.admin_view(views.order_view_pdf),
                  name='%s_%s_pdf' % info),
-            path('<path:object_id>/pdf/form', self.admin_site.admin_view(views.bestellung_pdf_erstellen),
+            path('<path:object_id>/pdf/form', self.admin_site.admin_view(views.order_create_pdf_form),
                  name='%s_%s_pdf_form' % info),
-            path('<path:object_id>/email/rechnung/', self.admin_site.admin_view(views.bestellung_email_rechnung),
-                 name='%s_%s_email_rechnung' % info),
-            path('<path:object_id>/email/lieferung/', self.admin_site.admin_view(views.bestellung_email_lieferung),
-                 name='%s_%s_email_lieferung' % info),
-            path('<path:object_id>/duplizieren/', self.admin_site.admin_view(views.bestellung_duplizieren),
-                 name='%s_%s_duplizieren' % info),
-            path('<path:object_id>/zu-lieferung/', self.admin_site.admin_view(views.bestellung_zu_lieferung),
-                 name='%s_%s_zu_lieferung' % info),
+            path('<path:object_id>/email/invoice/', self.admin_site.admin_view(views.create_order_email_invoice),
+                 name='%s_%s_email_invoice' % info),
+            path('<path:object_id>/email/shipped/', self.admin_site.admin_view(views.create_order_email_shipped),
+                 name='%s_%s_email_shipped' % info),
+            path('<path:object_id>/duplicate/', self.admin_site.admin_view(views.duplicate_order),
+                 name='%s_%s_duplicate' % info),
+            path('<path:object_id>/return/', self.admin_site.admin_view(views.copy_order_to_delivery),
+                 name='%s_%s_copy_to_delivery' % info),
         ]
         return my_urls + urls
 
@@ -426,7 +426,7 @@ class LieferantenAdmin(CustomModelAdmin):
 
 
 class LieferungInlineProdukte(CustomTabularInline):
-    model = Lieferung.produkte.through
+    model = Lieferung.products.through
     verbose_name = "Produkt"
     verbose_name_plural = "Produkte"
     extra = 0
@@ -440,14 +440,14 @@ class LieferungInlineProdukte(CustomTabularInline):
     NO_ADD = True
 
     def has_change_permission(self, request, obj=None):
-        return False if obj and obj.eingelagert else super().has_change_permission(request, obj)
+        return False if obj and obj.is_added_to_stock else super().has_change_permission(request, obj)
 
     def has_delete_permission(self, request, obj=None):
-        return False if obj and obj.eingelagert else super().has_delete_permission(request, obj)
+        return False if obj and obj.is_added_to_stock else super().has_delete_permission(request, obj)
 
 
 class LieferungInlineProdukteAdd(CustomTabularInline):
-    model = Lieferung.produkte.through
+    model = Lieferung.products.through
     verbose_name = "Produkt"
     verbose_name_plural = "Produkte hinzufügen"
     extra = 0
@@ -463,14 +463,14 @@ class LieferungInlineProdukteAdd(CustomTabularInline):
     NO_DELETE = True
 
     def has_add_permission(self, request, obj=None):
-        return False if obj and obj.eingelagert else super().has_add_permission(request, obj)
+        return False if obj and obj.is_added_to_stock else super().has_add_permission(request, obj)
 
 
 @admin.register(Lieferung)
 class LieferungenAdmin(CustomModelAdmin):
-    list_display = ('name', 'date', 'anzahlprodukte',
-                    'lieferant', 'eingelagert', 'html_notiz')
-    list_filter = ("eingelagert", "lieferant", )
+    list_display = ('name', 'date', 'total_quantity',
+                    'lieferant', 'is_added_to_stock', 'html_notiz')
+    list_filter = ("is_added_to_stock", "lieferant", )
 
     search_fields = ["name", "date", "lieferant__name", "lieferant__abbreviation",
                      "notiz__name", "notiz__description"]
@@ -626,7 +626,7 @@ class NotizenAdmin(CustomModelAdmin):
 
 
 class ProduktInlineKategorienInline(CustomTabularInline):
-    model = Produkt.kategorien.through
+    model = Produkt.categories.through
     extra = 0
 
     autocomplete_fields = ("kategorie", )
@@ -658,7 +658,7 @@ class ProduktAdmin(CustomModelAdmin):
                 ], 'classes': ["collapse start-open"]}),
             ('Aktion', {
                 'fields': [
-                    'aktion_von', 'aktion_bis', 'aktion_preis'
+                    'sale_from', 'sale_to', 'sale_price'
                 ], 'classes': ["collapse start-open"]}),
             ('Links', {
                 'fields': [
@@ -673,9 +673,9 @@ class ProduktAdmin(CustomModelAdmin):
     ordering = ('article_number', 'name')
 
     list_display = ('article_number', 'clean_name', 'clean_short_description',
-                    'clean_description', 'get_current_price', 'in_aktion', 'lagerbestand', 'html_image', 'html_notiz')
-    list_display_links = ('article_number', 'in_aktion',)
-    list_filter = ('lieferant', 'kategorien', 'lagerbestand')
+                    'clean_description', 'get_current_price', 'is_on_sale', 'lagerbestand', 'html_image', 'html_notiz')
+    list_display_links = ('article_number', 'is_on_sale',)
+    list_filter = ('lieferant', 'categories', 'lagerbestand')
     search_fields = ['article_number', 'name', 'short_description',
                      'description', 'note', 'notiz__name', 'notiz__description']
 
@@ -709,14 +709,14 @@ class ProduktAdmin(CustomModelAdmin):
         ) != 1 else 'Lagerbestand von einem Produkt') + ' zurückgesetzt!').format(queryset.count()))
 
     @admin.action(description="Aktion beenden", permissions=["change"])
-    def aktion_beenden(self, request, queryset):
+    def end_sale(self, request, queryset):
         for produkt in queryset.all():
-            produkt.aktion_bis = timezone.now()
+            produkt.sale_to = timezone.now()
             produkt.save()
         messages.success(request, (('Aktion von {} Produkten' if queryset.count(
         ) != 1 else 'Aktion von einem Produkt') + ' beendet!').format(queryset.count()))
 
-    actions = ["wc_update", "lagerbestand_zuruecksetzen", "aktion_beenden"]
+    actions = ["wc_update", "lagerbestand_zuruecksetzen", "end_sale"]
 
     # Save
 
@@ -727,7 +727,7 @@ class ProduktAdmin(CustomModelAdmin):
 
 
 class ProduktkategorienAdminProduktInline(CustomStackedInline):
-    model = Produkt.kategorien.through
+    model = Produkt.categories.through
     verbose_name = "Produkt in dieser Kategorie"
     verbose_name_plural = "Produkte in dieser Kategorie"
     extra = 0
@@ -749,26 +749,26 @@ class ProduktkategorienAdminProduktInline(CustomStackedInline):
 class ProduktkategorienAdmin(CustomModelAdmin):
     fieldsets = [
         ('Infos', {'fields': ['name', 'description', 'image_url']}),
-        ('Übergeordnete Kategorie', {'fields': ['uebergeordnete_kategorie']})
+        ('Übergeordnete Kategorie', {'fields': ['parent_category']})
     ]
 
     list_display = ('clean_name', 'clean_description',
-                    'uebergeordnete_kategorie', 'html_image', 'anzahl_produkte')
+                    'parent_category', 'html_image', 'total_quantity')
     search_fields = ['name', 'description']
 
-    ordering = ("uebergeordnete_kategorie", "name")
+    ordering = ("parent_category", "name")
 
     inlines = [ProduktkategorienAdminProduktInline]
 
-    list_select_related = ("uebergeordnete_kategorie",)
+    list_select_related = ("parent_category",)
 
-    autocomplete_fields = ("uebergeordnete_kategorie", )
+    autocomplete_fields = ("parent_category", )
 
     # Custom queryset
     
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.annotate(anzahl_produkte=Count('produkte'))
+        return qs.annotate(total_quantity=Count('products'))
 
     # Actions
 
@@ -788,7 +788,7 @@ class ProduktkategorienAdmin(CustomModelAdmin):
 class ZahlungsempfaengerAdmin(CustomModelAdmin):
     fieldsets = [
         ("Infos", {
-            "fields": ["firmenname", "firmenuid", "logourl", "website"]
+            "fields": ["name", "swiss_uid", "logourl", "website"]
         }),
         ("Adresse", {
             "fields": ["address_1", "address_2", "country"]
@@ -802,10 +802,10 @@ class ZahlungsempfaengerAdmin(CustomModelAdmin):
         })
     ]
 
-    list_display = ('firmenname', 'firmenuid', 'mode', 'qriban', 'iban')
+    list_display = ('name', 'swiss_uid', 'mode', 'qriban', 'iban')
     list_filter = ('mode',)
-    search_fields = ['firmenname', 'address_1',
-                     'address_2', 'qriban', 'iban', 'firmenuid']
+    search_fields = ['name', 'address_1',
+                     'address_2', 'qriban', 'iban', 'swiss_uid']
 
     save_on_top = True
 
@@ -818,7 +818,7 @@ class ZahlungsempfaengerAdmin(CustomModelAdmin):
                 messages.error(request, "Ungültige QR-IBAN!")
             if obj.mode == "NON" and not obj.has_valid_iban():
                 messages.error(request, "Ungültige IBAN!")
-            if obj.firmenuid and not obj.has_valid_uid():
+            if obj.swiss_uid and not obj.has_valid_uid():
                 messages.warning(request, "Ungültige UID!")
 
 

@@ -28,23 +28,23 @@ def log(string, *args):
 ###################
 
 
-def defaultlieferungsname():
+def default_delivery_title():
     return "Lieferung vom "+str(datetime.now().strftime("%d.%m.%Y"))
 
 
-def defaultzahlungsempfaenger():
+def default_payment_recipient():
     if Zahlungsempfaenger.objects.exists():
         return Zahlungsempfaenger.objects.first().pk
     return None
 
 
-def defaultansprechpartner():
+def default_contact_person():
     if Ansprechpartner.objects.exists():
         return Ansprechpartner.objects.first().pk
     return None
 
 
-def defaultorderkey():
+def default_order_key():
     return "kh-"+str(randint(10000000, 99999999))
 
 
@@ -351,7 +351,7 @@ class Bestellung(CustomModel):
         help_text="Bitte gib hier eine Trackingnummer der Schweizer Post ein. (optional)",
     )
 
-    ausgelagert = models.BooleanField(
+    is_removed_from_stock = models.BooleanField(
         verbose_name="Ausgelagert",
         default=False,
     )
@@ -385,7 +385,7 @@ class Bestellung(CustomModel):
         verbose_name="Bestellungs-Schlüssel",
         max_length=50,
         blank=True,
-        default=defaultorderkey,
+        default=default_order_key,
     )
 
     kunde = models.ForeignKey(
@@ -399,13 +399,13 @@ class Bestellung(CustomModel):
         to='Zahlungsempfaenger',
         on_delete=models.PROTECT,
         verbose_name="Zahlungsempfänger",
-        default=defaultzahlungsempfaenger,
+        default=default_payment_recipient,
     )
     ansprechpartner = models.ForeignKey(
         to='Ansprechpartner',
         verbose_name="Ansprechpartner",
         on_delete=models.PROTECT,
-        default=defaultansprechpartner,
+        default=default_contact_person,
     )
 
     # Billing address
@@ -578,7 +578,7 @@ class Bestellung(CustomModel):
 
     # Connections
 
-    produkte = models.ManyToManyField(
+    products = models.ManyToManyField(
         to='Produkt',
         through='Bestellungsposten',
         through_fields=('bestellung', 'produkt'),
@@ -590,14 +590,14 @@ class Bestellung(CustomModel):
         through_fields=('bestellung', 'kosten'),
     )
 
-    email_rechnung = models.ForeignKey(
+    email_link_invoice = models.ForeignKey(
         to='EMail',
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
         related_name='+',
     )
-    email_lieferung = models.ForeignKey(
+    email_link_shipped = models.ForeignKey(
         to='EMail',
         on_delete=models.SET_NULL,
         blank=True,
@@ -627,11 +627,11 @@ class Bestellung(CustomModel):
         "This HAS to be called after all related models have been saved."
 
         self.cached_sum = self.calc_total()
-        if self.is_shipped and (not self.ausgelagert):
-            for i in self.produkte.through.objects.filter(bestellung=self):
+        if self.is_shipped and (not self.is_removed_from_stock):
+            for i in self.products.through.objects.filter(bestellung=self):
                 i.produkt.lagerbestand -= i.quantity
                 i.produkt.save()
-            self.ausgelagert = True
+            self.is_removed_from_stock = True
 
         super().save(*args, **kwargs)
 
@@ -665,8 +665,8 @@ class Bestellung(CustomModel):
 
         output = f'//S1/10/{self.pk}/11/{date}'
 
-        if self.zahlungsempfaenger.firmenuid:
-            uid = self.zahlungsempfaenger.firmenuid.split("-")[1].replace(".", "")
+        if self.zahlungsempfaenger.swiss_uid:
+            uid = self.zahlungsempfaenger.swiss_uid.split("-")[1].replace(".", "")
             output += f'/30/{uid}'
         cond = self.payment_conditions
         vat_dict = self.get_vat_dict()
@@ -685,7 +685,7 @@ class Bestellung(CustomModel):
             percent, days = float(percent), int(days)
             data.append({
                 "days": days,
-                "date": self.invoice_date+timedelta(days=days),
+                "date": (self.invoice_date or self.order_date)+timedelta(days=days),
                 "percent": percent,
                 "price": runden(self.cached_sum*(1-(percent/100))),
             })
@@ -695,7 +695,7 @@ class Bestellung(CustomModel):
     def get_vat_dict(self):
         "Get the VAT as a dictionary"
         vat_dict = {}
-        for p in self.produkte.through.objects.filter(bestellung=self).select_related('produkt'):
+        for p in self.products.through.objects.filter(bestellung=self).select_related('produkt'):
             if str(p.produkt.vat_rate) in vat_dict:
                 vat_dict[str(p.produkt.vat_rate)] += p.calc_subtotal()
             else:
@@ -711,7 +711,7 @@ class Bestellung(CustomModel):
 
     def calc_total_without_vat(self):
         total = 0
-        for i in self.produkte.through.objects.filter(bestellung=self).select_related("produkt"):
+        for i in self.products.through.objects.filter(bestellung=self).select_related("produkt"):
             total += i.calc_subtotal()
         for i in self.kosten.through.objects.filter(bestellung=self).select_related("kosten"):
             total += i.calc_subtotal()
@@ -785,10 +785,7 @@ class Bestellung(CustomModel):
     def __str__(self):
         return self.name()
 
-    def get_pdf(self, lieferschein: bool = False, digital: bool = True):
-        return PDFOrder(self, is_delivery_note=lieferschein, add_cut_lines=digital).get_response(filename=('Lieferschein' if lieferschein else 'Rechnung')+' zu Bestellung '+str(self)+'.pdf')
-
-    def create_email_rechnung(self):
+    def create_email_invoice(self):
         context = {
             "tracking_link": str(self.tracking_link()),
             "trackingdata": bool(self.tracking_number and self.is_shipped),
@@ -797,7 +794,7 @@ class Bestellung(CustomModel):
             "woocommercedata": bool(self.woocommerceid),
         }
 
-        self.email_rechnung = EMail.objects.create(
+        self.email_link_invoice = EMail.objects.create(
             subject=f"Ihre Rechnung Nr. { self.id }"+(
                 f' (Online #{self.woocommerceid})' if self.woocommerceid else ''),
             to=self.addr_billing_email,
@@ -809,17 +806,17 @@ class Bestellung(CustomModel):
         filename = f"Rechnung Nr. { self.id }"+(
             f' (Online #{self.woocommerceid})' if self.woocommerceid else '')+".pdf"
 
-        self.email_rechnung.add_attachments(
+        self.email_link_invoice.add_attachments(
             Attachment.objects.create_from_binary(
                 filename=filename,
-                content=PDFOrder(self).get_pdf()
+                content=PDFOrder(self, "Rechnung").get_pdf()
             )
         )
 
         self.save()
-        return self.email_rechnung
+        return self.email_link_invoice
 
-    def create_email_lieferung(self):
+    def create_email_shipped(self):
         context = {
             "tracking_link": str(self.tracking_link()),
             "trackingdata": bool(self.tracking_link() and self.is_shipped),
@@ -828,7 +825,7 @@ class Bestellung(CustomModel):
             "woocommercedata": bool(self.woocommerceid),
         }
 
-        self.email_lieferung = EMail.objects.create(
+        self.email_link_shipped = EMail.objects.create(
             subject=f"Ihre Lieferung Nr. { self.id }",
             to=self.addr_shipping_email,
             html_template="bestellung_lieferung.html",
@@ -838,15 +835,15 @@ class Bestellung(CustomModel):
 
         filename = f"Lieferschein Nr. { self.id }.pdf"
 
-        self.email_lieferung.add_attachments(
+        self.email_link_shipped.add_attachments(
             Attachment.objects.create_from_binary(
                 filename=filename,
-                content=PDFOrder(self, is_delivery_note=True).get_pdf()
+                content=PDFOrder(self, "Lieferschein", is_delivery_note=True).get_pdf()
             )
         )
 
         self.save()
-        return self.email_lieferung
+        return self.email_link_shipped
 
     @admin.display(description="🔗 Notiz")
     def html_app_notiz(self):
@@ -875,7 +872,7 @@ class Bestellung(CustomModel):
     def get_stock_data(self):
         """Get the stock data of all products in this order"""
 
-        return [p.get_stock_data() for p in self.produkte.all()]
+        return [p.get_stock_data() for p in self.products.all()]
 
     def email_stock_warning(self):
         email_receiver = settings.get_db_setting(
@@ -929,19 +926,19 @@ class Bestellung(CustomModel):
         for field in constants.ADDR_SHIPPING_FIELDS+constants.ADDR_BILLING_FIELDS:
             setattr(new, field, getattr(self, field))
 
-        for bp in self.produkte.through.objects.filter(bestellung=self):
+        for bp in self.products.through.objects.filter(bestellung=self):
             bp.copyto(new)
         for bk in self.kosten.through.objects.filter(bestellung=self):
             bk.copyto(new)
         new.save()
         return new
 
-    def zu_lieferung(self):
+    def copy_to_delivery(self):
         new = Lieferung.objects.create(
             name=f"Rücksendung von Bestellung #{self.pk}"
         )
-        for lp in self.produkte.through.objects.filter(bestellung=self):
-            new.produkte.add(lp.produkt, through_defaults={"quantity": lp.quantity})
+        for lp in self.products.through.objects.filter(bestellung=self):
+            new.products.add(lp.produkt, through_defaults={"quantity": lp.quantity})
         new.save()
         return new
 
@@ -949,8 +946,8 @@ class Bestellung(CustomModel):
 
     admin_icon = "fas fa-clipboard-list"
 
-    DICT_EXCLUDE_FIELDS = ['produkte', 'kosten', 'email_rechnung', 'email_lieferung', 'kunde',
-                           'ansprechpartner', 'zahlungsempfaenger', 'ausgelagert',
+    DICT_EXCLUDE_FIELDS = ['products', 'kosten', 'email_link_invoice', 'email_link_shipped', 'kunde',
+                           'ansprechpartner', 'zahlungsempfaenger', 'is_removed_from_stock',
                            'is_shipped', 'is_paid', 'payment_method', 'order_key']
 
 
@@ -1445,11 +1442,11 @@ class Lieferant(CustomModel):
         return f'{self.name} ({self.pk})'
 
     def zuordnen(self):
-        produkte = Produkt.objects.filter(lieferant=None)
-        for produkt in produkte:
+        products = Produkt.objects.filter(lieferant=None)
+        for produkt in products:
             produkt.lieferant = self
             produkt.save()
-        return produkte.count()
+        return products.count()
 
     class Meta:
         verbose_name = "Lieferant"
@@ -1493,7 +1490,7 @@ class Lieferung(CustomModel):
     name = models.CharField(
         verbose_name="Name",
         max_length=50,
-        default=defaultlieferungsname,
+        default=default_delivery_title,
     )
     date = models.DateField(
         verbose_name="Erfasst am",
@@ -1506,27 +1503,27 @@ class Lieferung(CustomModel):
         null=True,
         blank=True,
     )
-    produkte = models.ManyToManyField(
+    products = models.ManyToManyField(
         to="Produkt",
         through="Lieferungsposten",
         through_fields=("lieferung", "produkt"),
     )
 
-    eingelagert = models.BooleanField(
+    is_added_to_stock = models.BooleanField(
         verbose_name="Eingelagert",
         default=False,
     )
 
     @admin.display(description="Anzahl Produklte")
-    def anzahlprodukte(self):
-        return self.produkte.through.objects.filter(lieferung=self).aggregate(models.Sum('quantity'))["quantity__sum"]
+    def total_quantity(self):
+        return self.products.through.objects.filter(lieferung=self).aggregate(models.Sum('quantity'))["quantity__sum"]
 
     def einlagern(self):
-        if not self.eingelagert:
-            for i in self.produkte.through.objects.filter(lieferung=self):
+        if not self.is_added_to_stock:
+            for i in self.products.through.objects.filter(lieferung=self):
                 i.produkt.lagerbestand += i.quantity
                 i.produkt.save()
-            self.eingelagert = True
+            self.is_added_to_stock = True
             self.save()
             return True
         return False
@@ -1722,17 +1719,17 @@ class Produkt(CustomModel):
         help_text="Wird nicht gedruckt oder angezeigt; nur für eigene Zwecke.",
     )
 
-    aktion_von = models.DateTimeField(
+    sale_from = models.DateTimeField(
         verbose_name="In Aktion von",
         blank=True,
         null=True,
     )
-    aktion_bis = models.DateTimeField(
+    sale_to = models.DateTimeField(
         verbose_name="In Aktion bis",
         blank=True,
         null=True,
     )
-    aktion_preis = models.FloatField(
+    sale_price = models.FloatField(
         verbose_name="Aktionspreis in CHF (exkl. MwSt)",
         blank=True,
         null=True,
@@ -1775,12 +1772,12 @@ class Produkt(CustomModel):
         blank=True,
     )
 
-    kategorien = models.ManyToManyField(
+    categories = models.ManyToManyField(
         to="Produktkategorie",
         through="ProduktProduktkategorieVerbindung",
         through_fields=("produkt", "kategorie"),
         verbose_name="Kategorie",
-        related_name="produkte",
+        related_name="products",
     )
 
     @admin.display(description="Name", ordering="name")
@@ -1796,16 +1793,16 @@ class Produkt(CustomModel):
         return langselect(self.description, lang)
 
     @admin.display(description="In Aktion", boolean=True)
-    def in_aktion(self, zeitpunkt: datetime = None):
+    def is_on_sale(self, zeitpunkt: datetime = None):
         zp = zeitpunkt or timezone.now()
-        if self.aktion_von and self.aktion_bis and self.aktion_preis:
-            return bool((self.aktion_von < zp) and (zp < self.aktion_bis))
+        if self.sale_from and self.sale_to and self.sale_price:
+            return bool((self.sale_from < zp) and (zp < self.sale_to))
         return False
 
     @admin.display(description="Aktueller Preis in CHF (exkl. MwSt)")
     def get_current_price(self, zeitpunkt: datetime = None):
         zp = zeitpunkt or timezone.now()
-        return self.aktion_preis if self.in_aktion(zp) else self.selling_price
+        return self.sale_price if self.is_on_sale(zp) else self.selling_price
 
     @admin.display(description="Bild", ordering="image_url")
     def html_image(self):
@@ -1821,7 +1818,7 @@ class Produkt(CustomModel):
 
     def get_incoming_stock(self):
         n = 0
-        for lp in Lieferungsposten.objects.filter(lieferung__eingelagert=False, produkt__id=self.id):
+        for lp in Lieferungsposten.objects.filter(lieferung__is_added_to_stock=False, produkt__id=self.id):
             n += lp.quantity
         return n
 
@@ -1939,7 +1936,7 @@ class Produktkategorie(CustomModel):
         blank=True,
     )
 
-    uebergeordnete_kategorie = models.ForeignKey(
+    parent_category = models.ForeignKey(
         to='self',
         verbose_name="Übergeordnete Kategorie",
         on_delete=models.SET_NULL,
@@ -1954,8 +1951,8 @@ class Produktkategorie(CustomModel):
         return ""
 
     @admin.display(description="Anzahl Produkte")
-    def anzahl_produkte(self):
-        return self.produkte.count()
+    def total_quantity(self):
+        return self.products.count()
 
     @admin.display(description="Name", ordering="name")
     def clean_name(self):
@@ -2047,12 +2044,12 @@ class Zahlungsempfaenger(CustomModel):
         blank=True,
         default="",
     )
-    firmenname = models.CharField(
+    name = models.CharField(
         verbose_name="Firmennname",
         max_length=70,
         help_text="Name der Firma oder des Empfängers",
     )
-    firmenuid = models.CharField(
+    swiss_uid = models.CharField(
         verbose_name="Firmen-UID",
         max_length=15,
         validators=[
@@ -2122,7 +2119,7 @@ class Zahlungsempfaenger(CustomModel):
 
     def has_valid_uid(self):
         try:
-            u = self.firmenuid.split("-")[1].replace(".", "")
+            u = self.swiss_uid.split("-")[1].replace(".", "")
             p = 11 - (((int(u[0])*5)+(int(u[1])*4)+(int(u[2])*3)+(int(u[3])*2) +
                        (int(u[4])*7)+(int(u[5])*6)+(int(u[6])*5)+(int(u[7])*4)) % 11)
             return int(u[8]) == p
@@ -2132,7 +2129,7 @@ class Zahlungsempfaenger(CustomModel):
 
     @admin.display(description="Zahlungsempfänger")
     def __str__(self):
-        return f'{self.firmenname} ({self.pk})'
+        return f'{self.name} ({self.pk})'
 
     class Meta:
         verbose_name = "Zahlungsempfänger"

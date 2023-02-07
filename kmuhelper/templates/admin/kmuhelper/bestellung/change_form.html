@@ -71,22 +71,22 @@
                             <hr>
                         {% endif %}
                         {% if original.addr_billing_email %}
-                            {% if original.email_rechnung and perms.kmuhelper.view_email %}
-                                <a href="{% url 'admin:kmuhelper_email_change' original.email_rechnung.pk %}">Rechnungsemail ansehen</a>
+                            {% if original.email_link_invoice and perms.kmuhelper.view_email %}
+                                <a href="{% url 'admin:kmuhelper_email_change' original.email_link_invoice.pk %}">Rechnungsemail ansehen</a>
                             {% endif %}
                             {% if perms.kmuhelper.add_email and perms.kmuhelper.change_bestellung %}
-                                <a href="{% url 'admin:kmuhelper_bestellung_email_rechnung' object_id %}">Rechnungsemail generieren</a>
+                                <a href="{% url 'admin:kmuhelper_bestellung_email_invoice' object_id %}">Rechnungsemail generieren</a>
                             {% endif %}
                         {% else %}
                             <a href="#" class="disabled">Rechnungsemail</a>
                         {% endif %}
                         <hr>
                         {% if original.addr_shipping_email and original.is_shipped %}
-                            {% if original.email_lieferung and perms.kmuhelper.view_email %}
-                                <a href="{% url 'admin:kmuhelper_email_change' original.email_lieferung.pk %}">Lieferungsemail ansehen</a>
+                            {% if original.email_link_shipped and perms.kmuhelper.view_email %}
+                                <a href="{% url 'admin:kmuhelper_email_change' original.email_link_shipped.pk %}">Lieferungsemail ansehen</a>
                             {% endif %}
                             {% if perms.kmuhelper.add_email and perms.kmuhelper.change_bestellung %}
-                                <a href="{% url 'admin:kmuhelper_bestellung_email_lieferung' object_id %}">Lieferungsemail generieren</a>
+                                <a href="{% url 'admin:kmuhelper_bestellung_email_shipped' object_id %}">Lieferungsemail generieren</a>
                             {% endif %}
                         {% else %}
                             <a href="#" class="disabled">Lieferungsemail</a>
@@ -108,7 +108,7 @@
         {% if perms.kmuhelper.add_lieferung and original.is_shipped %}
             <li>
                 <attr title="Die Produkte dieser Bestellung zu einer Lieferung kopieren">
-                    <a href="{% url 'admin:kmuhelper_bestellung_zu_lieferung' object_id %}" rel="noopener">Rücksendung</a>
+                    <a href="{% url 'admin:kmuhelper_bestellung_copy_to_delivery' object_id %}" rel="noopener">Rücksendung</a>
                 </attr>
             </li>
         {% endif %}

@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='bestellung',
             name='order_key',
-            field=models.CharField(blank=True, default=kmuhelper.modules.main.models.defaultorderkey, max_length=50, verbose_name='Bestellungs-Schlüssel'),
+            field=models.CharField(blank=True, default=kmuhelper.modules.main.models.default_order_key, max_length=50, verbose_name='Bestellungs-Schlüssel'),
         ),
         migrations.AlterField(
             model_name='bestellung',

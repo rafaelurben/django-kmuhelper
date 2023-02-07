@@ -1,7 +1,7 @@
 {% extends 'admin/kmuhelper/change_form.html' %}
 
 {% block object-tools-items %}
-    {% if change and perms.kmuhelper.change_produkt and not original.eingelagert %}
+    {% if change and perms.kmuhelper.change_produkt and not original.is_added_to_stock %}
         <li><a href="{% url 'admin:kmuhelper_lieferung_einlagern' object_id %}">Einlagern</a></li>
     {% endif %}
     {{ block.super }}

@@ -98,7 +98,7 @@ class App_LagerbestandAdmin(App_AdminBase, ProduktAdmin):
 
 @admin.register(App_Wareneingang)
 class App_WareneingangenAdmin(App_AdminBase, LieferungenAdmin):
-    list_display = ('name', 'date', 'anzahlprodukte', 'html_app_notiz')
+    list_display = ('name', 'date', 'total_quantity', 'html_app_notiz')
     list_filter = ()
 
 #

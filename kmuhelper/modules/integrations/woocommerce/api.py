@@ -60,11 +60,11 @@ class WooCommerce():
             selling_price=selling_price,
             image_url=(product["images"][0]["src"]) if len(
                 product["images"]) > 0 else "",
-            aktion_von=(product["date_on_sale_from_gmt"] +
+            sale_from=(product["date_on_sale_from_gmt"] +
                         "+00:00" if product["date_on_sale_from"] else None),
-            aktion_bis=(product["date_on_sale_to_gmt"] +
+            sale_to=(product["date_on_sale_to_gmt"] +
                         "+00:00" if product["date_on_sale_to"] else None),
-            aktion_preis=(product["sale_price"]
+            sale_price=(product["sale_price"]
                           if product["sale_price"] else None)
         )
         if product["manage_stock"]:
@@ -73,7 +73,7 @@ class WooCommerce():
             tup = Produktkategorie.objects.get_or_create(woocommerceid=category["id"])
             if tup[1]:
                 cls.category_update(tup[0], api=wcapi)
-            newproduct.kategorien.add(tup[0])
+            newproduct.categories.add(tup[0])
         newproduct.save()
         log("Produkt erstellt:", str(newproduct))
         return newproduct
@@ -105,20 +105,20 @@ class WooCommerce():
         product.image_url = (newproduct["images"][0]["src"]) if len(
             newproduct["images"]) > 0 else ""
         if newproduct["date_on_sale_from_gmt"]:
-            product.aktion_von = newproduct["date_on_sale_from_gmt"] + "+00:00"
+            product.sale_from = newproduct["date_on_sale_from_gmt"] + "+00:00"
         if newproduct["date_on_sale_to_gmt"]:
-            product.aktion_bis = newproduct["date_on_sale_to_gmt"] + "+00:00"
+            product.sale_to = newproduct["date_on_sale_to_gmt"] + "+00:00"
         if newproduct["sale_price"]:
-            product.aktion_preis = newproduct["sale_price"]
+            product.sale_price = newproduct["sale_price"]
 
-        product.kategorien.clear()
+        product.categories.clear()
         newcategories = []
         for category in newproduct["categories"]:
             tup = Produktkategorie.objects.get_or_create(woocommerceid=category["id"])
             if tup[1]:
                 cls.category_update(tup[0], api=wcapi)
             newcategories.append(tup[0])
-        product.kategorien.add(*newcategories)
+        product.categories.add(*newcategories)
 
         product.save()
         log("Produkt aktualisiert:", str(product))
@@ -354,7 +354,7 @@ class WooCommerce():
                 woocommerceid=newcategory["parent"])
             if tup[1]:
                 cls.category_update(tup[0], api=wcapi)
-            category.uebergeordnete_kategorie = tup[0]
+            category.parent_category = tup[0]
         category.save()
         log("Kategorie aktualisiert:", str(category))
         return category
@@ -415,7 +415,7 @@ class WooCommerce():
                 task_process2 = progress.add_task(
                     PREFIX + " [cyan]Kategorieabhängigkeiten verarbeiten...", total=len(categorieswithparents))
                 for tup in categorieswithparents:
-                    tup[0].uebergeordnete_kategorie = Produktkategorie.objects.get(
+                    tup[0].parent_category = Produktkategorie.objects.get(
                         woocommerceid=tup[1])
                     tup[0].save()
                     progress.update(task_process2, advance=1)
@@ -453,7 +453,7 @@ class WooCommerce():
             status=order["status"],
             is_shipped=(True if order["status"] == "completed" else False),
 
-            ausgelagert=(True if order["status"] == "completed" else False),
+            is_removed_from_stock=(True if order["status"] == "completed" else False),
 
             payment_method=order["payment_method"],
             is_paid=(True if order["date_paid"] else False),
@@ -505,7 +505,7 @@ class WooCommerce():
             else:
                 product = product[0]
 
-            neworder.produkte.add(
+            neworder.products.add(
                 product, 
                 through_defaults={
                     "quantity": int(item["quantity"]),
