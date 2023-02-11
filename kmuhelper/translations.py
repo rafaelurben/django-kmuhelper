@@ -2,7 +2,7 @@
 
 from django.utils import translation
 
-I18N_HELP_TEXT = "Unterstützt i18n: '[:de]Deutsch[:fr]Français[:it]Italiano[:en]English[:]'"
+I18N_HELP_TEXT = translation.gettext_lazy("Unterstützt i18n: '[:de]Deutsch[:fr]Français[:it]Italiano[:en]English[:]'")
 
 # qTranslate-X compatible translation functions
 
@@ -38,8 +38,11 @@ def autotranslate_kosten_name(name):
 # Django translation functions
 
 class Language():
+    """Context manager for language switching"""
+
     def __init__(self, language):
         self.language = language
+        self.cur_language = None
 
     def __enter__(self):
         self.cur_language = translation.get_language()

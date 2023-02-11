@@ -10,6 +10,8 @@ from django.core import mail
 from django.shortcuts import render
 from django.template.loader import get_template
 from django.urls import reverse
+from django.utils.html import format_html
+from django.utils.translation import gettext_lazy as _
 
 from kmuhelper.constants import URL_FAQ
 
@@ -179,6 +181,8 @@ def custom_app_list(request, models, title, url):
 
 ###############
 
-def faq(id="", text="FAQ"):
+def faq(anchor="", text=_("FAQ")):
     "Get a link to the FAQ page in the manual."
-    return f'<a href="{URL_FAQ}#{id}" target="_blank">{text}</a>'
+
+    href = f'{URL_FAQ}#{anchor}'
+    return format_html('<a target="_blank" href="{}">{}</a>', href, text)

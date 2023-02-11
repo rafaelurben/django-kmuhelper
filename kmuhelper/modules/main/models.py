@@ -19,17 +19,19 @@ from kmuhelper.overrides import CustomModel
 from kmuhelper.utils import runden, formatprice, modulo10rekursiv, send_pdf, faq
 from kmuhelper.translations import langselect, I18N_HELP_TEXT
 
-from django.utils import translation
-_ = translation.gettext
+from django.utils.translation import gettext_lazy, gettext, ngettext, pgettext, pgettext_lazy, npgettext
 
-def log(string, *args):
-    print("[deep_pink4][KMUHelper Main][/] -", string, *args)
+_ = gettext_lazy
+
+def log(content, *args):
+    print("[deep_pink4][KMUHelper Main][/] -", content, *args)
 
 ###################
 
 
 def default_delivery_title():
-    return "Lieferung vom "+str(datetime.now().strftime("%d.%m.%Y"))
+    datestr = datetime.now().strftime("%d.%m.%Y")
+    return gettext("Lieferung vom %(date)s") % {"date": datestr}
 
 
 def default_payment_recipient():
@@ -70,27 +72,27 @@ class Ansprechpartner(CustomModel):
     """Model representing a contact person"""
 
     name = models.CharField(
-        verbose_name="Name",
+        verbose_name=_("Name"),
         max_length=50,
-        help_text="Auf Rechnung ersichtlich!",
+        help_text=_("Auf Rechnung ersichtlich!"),
     )
     phone = models.CharField(
-        verbose_name="Telefon",
+        verbose_name=_("Telefon"),
         max_length=50,
-        help_text="Auf Rechnung ersichtlich!",
+        help_text=_("Auf Rechnung ersichtlich!"),
     )
     email = models.EmailField(
-        verbose_name="E-Mail",
-        help_text="Auf Rechnung ersichtlich!",
+        verbose_name=_("E-Mail"),
+        help_text=_("Auf Rechnung ersichtlich!"),
     )
 
-    @admin.display(description="Ansprechpartner")
+    @admin.display(description=pgettext_lazy("singular", "Ansprechpartner"), ordering="name")
     def __str__(self):
         return f"{self.name} ({self.pk})"
 
     class Meta:
-        verbose_name = "Ansprechpartner"
-        verbose_name_plural = "Ansprechpartner"
+        verbose_name = pgettext_lazy("singular", "Ansprechpartner")
+        verbose_name_plural = pgettext_lazy("plural", "Ansprechpartner")
 
     objects = models.Manager()
 
@@ -115,15 +117,15 @@ class Bestellungskosten(CustomModel):
 
     # Custom data printed on the invoice
     note = models.CharField(
-        verbose_name="Bemerkung",
+        verbose_name=_("Bemerkung"),
         default="",
         max_length=250,
         blank=True,
-        help_text="Wird auf die Rechnung gedruckt.",
+        help_text=_("Wird auf die Rechnung gedruckt."),
     )
 
     discount = models.FloatField(
-        verbose_name="Rabatt in %",
+        verbose_name=_("Rabatt in %"),
         default=0.0,
         validators=[
             MinValueValidator(0),
@@ -133,17 +135,17 @@ class Bestellungskosten(CustomModel):
 
     # Data from Kosten
     name = models.CharField(
-        verbose_name="Name",
+        verbose_name=_("Name"),
         max_length=500,
-        default="Zusätzliche Kosten",
+        default=_("Zusätzliche Kosten"),
         help_text=I18N_HELP_TEXT,
     )
     price = models.FloatField(
-        verbose_name="Preis (exkl. MwSt)",
+        verbose_name=_("Preis (exkl. MwSt)"),
         default=0.0,
     )
     vat_rate = models.FloatField(
-        verbose_name="MwSt-Satz",
+        verbose_name=_("MwSt-Satz"),
         choices=constants.VAT_RATES,
         default=constants.VAT_RATE_DEFAULT,
     )
@@ -159,15 +161,15 @@ class Bestellungskosten(CustomModel):
         return runden(self.price*(self.discount/100))*-1
 
     # Display methods
-    @admin.display(description="Name", ordering="name")
+    @admin.display(description=_("Name"), ordering="name")
     def clean_name(self):
         return langselect(self.name)
 
-    @admin.display(description="Zwischensumme (exkl. MwSt)")
+    @admin.display(description=_("Zwischensumme (exkl. MwSt)"))
     def display_subtotal(self):
         return formatprice(self.calc_subtotal()) + " CHF"
 
-    @admin.display(description="Bestellungskosten")
+    @admin.display(description=pgettext_lazy("singular", "Bestellungskosten"))
     def __str__(self):
         if self.kosten:
             return f"({self.pk}) {self.clean_name()} ({self.kosten.pk})"
@@ -181,8 +183,8 @@ class Bestellungskosten(CustomModel):
         super().save(*args, **kwargs)
 
     class Meta:
-        verbose_name = "Bestellungskosten"
-        verbose_name_plural = "Bestellungskosten"
+        verbose_name = pgettext_lazy("singular", "Bestellungskosten")
+        verbose_name_plural = pgettext_lazy("plural", "Bestellungskosten")
 
     objects = models.Manager()
 
@@ -205,19 +207,19 @@ class Bestellungsposten(CustomModel):
         on_delete=models.PROTECT,
     )
     note = models.CharField(
-        verbose_name="Bemerkung",
+        verbose_name=_("Bemerkung"),
         default="",
         max_length=250,
         blank=True,
-        help_text="Wird auf die Rechnung gedruckt.",
+        help_text=_("Wird auf die Rechnung gedruckt."),
     )
 
     quantity = models.IntegerField(
-        verbose_name="Menge",
+        verbose_name=_("Menge"),
         default=1,
     )
-    discount = models.IntegerField(
-        verbose_name="Rabatt in %",
+    discount = models.FloatField(
+        verbose_name=_("Rabatt in %"),
         default=0,
         validators=[
             MinValueValidator(0),
@@ -226,7 +228,7 @@ class Bestellungsposten(CustomModel):
     )
 
     product_price = models.FloatField(
-        verbose_name="Produktpreis (exkl. MwSt)",
+        verbose_name=_("Produktpreis (exkl. MwSt)"),
         default=0.0,
     )
 
@@ -241,15 +243,15 @@ class Bestellungsposten(CustomModel):
         return runden(self.product_price*self.quantity*(self.discount/100))*-1
 
     # Display methods
-    @admin.display(description="MwSt-Satz")
+    @admin.display(description=_("MwSt-Satz"))
     def display_vat_rate(self):
         return formatprice(self.produkt.vat_rate)
 
-    @admin.display(description="Zwischensumme (exkl. MwSt)")
+    @admin.display(description=_("Zwischensumme (exkl. MwSt)"))
     def display_subtotal(self):
         return formatprice(self.calc_subtotal()) + " CHF"
 
-    @admin.display(description="Bestellungsposten")
+    @admin.display(description=pgettext_lazy("singular", "Bestellungsposten"))
     def __str__(self):
         return f'({self.pk}) {self.quantity}x {self.produkt.clean_name()} ({self.produkt.pk})'
 
@@ -259,8 +261,8 @@ class Bestellungsposten(CustomModel):
         super().save(*args, **kwargs)
 
     class Meta:
-        verbose_name = "Bestellungsposten"
-        verbose_name_plural = "Bestellungsposten"
+        verbose_name = pgettext_lazy("singular", "Bestellungsposten")
+        verbose_name_plural = pgettext_lazy("plural", "Bestellungsposten")
 
     objects = models.Manager()
 
@@ -275,100 +277,85 @@ class Bestellung(CustomModel):
     """Model representing an order"""
 
     woocommerceid = models.IntegerField(
-        verbose_name="WooCommerce ID",
+        verbose_name=_("WooCommerce ID"),
         default=0,
     )
 
     date = models.DateTimeField(
-        verbose_name="Datum",
+        verbose_name=_("Datum"),
         default=timezone.now,
     )
 
     invoice_date = models.DateField(
-        verbose_name="Rechnungsdatum",
+        verbose_name=_("Rechnungsdatum"),
         default=None,
         blank=True,
         null=True,
-        help_text="Datum der Rechnung. Wird auch als Startpunkt für die Zahlungskonditionen verwendet.",
+        help_text=_("Datum der Rechnung. Wird auch als Startpunkt für die Zahlungskonditionen verwendet."),
     )
-    pdf_title = models.CharField(
-        verbose_name="Rechnungstitel",
-        default="",
-        blank=True,
-        max_length=32,
-        help_text="Titel der Rechnung. Leer lassen für 'RECHNUNG'",
-    )
-    pdf_text = models.TextField(
-        verbose_name="Rechnungstext",
-        default="",
-        blank=True,
-        help_text=mark_safe(
-            "Wird auf der Rechnung gedruckt! Unterstützt " +
-            "<abbr title='<b>Fett</b><u>Unterstrichen</u><i>Kursiv</i>'>XML markup</abbr>."
-        ),
-    )
+
     payment_conditions = models.CharField(
-        verbose_name="Zahlungskonditionen",
+        verbose_name=_("Zahlungskonditionen"),
         default=default_payment_conditions,
         validators=[
             RegexValidator(
-                "^([0-9]+(\.[0-9]+)?:[0-9]+;)*0:[0-9]+$",
-                "Bitte benutze folgendes Format: 'p:d;p:d' - p = Skonto in %; d = Tage",
+                r"^([0-9]+(\.[0-9]+)?:[0-9]+;)*0:[0-9]+$",
+                _("Bitte benutze folgendes Format: 'p:d;p:d' - p = Skonto in %; d = Tage"),
             )
         ],
         max_length=16,
-        help_text="Skonto und Zahlungsfrist -> "+faq('wie-funktionieren-zahlungskonditionen', 'Mehr erfahren'),
+        help_text=_("Skonto und Zahlungsfrist")+" -> "+faq('wie-funktionieren-zahlungskonditionen'),
     )
 
     status = models.CharField(
-        verbose_name="Status",
+        verbose_name=_("Status"),
         max_length=11,
         default='processing',
         choices=constants.ORDERSTATUS,
     )
     is_shipped = models.BooleanField(
-        verbose_name="Versendet",
+        verbose_name=_("Versendet?"),
         default=False,
-        help_text='Mehr Infos -> '+faq('was-passiert-wenn-ich-eine-bestellung-als-bezahltversendet-markiere', 'FAQ'),
+        help_text=_('Mehr Infos')+' -> '+faq('was-passiert-wenn-ich-eine-bestellung-als-bezahltversendet-markiere'),
     )
     shipped_on = models.DateField(
-        verbose_name="Versendet am",
+        verbose_name=_("Versendet am"),
         default=None,
         blank=True,
         null=True,
     )
     tracking_number = models.CharField(
-        verbose_name="Trackingnummer",
+        verbose_name=_("Trackingnummer"),
         default="",
         blank=True,
         max_length=25,
         validators=[
             RegexValidator(
                 r'^99\.[0-9]{2}\.[0-9]{6}\.[0-9]{8}$',
-                'Bite benutze folgendes Format: 99.xx.xxxxxx.xxxxxxxx',
+                _('Bite benutze folgendes Format: 99.xx.xxxxxx.xxxxxxxx'),
             )
         ],
-        help_text="Bitte gib hier eine Trackingnummer der Schweizer Post ein. (optional)",
+        help_text=_("Bitte gib hier eine Trackingnummer der Schweizer Post ein. (optional)"),
     )
 
     is_removed_from_stock = models.BooleanField(
-        verbose_name="Ausgelagert",
+        verbose_name=_("Ausgelagert?"),
         default=False,
     )
 
     payment_method = models.CharField(
-        verbose_name="Zahlungsmethode",
+        verbose_name=_("Zahlungsmethode"),
         max_length=7,
         default="cod",
         choices=constants.PAYMENTMETHODS,
     )
     is_paid = models.BooleanField(
-        verbose_name="Bezahlt",
+        verbose_name=_("Bezahlt?"),
         default=False,
-        help_text='Mehr Infos -> '+faq('was-passiert-wenn-ich-eine-bestellung-als-bezahltversendet-markiere', 'FAQ'),
+        help_text=_('Mehr Infos')+' -> '+faq('was-passiert-wenn-ich-eine-bestellung-als-bezahltversendet-markiere'),
     )
     paid_on = models.DateField(
-        verbose_name="Bezahlt am",
+        verbose_name=_("Bezahlt am"),
         default=None,
         blank=True,
         null=True,
@@ -378,11 +365,11 @@ class Bestellung(CustomModel):
         verbose_name="Kundennotiz",
         default="",
         blank=True,
-        help_text="Vom Kunden erfasste Notiz.",
+        help_text=_("Vom Kunden erfasste Notiz."),
     )
 
     order_key = models.CharField(
-        verbose_name="Bestellungs-Schlüssel",
+        verbose_name=_("Bestellungs-Schlüssel"),
         max_length=50,
         blank=True,
         default=default_order_key,
@@ -398,12 +385,12 @@ class Bestellung(CustomModel):
     zahlungsempfaenger = models.ForeignKey(
         to='Zahlungsempfaenger',
         on_delete=models.PROTECT,
-        verbose_name="Zahlungsempfänger",
+        verbose_name=pgettext_lazy("singular", "Zahlungsempfänger"),
         default=default_payment_recipient,
     )
     ansprechpartner = models.ForeignKey(
         to='Ansprechpartner',
-        verbose_name="Ansprechpartner",
+        verbose_name=pgettext_lazy("singular", "Ansprechpartner"),
         on_delete=models.PROTECT,
         default=default_contact_person,
     )
@@ -427,67 +414,67 @@ class Bestellung(CustomModel):
         }
 
     addr_billing_first_name = models.CharField(
-        verbose_name="Vorname",
+        verbose_name=pgettext_lazy("address", "Vorname"),
         max_length=250,
         default="",
         blank=True,
     )
     addr_billing_last_name = models.CharField(
-        verbose_name="Nachname",
+        verbose_name=pgettext_lazy("address", "Nachname"),
         max_length=250,
         default="",
         blank=True,
     )
     addr_billing_company = models.CharField(
-        verbose_name="Firma",
+        verbose_name=pgettext_lazy("address", "Firma"),
         max_length=250,
         default="",
         blank=True,
     )
     addr_billing_address_1 = models.CharField(
-        verbose_name="Adresszeile 1",
+        verbose_name=pgettext_lazy("address", "Adresszeile 1"),
         max_length=250,
         default="",
         blank=True,
         help_text="Strasse und Hausnummer oder 'Postfach'",
     )
     addr_billing_address_2 = models.CharField(
-        verbose_name="Adresszeile 2",
+        verbose_name=pgettext_lazy("address", "Adresszeile 2"),
         max_length=250,
         default="",
         blank=True,
         help_text="Wird in QR-Rechnung NICHT verwendet!",
     )
     addr_billing_city = models.CharField(
-        verbose_name="Ort",
+        verbose_name=pgettext_lazy("address", "Ort"),
         max_length=250,
         default="",
         blank=True,
     )
     addr_billing_state = models.CharField(
-        verbose_name="Kanton",
+        verbose_name=pgettext_lazy("address", "Kanton"),
         max_length=50,
         default="",
         blank=True,
     )
     addr_billing_postcode = models.CharField(
-        verbose_name="Postleitzahl",
+        verbose_name=pgettext_lazy("address", "Postleitzahl"),
         max_length=50,
         default="",
         blank=True,
     )
     addr_billing_country = models.CharField(
-        verbose_name="Land",
+        verbose_name=pgettext_lazy("address", "Land"),
         max_length=2,
         default="CH",
         choices=constants.COUNTRIES,
     )
     addr_billing_email = models.EmailField(
-        verbose_name="E-Mail Adresse",
+        verbose_name=pgettext_lazy("address", "E-Mail Adresse"),
         blank=True,
     )
     addr_billing_phone = models.CharField(
-        verbose_name="Telefon",
+        verbose_name=pgettext_lazy("address", "Telefon"),
         max_length=50,
         default="",
         blank=True,
@@ -512,65 +499,65 @@ class Bestellung(CustomModel):
         }
 
     addr_shipping_first_name = models.CharField(
-        verbose_name="Vorname",
+        verbose_name=pgettext_lazy("address", "Vorname"),
         max_length=250,
         default="",
         blank=True,
     )
     addr_shipping_last_name = models.CharField(
-        verbose_name="Nachname",
+        verbose_name=pgettext_lazy("address", "Nachname"),
         max_length=250,
         default="",
         blank=True,
     )
     addr_shipping_company = models.CharField(
-        verbose_name="Firma",
+        verbose_name=pgettext_lazy("address", "Firma"),
         max_length=250,
         default="",
         blank=True,
     )
     addr_shipping_address_1 = models.CharField(
-        verbose_name="Adresszeile 1",
+        verbose_name=pgettext_lazy("address", "Adresszeile 1"),
         max_length=250,
         default="",
         blank=True,
     )
     addr_shipping_address_2 = models.CharField(
-        verbose_name="Adresszeile 2",
+        verbose_name=pgettext_lazy("address", "Adresszeile 2"),
         max_length=250,
         default="",
         blank=True,
     )
     addr_shipping_city = models.CharField(
-        verbose_name="Ort",
+        verbose_name=pgettext_lazy("address", "Ort"),
         max_length=250,
         default="",
         blank=True,
     )
     addr_shipping_state = models.CharField(
-        verbose_name="Kanton",
+        verbose_name=pgettext_lazy("address", "Kanton"),
         max_length=50,
         default="",
         blank=True,
     )
     addr_shipping_postcode = models.CharField(
-        verbose_name="Postleitzahl",
+        verbose_name=pgettext_lazy("address", "Postleitzahl"),
         max_length=50,
         default="",
         blank=True,
     )
     addr_shipping_country = models.CharField(
-        verbose_name="Land",
+        verbose_name=pgettext_lazy("address", "Land"),
         max_length=2,
         default="CH",
         choices=constants.COUNTRIES,
     )
     addr_shipping_email = models.EmailField(
-        verbose_name="E-Mail Adresse",
+        verbose_name=pgettext_lazy("address", "E-Mail Adresse"),
         blank=True,
     )
     addr_shipping_phone = models.CharField(
-        verbose_name="Telefon",
+        verbose_name=pgettext_lazy("address", "Telefon"),
         max_length=50,
         default="",
         blank=True,
@@ -606,8 +593,22 @@ class Bestellung(CustomModel):
     )
 
     cached_sum = models.FloatField(
-        verbose_name="Summe in CHF",
+        verbose_name=_("Total in CHF"),
         default=0.0,
+    )
+
+    # Data for PDF generation (only editable via PDF generation form)
+
+    pdf_title = models.CharField(
+        editable=False,
+        default="",
+        blank=True,
+        max_length=32,
+    )
+    pdf_text = models.TextField(
+        editable=False,
+        default="",
+        blank=True,
     )
 
     # # Wiederkehrende Rechnungen
@@ -616,6 +617,16 @@ class Bestellung(CustomModel):
     # recurring_next = models.DateField("Wiederkehrend am", default=None, blank=True, null=True)
     # recurring_until = models.DateField("Wiederkehrend bis", default=None, blank=True, null=True)
     # recurring_frequency = models.CharField("Häufigkeit", choices=ORDER_FREQUENCY_TYPES, default=None, blank=True, null=True)
+
+    # Properties
+
+    @property
+    def language(self):
+        if self.kunde is not None:
+            return self.kunde.language
+        return 'de'
+
+    # Functions
 
     def import_customer_data(self):
         "Copy the customer data from the customer into the order"
@@ -644,14 +655,14 @@ class Bestellung(CustomModel):
 
         super().save(*args, **kwargs)
 
-    @admin.display(description="Trackinglink", ordering="tracking_number")
+    @admin.display(description=_("Trackinglink"), ordering="tracking_number")
     def tracking_link(self):
         return f'https://www.post.ch/swisspost-tracking?formattedParcelCodes={self.tracking_number}' if self.tracking_number else None
 
     def unstrukturierte_mitteilung(self):
         if self.zahlungsempfaenger.mode == "QRR":
             return str(self.date.strftime("%d.%m.%Y"))
-        return _("Referenznummer:")+" "+str(self.id)
+        return _("Referenznummer")+": "+str(self.id)
 
     def referenznummer(self):
         a = self.pkfill(22)+"0000"
@@ -728,33 +739,39 @@ class Bestellung(CustomModel):
     def calc_total(self):
         return runden(self.calc_total_without_vat()+self.calc_total_vat())
 
-    @admin.display(description="Rechnungstotal")
+    @admin.display(description=_("Rechnungstotal"))
     def display_total_breakdown(self):
         return f'{formatprice(self.calc_total_without_vat())} CHF + {formatprice(self.calc_total_vat())} CHF MwSt = {formatprice(self.calc_total())} CHF'
 
-    @admin.display(description="Total", ordering="cached_sum")
+    @admin.display(description=_("Total"), ordering="cached_sum")
     def display_cached_sum(self):
         return f'{formatprice(self.cached_sum)} CHF'
 
-    @admin.display(description="Name")
+    @admin.display(description=_("Name"))
     def name(self):
         return (f'{self.date.year}-' if self.date and not isinstance(self.date, str) else '') + \
                (f'{self.pkfill(6)}'+(f' (WC#{self.woocommerceid})' if self.woocommerceid else '')) + \
                (f' - {self.kunde}' if self.kunde is not None else " Gast")
 
-    @admin.display(description="Info")
+    @admin.display(description=_("Info"))
     def info(self):
         return f'{self.date.strftime("%d.%m.%Y")} - '+((self.kunde.company if self.kunde.company else (f'{self.kunde.first_name} {self.kunde.last_name}')) if self.kunde else "Gast")
 
-    @admin.display(description="Bezahlt nach")
+    @admin.display(description=_("Bezahlt nach"))
     def display_paid_after(self):
         if self.paid_on is None:
             return "-"
         
         daydiff = (self.paid_on - self.invoice_date).days
-        return f'{daydiff} Tag{"en" if daydiff != 1 else ""}'
+        
+        return npgettext(
+            "Paid after ...",
+            _("%(count)d Tag") % {"count": daydiff},
+            _("%(count)d Tagen") % {"count": daydiff},
+            daydiff
+        )
 
-    @admin.display(description="Konditionen")
+    @admin.display(description=_("Konditionen"))
     def display_payment_conditions(self):
         "Get the payment conditions as a multiline string of values"
 
@@ -765,7 +782,7 @@ class Bestellung(CustomModel):
             datestr = condition["date"].strftime("%d.%m.%Y")
             price = formatprice(condition["price"])
             percent = condition["percent"]
-            output += f'{price} CHF bis {datestr} ({percent}%)<br>'
+            output += f'{price} CHF ' + gettext('bis') + f' {datestr} ({percent}%)<br>'
 
         return mark_safe(output)
 
@@ -781,7 +798,7 @@ class Bestellung(CustomModel):
 
         return False
 
-    @admin.display(description="Bestellung")
+    @admin.display(description=pgettext_lazy("singular", "Bestellung"))
     def __str__(self):
         return self.name()
 
@@ -789,22 +806,32 @@ class Bestellung(CustomModel):
         context = {
             "tracking_link": str(self.tracking_link()),
             "trackingdata": bool(self.tracking_number and self.is_shipped),
-            "id": str(self.id),
+            "id": str(self.pk),
             "woocommerceid": str(self.woocommerceid),
             "woocommercedata": bool(self.woocommerceid),
         }
 
+        if self.woocommerceid:
+            ctx = {
+                'id': str(self.pk),
+                'onlineid': str(self.woocommerceid),
+            }
+            subject = gettext("Ihre Bestellung Nr. %(id)s (Online #%(onlineid)s)") % ctx
+            filename = gettext("Rechnung Nr. %(id)s (Online #%(onlineid)s).pdf") % ctx
+        else:
+            ctx = {
+                'id': str(self.pk),
+            }
+            subject = gettext("Ihre Bestellung Nr. %(id)s") % ctx
+            filename = gettext("Rechnung Nr. %(id)s.pdf") % ctx
+
         self.email_link_invoice = EMail.objects.create(
-            subject=f"Ihre Rechnung Nr. { self.id }"+(
-                f' (Online #{self.woocommerceid})' if self.woocommerceid else ''),
+            subject=subject,
             to=self.addr_billing_email,
             html_template="bestellung_rechnung.html",
             html_context=context,
-            notes=f"Diese E-Mail wurde automatisch aus Bestellung #{self.pk} generiert.",
+            notes=gettext("Diese E-Mail wurde automatisch aus Bestellung #%d generiert.") % self.pk,
         )
-
-        filename = f"Rechnung Nr. { self.id }"+(
-            f' (Online #{self.woocommerceid})' if self.woocommerceid else '')+".pdf"
 
         self.email_link_invoice.add_attachments(
             Attachment.objects.create_from_binary(
@@ -820,53 +847,65 @@ class Bestellung(CustomModel):
         context = {
             "tracking_link": str(self.tracking_link()),
             "trackingdata": bool(self.tracking_link() and self.is_shipped),
-            "id": str(self.id),
+            "id": str(self.pk),
             "woocommerceid": str(self.woocommerceid),
             "woocommercedata": bool(self.woocommerceid),
         }
 
+        if self.woocommerceid:
+            ctx = {
+                'id': str(self.pk),
+                'onlineid': str(self.woocommerceid),
+            }
+            subject = gettext("Ihre Lieferung Nr. %(id)s (Online #%(onlineid)s)") % ctx
+            filename = gettext("Lieferschein Nr. %(id)s (Online #%(onlineid)s).pdf") % ctx
+        else:
+            ctx = {
+                'id': str(self.pk),
+            }
+            subject = gettext("Ihre Lieferung Nr. %(id)s") % ctx
+            filename = gettext("Lieferschein Nr. %(id)s.pdf") % ctx
+
         self.email_link_shipped = EMail.objects.create(
-            subject=f"Ihre Lieferung Nr. { self.id }",
+            subject=subject,
             to=self.addr_shipping_email,
             html_template="bestellung_lieferung.html",
             html_context=context,
-            notes=f"Diese E-Mail wurde automatisch aus Bestellung #{self.pk} generiert.",
+            notes=gettext("Diese E-Mail wurde automatisch aus Bestellung #%d generiert.") % self.pk,
         )
-
-        filename = f"Lieferschein Nr. { self.id }.pdf"
 
         self.email_link_shipped.add_attachments(
             Attachment.objects.create_from_binary(
                 filename=filename,
-                content=PDFOrder(self, "Lieferschein", is_delivery_note=True).get_pdf()
+                content=PDFOrder(self, _("Lieferschein"), is_delivery_note=True).get_pdf()
             )
         )
 
         self.save()
         return self.email_link_shipped
 
-    @admin.display(description="🔗 Notiz")
+    @admin.display(description=_("🔗 Notiz"))
     def html_app_notiz(self):
         if hasattr(self, "notiz"):
             link = reverse("admin:kmuhelper_app_todo_change",
                            kwargs={"object_id": self.notiz.pk})
-            text = "Notiz ansehen"
+            text = gettext("Notiz ansehen")
         else:
             link = reverse("admin:kmuhelper_app_todo_add") + \
                 '?from_bestellung='+str(self.pk)
-            text = "Notiz hinzufügen"
+            text = gettext("Notiz hinzufügen")
         return format_html('<a target="_blank" href="{}">{}</a>', link, text)
 
-    @admin.display(description="🔗 Notiz")
+    @admin.display(description=_("🔗 Notiz"))
     def html_notiz(self):
         if hasattr(self, "notiz"):
             link = reverse("admin:kmuhelper_notiz_change",
                            kwargs={"object_id": self.notiz.pk})
-            text = "Notiz ansehen"
+            text = gettext("Notiz ansehen")
         else:
             link = reverse("admin:kmuhelper_notiz_add") + \
                 '?from_bestellung='+str(self.pk)
-            text = "Notiz hinzufügen"
+            text = gettext("Notiz hinzufügen")
         return format_html('<a target="_blank" href="{}">{}</a>', link, text)
 
     def get_stock_data(self):
@@ -887,13 +926,13 @@ class Bestellung(CustomModel):
 
             if warnings != []:
                 email = EMail.objects.create(
-                    subject="[KMUHelper] - Lagerbestand knapp!",
+                    subject=gettext("[KMUHelper] - Lagerbestand knapp!"),
                     to=email_receiver,
                     html_template="bestellung_stock_warning.html",
                     html_context={
                         "warnings": warnings,
                     },
-                    notes=f"Diese E-Mail wurde automatisch aus Bestellung #{self.pk} generiert.",
+                    notes = gettext("Diese E-Mail wurde automatisch aus Bestellung #%d generiert.") % self.pk,
                 )
 
                 success = email.send(
@@ -903,12 +942,12 @@ class Bestellung(CustomModel):
                 )
                 return bool(success)
         else:
-            log("Keine E-Mail für Warnungen zum Lagerbestand festgelegt!")
+            log("No email receiver for stock warning set.")
         return None
 
     class Meta:
-        verbose_name = "Bestellung"
-        verbose_name_plural = "Bestellungen"
+        verbose_name = _("Bestellung")
+        verbose_name_plural = _("Bestellungen")
 
     def duplicate(self):
         new = Bestellung.objects.create(
@@ -920,7 +959,7 @@ class Bestellung(CustomModel):
             pdf_text=self.pdf_text,
             payment_conditions=self.payment_conditions,
 
-            customer_note=f"Kopie aus Bestellung #{self.pk}\n--------------------------------\n{self.customer_note}",
+            customer_note=gettext("Kopie aus Bestellung #%d") % self.pk + "\n" + "-"*32 + "\n" + self.customer_note,
         )
 
         for field in constants.ADDR_SHIPPING_FIELDS+constants.ADDR_BILLING_FIELDS:
@@ -935,7 +974,7 @@ class Bestellung(CustomModel):
 
     def copy_to_delivery(self):
         new = Lieferung.objects.create(
-            name=f"Rücksendung von Bestellung #{self.pk}"
+            name=gettext("Rücksendung von Bestellung #%d") % self.pk,
         )
         for lp in self.products.through.objects.filter(bestellung=self):
             new.products.add(lp.produkt, through_defaults={"quantity": lp.quantity})
@@ -1009,34 +1048,34 @@ class Kosten(CustomModel):
     """Model representing additional costs"""
 
     name = models.CharField(
-        verbose_name="Name",
+        verbose_name=_("Bezeichnung"),
         max_length=500,
-        default="Zusätzliche Kosten",
+        default=_("Zusätzliche Kosten"),
         help_text=I18N_HELP_TEXT,
     )
     price = models.FloatField(
-        verbose_name="Preis (exkl. MwSt)",
+        verbose_name=_("Preis (exkl. MwSt)"),
         default=0.0,
     )
     vat_rate = models.FloatField(
-        verbose_name="MwSt-Satz",
+        verbose_name=_("MwSt-Satz"),
         choices=constants.VAT_RATES,
         default=constants.VAT_RATE_DEFAULT,
     )
 
-    @admin.display(description="Name", ordering="name")
+    @admin.display(description=_("Bezeichnung"), ordering="name")
     def clean_name(self):
         return langselect(self.name)
 
-    @admin.display(description="Kosten")
+    @admin.display(description=pgettext_lazy("singular", "Kosten"))
     def __str__(self):
         return f'{ self.clean_name() } ({ self.price } CHF' + \
             (f' + {self.vat_rate}% MwSt' if self.vat_rate else '') + \
             f') ({self.pk})'
 
     class Meta:
-        verbose_name = "Kosten"
-        verbose_name_plural = "Kosten"
+        verbose_name = pgettext_lazy("singular", "Kosten")
+        verbose_name_plural = pgettext_lazy("plural", "Kosten")
 
     objects = models.Manager()
 
@@ -1047,177 +1086,177 @@ class Kunde(CustomModel):
     """Model representing a customer"""
 
     woocommerceid = models.IntegerField(
-        verbose_name="WooCommerce ID",
+        verbose_name=_("WooCommerce ID"),
         default=0,
     )
 
     email = models.EmailField(
-        verbose_name="E-Mail Adresse",
+        verbose_name=_("E-Mail Adresse"),
         blank=True,
     )
     first_name = models.CharField(
-        verbose_name="Vorname",
+        verbose_name=_("Vorname"),
         max_length=250,
         default="",
         blank=True,
     )
     last_name = models.CharField(
-        verbose_name="Nachname",
+        verbose_name=_("Nachname"),
         max_length=250,
         default="",
         blank=True,
     )
     company = models.CharField(
-        verbose_name="Firma",
+        verbose_name=_("Firma"),
         max_length=250,
         default="",
         blank=True,
     )
     username = models.CharField(
-        verbose_name="Benutzername",
+        verbose_name=_("Benutzername"),
         max_length=50,
         default="",
         blank=True,
     )
     avatar_url = models.URLField(
-        verbose_name="Avatar URL",
+        verbose_name=_("Avatar URL"),
         blank=True,
         editable=False,
     )
     language = models.CharField(
-        verbose_name="Sprache",
+        verbose_name=_("Sprache"),
         default="de",
         choices=constants.LANGUAGES,
         max_length=2,
     )
 
     addr_billing_first_name = models.CharField(
-        verbose_name="Vorname",
+        verbose_name=pgettext_lazy("address", "Vorname"),
         max_length=250,
         default="",
         blank=True,
     )
     addr_billing_last_name = models.CharField(
-        verbose_name="Nachname",
+        verbose_name=pgettext_lazy("address", "Nachname"),
         max_length=250,
         default="",
         blank=True,
     )
     addr_billing_company = models.CharField(
-        verbose_name="Firma",
+        verbose_name=pgettext_lazy("address", "Firma"),
         max_length=250,
         default="",
         blank=True,
     )
     addr_billing_address_1 = models.CharField(
-        verbose_name="Adresszeile 1",
+        verbose_name=pgettext_lazy("address", "Adresszeile 1"),
         max_length=250,
         default="",
         blank=True,
-        help_text='Strasse und Hausnummer oder "Postfach"',
+        help_text=_('Strasse und Hausnummer oder "Postfach"'),
     )
     addr_billing_address_2 = models.CharField(
-        verbose_name="Adresszeile 2",
+        verbose_name=pgettext_lazy("address", "Adresszeile 2"),
         max_length=250,
         default="",
         blank=True,
-        help_text="Wird in QR-Rechnung NICHT verwendet!",
+        help_text=_("Wird in QR-Rechnung NICHT verwendet!"),
     )
     addr_billing_city = models.CharField(
-        verbose_name="Ort",
+        verbose_name=pgettext_lazy("address", "Ort"),
         max_length=250,
         default="",
         blank=True,
     )
     addr_billing_state = models.CharField(
-        verbose_name="Kanton",
+        verbose_name=pgettext_lazy("address", "Kanton"),
         max_length=50,
         default="",
         blank=True,
     )
     addr_billing_postcode = models.CharField(
-        verbose_name="Postleitzahl",
+        verbose_name=pgettext_lazy("address", "Postleitzahl"),
         max_length=50,
         default="",
         blank=True,
     )
     addr_billing_country = models.CharField(
-        verbose_name="Land",
+        verbose_name=pgettext_lazy("address", "Land"),
         max_length=2,
         default="CH",
         choices=constants.COUNTRIES,
     )
     addr_billing_email = models.EmailField(
-        verbose_name="E-Mail Adresse",
+        verbose_name=pgettext_lazy("address", "E-Mail Adresse"),
         blank=True,
     )
     addr_billing_phone = models.CharField(
-        verbose_name="Telefon",
+        verbose_name=pgettext_lazy("address", "Telefon"),
         max_length=50,
         default="",
         blank=True,
     )
 
     addr_shipping_first_name = models.CharField(
-        verbose_name="Vorname",
+        verbose_name=pgettext_lazy("address", "Vorname"),
         max_length=250,
         default="",
         blank=True,
     )
     addr_shipping_last_name = models.CharField(
-        verbose_name="Nachname",
+        verbose_name=pgettext_lazy("address", "Nachname"),
         max_length=250,
         default="",
         blank=True,
     )
     addr_shipping_company = models.CharField(
-        verbose_name="Firma",
+        verbose_name=pgettext_lazy("address", "Firma"),
         max_length=250,
         default="",
         blank=True,
     )
     addr_shipping_address_1 = models.CharField(
-        verbose_name="Adresszeile 1",
+        verbose_name=pgettext_lazy("address", "Adresszeile 1"),
         max_length=250,
         default="",
         blank=True,
     )
     addr_shipping_address_2 = models.CharField(
-        verbose_name="Adresszeile 2",
+        verbose_name=pgettext_lazy("address", "Adresszeile 2"),
         max_length=250,
         default="",
         blank=True,
     )
     addr_shipping_city = models.CharField(
-        verbose_name="Ort",
+        verbose_name=pgettext_lazy("address", "Ort"),
         max_length=250,
         default="",
         blank=True,
     )
     addr_shipping_state = models.CharField(
-        verbose_name="Kanton",
+        verbose_name=pgettext_lazy("address", "Kanton"),
         max_length=50,
         default="",
         blank=True,
     )
     addr_shipping_postcode = models.CharField(
-        verbose_name="Postleitzahl",
+        verbose_name=pgettext_lazy("address", "Postleitzahl"),
         max_length=50,
         default="",
         blank=True,
     )
     addr_shipping_country = models.CharField(
-        verbose_name="Land",
+        verbose_name=pgettext_lazy("address", "Land"),
         max_length=2,
         default="CH",
         choices=constants.COUNTRIES,
     )
     addr_shipping_email = models.EmailField(
-        verbose_name="E-Mail Adresse",
+        verbose_name=pgettext_lazy("address", "E-Mail Adresse"),
         blank=True,
     )
     addr_shipping_phone = models.CharField(
-        verbose_name="Telefon",
+        verbose_name=pgettext_lazy("address", "Telefon"),
         max_length=50,
         default="",
         blank=True,
@@ -1225,19 +1264,19 @@ class Kunde(CustomModel):
 
     combine_with = models.ForeignKey(
         to='self',
-        verbose_name="Zusammenfügen mit",
+        verbose_name=_("Zusammenfügen mit"),
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        help_text="Dies kann nicht widerrufen werden! Werte im aktuellen Kunden werden bevorzugt.",
+        help_text=_("Dies kann nicht widerrufen werden! Werte im aktuellen Kunden werden bevorzugt."),
     )
     website = models.URLField(
-        verbose_name="Webseite",
+        verbose_name=_("Webseite"),
         default="",
         blank=True,
     )
     note = models.TextField(
-        verbose_name="Bemerkung",
+        verbose_name=_("Bemerkung"),
         default="",
         blank=True,
     )
@@ -1249,13 +1288,13 @@ class Kunde(CustomModel):
         null=True,
     )
 
-    @admin.display(description="Avatar", ordering="avatar_url")
+    @admin.display(description=_("Avatar"), ordering='avatar_url')
     def avatar(self):
         if self.avatar_url:
             return mark_safe('<img src="'+self.avatar_url+'" width="50px">')
         return ""
 
-    @admin.display(description="Kunde")
+    @admin.display(description=pgettext_lazy("singular", "Kunde"))
     def __str__(self):
         s = f'{self.pkfill(8)} '
         if self.woocommerceid:
@@ -1271,8 +1310,8 @@ class Kunde(CustomModel):
         return s
 
     class Meta:
-        verbose_name = "Kunde"
-        verbose_name_plural = "Kunden"
+        verbose_name = pgettext_lazy("singular", "Kunde")
+        verbose_name_plural = pgettext_lazy("plural", "Kunden")
 
     def save(self, *args, **kwargs):
         if self.combine_with:
@@ -1326,7 +1365,7 @@ class Kunde(CustomModel):
             self.combine_with = None
         super().save(*args, **kwargs)
 
-    def create_email_registriert(self):
+    def create_email_registered(self):
         context = {
             "kunde": {
                 "id": self.pk,
@@ -1338,38 +1377,38 @@ class Kunde(CustomModel):
         }
 
         self.email_registriert = EMail.objects.create(
-            subject="Registrierung erfolgreich!",
+            subject=gettext("Registrierung erfolgreich!"),
             to=self.email,
             html_template="kunde_registriert.html",
             html_context=context,
-            notes=f"Diese E-Mail wurde automatisch aus Kunde #{self.pk} generiert.",
+            notes=gettext("Diese E-Mail wurde automatisch aus Kunde #%d generiert.") % self.pk,
         )
 
         self.save()
         return self.email_registriert
 
-    @admin.display(description="🔗 Notiz")
+    @admin.display(description=_("🔗 Notiz"))
     def html_app_notiz(self):
         if hasattr(self, "notiz"):
             link = reverse("admin:kmuhelper_app_todo_change",
                            kwargs={"object_id": self.notiz.pk})
-            text = "Notiz ansehen"
+            text = gettext("Notiz ansehen")
         else:
             link = reverse("admin:kmuhelper_app_todo_add") + \
                 '?from_kunde='+str(self.pk)
-            text = "Notiz hinzufügen"
+            text = gettext("Notiz hinzufügen")
         return format_html('<a target="_blank" href="{}">{}</a>', link, text)
 
-    @admin.display(description="🔗 Notiz")
+    @admin.display(description=_("🔗 Notiz"))
     def html_notiz(self):
         if hasattr(self, "notiz"):
             link = reverse("admin:kmuhelper_notiz_change",
                            kwargs={"object_id": self.notiz.pk})
-            text = "Notiz ansehen"
+            text = gettext("Notiz ansehen")
         else:
             link = reverse("admin:kmuhelper_notiz_add") + \
                 '?from_kunde='+str(self.pk)
-            text = "Notiz hinzufügen"
+            text = gettext("Notiz hinzufügen")
         return format_html('<a target="_blank" href="{}">{}</a>', link, text)
 
     objects = models.Manager()
@@ -1383,61 +1422,61 @@ class Lieferant(CustomModel):
     """Model representing a supplier (used only for categorizing)"""
 
     abbreviation = models.CharField(
-        verbose_name="Kürzel",
+        verbose_name=_("Kürzel"),
         max_length=5,
     )
     name = models.CharField(
-        verbose_name="Name",
+        verbose_name=_("Name"),
         max_length=50,
     )
 
     website = models.URLField(
-        verbose_name="Webseite",
+        verbose_name=_("Webseite"),
         blank=True,
     )
     phone = models.CharField(
-        verbose_name="Telefon",
+        verbose_name=_("Telefon"),
         max_length=50,
         default="",
         blank=True,
     )
     email = models.EmailField(
-        verbose_name="E-Mail",
+        verbose_name=_("E-Mail"),
         null=True,
         blank=True,
     )
 
     adresse = models.TextField(
-        verbose_name="Adresse",
+        verbose_name=_("Adresse"),
         default="",
         blank=True,
     )
     notiz = models.TextField(
-        verbose_name="Notiz",
+        verbose_name=_("Notiz"),
         default="",
         blank=True,
     )
 
     ansprechpartner = models.CharField(
-        verbose_name="Ansprechpartner",
+        verbose_name=pgettext_lazy("singular", "Ansprechpartner"),
         max_length=250,
         default="",
         blank=True,
     )
     ansprechpartnertel = models.CharField(
-        verbose_name="Ansprechpartner Telefon",
+        verbose_name=_("Ansprechpartner Telefon"),
         max_length=50,
         default="",
         blank=True,
     )
     ansprechpartnermail = models.EmailField(
-        verbose_name="Ansprechpartner E-Mail",
+        verbose_name=_("Ansprechpartner E-Mail"),
         null=True,
         default="",
         blank=True,
     )
 
-    @admin.display(description="Lieferant")
+    @admin.display(description=pgettext_lazy("singular", "Lieferant"))
     def __str__(self):
         return f'{self.name} ({self.pk})'
 
@@ -1449,8 +1488,8 @@ class Lieferant(CustomModel):
         return products.count()
 
     class Meta:
-        verbose_name = "Lieferant"
-        verbose_name_plural = "Lieferanten"
+        verbose_name = pgettext_lazy("singular", "Lieferant")
+        verbose_name_plural = pgettext_lazy("singular", "Lieferanten")
 
     objects = models.Manager()
 
@@ -1469,17 +1508,17 @@ class Lieferungsposten(CustomModel):
         on_delete=models.PROTECT,
     )
     quantity = models.IntegerField(
-        verbose_name="Menge",
+        verbose_name=_("Menge"),
         default=1,
     )
 
-    @admin.display(description="Lieferungsposten")
+    @admin.display(description=pgettext_lazy("singular", "Lieferungsposten"))
     def __str__(self):
         return f'({self.lieferung.pk}) -> {self.quantity}x {self.produkt}'
 
     class Meta:
-        verbose_name = "Lieferungsposten"
-        verbose_name_plural = "Lieferungsposten"
+        verbose_name = pgettext_lazy("singular", "Lieferungsposten")
+        verbose_name_plural = pgettext_lazy("plural", "Lieferungsposten")
 
     objects = models.Manager()
 
@@ -1488,12 +1527,12 @@ class Lieferung(CustomModel):
     """Model representing an *incoming* delivery"""
 
     name = models.CharField(
-        verbose_name="Name",
+        verbose_name=_("Name"),
         max_length=50,
         default=default_delivery_title,
     )
     date = models.DateField(
-        verbose_name="Erfasst am",
+        verbose_name=_("Erfasst am"),
         auto_now_add=True,
     )
 
@@ -1510,11 +1549,11 @@ class Lieferung(CustomModel):
     )
 
     is_added_to_stock = models.BooleanField(
-        verbose_name="Eingelagert",
+        verbose_name=_("Eingelagert?"),
         default=False,
     )
 
-    @admin.display(description="Anzahl Produklte")
+    @admin.display(description=_("Anzahl Produkte"))
     def total_quantity(self):
         return self.products.through.objects.filter(lieferung=self).aggregate(models.Sum('quantity'))["quantity__sum"]
 
@@ -1528,16 +1567,16 @@ class Lieferung(CustomModel):
             return True
         return False
 
-    @admin.display(description="🔗 Notiz")
+    @admin.display(description=_("🔗 Notiz"))
     def html_app_notiz(self):
         if hasattr(self, "notiz"):
             link = reverse("admin:kmuhelper_app_todo_change",
                            kwargs={"object_id": self.notiz.pk})
-            text = "Notiz ansehen"
+            text = gettext("Notiz ansehen")
         else:
             link = reverse("admin:kmuhelper_app_todo_add") + \
                 '?from_lieferung='+str(self.pk)
-            text = "Notiz hinzufügen"
+            text = gettext("Notiz hinzufügen")
         return format_html('<a target="_blank" href="{}">{}</a>', link, text)
 
     @admin.display(description="🔗 Notiz")
@@ -1545,20 +1584,20 @@ class Lieferung(CustomModel):
         if hasattr(self, "notiz"):
             link = reverse("admin:kmuhelper_notiz_change",
                            kwargs={"object_id": self.notiz.pk})
-            text = "Notiz ansehen"
+            text = gettext("Notiz ansehen")
         else:
             link = reverse("admin:kmuhelper_notiz_add") + \
                 '?from_lieferung='+str(self.pk)
-            text = "Notiz hinzufügen"
+            text = gettext("Notiz hinzufügen")
         return format_html('<a target="_blank" href="{}">{}</a>', link, text)
 
-    @admin.display(description="Lieferung")
+    @admin.display(description=pgettext_lazy("singular", "Lieferung"))
     def __str__(self):
         return f'{self.name} ({self.pk})'
 
     class Meta:
-        verbose_name = "Lieferung"
-        verbose_name_plural = "Lieferungen"
+        verbose_name = pgettext_lazy("singular", "Lieferung")
+        verbose_name_plural = pgettext_lazy("plural", "Lieferungen")
 
     objects = models.Manager()
 
@@ -1569,27 +1608,27 @@ class Notiz(CustomModel):
     """Model representing a note"""
 
     name = models.CharField(
-        verbose_name="Name",
+        verbose_name=_("Name"),
         max_length=50,
     )
     description = models.TextField(
-        verbose_name="Beschrieb",
+        verbose_name=_("Beschrieb"),
         default="",
         blank=True,
     )
 
     erledigt = models.BooleanField(
-        verbose_name="Erledigt",
+        verbose_name=_("Erledigt?"),
         default=False,
     )
 
     priority = models.IntegerField(
-        verbose_name="Priorität",
+        verbose_name=_("Priorität"),
         default=0,
         blank=True,
     )
     erstellt_am = models.DateTimeField(
-        verbose_name="Erstellt am",
+        verbose_name=_("Erstellt am"),
         auto_now_add=True,
     )
 
@@ -1622,7 +1661,7 @@ class Notiz(CustomModel):
         related_name="notiz",
     )
 
-    @admin.display(description="🔗 Notiz")
+    @admin.display(description=_("🔗 Notiz"))
     def __str__(self):
         return f'{self.name} ({self.pk})'
 
@@ -1631,24 +1670,28 @@ class Notiz(CustomModel):
         if self.bestellung:
             url = reverse("admin:kmuhelper_bestellung_change",
                           kwargs={"object_id": self.bestellung.pk})
-            text += f"Bestellung <a href='{url}'>#{self.bestellung.pk}</a><br>"
+            text += pgettext("singular", "Bestellung")
+            text += f" <a href='{url}'>#{self.bestellung.pk}</a><br>"
         if self.produkt:
             url = reverse("admin:kmuhelper_produkt_change",
                           kwargs={"object_id": self.produkt.pk})
-            text += f"Produkt <a href='{url}'>#{self.produkt.pk}</a><br>"
+            text += pgettext("singular", "Produkt")
+            text += f" <a href='{url}'>#{self.produkt.pk}</a><br>"
         if self.kunde:
             url = reverse("admin:kmuhelper_kunde_change",
                           kwargs={"object_id": self.kunde.pk})
-            text += f"Kunde <a href='{url}'>#{self.kunde.pk}</a><br>"
+            text += pgettext("singular", "Kunde")
+            text += f" <a href='{url}'>#{self.kunde.pk}</a><br>"
         if self.lieferung:
             url = reverse("admin:kmuhelper_lieferung_change",
                           kwargs={"object_id": self.lieferung.pk})
-            text += f"Lieferung <a href='{url}'>#{self.lieferung.pk}</a><br>"
+            text += pgettext("singular", "Lieferung")
+            text += f" <a href='{url}'>#{self.lieferung.pk}</a><br>"
         return mark_safe(text) or "Diese Notiz hat keine Verknüpfungen."
 
     class Meta:
-        verbose_name = "Notiz"
-        verbose_name_plural = "Notizen"
+        verbose_name = pgettext_lazy("singular", "Notiz")
+        verbose_name_plural = pgettext_lazy("plural", "Notizen")
 
     objects = models.Manager()
 
@@ -1659,115 +1702,115 @@ class Produkt(CustomModel):
     """Model representing a product"""
 
     article_number = models.CharField(
-        verbose_name="Artikelnummer",
+        verbose_name=_("Artikelnummer"),
         max_length=25,
     )
 
     woocommerceid = models.IntegerField(
-        verbose_name='WooCommerce ID',
+        verbose_name=_("WooCommerce ID"),
         default=0,
     )
 
     name = models.CharField(
-        verbose_name='Name',
+        verbose_name=_("Name"),
         max_length=500,
         help_text=I18N_HELP_TEXT,
     )
     short_description = models.TextField(
-        verbose_name='Kurzbeschrieb',
+        verbose_name=_("Kurzbeschrieb"),
         default="",
         blank=True,
         help_text=I18N_HELP_TEXT,
     )
     description = models.TextField(
-        verbose_name='Beschrieb',
+        verbose_name=_("Beschrieb"),
         default="",
         blank=True,
         help_text=I18N_HELP_TEXT,
     )
 
     quantity_description = models.CharField(
-        verbose_name='Mengenbezeichnung',
+        verbose_name=_("Mengenbezeichnung"),
         max_length=100,
         default="Stück",
         blank=True,
         help_text=I18N_HELP_TEXT,
     )
     selling_price = models.FloatField(
-        verbose_name='Normalpreis in CHF (exkl. MwSt)',
+        verbose_name=_("Normalpreis in CHF (exkl. MwSt)"),
         default=0,
     )
     vat_rate = models.FloatField(
-        verbose_name='Mehrwertsteuersatz',
+        verbose_name=_("MwSt-Satz"),
         choices=constants.VAT_RATES,
         default=constants.VAT_RATE_DEFAULT,
     )
 
     lagerbestand = models.IntegerField(
-        verbose_name="Lagerbestand",
+        verbose_name=_("Lagerbestand"),
         default=0,
     )
     soll_lagerbestand = models.IntegerField(
-        verbose_name="Soll-Lagerbestand",
+        verbose_name=_("Soll-Lagerbestand"),
         default=1,
     )
 
     note = models.TextField(
-        verbose_name='Bemerkung',
+        verbose_name=_("Bemerkung"),
         default="",
         blank=True,
-        help_text="Wird nicht gedruckt oder angezeigt; nur für eigene Zwecke.",
+        help_text=_("Wird nicht gedruckt oder angezeigt; nur für eigene Zwecke."),
     )
 
     sale_from = models.DateTimeField(
-        verbose_name="In Aktion von",
+        verbose_name=_("In Aktion von"),
         blank=True,
         null=True,
     )
     sale_to = models.DateTimeField(
-        verbose_name="In Aktion bis",
+        verbose_name=_("In Aktion bis"),
         blank=True,
         null=True,
     )
     sale_price = models.FloatField(
-        verbose_name="Aktionspreis in CHF (exkl. MwSt)",
+        verbose_name=_("Aktionspreis in CHF (exkl. MwSt)"),
         blank=True,
         null=True,
     )
 
     datasheet_url = models.CharField(
-        verbose_name='Datenblattlink',
+        verbose_name=_("Datenblattlink"),
         max_length=500,
         default="",
         blank=True,
     )
     image_url = models.URLField(
-        verbose_name='Bildlink',
+        verbose_name=_("Bildlink"),
         default="",
         blank=True,
     )
 
     lieferant = models.ForeignKey(
         to="Lieferant",
-        verbose_name="Lieferant",
+        verbose_name=pgettext_lazy("singular", "Lieferant"),
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
     )
     lieferant_preis = models.CharField(
-        verbose_name="Lieferantenpreis",
+        verbose_name=_("Einkaufspreis"),
         default="",
         blank=True,
         max_length=20,
     )
     lieferant_article_number = models.CharField(
-        verbose_name="Lieferantenartikelnummer",
+        verbose_name=_("Lieferantenartikelnummer"),
         default="",
         blank=True,
         max_length=25,
     )
     lieferant_url = models.URLField(
-        verbose_name="Lieferantenurl (Für Nachbestellungen)",
+        verbose_name=_("Lieferantenurl (Für Nachbestellungen)"),
         default="",
         blank=True,
     )
@@ -1776,35 +1819,35 @@ class Produkt(CustomModel):
         to="Produktkategorie",
         through="ProduktProduktkategorieVerbindung",
         through_fields=("produkt", "kategorie"),
-        verbose_name="Kategorie",
+        verbose_name=pgettext_lazy("plural", "Kategorien"),
         related_name="products",
     )
 
-    @admin.display(description="Name", ordering="name")
+    @admin.display(description=_("Bezeichnung"), ordering="name")
     def clean_name(self, lang="de"):
         return langselect(self.name, lang)
 
-    @admin.display(description="Kurzbeschrieb", ordering="short_description")
+    @admin.display(description=_("Kurzbeschrieb"), ordering="short_description")
     def clean_short_description(self, lang="de"):
         return langselect(self.short_description, lang)
 
-    @admin.display(description="Beschrieb", ordering="description")
+    @admin.display(description=_("Beschrieb"), ordering="description")
     def clean_description(self, lang="de"):
         return langselect(self.description, lang)
 
-    @admin.display(description="In Aktion", boolean=True)
+    @admin.display(description=_("In Aktion?"), boolean=True)
     def is_on_sale(self, zeitpunkt: datetime = None):
         zp = zeitpunkt or timezone.now()
         if self.sale_from and self.sale_to and self.sale_price:
             return bool((self.sale_from < zp) and (zp < self.sale_to))
         return False
 
-    @admin.display(description="Aktueller Preis in CHF (exkl. MwSt)")
+    @admin.display(description=_("Aktueller Preis in CHF (exkl. MwSt)"))
     def get_current_price(self, zeitpunkt: datetime = None):
         zp = zeitpunkt or timezone.now()
         return self.sale_price if self.is_on_sale(zp) else self.selling_price
 
-    @admin.display(description="Bild", ordering="image_url")
+    @admin.display(description=_("Bild"), ordering="image_url")
     def html_image(self):
         if self.image_url:
             return format_html('<img src="{}" width="100px">', self.image_url)
@@ -1851,8 +1894,14 @@ class Produkt(CustomModel):
         }
 
         if includemessage:
-            stockstring = f"Aktuell: { n_current } | Ausgehend: { n_going }" + (
-                f" | Eingehend: { n_coming }" if n_coming else "")
+            t_current = gettext("Aktuell")
+            t_going = gettext("Ausgehend")
+            t_coming = gettext("Eingehend")
+
+            stockstring = f"{t_current}: { n_current } | {t_going}: { n_going }"
+            if t_coming:
+                stockstring += f" | {t_coming}: { n_coming }"
+
             adminurl = reverse(
                 f'admin:kmuhelper_produkt_change', args=[self.pk])
             adminlink = format_html('<a href="{}">{}</a>', adminurl, p_name)
@@ -1860,11 +1909,11 @@ class Produkt(CustomModel):
             formatdata = (adminlink, p_article_number, stockstring)
 
             if data["stock_overbooked"]:
-                data["message"] = format_html(
-                    'Zu wenig Lagerbestand bei "{}" [{}]: {}', *formatdata)
+                msg = gettext('Zu wenig Lagerbestand bei')
+                data["message"] = format_html('{} "{}" [{}]: {}', msg, *formatdata)
             elif data["stock_in_danger"]:
-                data["message"] = format_html(
-                    'Knapper Lagerbestand bei "{}" [{}]: {}', *formatdata)
+                msg = gettext('Knapper Lagerbestand bei')
+                data["message"] = format_html('{} "{}" [{}]: {}', msg, *formatdata)
 
         return data
 
@@ -1876,37 +1925,37 @@ class Produkt(CustomModel):
         elif data["stock_in_danger"]:
             messages.warning(request, data["message"])
 
-    @admin.display(description="🔗 Notiz")
+    @admin.display(description=_("🔗 Notiz"))
     def html_app_notiz(self):
         if hasattr(self, "notiz"):
             link = reverse("admin:kmuhelper_app_todo_change",
                            kwargs={"object_id": self.notiz.pk})
-            text = "Notiz ansehen"
+            text = gettext("Notiz ansehen")
         else:
             link = reverse("admin:kmuhelper_app_todo_add") + \
                 '?from_produkt='+str(self.pk)
-            text = "Notiz hinzufügen"
+            text = gettext("Notiz hinzufügen")
         return format_html('<a target="_blank" href="{}">{}</a>', link, text)
 
-    @admin.display(description="🔗 Notiz")
+    @admin.display(description=_("🔗 Notiz"))
     def html_notiz(self):
         if hasattr(self, "notiz"):
             link = reverse("admin:kmuhelper_notiz_change",
                            kwargs={"object_id": self.notiz.pk})
-            text = "Notiz ansehen"
+            text = gettext("Notiz ansehen")
         else:
             link = reverse("admin:kmuhelper_notiz_add") + \
                 '?from_produkt='+str(self.pk)
-            text = "Notiz hinzufügen"
+            text = gettext("Notiz hinzufügen")
         return format_html('<a target="_blank" href="{}">{}</a>', link, text)
 
-    @admin.display(description="Produkt")
+    @admin.display(description=pgettext_lazy("singular", "Produkt"))
     def __str__(self):
         return f'{self.article_number} - {self.clean_name()} ({self.pk})'
 
     class Meta:
-        verbose_name = "Produkt"
-        verbose_name_plural = "Produkte"
+        verbose_name = pgettext_lazy("singular", "Produkt")
+        verbose_name_plural = pgettext_lazy("plural", "Produkte")
 
     objects = models.Manager()
 
@@ -1917,58 +1966,58 @@ class Produktkategorie(CustomModel):
     """Model representing a category for products"""
 
     woocommerceid = models.IntegerField(
-        verbose_name="WooCommerce ID",
+        verbose_name=_("WooCommerce ID"),
         default=0,
     )
 
     name = models.CharField(
-        verbose_name="Name",
+        verbose_name=_("Bezeichnung"),
         max_length=250,
         default="",
     )
     description = models.TextField(
-        verbose_name="Beschrieb",
+        verbose_name=_("Beschrieb"),
         default="",
         blank=True,
     )
     image_url = models.URLField(
-        verbose_name="Bildlink",
+        verbose_name=_("Bildlink"),
         blank=True,
     )
 
     parent_category = models.ForeignKey(
         to='self',
-        verbose_name="Übergeordnete Kategorie",
+        verbose_name=_("Übergeordnete Kategorie"),
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
     )
 
-    @admin.display(description="Bild", ordering="image_url")
+    @admin.display(description=_("Bild"), ordering="image_url")
     def html_image(self):
         if self.image_url:
             return format_html('<img src="{}" width="100px">', self.image_url)
         return ""
 
-    @admin.display(description="Anzahl Produkte")
+    @admin.display(description=_("Anzahl Produkte"))
     def total_quantity(self):
         return self.products.count()
 
-    @admin.display(description="Name", ordering="name")
+    @admin.display(description=_("Bezeichnung"), ordering="name")
     def clean_name(self):
         return langselect(self.name)
 
-    @admin.display(description="Beschrieb", ordering="description")
+    @admin.display(description=_("Beschrieb"), ordering="description")
     def clean_description(self):
         return langselect(self.description)
 
-    @admin.display(description="Kategorie")
+    @admin.display(description=pgettext_lazy("singular", "Kategorie"))
     def __str__(self):
         return f'{self.clean_name()} ({self.pk})'
 
     class Meta:
-        verbose_name = "Produktkategorie"
-        verbose_name_plural = "Produktkategorien"
+        verbose_name = pgettext_lazy("singular", "Produktkategorie")
+        verbose_name_plural = pgettext_lazy("plural", "Produktkategorien")
 
     objects = models.Manager()
 
@@ -1977,16 +2026,22 @@ class Produktkategorie(CustomModel):
 class ProduktProduktkategorieVerbindung(CustomModel):
     """Model representing the connection between 'Produkt' and 'Produktkategorie'"""
 
-    produkt = models.ForeignKey("Produkt", on_delete=models.CASCADE)
-    kategorie = models.ForeignKey("Produktkategorie", on_delete=models.CASCADE)
+    produkt = models.ForeignKey(
+        to='Produkt',
+        on_delete=models.CASCADE,
+    )
+    kategorie = models.ForeignKey(
+        to='Produktkategorie',
+        on_delete=models.CASCADE,
+    )
 
-    @admin.display(description="Produktkategorie")
+    @admin.display(description=pgettext_lazy("singular", "Produkt-Kategorie-Verknüpfung"))
     def __str__(self):
         return f'({self.kategorie.pk}) {self.kategorie.clean_name()} <-> {self.produkt}'
 
     class Meta:
-        verbose_name = "Produkt-Kategorie-Verknüpfung"
-        verbose_name_plural = "Produkt-Kategorie-Verknüpfungen"
+        verbose_name = pgettext_lazy("singular", "Produkt-Kategorie-Verknüpfung")
+        verbose_name_plural = pgettext_lazy("plural", "Produkt-Kategorie-Verknüpfungen")
 
     objects = models.Manager()
 
@@ -1995,105 +2050,105 @@ class Zahlungsempfaenger(CustomModel):
     """Model representing a payment receiver for the qr bill"""
 
     mode = models.CharField(
-        verbose_name="Modus",
+        verbose_name=_("Modus"),
         max_length=15,
         choices=[
-            ('QRR', "QR-Referenz"),
-            ('NON', "Ohne Referenz"),
+            ('QRR', _("QR-Referenz")),
+            ('NON', _("Ohne Referenz")),
         ],
         default='QRR'
     )
 
     qriban = models.CharField(
-        verbose_name="QR-IBAN",
+        verbose_name=_("QR-IBAN"),
         max_length=21+5,
         validators=[
             RegexValidator(
                 r'^(CH|LI)[0-9]{2}\s3[0-9]{3}\s[0-9]{4}\s[0-9]{4}\s[0-9]{4}\s[0-9]{1}$',
-                'Bite benutze folgendes Format: (CH|LI)pp 3xxx xxxx xxxx xxxx x',
+                _('Bite benutze folgendes Format: (CH|LI)pp 3xxx xxxx xxxx xxxx x'),
             ),
         ],
-        help_text="QR-IBAN mit Leerzeichen (Nur verwendet im Modus 'QR-Referenz')",
+        help_text=_("QR-IBAN mit Leerzeichen (Nur verwendet im Modus 'QR-Referenz')"),
         blank=True,
         default="",
     )
     iban = models.CharField(
-        verbose_name="IBAN",
+        verbose_name=_("IBAN"),
         max_length=21+5,
         validators=[
             RegexValidator(
                 r'^(CH|LI)[0-9]{2}\s[0-9]{4}\s[0-9]{4}\s[0-9]{4}\s[0-9]{4}\s[0-9]{1}$',
-                'Bite benutze folgendes Format: (CH|LI)pp 3xxx xxxx xxxx xxxx x',
+                _('Bite benutze folgendes Format: (CH|LI)pp 3xxx xxxx xxxx xxxx x'),
             ),
         ],
-        help_text="IBAN mit Leerzeichen (Nur verwendet im Modus 'Ohne Referenz')",
+        help_text=_("IBAN mit Leerzeichen (Nur verwendet im Modus 'Ohne Referenz')"),
         blank=True,
         default="",
     )
 
     logourl = models.URLField(
-        verbose_name="Logo (URL)",
+        verbose_name=_("Logo (URL)"),
         validators=[
             RegexValidator(
                 r'''^[0-9a-zA-Z\-\.\|\?\(\)\*\+&"'_:;/]+\.(png|jpg)$''',
-                '''Nur folgende Zeichen gestattet: 0-9a-zA-Z-_.:;/|?&()"'*+ - ''' +
-                '''Muss auf .jpg/.png enden.''',
+                _('''Nur folgende Zeichen gestattet: 0-9a-zA-Z-_.:;/|?&()"'*+ - ''') +
+                _('''Muss auf .jpg/.png enden.'''),
             ),
         ],
-        help_text="URL eines Bildes (.jpg/.png) - Wird auf die Rechnung gedruckt.",
+        help_text=_("URL eines Bildes (.jpg/.png) - Wird auf die Rechnung gedruckt."),
         blank=True,
         default="",
     )
     name = models.CharField(
-        verbose_name="Firmennname",
+        verbose_name=_("Name"),
         max_length=70,
         help_text="Name der Firma oder des Empfängers",
     )
     swiss_uid = models.CharField(
-        verbose_name="Firmen-UID",
+        verbose_name=_("Firmen-UID"),
         max_length=15,
         validators=[
             RegexValidator(
                 r'^CHE-[0-9]{3}\.[0-9]{3}\.[0-9]{3}$',
-                'Bite benutze folgendes Format: CHE-123.456.789'
+                _('Bite benutze folgendes Format: CHE-123.456.789')
             )
         ],
-        help_text="UID der Firma - Format: CHE-123.456.789 (Mehrwertsteuernummer)",
+        help_text=_("UID der Firma - Format: CHE-123.456.789 (Mehrwertsteuernummer)"),
         blank=True,
         default="",
     )
     address_1 = models.CharField(
-        verbose_name="Strasse und Hausnummer oder 'Postfach'",
+        verbose_name=_("Strasse und Hausnummer oder 'Postfach'"),
         max_length=70,
     )
     address_2 = models.CharField(
-        verbose_name="PLZ und Ort",
+        verbose_name=_("PLZ und Ort"),
         max_length=70,
     )
     country = models.CharField(
-        verbose_name="Land",
+        verbose_name=_("Land"),
         max_length=2,
         choices=constants.COUNTRIES,
         default="CH",
     )
     email = models.EmailField(
-        verbose_name="E-Mail",
+        verbose_name=_("E-Mail"),
         default="",
         blank=True,
-        help_text="Nicht auf der Rechnung ersichtlich",
+        help_text=_("Nicht auf der Rechnung ersichtlich"),
     )
     phone = models.CharField(
-        verbose_name="Telefon",
+        verbose_name=_("Telefon"),
         max_length=70,
         default="",
         blank=True,
-        help_text="Nicht auf der Rechnung ersichtlich",
+        help_text=_("Nicht auf der Rechnung ersichtlich"),
     )
     website = models.URLField(
-        verbose_name="Webseite",
+        verbose_name=_("Webseite"),
         default="",
         blank=True,
-        help_text="Auf der Rechnung ersichtlich, sofern vorhanden!",
+        help_text=_("Auf der Rechnung ersichtlich, sofern vorhanden!"),
     )
 
     @classmethod
@@ -2127,13 +2182,13 @@ class Zahlungsempfaenger(CustomModel):
             log("Error while validating UID:", e)
             return False
 
-    @admin.display(description="Zahlungsempfänger")
+    @admin.display(description=pgettext_lazy("singular", "Zahlungsempfänger"))
     def __str__(self):
         return f'{self.name} ({self.pk})'
 
     class Meta:
-        verbose_name = "Zahlungsempfänger"
-        verbose_name_plural = "Zahlungsempfänger"
+        verbose_name = pgettext_lazy("singular", "Zahlungsempfänger")
+        verbose_name_plural = pgettext_lazy("plural", "Zahlungsempfänger")
 
     objects = models.Manager()
 

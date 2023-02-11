@@ -53,7 +53,7 @@ def lieferung_einlagern(request, obj):
 )
 @require_object(Kunde)
 def kunde_email_registriert(request, obj):
-    mail = obj.create_email_registriert()
+    mail = obj.create_email_registered()
     messages.success(request, "E-Mail wurde generiert!")
     return redirect(reverse("admin:kmuhelper_email_change", args=[mail.pk]))
 

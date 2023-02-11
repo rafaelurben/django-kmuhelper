@@ -1,47 +1,49 @@
 """Useful constants used in multiple places"""
 
+from django.utils.translation import gettext_lazy as _
+
 URL_MANUAL = "https://rafaelurben.github.io/django-kmuhelper/manual/"
 URL_FAQ = "https://rafaelurben.github.io/django-kmuhelper/manual/faq"
 
 ORDERSTATUS = [
-    ("pending", "Zahlung ausstehend"),
-    ("processing", "In Bearbeitung"),
-    ("on-hold", "In Wartestellung"),
-    ("completed", "Abgeschlossen"),
-    ("cancelled", "Storniert/Abgebrochen"),
-    ("refunded", "Rückerstattet"),
-    ("failed", "Fehlgeschlagen"),
-    ("trash", "Gelöscht")
+    ("pending", _("Zahlung ausstehend")),
+    ("processing", _("In Bearbeitung")),
+    ("on-hold", _("In Wartestellung")),
+    ("completed", _("Abgeschlossen")),
+    ("cancelled", _("Storniert/Abgebrochen")),
+    ("refunded", _("Rückerstattet")),
+    ("failed", _("Fehlgeschlagen")),
+    ("trash", _("Gelöscht"))
 ]
 
 VAT_RATES = [
-    (0.0, "0.0% (Mehrwertsteuerfrei)"),
-    (2.5, "2.5% (Bis 2023: Reduzierter Satz)"),
-    (2.6, "2.6% (Ab 2024: Reduzierter Satz)"),
-    (3.7, "3.7% (Bis 2023: Sondersatz für Beherbergung)"),
-    (3.8, "3.8% (Ab 2024: Sondersatz für Beherbergung)"),
-    (7.7, "7.7% (Bis 2023: Normalsatz)"),
-    (8.1, "8.1% (Ab 2024: Normalsatz)"),
+    (0.0, _("0.0% (Mehrwertsteuerfrei)")),
+    (2.5, _("2.5% (Bis 2023: Reduzierter Satz)")),
+    (2.6, _("2.6% (Ab 2024: Reduzierter Satz)")),
+    (3.7, _("3.7% (Bis 2023: Sondersatz für Beherbergung)")),
+    (3.8, _("3.8% (Ab 2024: Sondersatz für Beherbergung)")),
+    (7.7, _("7.7% (Bis 2023: Normalsatz)")),
+    (8.1, _("8.1% (Ab 2024: Normalsatz)")),
 ]
 VAT_RATE_DEFAULT = 7.7
 
 PAYMENTMETHODS = [
-    ("bacs", "Überweisung"),
-    ("cheque", "Scheck"),
-    ("cod", "Rechnung / Nachnahme"),
-    ("paypal", "PayPal")
+    ("bacs", _("Überweisung")),
+    ("cheque", _("Scheck")),
+    ("cod", _("Rechnung / Nachnahme")),
+    ("paypal", _("PayPal"))
 ]
 
 COUNTRIES = [
-    ("CH", "Schweiz"),
-    ("LI", "Liechtenstein")
+    ("CH", _("Schweiz")),
+    ("LI", _("Liechtenstein"))
 ]
 
 LANGUAGES = [
-    ("de", "Deutsch [DE]"),
-    ("fr", "Französisch [FR]"),
-    ("it", "Italienisch [IT]"),
-    ("en", "Englisch [EN]")
+    ("de", _("Deutsch [DE]")),
+    ("fr", _("Französisch [FR]")),
+    ("it", _("Italienisch [IT]")),
+    ("en", _("Englisch [EN]"))
 ]
 
 ADDR_BILLING_FIELDS_WITHOUT_CONTACT = [

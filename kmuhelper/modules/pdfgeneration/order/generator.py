@@ -649,7 +649,7 @@ class PDFOrder(PDFGenerator):
     def __init__(self, order, title, *, text=None, lang=None, is_delivery_note=False, add_cut_lines=True, show_payment_conditions=None):
         order.cached_sum = order.calc_total()
 
-        lang = lang or (order.kunde.language if order.kunde and order.kunde.language else "de")
+        lang = lang or order.language
 
         # Header
         elements = [

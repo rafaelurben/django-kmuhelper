@@ -37,7 +37,7 @@ def order_view_pdf(request, obj):
         text = order.pdf_text
 
     # Get the language
-    defaultlang = order.kunde.language if order.kunde and order.kunde.language else "de"
+    defaultlang = order.language
     lang = request.GET.get('language', defaultlang).lower()
     if lang not in dict(constants.LANGUAGES):
         lang = defaultlang
@@ -85,7 +85,7 @@ def order_view_pdf(request, obj):
 @require_object(Bestellung)
 def order_create_pdf_form(request, obj):
     initial={
-        'language': obj.kunde.language if obj.kunde and obj.kunde.language else 'de',
+        'language': obj.language,
         'title': obj.pdf_title,
         'text': obj.pdf_text,
     }
