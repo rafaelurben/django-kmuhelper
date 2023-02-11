@@ -1790,21 +1790,15 @@ class Produkt(CustomModel):
         return ""
 
     def get_reserved_stock(self):
-        n = 0
-        for bp in Bestellungsposten.objects.filter(bestellung__is_shipped=False, produkt__id=self.id):
-            n += bp.quantity
-        return n
+        return Bestellungsposten.objects.filter(bestellung__is_shipped=False, produkt_id=self.pk).aggregate(models.Sum("quantity"))["quantity__sum"] or 0
 
     def get_incoming_stock(self):
-        n = 0
-        for lp in Lieferungsposten.objects.filter(lieferung__is_added_to_stock=False, produkt__id=self.id):
-            n += lp.quantity
-        return n
+        return Lieferungsposten.objects.filter(lieferung__is_added_to_stock=False, produkt__id=self.pk).aggregate(models.Sum("quantity"))["quantity__sum"] or 0
 
     def get_stock_data(self, includemessage=False):
         """Get the stock and product information as a dictionary"""
 
-        p_id = self.id
+        p_id = self.pk
         p_name = self.clean_name()
         p_article_number = self.article_number
 
