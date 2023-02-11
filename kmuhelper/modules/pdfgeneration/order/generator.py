@@ -47,7 +47,7 @@ class _PDFOrderPriceTable(Table):
                 Paragraph(langselect(bp.produkt.name, lang)),
                 str(bp.quantity),
                 langselect(autotranslate_quantity_description(
-                    bp.produkt.quantity_description), lang),
+                    bp.produkt.quantity_description, bp.quantity), lang),
                 formatprice(bp.product_price),
                 formatprice(subtotal_without_discount)
             ))
@@ -216,7 +216,7 @@ class _PDFOrderProductTable(Table):
                 Paragraph(langselect(bp.produkt.name, lang)),
                 str(bp.quantity),
                 langselect(autotranslate_quantity_description(
-                    bp.produkt.quantity_description), lang),
+                    bp.produkt.quantity_description, bp.quantity), lang),
             ))
             if bp.note:
                 data.append((

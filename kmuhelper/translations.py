@@ -15,18 +15,43 @@ def langselect(string, lang="de"):
 
 # Autotranslations
 
-def autotranslate_quantity_description(quantity_description):
+def autotranslate_quantity_description(quantity_description, quantity=1):
     match quantity_description:
-        case "Stück":
-            return "[:de]Stück[:fr]Pièce[:it]Pezzo[:en]Piece[:]"
-        case "Stunden":
-            return "[:de]Stunden[:fr]Heures[:it]Ore[:en]Hours[:]"
-        case "Einheiten":
-            return "[:de]Einheiten[:fr]Unités[:it]Unità[:en]Units[:]"
-        case "Flasche":
-            return "[:de]Flasche[:fr]Bouteille[:it]Bottiglia[:en]Bottle[:]"
-        case "Tube":
-            return "[:de]Tube[:fr]Tube[:it]Tubetto[:en]Tube[:]"
+        case "Stück" | "Stück" | "Stück(e)":
+            return translation.npgettext(
+                "quantity description",
+                "Stück",
+                "Stück",
+                quantity
+            )
+        case "Stunde" | "Stunden" | "Stunde(n)":
+            return translation.npgettext(
+                "quantity description",
+                "Stunde",
+                "Stunden",
+                quantity
+            )
+        case "Einheit" | "Einheiten" | "Einheit(en)":
+            return translation.npgettext(
+                "quantity description",
+                "Einheit",
+                "Einheiten",
+                quantity
+            )
+        case "Flasche" | "Flaschen" | "Flasche(n)":
+            return translation.npgettext(
+                "quantity description",
+                "Flasche",
+                "Flaschen",
+                quantity
+            )
+        case "Tube" | "Tuben" | "Tube(n)":
+            return translation.npgettext(
+                "quantity description",
+                "Tube",
+                "Tuben",
+                quantity
+            )
     return quantity_description
 
 def autotranslate_kosten_name(name):

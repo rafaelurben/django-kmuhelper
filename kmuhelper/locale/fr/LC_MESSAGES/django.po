@@ -23,8 +23,8 @@ msgid "Enter valid email addresses."
 msgstr "Entrez des adresses électroniques valides."
 
 #: .\kmuhelper\modules\main\models.py:654
-msgid "Referenznummer:"
-msgstr "Numéro de référence :"
+msgid "Referenznummer"
+msgstr "Numéro de référence"
 
 #: .\kmuhelper\modules\pdfgeneration\order\generator.py:32
 #: .\kmuhelper\modules\pdfgeneration\order\generator.py:204
@@ -221,6 +221,41 @@ msgstr ""
 "\n"
 "Si votre paiement devait se recouper avec cette lettre, veuillez considérer "
 "que celle-ci est sans objet."
+
+#: .\kmuhelper\translations.py:23
+msgctxt "quantity description"
+msgid "Stück"
+msgid_plural "Stück"
+msgstr[0] "Pièce"
+msgstr[1] "Pièces"
+
+#: .\kmuhelper\translations.py:31
+msgctxt "quantity description"
+msgid "Stunde"
+msgid_plural "Stunden"
+msgstr[0] "Heure"
+msgstr[1] "Heures"
+
+#: .\kmuhelper\translations.py:39
+msgctxt "quantity description"
+msgid "Einheit"
+msgid_plural "Einheiten"
+msgstr[0] "Unité"
+msgstr[1] "Unités"
+
+#: .\kmuhelper\translations.py:47
+msgctxt "quantity description"
+msgid "Flasche"
+msgid_plural "Flaschen"
+msgstr[0] "Bouteille"
+msgstr[1] "Bouteilles"
+
+#: .\kmuhelper\translations.py:55
+msgctxt "quantity description"
+msgid "Tube"
+msgid_plural "Tuben"
+msgstr[0] "Tube"
+msgstr[1] "Tubes"
 
 #~ msgid "Ihr/e Ansprechpartner/in"
 #~ msgstr "Votre interlocuteur"
