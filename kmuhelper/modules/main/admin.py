@@ -137,7 +137,7 @@ class BestellungInlineBestellungskostenImport(CustomTabularInline):
 @admin.register(Bestellung)
 class BestellungsAdmin(CustomModelAdmin):
     list_display = ('id', 'date', 'kunde', 'status', 'payment_method',
-                    'is_shipped', 'is_paid', 'display_cached_sum', 'html_notiz')
+                    'is_shipped', 'is_paid', 'display_cached_sum', 'linked_note_html')
     list_filter = ('status', 'is_paid', 'is_shipped', 'payment_method', 'zahlungsempfaenger', 'ansprechpartner')
     search_fields = ['id', 'date', 'notiz__name', 'notiz__description', 'customer_note',
                      'tracking_number'] + constants.ADDR_BILLING_FIELDS + constants.ADDR_SHIPPING_FIELDS
@@ -171,7 +171,7 @@ class BestellungsAdmin(CustomModelAdmin):
                     'fields': [('display_total_breakdown', 'display_payment_conditions'), ('paid_on', 'is_paid')]
                 }),
                 ('Notizen & Texte', {
-                    'fields': ['customer_note', 'html_notiz'],
+                    'fields': ['customer_note', 'linked_note_html'],
                     'classes': ["collapse start-open"]}),
                 ('Rechnungsadresse', {
                     'fields': constants.ADDR_BILLING_FIELDS if obj.is_paid else constants.ADDR_BILLING_FIELDS_CATEGORIZED,
@@ -194,7 +194,7 @@ class BestellungsAdmin(CustomModelAdmin):
                 'classes': ["collapse start-open"]}),
         ]
 
-    readonly_fields = ('html_notiz', 'name', 'tracking_link', 'display_total_breakdown', 'display_payment_conditions')
+    readonly_fields = ('linked_note_html', 'name', 'tracking_link', 'display_total_breakdown', 'display_payment_conditions')
 
     def get_additional_readonly_fields(self, request, obj=None):
         fields = []
@@ -336,7 +336,7 @@ class KundenAdmin(CustomModelAdmin):
             return default + [
                 ('Diverses', {
                     'fields': [
-                        'website', 'note', 'html_notiz'
+                        'website', 'note', 'linked_note_html'
                     ]}),
                 ('Erweitert', {
                     'fields': [
@@ -351,11 +351,11 @@ class KundenAdmin(CustomModelAdmin):
     ordering = ('addr_billing_postcode', 'company', 'last_name', 'first_name')
 
     list_display = ('id', 'company', 'last_name', 'first_name', 'addr_billing_postcode',
-                    'addr_billing_city', 'email', 'avatar', 'html_notiz')
+                    'addr_billing_city', 'email', 'avatar', 'linked_note_html')
     search_fields = ['id', 'last_name', 'first_name', 'company', 'email', 'username', 'website',
                      'notiz__name', 'notiz__description'] + constants.ADDR_BILLING_FIELDS + constants.ADDR_SHIPPING_FIELDS
 
-    readonly_fields = ["html_notiz"]
+    readonly_fields = ["linked_note_html"]
 
     list_select_related = ["notiz"]
 
@@ -469,20 +469,20 @@ class LieferungInlineProdukteAdd(CustomTabularInline):
 @admin.register(Lieferung)
 class LieferungenAdmin(CustomModelAdmin):
     list_display = ('name', 'date', 'total_quantity',
-                    'lieferant', 'is_added_to_stock', 'html_notiz')
+                    'lieferant', 'is_added_to_stock', 'linked_note_html')
     list_filter = ("is_added_to_stock", "lieferant", )
 
     search_fields = ["name", "date", "lieferant__name", "lieferant__abbreviation",
                      "notiz__name", "notiz__description"]
 
-    readonly_fields = ["html_notiz"]
+    readonly_fields = ["linked_note_html"]
 
     autocomplete_fields = ("lieferant", )
 
     ordering = ('-date',)
 
     fieldsets = [
-        ('Infos', {'fields': ['name', 'html_notiz']}),
+        ('Infos', {'fields': ['name', 'linked_note_html']}),
         ('Lieferant', {'fields': ['lieferant']})
     ]
 
@@ -666,20 +666,20 @@ class ProduktAdmin(CustomModelAdmin):
                 ], 'classes': ["collapse"]}),
             ('Bemerkung / Notiz', {
                 'fields': [
-                    'note', 'html_notiz'] if obj else ['note'],
+                    'note', 'linked_note_html'] if obj else ['note'],
                 'classes': ["collapse start-open"]})
         ]
 
     ordering = ('article_number', 'name')
 
     list_display = ('article_number', 'clean_name', 'clean_short_description',
-                    'clean_description', 'get_current_price', 'is_on_sale', 'lagerbestand', 'html_image', 'html_notiz')
+                    'clean_description', 'get_current_price', 'is_on_sale', 'lagerbestand', 'html_image', 'linked_note_html')
     list_display_links = ('article_number', 'is_on_sale',)
     list_filter = ('lieferant', 'categories', 'lagerbestand')
     search_fields = ['article_number', 'name', 'short_description',
                      'description', 'note', 'notiz__name', 'notiz__description']
 
-    readonly_fields = ["html_notiz"]
+    readonly_fields = ["linked_note_html"]
 
     autocomplete_fields = ("lieferant", )
 

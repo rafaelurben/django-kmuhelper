@@ -12,6 +12,8 @@ class App_ToDoManager(models.Manager):
 
 
 class App_ToDo(Notiz):
+    IS_APP_MODEL = True
+
     objects = App_ToDoManager()
 
     class Meta:
@@ -29,6 +31,8 @@ class App_WarenausgangManager(models.Manager):
 
 
 class App_Warenausgang(Bestellung):
+    IS_APP_MODEL = True
+
     objects = App_WarenausgangManager()
 
     class Meta:
@@ -47,6 +51,8 @@ class App_ZahlungseingangManager(models.Manager):
 
 
 class App_Zahlungseingang(Bestellung):
+    IS_APP_MODEL = True
+
     objects = App_ZahlungseingangManager()
 
     class Meta:
@@ -60,6 +66,8 @@ class App_Zahlungseingang(Bestellung):
 
 
 class App_Lagerbestand(Produkt):
+    IS_APP_MODEL = True
+
     @admin.display(description="Preis")
     def get_current_price(self, *args, **kwargs):
         return super().get_current_price(*args, **kwargs)
@@ -83,6 +91,8 @@ class App_WareneingangsManager(models.Manager):
 
 
 class App_Wareneingang(Lieferung):
+    IS_APP_MODEL = True
+
     objects = App_WareneingangsManager()
 
     class Meta:

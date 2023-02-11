@@ -5,6 +5,8 @@ from django.db import models
 from django.forms.models import model_to_dict
 from django.shortcuts import redirect
 from django.urls import reverse
+from django.utils.translation import gettext_lazy as _, gettext
+from django.utils.html import format_html
 
 from kmuhelper import widgets
 
@@ -34,6 +36,32 @@ class CustomModel(models.Model):
         """Return the model fields as a query string"""
 
         return urlencode(self.to_dict)
+
+    @admin.display(description=_("🔗 Notiz"), ordering='notiz')
+    def linked_note_html(self):
+        is_app = getattr(self.__class__, "IS_APP_MODEL", False)
+        relname = getattr(self.__class__, "NOTE_RELATION", None)
+
+        if relname is None:
+            return None
+
+        if hasattr(self, "notiz"):
+            if is_app:
+                viewname = "admin:kmuhelper_app_todo_change"
+            else:
+                viewname = "admin:kmuhelper_notiz_change"
+
+            link = reverse(viewname, kwargs={"object_id": self.notiz.pk})
+            text = gettext("Notiz ansehen")
+        else:
+            if is_app:
+                viewname = "admin:kmuhelper_app_todo_add"
+            else:
+                viewname = "admin:kmuhelper_notiz_add"
+
+            link = reverse(viewname) + '?from_bestellung='+str(self.pk)
+            text = gettext("Notiz erstellen")
+        return format_html('<a target="_blank" href="{}">{}</a>', link, text)
 
     class Meta:
         abstract = True

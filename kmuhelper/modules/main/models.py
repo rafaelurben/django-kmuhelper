@@ -276,6 +276,8 @@ class Bestellungsposten(CustomModel):
 class Bestellung(CustomModel):
     """Model representing an order"""
 
+    NOTE_RELATION = 'bestellung'
+
     woocommerceid = models.IntegerField(
         verbose_name=_("WooCommerce ID"),
         default=0,
@@ -884,30 +886,6 @@ class Bestellung(CustomModel):
         self.save()
         return self.email_link_shipped
 
-    @admin.display(description=_("🔗 Notiz"))
-    def html_app_notiz(self):
-        if hasattr(self, "notiz"):
-            link = reverse("admin:kmuhelper_app_todo_change",
-                           kwargs={"object_id": self.notiz.pk})
-            text = gettext("Notiz ansehen")
-        else:
-            link = reverse("admin:kmuhelper_app_todo_add") + \
-                '?from_bestellung='+str(self.pk)
-            text = gettext("Notiz hinzufügen")
-        return format_html('<a target="_blank" href="{}">{}</a>', link, text)
-
-    @admin.display(description=_("🔗 Notiz"))
-    def html_notiz(self):
-        if hasattr(self, "notiz"):
-            link = reverse("admin:kmuhelper_notiz_change",
-                           kwargs={"object_id": self.notiz.pk})
-            text = gettext("Notiz ansehen")
-        else:
-            link = reverse("admin:kmuhelper_notiz_add") + \
-                '?from_bestellung='+str(self.pk)
-            text = gettext("Notiz hinzufügen")
-        return format_html('<a target="_blank" href="{}">{}</a>', link, text)
-
     def get_stock_data(self):
         """Get the stock data of all products in this order"""
 
@@ -1084,6 +1062,8 @@ class Kosten(CustomModel):
 
 class Kunde(CustomModel):
     """Model representing a customer"""
+
+    NOTE_RELATION = 'kunde'
 
     woocommerceid = models.IntegerField(
         verbose_name=_("WooCommerce ID"),
@@ -1387,30 +1367,6 @@ class Kunde(CustomModel):
         self.save()
         return self.email_registriert
 
-    @admin.display(description=_("🔗 Notiz"))
-    def html_app_notiz(self):
-        if hasattr(self, "notiz"):
-            link = reverse("admin:kmuhelper_app_todo_change",
-                           kwargs={"object_id": self.notiz.pk})
-            text = gettext("Notiz ansehen")
-        else:
-            link = reverse("admin:kmuhelper_app_todo_add") + \
-                '?from_kunde='+str(self.pk)
-            text = gettext("Notiz hinzufügen")
-        return format_html('<a target="_blank" href="{}">{}</a>', link, text)
-
-    @admin.display(description=_("🔗 Notiz"))
-    def html_notiz(self):
-        if hasattr(self, "notiz"):
-            link = reverse("admin:kmuhelper_notiz_change",
-                           kwargs={"object_id": self.notiz.pk})
-            text = gettext("Notiz ansehen")
-        else:
-            link = reverse("admin:kmuhelper_notiz_add") + \
-                '?from_kunde='+str(self.pk)
-            text = gettext("Notiz hinzufügen")
-        return format_html('<a target="_blank" href="{}">{}</a>', link, text)
-
     objects = models.Manager()
 
     admin_icon = "fas fa-users"
@@ -1526,6 +1482,8 @@ class Lieferungsposten(CustomModel):
 class Lieferung(CustomModel):
     """Model representing an *incoming* delivery"""
 
+    NOTE_RELATION = "lieferung"
+
     name = models.CharField(
         verbose_name=_("Name"),
         max_length=50,
@@ -1566,30 +1524,6 @@ class Lieferung(CustomModel):
             self.save()
             return True
         return False
-
-    @admin.display(description=_("🔗 Notiz"))
-    def html_app_notiz(self):
-        if hasattr(self, "notiz"):
-            link = reverse("admin:kmuhelper_app_todo_change",
-                           kwargs={"object_id": self.notiz.pk})
-            text = gettext("Notiz ansehen")
-        else:
-            link = reverse("admin:kmuhelper_app_todo_add") + \
-                '?from_lieferung='+str(self.pk)
-            text = gettext("Notiz hinzufügen")
-        return format_html('<a target="_blank" href="{}">{}</a>', link, text)
-
-    @admin.display(description="🔗 Notiz")
-    def html_notiz(self):
-        if hasattr(self, "notiz"):
-            link = reverse("admin:kmuhelper_notiz_change",
-                           kwargs={"object_id": self.notiz.pk})
-            text = gettext("Notiz ansehen")
-        else:
-            link = reverse("admin:kmuhelper_notiz_add") + \
-                '?from_lieferung='+str(self.pk)
-            text = gettext("Notiz hinzufügen")
-        return format_html('<a target="_blank" href="{}">{}</a>', link, text)
 
     @admin.display(description=pgettext_lazy("singular", "Lieferung"))
     def __str__(self):
@@ -1700,6 +1634,8 @@ class Notiz(CustomModel):
 
 class Produkt(CustomModel):
     """Model representing a product"""
+
+    NOTE_RELATION = 'produkt'
 
     article_number = models.CharField(
         verbose_name=_("Artikelnummer"),
@@ -1924,30 +1860,6 @@ class Produkt(CustomModel):
             messages.error(request, data["message"])
         elif data["stock_in_danger"]:
             messages.warning(request, data["message"])
-
-    @admin.display(description=_("🔗 Notiz"))
-    def html_app_notiz(self):
-        if hasattr(self, "notiz"):
-            link = reverse("admin:kmuhelper_app_todo_change",
-                           kwargs={"object_id": self.notiz.pk})
-            text = gettext("Notiz ansehen")
-        else:
-            link = reverse("admin:kmuhelper_app_todo_add") + \
-                '?from_produkt='+str(self.pk)
-            text = gettext("Notiz hinzufügen")
-        return format_html('<a target="_blank" href="{}">{}</a>', link, text)
-
-    @admin.display(description=_("🔗 Notiz"))
-    def html_notiz(self):
-        if hasattr(self, "notiz"):
-            link = reverse("admin:kmuhelper_notiz_change",
-                           kwargs={"object_id": self.notiz.pk})
-            text = gettext("Notiz ansehen")
-        else:
-            link = reverse("admin:kmuhelper_notiz_add") + \
-                '?from_produkt='+str(self.pk)
-            text = gettext("Notiz hinzufügen")
-        return format_html('<a target="_blank" href="{}">{}</a>', link, text)
 
     @admin.display(description=pgettext_lazy("singular", "Produkt"))
     def __str__(self):

@@ -65,7 +65,7 @@ class App_ToDoenAdmin(App_AdminBase, NotizenAdmin):
 @admin.register(App_Warenausgang)
 class App_WarenausgangAdmin(App_AdminBase, BestellungsAdmin):
     list_display = ('id', 'info', 'status', 'shipped_on', 'is_shipped',
-                    'tracking_number', 'html_app_notiz')
+                    'tracking_number', 'linked_note_html')
     list_editable = ("shipped_on", "is_shipped", "status", "tracking_number")
     list_filter = ('status', 'is_paid')
 
@@ -77,7 +77,7 @@ class App_WarenausgangAdmin(App_AdminBase, BestellungsAdmin):
 @admin.register(App_Zahlungseingang)
 class App_ZahlungseingangAdmin(App_AdminBase, BestellungsAdmin):
     list_display = ('id', 'info', 'status', 'paid_on', 'is_paid',
-                    'display_cached_sum', 'display_payment_conditions', 'html_app_notiz')
+                    'display_cached_sum', 'display_payment_conditions', 'linked_note_html')
     list_editable = ("paid_on", "is_paid", "status")
     list_filter = ('status', 'is_shipped', 'payment_method')
 
@@ -89,7 +89,7 @@ class App_ZahlungseingangAdmin(App_AdminBase, BestellungsAdmin):
 @admin.register(App_Lagerbestand)
 class App_LagerbestandAdmin(App_AdminBase, ProduktAdmin):
     list_display = ('nr', 'clean_name', 'lagerbestand',
-                    'get_current_price', 'note', 'html_app_notiz')
+                    'get_current_price', 'note', 'linked_note_html')
     list_display_links = ('nr',)
     list_editable = ["lagerbestand"]
 
@@ -98,7 +98,7 @@ class App_LagerbestandAdmin(App_AdminBase, ProduktAdmin):
 
 @admin.register(App_Wareneingang)
 class App_WareneingangenAdmin(App_AdminBase, LieferungenAdmin):
-    list_display = ('name', 'date', 'total_quantity', 'html_app_notiz')
+    list_display = ('name', 'date', 'total_quantity', 'linked_note_html')
     list_filter = ()
 
 #
