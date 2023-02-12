@@ -1,3 +1,4 @@
 include LICENSE
 include README.md
+include README-EN.md
 recursive-include kmuhelper/ *

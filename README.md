@@ -1,5 +1,7 @@
 # KMUHelper
 
+(Click [here](./README-EN.md) for an English version.)
+
 [![PyPI](https://img.shields.io/pypi/v/django-kmuhelper)](https://pypi.org/project/django-kmuhelper)
 [![PyPI - Django Version](https://img.shields.io/pypi/djversions/django-kmuhelper)](https://pypi.org/project/django-kmuhelper)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/django-kmuhelper)](https://pypi.org/project/django-kmuhelper)
@@ -31,6 +33,8 @@ Geplante Änderungen und aktuelle Programmierfortschritte können im [Projekt-Bo
 
 Siehe [hier](https://rafaelurben.github.io/django-kmuhelper/installation).
 
-## English / Translations
+## Sprache und Übersetzungen
 
-There is currently no english translation planned because this app's main focus is Switzerland with its QR invoice, so there's no point in an english translation, although I might consider creating a French translation.
+Der KMUHelper selbst ist aktuell nur in Deutsch verfügbar. Eine übersetzte Version ist in Arbeit.
+
+Die Rechnungen können schon jetzt in Deutsch, Englisch, Französisch und Italienisch erstellt werden.
