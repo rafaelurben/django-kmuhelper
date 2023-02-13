@@ -136,9 +136,9 @@ class BestellungInlineBestellungskostenImport(CustomTabularInline):
 
 @admin.register(Bestellung)
 class BestellungsAdmin(CustomModelAdmin):
-    list_display = ('id', 'date', 'kunde', 'status', 'payment_method',
+    list_display = ('id', 'date', 'customer', 'status', 'payment_method',
                     'is_shipped', 'is_paid', 'display_cached_sum', 'linked_note_html')
-    list_filter = ('status', 'is_paid', 'is_shipped', 'payment_method', 'zahlungsempfaenger', 'ansprechpartner')
+    list_filter = ('status', 'is_paid', 'is_shipped', 'payment_method', 'payment_receiver', 'contact_person')
     search_fields = ['id', 'date', 'linked_note__name', 'linked_note__description', 'customer_note',
                      'tracking_number'] + constants.ADDR_BILLING_FIELDS + constants.ADDR_SHIPPING_FIELDS
 
@@ -147,11 +147,11 @@ class BestellungsAdmin(CustomModelAdmin):
     inlines = [BestellungInlineBestellungsposten, BestellungInlineBestellungspostenAdd,
                BestellungInlineBestellungskosten, BestellungInlineBestellungskostenImport]
 
-    autocomplete_fields = ("kunde", "zahlungsempfaenger", "ansprechpartner", )
+    autocomplete_fields = ("customer", "payment_receiver", "contact_person", )
 
     save_on_top = True
 
-    list_select_related = ["kunde", "linked_note"]
+    list_select_related = ["customer", "linked_note"]
 
     date_hierarchy = "date"
 
@@ -159,10 +159,10 @@ class BestellungsAdmin(CustomModelAdmin):
         if obj:
             return [
                 ('Einstellungen', {
-                    'fields': ['zahlungsempfaenger', 'ansprechpartner']
+                    'fields': ['payment_receiver', 'contact_person']
                 }),
                 ('Infos', {'fields': ['name', 'date', 'status']}),
-                ('Kunde', {'fields': ['kunde']}),
+                ('Kunde', {'fields': ['customer']}),
                 ('Lieferung', {'fields': [('shipped_on', 'is_shipped'), 'tracking_number']}),
                 ('Bezahlungsoptionen', {
                     'fields': ['payment_method', 'invoice_date', 'payment_conditions']
@@ -183,9 +183,9 @@ class BestellungsAdmin(CustomModelAdmin):
 
         return [
             ('Einstellungen', {'fields': [
-                'zahlungsempfaenger', 'ansprechpartner']}),
+                'payment_receiver', 'contact_person']}),
             ('Infos', {'fields': ['status']}),
-            ('Kunde', {'fields': ['kunde']}),
+            ('Kunde', {'fields': ['customer']}),
             ('Bezahlungsoptionen', {
                 'fields': ['payment_method', 'invoice_date', 'payment_conditions'],
                 'classes': ["collapse start-open"]}),
@@ -215,14 +215,14 @@ class BestellungsAdmin(CustomModelAdmin):
     def mark_as_paid(self, request, queryset):
         successcount = 0
         errorcount = 0
-        for bestellung in queryset.all():
-            if bestellung.is_paid:
+        for order in queryset.all():
+            if order.is_paid:
                 errorcount += 1
             else:
-                bestellung.is_paid = True
-                if bestellung.is_shipped:
-                    bestellung.status = "completed"
-                bestellung.save()
+                order.is_paid = True
+                if order.is_shipped:
+                    order.status = "completed"
+                order.save()
                 successcount += 1
         messages.success(request, (('{} Bestellungen' if successcount !=
                                     1 else 'Eine Bestellung') + ' als bezahlt markiert!').format(successcount))
@@ -310,7 +310,7 @@ class KundenAdminBestellungsInline(CustomTabularInline):
     
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.select_related('kunde')
+        return qs.select_related('customer')
 
     # Permissions
 
@@ -386,8 +386,8 @@ class KundenAdmin(CustomModelAdmin):
         urls = super().get_urls()
 
         my_urls = [
-            path('<path:object_id>/email/registriert/', self.admin_site.admin_view(views.kunde_email_registriert),
-                 name='%s_%s_email_registriert' % info),
+            path('<path:object_id>/email/registered/', self.admin_site.admin_view(views.create_customer_email_registered),
+                 name='%s_%s_email_registered' % info),
         ]
         return my_urls + urls
 
@@ -396,20 +396,21 @@ class KundenAdmin(CustomModelAdmin):
 class LieferantenAdmin(CustomModelAdmin):
     fieldsets = [
         ('Infos', {'fields': ['abbreviation', 'name']}),
-        ('Firma', {'fields': ['website', 'phone', 'email']}),
-        ('Texte', {
-            'fields': ['adresse', 'note'],
-            'classes': ["collapse"]}),
+        ('Firma', {'fields': ['website', 'phone', 'email', 'address']}),
         ('Ansprechpartner', {
             'fields': [
-                'ansprechpartner', 'ansprechpartnertel', 'ansprechpartnermail'
-            ], 'classes': ["collapse"]})
+                'contact_person_name', 'contact_person_phone', 'contact_person_email'
+            ],
+            'classes': ["collapse", "start-open"]}),
+        ('Notiz', {
+            'fields': ['note'],
+            'classes': ["collapse", "start-open"]}),
     ]
 
     ordering = ('abbreviation',)
 
     list_display = ('abbreviation', 'name', 'note')
-    search_fields = ['abbreviation', 'name', 'adresse', 'note']
+    search_fields = ['abbreviation', 'name', 'address', 'note']
 
     # Views
 

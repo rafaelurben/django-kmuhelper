@@ -285,7 +285,7 @@ class _PDFOrderQrInvoice(Flowable):
 
     def get_swiss_qr_payload(self):
         order = self.order
-        recv = order.zahlungsempfaenger
+        recv = order.payment_receiver
         addr = order.addr_billing
         qrpayload = []
 
@@ -393,7 +393,7 @@ class _PDFOrderQrInvoice(Flowable):
         ref = order.referenznummer()
         total = format(order.cached_sum, "08,.2f").replace(
             ",", " ").lstrip(" 0")
-        recv = order.zahlungsempfaenger
+        recv = order.payment_receiver
         addr = order.addr_billing
 
         c = self.canv
@@ -537,7 +537,7 @@ class _PDFOrderHeader(Flowable):
 
     def draw_header(self):
         order = self.order
-        ze = order.zahlungsempfaenger
+        ze = order.payment_receiver
 
         c = self.canv
         c.saveState()
@@ -575,8 +575,8 @@ class _PDFOrderHeader(Flowable):
         # Company info: Content
         t = c.beginText(24*mm, 46*mm)
         t.setFont("Helvetica", 8)
-        t.textLine(order.ansprechpartner.phone)
-        t.textLine(order.ansprechpartner.email)
+        t.textLine(order.contact_person.phone)
+        t.textLine(order.contact_person.email)
         if ze.website:
             t.textLine(ze.website)
         if ze.swiss_uid:
@@ -598,7 +598,7 @@ class _PDFOrderHeader(Flowable):
         # Customer/Order info: Content
         t = c.beginText(64*mm, 27*mm)
         t.setFont("Helvetica", 12)
-        t.textLine(order.kunde.pkfill(9) if order.kunde else "-"*9)
+        t.textLine(order.customer.pkfill(9) if order.customer else "-"*9)
         t.textLine(order.pkfill(9))
         t.textLine(order.date.strftime("%d.%m.%Y"))
         if self.is_delivery_note:

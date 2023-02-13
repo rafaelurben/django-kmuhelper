@@ -24,11 +24,11 @@
                                 {% endif %}
                                 <hr>
                                 {% if original.email %}
-                                    {% if original.email_registriert and perms.kmuhelper.view_email %}
-                                        <a href="{% url 'admin:kmuhelper_email_change' original.email_registriert.pk %}">Registrierungsemail ansehen</a>
+                                    {% if original.email_link_registered and perms.kmuhelper.view_email %}
+                                        <a href="{% url 'admin:kmuhelper_email_change' original.email_link_registered.pk %}">Registrierungsemail ansehen</a>
                                     {% endif %}
                                     {% if perms.kmuhelper.add_email and perms.kmuhelper.change_kunde %}
-                                        <a href="{% url 'admin:kmuhelper_kunde_email_registriert' object_id %}">Registrierungsemail generieren</a>
+                                        <a href="{% url 'admin:kmuhelper_kunde_email_registered' object_id %}">Registrierungsemail generieren</a>
                                     {% endif %}
                                 {% else %}
                                     <a href="" class="disabled">Registrierungsemail</a>

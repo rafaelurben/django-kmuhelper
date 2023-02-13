@@ -72,19 +72,19 @@ class PaymentImport(CustomModel):
                     data['relatedpayments'] = relatedpayments.all()
 
                 try:
-                    bestellung = Bestellung.objects.get(pk=oid)
+                    order = Bestellung.objects.get(pk=oid)
 
-                    data['order'] = bestellung
+                    data['order'] = order
 
-                    if entry.currency == 'CHF' and bestellung.is_correct_payment(entry.amount, entry.valuedate):
-                        if bestellung.is_paid:
+                    if entry.currency == 'CHF' and order.is_correct_payment(entry.amount, entry.valuedate):
+                        if order.is_paid:
                             context['alreadypaid'].append(data)
                         else:
                             context['ready'].append(data)
                     else:
-                        if bestellung.kunde:
-                            data['samecustomerorders'] = bestellung.kunde.bestellungen.exclude(
-                                id=bestellung.id).filter(is_paid=False)
+                        if order.customer:
+                            data['samecustomerorders'] = order.customer.orders.exclude(
+                                id=order.id).filter(is_paid=False)
                         context['unclear'].append(data)
                 except ObjectDoesNotExist:
                     context['notfound'].append(data)

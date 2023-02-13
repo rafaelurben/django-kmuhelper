@@ -43,8 +43,8 @@
             <td>{{ payment.iban }}</td>
             <td>Kunde:</td>
             <td>
-                <a href="{% url 'admin:kmuhelper_kunde_change' object_id=order.kunde.pk %}" target="_blank">
-                    {{ order.kunde }}
+                <a href="{% url 'admin:kmuhelper_kunde_change' object_id=order.customer.pk %}" target="_blank">
+                    {{ order.customer }}
                 </a>
             </td>
         </tr>

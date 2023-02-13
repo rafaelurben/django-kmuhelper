@@ -486,16 +486,16 @@ class WooCommerce():
         )
         neworder.date = order["date_created_gmt"] + "+00:00"
         if order["customer_id"]:
-            kunde = Kunde.objects.get_or_create(
+            customer = Kunde.objects.get_or_create(
                 woocommerceid=int(order["customer_id"]))
-            if kunde[1]:
-                kunde = cls.customer_update(kunde[0], api=wcapi)
+            if customer[1]:
+                customer = cls.customer_update(customer[0], api=wcapi)
             else:
-                kunde = kunde[0]
+                customer = customer[0]
 
-            neworder.kunde = kunde
-            neworder.addr_shipping_email = kunde.addr_shipping_email
-            neworder.addr_shipping_phone = kunde.addr_shipping_phone
+            neworder.customer = customer
+            neworder.addr_shipping_email = customer.addr_shipping_email
+            neworder.addr_shipping_phone = customer.addr_shipping_phone
 
         for item in order["line_items"]:
             product = Produkt.objects.get_or_create(

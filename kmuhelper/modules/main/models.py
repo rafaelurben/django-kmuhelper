@@ -364,7 +364,7 @@ class Bestellung(CustomModel):
     )
 
     customer_note = models.TextField(
-        verbose_name="Kundennotiz",
+        verbose_name=_("Kundennotiz"),
         default="",
         blank=True,
         help_text=_("Vom Kunden erfasste Notiz."),
@@ -377,20 +377,20 @@ class Bestellung(CustomModel):
         default=default_order_key,
     )
 
-    kunde = models.ForeignKey(
+    customer = models.ForeignKey(
         to='Kunde',
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        related_name='bestellungen',
+        related_name='orders',
     )
-    zahlungsempfaenger = models.ForeignKey(
+    payment_receiver = models.ForeignKey(
         to='Zahlungsempfaenger',
         on_delete=models.PROTECT,
         verbose_name=pgettext_lazy("singular", "Zahlungsempfänger"),
         default=default_payment_recipient,
     )
-    ansprechpartner = models.ForeignKey(
+    contact_person = models.ForeignKey(
         to='Ansprechpartner',
         verbose_name=pgettext_lazy("singular", "Ansprechpartner"),
         on_delete=models.PROTECT,
@@ -624,8 +624,8 @@ class Bestellung(CustomModel):
 
     @property
     def language(self):
-        if self.kunde is not None:
-            return self.kunde.language
+        if self.customer is not None:
+            return self.customer.language
         return 'de'
 
     # Functions
@@ -634,7 +634,7 @@ class Bestellung(CustomModel):
         "Copy the customer data from the customer into the order"
 
         for field in constants.ADDR_SHIPPING_FIELDS+constants.ADDR_BILLING_FIELDS:
-            setattr(self, field, getattr(self.kunde, field))
+            setattr(self, field, getattr(self.customer, field))
 
     def second_save(self, *args, **kwargs):
         "This HAS to be called after all related models have been saved."
@@ -649,7 +649,7 @@ class Bestellung(CustomModel):
         super().save(*args, **kwargs)
 
     def save(self, *args, **kwargs):
-        if not self.pk and not self.woocommerceid and self.kunde:
+        if not self.pk and not self.woocommerceid and self.customer:
             self.import_customer_data()
 
         if self.invoice_date is None:
@@ -662,7 +662,7 @@ class Bestellung(CustomModel):
         return f'https://www.post.ch/swisspost-tracking?formattedParcelCodes={self.tracking_number}' if self.tracking_number else None
 
     def unstrukturierte_mitteilung(self):
-        if self.zahlungsempfaenger.mode == "QRR":
+        if self.payment_receiver.mode == "QRR":
             return str(self.date.strftime("%d.%m.%Y"))
         return _("Referenznummer")+": "+str(self.id)
 
@@ -678,8 +678,8 @@ class Bestellung(CustomModel):
 
         output = f'//S1/10/{self.pk}/11/{date}'
 
-        if self.zahlungsempfaenger.swiss_uid:
-            uid = self.zahlungsempfaenger.swiss_uid.split("-")[1].replace(".", "")
+        if self.payment_receiver.swiss_uid:
+            uid = self.payment_receiver.swiss_uid.split("-")[1].replace(".", "")
             output += f'/30/{uid}'
         cond = self.payment_conditions
         vat_dict = self.get_vat_dict()
@@ -753,11 +753,11 @@ class Bestellung(CustomModel):
     def name(self):
         return (f'{self.date.year}-' if self.date and not isinstance(self.date, str) else '') + \
                (f'{self.pkfill(6)}'+(f' (WC#{self.woocommerceid})' if self.woocommerceid else '')) + \
-               (f' - {self.kunde}' if self.kunde is not None else " Gast")
+               (f' - {self.customer}' if self.customer is not None else ' ' + gettext("Gast"))
 
     @admin.display(description=_("Info"))
     def info(self):
-        return f'{self.date.strftime("%d.%m.%Y")} - '+((self.kunde.company if self.kunde.company else (f'{self.kunde.first_name} {self.kunde.last_name}')) if self.kunde else "Gast")
+        return f'{self.date.strftime("%d.%m.%Y")} - '+((self.customer.company if self.customer.company else (f'{self.customer.first_name} {self.customer.last_name}')) if self.customer else "Gast")
 
     @admin.display(description=_("Bezahlt nach"))
     def display_paid_after(self):
@@ -929,9 +929,9 @@ class Bestellung(CustomModel):
 
     def duplicate(self):
         new = Bestellung.objects.create(
-            kunde=self.kunde,
-            zahlungsempfaenger=self.zahlungsempfaenger,
-            ansprechpartner=self.ansprechpartner,
+            customer=self.customer,
+            payment_receiver=self.payment_receiver,
+            contact_person=self.contact_person,
 
             pdf_title=self.pdf_title,
             pdf_text=self.pdf_text,
@@ -963,8 +963,8 @@ class Bestellung(CustomModel):
 
     admin_icon = "fas fa-clipboard-list"
 
-    DICT_EXCLUDE_FIELDS = ['products', 'kosten', 'email_link_invoice', 'email_link_shipped', 'kunde',
-                           'ansprechpartner', 'zahlungsempfaenger', 'is_removed_from_stock',
+    DICT_EXCLUDE_FIELDS = ['products', 'kosten', 'email_link_invoice', 'email_link_shipped', 'customer',
+                           'contact_person', 'payment_receiver', 'is_removed_from_stock',
                            'is_shipped', 'is_paid', 'payment_method', 'order_key']
 
 
@@ -1261,7 +1261,7 @@ class Kunde(CustomModel):
         blank=True,
     )
 
-    email_registriert = models.ForeignKey(
+    email_link_registered = models.ForeignKey(
         to='EMail',
         on_delete=models.SET_NULL,
         blank=True,
@@ -1332,9 +1332,9 @@ class Kunde(CustomModel):
             self.website = self.website or self.combine_with.website
             self.note = self.note+"\n"+self.combine_with.note
 
-            for bestellung in self.combine_with.bestellungen.all():
-                bestellung.kunde = self
-                bestellung.save()
+            for order in self.combine_with.orders.all():
+                order.customer = self
+                order.save()
 
             if getattr(self.combine_with, 'linked_note', False):
                 other_linked_note = self.combine_with.linked_note
@@ -1347,7 +1347,7 @@ class Kunde(CustomModel):
 
     def create_email_registered(self):
         context = {
-            "kunde": {
+            "customer": {
                 "id": self.pk,
                 "first_name": self.first_name,
                 "last_name": self.last_name,
@@ -1356,7 +1356,7 @@ class Kunde(CustomModel):
             }
         }
 
-        self.email_registriert = EMail.objects.create(
+        self.email_link_registered = EMail.objects.create(
             subject=gettext("Registrierung erfolgreich!"),
             to=self.email,
             html_template="kunde_registriert.html",
@@ -1365,13 +1365,13 @@ class Kunde(CustomModel):
         )
 
         self.save()
-        return self.email_registriert
+        return self.email_link_registered
 
     objects = models.Manager()
 
     admin_icon = "fas fa-users"
 
-    DICT_EXCLUDE_FIELDS = ['email_registriert', 'combine_with']
+    DICT_EXCLUDE_FIELDS = ['email_link_registered', 'combine_with']
 
 
 class Lieferant(CustomModel):
@@ -1402,7 +1402,7 @@ class Lieferant(CustomModel):
         blank=True,
     )
 
-    adresse = models.TextField(
+    address = models.TextField(
         verbose_name=_("Adresse"),
         default="",
         blank=True,
@@ -1413,20 +1413,20 @@ class Lieferant(CustomModel):
         blank=True,
     )
 
-    ansprechpartner = models.CharField(
-        verbose_name=pgettext_lazy("singular", "Ansprechpartner"),
+    contact_person_name = models.CharField(
+        verbose_name=_("Name"),
         max_length=250,
         default="",
         blank=True,
     )
-    ansprechpartnertel = models.CharField(
-        verbose_name=_("Ansprechpartner Telefon"),
+    contact_person_phone = models.CharField(
+        verbose_name=_("Telefon"),
         max_length=50,
         default="",
         blank=True,
     )
-    ansprechpartnermail = models.EmailField(
-        verbose_name=_("Ansprechpartner E-Mail"),
+    contact_person_email = models.EmailField(
+        verbose_name=_("E-Mail"),
         null=True,
         default="",
         blank=True,

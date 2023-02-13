@@ -14,8 +14,8 @@
             <summary>
                 Andere unbezahlte Bestellungen von
                 <a target="_blank"
-                    href="{% url 'admin:kmuhelper_kunde_change' object_id=entry.order.kunde.pk %}#bestellungen-group">
-                    {{ entry.order.kunde }}
+                    href="{% url 'admin:kmuhelper_kunde_change' object_id=entry.order.customer.pk %}#orders-group">
+                    {{ entry.order.customer }}
                 </a> ({{ entry.samecustomerorders|length }})
             </summary>
             <div>
