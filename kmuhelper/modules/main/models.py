@@ -53,18 +53,6 @@ def default_order_key():
 def default_payment_conditions():
     return settings.get_db_setting("default-payment-conditions", "0:30")
 
-# GUTSCHEINTYPEN = [
-#     ("percent", "Prozent"),
-#     ("fixed_cart", "Fixer Betrag auf den Warenkorb"),
-#     ("fixed_product", "Fixer Betrag auf ein Produkt")
-# ]
-
-# ORDER_FREQUENCY_TYPES = [
-#     ("weekly", "Wöchentlich"),
-#     ("monthly", "Monatlich"),
-#     ("yearly", "Jährlich"),
-# ]
-
 #############
 
 
@@ -613,13 +601,6 @@ class Bestellung(CustomModel):
         blank=True,
     )
 
-    # # Wiederkehrende Rechnungen
-
-    # recurring = models.BooleanField("Wiederkehrend", default=False)
-    # recurring_next = models.DateField("Wiederkehrend am", default=None, blank=True, null=True)
-    # recurring_until = models.DateField("Wiederkehrend bis", default=None, blank=True, null=True)
-    # recurring_frequency = models.CharField("Häufigkeit", choices=ORDER_FREQUENCY_TYPES, default=None, blank=True, null=True)
-
     # Properties
 
     @property
@@ -966,60 +947,6 @@ class Bestellung(CustomModel):
     DICT_EXCLUDE_FIELDS = ['products', 'kosten', 'email_link_invoice', 'email_link_shipped', 'customer',
                            'contact_person', 'payment_receiver', 'is_removed_from_stock',
                            'is_shipped', 'is_paid', 'payment_method', 'order_key']
-
-
-# class Gutschein(CustomModel):
-#     woocommerceid = models.IntegerField('WooCommerce ID', default=0)
-#
-#     code = models.CharField("Gutscheincode", max_length=25)
-#     amount = models.FloatField("Menge (Preis oder Anzahl Prozent)")
-#     typ = models.CharField("Gutscheintyp", max_length=14, choices=GUTSCHEINTYPEN)
-#     description = models.TextField("Beschrieb",default="",blank=True)
-#     #datum_bis = models.DateField("Gültig bis", blank=True, null=True)
-#     #nicht_kumulierbar = models.BooleanField("Nicht kumulierbar", default=True, help_text="Aktivieren, damit der Gutschein nicht kumuliert werden kann.")
-#
-#     produkte = models.ManyToManyField("Produkt", verbose_name="Produkte", help_text="Produkte, auf welche der Gutschein angewendet werden kann.")
-#     ausgeschlossene_produkte = models.ManyToManyField("Produkt", verbose_name="Ausgeschlossenes Produkt", verbose_name_plural="Ausgeschlossene Produkte",help_text="Produkte, auf welche der Gutschein nicht angewendet werden kann.")
-#
-#     #limit_gesamt = models.IntegerField("Gesamtlimit", default=0, help_text="Anzahl Benutzungen")
-#     #limit_pro_kunde = models.IntegerField("Limit pro Kunde", default=0, help_text="Anzahl Benutzungen pro Kunde")
-#     limit_artikel = models.IntegerField("Limit an Artikeln", default=0, help_text="Anzahl Artikel, auf welche der Gutschein maximal angewendet werden kann.")
-#
-#     #kostenlose_lieferung = models.BooleanField("Kostenlose Lieferung", default=False, help_text="Wenn aktiviert, erlaube kostenlose Lieferung")
-#
-#     produktkategorien = models.ManyToManyField("Produktkategorie", verbose_name="Kategorie", verbose_name="Kategorien",help_text="Kategorien, auf welche der Gutschein angewendet werden kann.")
-#     ausgeschlossene_produktkategorien = models.ManyToManyField("Kategorie", verbose_name="Ausgeschlossene Kategorie", verbose_name_plural="Ausgeschlossene Kategorie",help_text="Kategorien, auf welche der Gutschein nicht angewendet werden kann.")
-#
-#     nicht_kumulierbar_mit_aktion = models.BooleanField("Nicht kumulierbar mit Aktion", default=True, help_text="Aktivieren, damit der Gutschein nicht auf Produkte angewendet werden kann, welche in Aktion sind.")
-#     mindestbetrag = models.FloatField("Mindestbetrag", default=0.0)
-#     maximalbetrag = models.FloatField("Maximalbetrag", default=0.0)
-#
-#     #erlaubte_emails
-#     #benutzt_von = models.ManyToManyField("Kunde")
-#
-#     def gueltig_fuer_bestellung(self, bestellung):
-#         if ((self.mindestbetrag <= bestellung.calc_total()) and (self.maximalbetrag == 0.0 or (self.maximalbetrag >= bestellung.calc_total()))):
-#             return True
-#         else:
-#             return False
-#
-#     def wert_fuer_bestellung(self, bestellung):
-#         if self.gueltig_fuer_bestellung(bestellung):
-#             if self.typ == "fixed_cart":
-#                 return self.amount
-#             elif self.typ == "fixed_product":
-#                 pass
-#             elif self.typ == "percent":
-#                 pass
-#         else:
-#             return 0.0
-#
-#     class Meta:
-#         verbose_name = "Gutschein"
-#         verbose_name_plural = "Gutscheine"
-#
-#     objects = models.Manager()
-
 
 
 class Kosten(CustomModel):
