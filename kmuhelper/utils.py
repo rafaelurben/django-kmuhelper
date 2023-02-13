@@ -2,13 +2,10 @@ import sys
 import subprocess
 import requests
 
-from io import BytesIO
 from packaging.version import Version, InvalidVersion
 
 from django.contrib import messages
-from django.core import mail
 from django.shortcuts import render
-from django.template.loader import get_template
 from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
@@ -94,42 +91,6 @@ def runden(price, to=0.05):
     # Note: formatprice is used because of floating point approximation
     return float(formatprice(float(round(round(price / to) * to, 2))))
 
-
-###############
-
-
-def send_mail(subject: str, to: str, template_name: str, context: dict = {}, **kwargs):
-    html_message = get_template(
-        "kmuhelper/emails/"+template_name).render(context)
-
-    msg = mail.EmailMessage(
-        subject=subject,
-        body=html_message,
-        to=[to],
-        **kwargs
-    )
-
-    msg.content_subtype = "html"
-
-    return bool(msg.send())
-
-
-def send_pdf(subject: str, to: str, template_name: str, pdf: BytesIO, pdf_filename: str = "file.pdf", context: dict = {}, **kwargs):
-    html_message = get_template(
-        "kmuhelper/emails/"+template_name).render(context)
-
-    msg = mail.EmailMessage(
-        subject=subject,
-        body=html_message,
-        to=[to],
-        **kwargs
-    )
-
-    msg.content_subtype = "html"
-    msg.attach(filename=pdf_filename, content=pdf.read(),
-               mimetype="application/pdf")
-
-    return bool(msg.send())
 
 ###############
 

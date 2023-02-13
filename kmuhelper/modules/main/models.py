@@ -6,7 +6,6 @@ import string
 
 from django.db import models
 from django.contrib import admin, messages
-from django.core import mail
 from django.core.validators import RegexValidator, MinValueValidator, MaxValueValidator
 from django.utils import timezone
 from django.utils.html import mark_safe, format_html
@@ -16,8 +15,8 @@ from kmuhelper import settings, constants
 from kmuhelper.modules.emails.models import EMail, Attachment
 from kmuhelper.modules.pdfgeneration import PDFOrder
 from kmuhelper.overrides import CustomModel
-from kmuhelper.utils import runden, formatprice, modulo10rekursiv, send_pdf, faq
-from kmuhelper.translations import langselect, I18N_HELP_TEXT
+from kmuhelper.utils import runden, formatprice, modulo10rekursiv, faq
+from kmuhelper.translations import langselect, I18N_HELP_TEXT, Language
 
 from django.utils.translation import gettext_lazy, gettext, ngettext, pgettext, pgettext_lazy, npgettext
 
@@ -785,87 +784,93 @@ class Bestellung(CustomModel):
     def __str__(self):
         return self.name()
 
-    def create_email_invoice(self):
-        context = {
-            "tracking_link": str(self.tracking_link()),
-            "trackingdata": bool(self.tracking_number and self.is_shipped),
-            "id": str(self.pk),
-            "woocommerceid": str(self.woocommerceid),
-            "woocommercedata": bool(self.woocommerceid),
-        }
-
-        if self.woocommerceid:
-            ctx = {
-                'id': str(self.pk),
-                'onlineid': str(self.woocommerceid),
+    def create_email_invoice(self, lang=None):
+        lang = lang or self.language
+        with Language(lang):
+            context = {
+                "tracking_link": str(self.tracking_link()),
+                "trackingdata": bool(self.tracking_number and self.is_shipped),
+                "id": str(self.pk),
+                "woocommerceid": str(self.woocommerceid),
+                "woocommercedata": bool(self.woocommerceid),
             }
-            subject = gettext("Ihre Bestellung Nr. %(id)s (Online #%(onlineid)s)") % ctx
-            filename = gettext("Rechnung Nr. %(id)s (Online #%(onlineid)s).pdf") % ctx
-        else:
-            ctx = {
-                'id': str(self.pk),
-            }
-            subject = gettext("Ihre Bestellung Nr. %(id)s") % ctx
-            filename = gettext("Rechnung Nr. %(id)s.pdf") % ctx
 
-        self.email_link_invoice = EMail.objects.create(
-            subject=subject,
-            to=self.addr_billing_email,
-            html_template="bestellung_rechnung.html",
-            html_context=context,
-            notes=gettext("Diese E-Mail wurde automatisch aus Bestellung #%d generiert.") % self.pk,
-        )
+            if self.woocommerceid:
+                ctx = {
+                    'id': str(self.pk),
+                    'onlineid': str(self.woocommerceid),
+                }
+                subject = gettext("Ihre Bestellung Nr. %(id)s (Online #%(onlineid)s)") % ctx
+                filename = gettext("Rechnung Nr. %(id)s (Online #%(onlineid)s).pdf") % ctx
+            else:
+                ctx = {
+                    'id': str(self.pk),
+                }
+                subject = gettext("Ihre Bestellung Nr. %(id)s") % ctx
+                filename = gettext("Rechnung Nr. %(id)s.pdf") % ctx
 
-        self.email_link_invoice.add_attachments(
-            Attachment.objects.create_from_binary(
-                filename=filename,
-                content=PDFOrder(self, "Rechnung").get_pdf()
+            self.email_link_invoice = EMail.objects.create(
+                subject=subject,
+                to=self.addr_billing_email,
+                language=lang,
+                html_template="bestellung_rechnung.html",
+                html_context=context,
+                notes=gettext("Diese E-Mail wurde automatisch aus Bestellung #%d generiert.") % self.pk,
             )
-        )
 
-        self.save()
-        return self.email_link_invoice
-
-    def create_email_shipped(self):
-        context = {
-            "tracking_link": str(self.tracking_link()),
-            "trackingdata": bool(self.tracking_link() and self.is_shipped),
-            "id": str(self.pk),
-            "woocommerceid": str(self.woocommerceid),
-            "woocommercedata": bool(self.woocommerceid),
-        }
-
-        if self.woocommerceid:
-            ctx = {
-                'id': str(self.pk),
-                'onlineid': str(self.woocommerceid),
-            }
-            subject = gettext("Ihre Lieferung Nr. %(id)s (Online #%(onlineid)s)") % ctx
-            filename = gettext("Lieferschein Nr. %(id)s (Online #%(onlineid)s).pdf") % ctx
-        else:
-            ctx = {
-                'id': str(self.pk),
-            }
-            subject = gettext("Ihre Lieferung Nr. %(id)s") % ctx
-            filename = gettext("Lieferschein Nr. %(id)s.pdf") % ctx
-
-        self.email_link_shipped = EMail.objects.create(
-            subject=subject,
-            to=self.addr_shipping_email,
-            html_template="bestellung_lieferung.html",
-            html_context=context,
-            notes=gettext("Diese E-Mail wurde automatisch aus Bestellung #%d generiert.") % self.pk,
-        )
-
-        self.email_link_shipped.add_attachments(
-            Attachment.objects.create_from_binary(
-                filename=filename,
-                content=PDFOrder(self, _("Lieferschein"), is_delivery_note=True).get_pdf()
+            self.email_link_invoice.add_attachments(
+                Attachment.objects.create_from_binary(
+                    filename=filename,
+                    content=PDFOrder(self, gettext("Rechnung")).get_pdf()
+                )
             )
-        )
 
-        self.save()
-        return self.email_link_shipped
+            self.save()
+            return self.email_link_invoice
+
+    def create_email_shipped(self, lang=None):
+        lang = lang or self.language
+        with Language(lang):
+            context = {
+                "tracking_link": str(self.tracking_link()),
+                "trackingdata": bool(self.tracking_link() and self.is_shipped),
+                "id": str(self.pk),
+                "woocommerceid": str(self.woocommerceid),
+                "woocommercedata": bool(self.woocommerceid),
+            }
+
+            if self.woocommerceid:
+                ctx = {
+                    'id': str(self.pk),
+                    'onlineid': str(self.woocommerceid),
+                }
+                subject = gettext("Ihre Lieferung Nr. %(id)s (Online #%(onlineid)s)") % ctx
+                filename = gettext("Lieferschein Nr. %(id)s (Online #%(onlineid)s).pdf") % ctx
+            else:
+                ctx = {
+                    'id': str(self.pk),
+                }
+                subject = gettext("Ihre Lieferung Nr. %(id)s") % ctx
+                filename = gettext("Lieferschein Nr. %(id)s.pdf") % ctx
+
+            self.email_link_shipped = EMail.objects.create(
+                subject=subject,
+                to=self.addr_shipping_email,
+                language=lang,
+                html_template="bestellung_lieferung.html",
+                html_context=context,
+                notes=gettext("Diese E-Mail wurde automatisch aus Bestellung #%d generiert.") % self.pk,
+            )
+
+            self.email_link_shipped.add_attachments(
+                Attachment.objects.create_from_binary(
+                    filename=filename,
+                    content=PDFOrder(self, _("Lieferschein"), is_delivery_note=True).get_pdf()
+                )
+            )
+
+            self.save()
+            return self.email_link_shipped
 
     def get_stock_data(self):
         """Get the stock data of all products in this order"""
@@ -1272,27 +1277,30 @@ class Kunde(CustomModel):
             self.combine_with = None
         super().save(*args, **kwargs)
 
-    def create_email_registered(self):
-        context = {
-            "customer": {
-                "id": self.pk,
-                "first_name": self.first_name,
-                "last_name": self.last_name,
-                "company": self.company,
-                "email": self.email,
+    def create_email_registered(self, lang=None):
+        lang = lang or self.language
+        with Language(lang):
+            context = {
+                "customer": {
+                    "id": self.pk,
+                    "first_name": self.first_name,
+                    "last_name": self.last_name,
+                    "company": self.company,
+                    "email": self.email,
+                }
             }
-        }
 
-        self.email_link_registered = EMail.objects.create(
-            subject=gettext("Registrierung erfolgreich!"),
-            to=self.email,
-            html_template="kunde_registriert.html",
-            html_context=context,
-            notes=gettext("Diese E-Mail wurde automatisch aus Kunde #%d generiert.") % self.pk,
-        )
+            self.email_link_registered = EMail.objects.create(
+                subject=gettext("Registrierung erfolgreich!"),
+                to=self.email,
+                language=lang,
+                html_template="kunde_registriert.html",
+                html_context=context,
+                notes=gettext("Diese E-Mail wurde automatisch aus Kunde #%d generiert.") % self.pk,
+            )
 
-        self.save()
-        return self.email_link_registered
+            self.save()
+            return self.email_link_registered
 
     objects = models.Manager()
 

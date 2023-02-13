@@ -12,12 +12,15 @@ from django.utils import timezone
 from django.utils.html import format_html
 from django.template import TemplateDoesNotExist, TemplateSyntaxError
 from django.template.loader import get_template
+from django.utils.translation import gettext_lazy, gettext
 
 from kmuhelper.external.multi_email_field.fields import MultiEmailField
 
-from kmuhelper import settings
+from kmuhelper import settings, constants
 from kmuhelper.overrides import CustomModel
+from kmuhelper.translations import Language
 
+_ = gettext_lazy
 
 def log(string, *args):
     print("[deep_pink4][KMUHelper E-Mails][/] -", string, *args)
@@ -166,6 +169,13 @@ class EMail(CustomModel):
         help_text="Blindkopie",
     )
 
+    language = models.CharField(
+        verbose_name=_("Sprache"),
+        default="de",
+        choices=constants.LANGUAGES,
+        max_length=2,
+    )
+
     html_template = models.CharField(
         verbose_name="Designvorlage",
         default="default.html",
@@ -296,14 +306,15 @@ class EMail(CustomModel):
     def render(self, online=False):
         """Render the email and return the rendered string"""
 
-        context = self.get_context()
+        with Language(self.language):
+            context = self.get_context()
 
-        if online:
-            context["isonline"] = True
-            context["attachments"] = list(self.attachments.all())
-        else:
-            context["view_online_url"] = self.get_url_with_domain()
-        return get_template("kmuhelper/emails/"+str(self.html_template)).render(context)
+            if online:
+                context["isonline"] = True
+                context["attachments"] = list(self.attachments.all())
+            else:
+                context["view_online_url"] = self.get_url_with_domain()
+            return get_template("kmuhelper/emails/"+str(self.html_template)).render(context)
 
     def add_attachments(self, *attachments):
         """Add one or more Attachment objects to this EMail"""
