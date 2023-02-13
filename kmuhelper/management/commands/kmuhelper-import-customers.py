@@ -128,7 +128,7 @@ class Command(BaseCommand):
                         addr_shipping_country=country,
 
                         website=website,
-                        notiz=notiz
+                        note=notiz
                     )
                 elif oldwithidandemail:
                     self.stdout.write(self.style.SUCCESS("Kunde existiert bereits!" +

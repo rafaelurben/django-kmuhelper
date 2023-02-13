@@ -8,7 +8,7 @@ from kmuhelper.modules.main.models import Notiz, Bestellung, Produkt, Lieferung
 
 class App_ToDoManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(erledigt=False)
+        return super().get_queryset().filter(done=False)
 
 
 class App_ToDo(Notiz):

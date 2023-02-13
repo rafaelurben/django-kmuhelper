@@ -276,7 +276,7 @@ class Bestellungsposten(CustomModel):
 class Bestellung(CustomModel):
     """Model representing an order"""
 
-    NOTE_RELATION = 'bestellung'
+    NOTE_RELATION = 'order'
 
     woocommerceid = models.IntegerField(
         verbose_name=_("WooCommerce ID"),
@@ -1063,7 +1063,7 @@ class Kosten(CustomModel):
 class Kunde(CustomModel):
     """Model representing a customer"""
 
-    NOTE_RELATION = 'kunde'
+    NOTE_RELATION = 'customer'
 
     woocommerceid = models.IntegerField(
         verbose_name=_("WooCommerce ID"),
@@ -1336,10 +1336,10 @@ class Kunde(CustomModel):
                 bestellung.kunde = self
                 bestellung.save()
 
-            if getattr(self.combine_with, 'notiz', False):
-                notiz = self.combine_with.notiz
-                notiz.kunde = None if getattr(self, 'notiz', False) else self
-                notiz.save()
+            if getattr(self.combine_with, 'linked_note', False):
+                other_linked_note = self.combine_with.linked_note
+                other_linked_note.linked_customer = None if getattr(self, 'linked_note', False) else self
+                other_linked_note.save()
 
             self.combine_with.delete()
             self.combine_with = None
@@ -1407,7 +1407,7 @@ class Lieferant(CustomModel):
         default="",
         blank=True,
     )
-    notiz = models.TextField(
+    note = models.TextField(
         verbose_name=_("Notiz"),
         default="",
         blank=True,
@@ -1482,7 +1482,7 @@ class Lieferungsposten(CustomModel):
 class Lieferung(CustomModel):
     """Model representing an *incoming* delivery"""
 
-    NOTE_RELATION = "lieferung"
+    NOTE_RELATION = 'delivery'
 
     name = models.CharField(
         verbose_name=_("Name"),
@@ -1551,7 +1551,7 @@ class Notiz(CustomModel):
         blank=True,
     )
 
-    erledigt = models.BooleanField(
+    done = models.BooleanField(
         verbose_name=_("Erledigt?"),
         default=False,
     )
@@ -1561,38 +1561,38 @@ class Notiz(CustomModel):
         default=0,
         blank=True,
     )
-    erstellt_am = models.DateTimeField(
+    created_at = models.DateTimeField(
         verbose_name=_("Erstellt am"),
         auto_now_add=True,
     )
 
-    bestellung = models.OneToOneField(
+    linked_order = models.OneToOneField(
         to="Bestellung",
         blank=True,
         null=True,
         on_delete=models.CASCADE,
-        related_name="notiz",
+        related_name="linked_note",
     )
-    produkt = models.OneToOneField(
+    linked_product = models.OneToOneField(
         to="Produkt",
         blank=True,
         null=True,
         on_delete=models.CASCADE,
-        related_name="notiz",
+        related_name="linked_note",
     )
-    kunde = models.OneToOneField(
+    linked_customer = models.OneToOneField(
         to="Kunde",
         blank=True,
         null=True,
         on_delete=models.CASCADE,
-        related_name="notiz",
+        related_name="linked_note",
     )
-    lieferung = models.OneToOneField(
+    linked_delivery = models.OneToOneField(
         to="Lieferung",
         blank=True,
         null=True,
         on_delete=models.CASCADE,
-        related_name="notiz",
+        related_name="linked_note",
     )
 
     @admin.display(description=_("🔗 Notiz"))
@@ -1601,27 +1601,27 @@ class Notiz(CustomModel):
 
     def links(self):
         text = ""
-        if self.bestellung:
+        if self.linked_order:
             url = reverse("admin:kmuhelper_bestellung_change",
-                          kwargs={"object_id": self.bestellung.pk})
+                          kwargs={"object_id": self.linked_order.pk})
             text += pgettext("singular", "Bestellung")
-            text += f" <a href='{url}'>#{self.bestellung.pk}</a><br>"
-        if self.produkt:
+            text += f" <a href='{url}'>#{self.linked_order.pk}</a><br>"
+        if self.linked_product:
             url = reverse("admin:kmuhelper_produkt_change",
-                          kwargs={"object_id": self.produkt.pk})
+                          kwargs={"object_id": self.linked_product.pk})
             text += pgettext("singular", "Produkt")
-            text += f" <a href='{url}'>#{self.produkt.pk}</a><br>"
-        if self.kunde:
+            text += f" <a href='{url}'>#{self.linked_product.pk}</a><br>"
+        if self.linked_customer:
             url = reverse("admin:kmuhelper_kunde_change",
-                          kwargs={"object_id": self.kunde.pk})
+                          kwargs={"object_id": self.linked_customer.pk})
             text += pgettext("singular", "Kunde")
-            text += f" <a href='{url}'>#{self.kunde.pk}</a><br>"
-        if self.lieferung:
+            text += f" <a href='{url}'>#{self.linked_customer.pk}</a><br>"
+        if self.linked_delivery:
             url = reverse("admin:kmuhelper_lieferung_change",
-                          kwargs={"object_id": self.lieferung.pk})
+                          kwargs={"object_id": self.linked_delivery.pk})
             text += pgettext("singular", "Lieferung")
-            text += f" <a href='{url}'>#{self.lieferung.pk}</a><br>"
-        return mark_safe(text) or "Diese Notiz hat keine Verknüpfungen."
+            text += f" <a href='{url}'>#{self.linked_delivery.pk}</a><br>"
+        return mark_safe(text) or gettext("Diese Notiz hat keine Verknüpfungen.")
 
     class Meta:
         verbose_name = pgettext_lazy("singular", "Notiz")
@@ -1635,7 +1635,7 @@ class Notiz(CustomModel):
 class Produkt(CustomModel):
     """Model representing a product"""
 
-    NOTE_RELATION = 'produkt'
+    NOTE_RELATION = 'product'
 
     article_number = models.CharField(
         verbose_name=_("Artikelnummer"),

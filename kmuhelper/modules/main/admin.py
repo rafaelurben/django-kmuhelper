@@ -139,7 +139,7 @@ class BestellungsAdmin(CustomModelAdmin):
     list_display = ('id', 'date', 'kunde', 'status', 'payment_method',
                     'is_shipped', 'is_paid', 'display_cached_sum', 'linked_note_html')
     list_filter = ('status', 'is_paid', 'is_shipped', 'payment_method', 'zahlungsempfaenger', 'ansprechpartner')
-    search_fields = ['id', 'date', 'notiz__name', 'notiz__description', 'customer_note',
+    search_fields = ['id', 'date', 'linked_note__name', 'linked_note__description', 'customer_note',
                      'tracking_number'] + constants.ADDR_BILLING_FIELDS + constants.ADDR_SHIPPING_FIELDS
 
     ordering = ("is_shipped", "is_paid", "-date")
@@ -151,7 +151,7 @@ class BestellungsAdmin(CustomModelAdmin):
 
     save_on_top = True
 
-    list_select_related = ["kunde", "notiz"]
+    list_select_related = ["kunde", "linked_note"]
 
     date_hierarchy = "date"
 
@@ -353,11 +353,11 @@ class KundenAdmin(CustomModelAdmin):
     list_display = ('id', 'company', 'last_name', 'first_name', 'addr_billing_postcode',
                     'addr_billing_city', 'email', 'avatar', 'linked_note_html')
     search_fields = ['id', 'last_name', 'first_name', 'company', 'email', 'username', 'website',
-                     'notiz__name', 'notiz__description'] + constants.ADDR_BILLING_FIELDS + constants.ADDR_SHIPPING_FIELDS
+                     'linked_note__name', 'linked_note__description'] + constants.ADDR_BILLING_FIELDS + constants.ADDR_SHIPPING_FIELDS
 
     readonly_fields = ["linked_note_html"]
 
-    list_select_related = ["notiz"]
+    list_select_related = ["linked_note"]
 
     autocomplete_fields = ["combine_with"]
 
@@ -398,7 +398,7 @@ class LieferantenAdmin(CustomModelAdmin):
         ('Infos', {'fields': ['abbreviation', 'name']}),
         ('Firma', {'fields': ['website', 'phone', 'email']}),
         ('Texte', {
-            'fields': ['adresse', 'notiz'],
+            'fields': ['adresse', 'note'],
             'classes': ["collapse"]}),
         ('Ansprechpartner', {
             'fields': [
@@ -408,8 +408,8 @@ class LieferantenAdmin(CustomModelAdmin):
 
     ordering = ('abbreviation',)
 
-    list_display = ('abbreviation', 'name', 'notiz')
-    search_fields = ['abbreviation', 'name', 'adresse', 'notiz']
+    list_display = ('abbreviation', 'name', 'note')
+    search_fields = ['abbreviation', 'name', 'adresse', 'note']
 
     # Views
 
@@ -473,7 +473,7 @@ class LieferungenAdmin(CustomModelAdmin):
     list_filter = ("is_added_to_stock", "lieferant", )
 
     search_fields = ["name", "date", "lieferant__name", "lieferant__abbreviation",
-                     "notiz__name", "notiz__description"]
+                     "linked_note__name", "linked_note__description"]
 
     readonly_fields = ["linked_note_html"]
 
@@ -490,7 +490,7 @@ class LieferungenAdmin(CustomModelAdmin):
 
     save_on_top = True
 
-    list_select_related = ("lieferant", "notiz", )
+    list_select_related = ("lieferant", "linked_note", )
 
     # Actions
 
@@ -527,12 +527,12 @@ class LieferungenAdmin(CustomModelAdmin):
 
 @admin.register(Notiz)
 class NotizenAdmin(CustomModelAdmin):
-    list_display = ["name", "description", "priority", "erledigt", "erstellt_am"]
-    list_filter = ["erledigt", "priority"]
+    list_display = ["name", "description", "priority", "done", "created_at"]
+    list_filter = ["done", "priority"]
 
     readonly_fields = ["links"]
 
-    ordering = ["erledigt", "-priority", "erstellt_am"]
+    ordering = ["done", "-priority", "created_at"]
 
     search_fields = ("name", "description")
 
@@ -540,39 +540,35 @@ class NotizenAdmin(CustomModelAdmin):
         if obj:
             return [
                 ("Infos", {"fields": ["name", "description"]}),
-                ("Daten", {"fields": ["erledigt", "priority"]}),
+                ("Daten", {"fields": ["done", "priority"]}),
                 ("Verknüpfungen", {"fields": ["links"]}),
             ]
 
         return [
             ("Infos", {"fields": ["name", "description"]}),
-            ("Daten", {"fields": ["erledigt", "priority"]}),
+            ("Daten", {"fields": ["done", "priority"]}),
         ]
 
     def get_form(self, request, obj=None, change=False, **kwargs):
         form = super().get_form(request, obj, change, **kwargs)
         if obj is None:
             form.base_fields['description'].initial = ""
-            if "from_bestellung" in request.GET:
-                form.base_fields['name'].initial = 'Bestellung #' + \
-                    request.GET.get("from_bestellung")
-                form.base_fields['description'].initial += '\n\n[Bestellung #' + \
-                    request.GET.get("from_bestellung") + "]"
-            if "from_produkt" in request.GET:
-                form.base_fields['name'].initial = 'Produkt #' + \
-                    request.GET.get("from_produkt")
-                form.base_fields['description'].initial += '\n\n[Produkt #' + \
-                    request.GET.get("from_produkt") + "]"
-            if "from_kunde" in request.GET:
-                form.base_fields['name'].initial = 'Kunde #' + \
-                    request.GET.get("from_kunde")
-                form.base_fields['description'].initial += '\n\n[Kunde #' + \
-                    request.GET.get("from_kunde") + "]"
-            if "from_lieferung" in request.GET:
-                form.base_fields['name'].initial = 'Lieferung #' + \
-                    request.GET.get("from_lieferung")
-                form.base_fields['description'].initial += '\n\n[Lieferung #' + \
-                    request.GET.get("from_lieferung") + "]"
+            if "from_order" in request.GET:
+                pk = request.GET.get("from_order")
+                form.base_fields['name'].initial = 'Bestellung #' + pk
+                form.base_fields['description'].initial += '\n\n[Bestellung #' + pk + "]"
+            if "from_product" in request.GET:
+                pk = request.GET.get("from_product")
+                form.base_fields['name'].initial = 'Produkt #' + pk
+                form.base_fields['description'].initial += '\n\n[Produkt #' + pk + "]"
+            if "from_customer" in request.GET:
+                pk = request.GET.get("from_customer")
+                form.base_fields['name'].initial = 'Kunde #' + pk
+                form.base_fields['description'].initial += '\n\n[Kunde #' + pk + "]"
+            if "from_delivery" in request.GET:
+                pk = request.GET.get("from_delivery")
+                form.base_fields['name'].initial = 'Lieferung #' + pk
+                form.base_fields['description'].initial += '\n\n[Lieferung #' + pk + "]"
         return form
 
     # Save
@@ -580,49 +576,48 @@ class NotizenAdmin(CustomModelAdmin):
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
         if not change:
-            if "from_bestellung" in request.GET:
-                if Bestellung.objects.filter(pk=request.GET["from_bestellung"]).exists():
-                    bestellung = Bestellung.objects.get(
-                        pk=request.GET["from_bestellung"])
-                    obj.bestellung = bestellung
+            if "from_order" in request.GET:
+                pk = request.GET["from_order"]
+                if Bestellung.objects.filter(pk=pk).exists():
+                    order = Bestellung.objects.get(pk=pk)
+                    obj.linked_order = order
                     obj.save()
                     messages.info(
-                        request, "Bestellung #" + str(bestellung.pk) + " wurde mit dieser Notiz verknüpft.")
+                        request, "Bestellung #%s wurde mit dieser Notiz verknüpft." % pk)
                 else:
                     messages.warning(
-                        request, "Bestellung #" + request.GET["from_bestellung"] + " konnte nicht gefunden werden. Die Notiz wurde trotzdem erstellt.")
-            if "from_produkt" in request.GET:
-                if Produkt.objects.filter(pk=request.GET["from_produkt"]).exists():
-                    produkt = Produkt.objects.get(
-                        pk=request.GET["from_produkt"])
-                    obj.produkt = produkt
+                        request, "Bestellung #%s konnte nicht gefunden werden. Die Notiz wurde trotzdem erstellt." % pk)
+            if "from_product" in request.GET:
+                pk = request.GET["from_product"]
+                if Produkt.objects.filter(pk=pk).exists():
+                    product = Produkt.objects.get(pk=pk)
+                    obj.linked_product = product
                     obj.save()
                     messages.info(
-                        request, "Produkt #" + str(produkt.pk) + " wurde mit dieser Notiz verknüpft.")
+                        request, "Produkt #%s wurde mit dieser Notiz verknüpft." % pk)
                 else:
                     messages.warning(
-                        request, "Produkt #" + request.GET["from_produkt"] + " konnte nicht gefunden werden. Die Notiz wurde trotzdem erstellt.")
-            if "from_kunde" in request.GET:
-                if Kunde.objects.filter(pk=request.GET["from_kunde"]).exists():
-                    kunde = Kunde.objects.get(pk=request.GET["from_kunde"])
-                    obj.kunde = kunde
+                        request, "Produkt #%s konnte nicht gefunden werden. Die Notiz wurde trotzdem erstellt." % pk)
+            if "from_customer" in request.GET:
+                pk = request.GET["from_customer"]
+                if Kunde.objects.filter(pk=pk).exists():
+                    customer = Kunde.objects.get(pk=pk)
+                    obj.linked_customer = customer
                     obj.save()
-                    messages.info(request, "Kunde #" + str(kunde.pk) +
-                                  " wurde mit dieser Notiz verknüpft.")
+                    messages.info(request, "Kunde #%s wurde mit dieser Notiz verknüpft." % pk)
                 else:
                     messages.warning(
-                        request, "Kunde #" + request.GET["from_kunde"] + " konnte nicht gefunden werden. Die Notiz wurde trotzdem erstellt.")
-            if "from_lieferung" in request.GET:
-                if Lieferung.objects.filter(pk=request.GET["from_lieferung"]).exists():
-                    lieferung = Lieferung.objects.get(
-                        pk=request.GET["from_lieferung"])
-                    obj.lieferung = lieferung
+                        request, "Kunde #%s konnte nicht gefunden werden. Die Notiz wurde trotzdem erstellt." % pk)
+            if "from_delivery" in request.GET:
+                pk = request.GET["from_delivery"]
+                if Lieferung.objects.filter(pk=pk).exists():
+                    delivery = Lieferung.objects.get(pk=pk)
+                    obj.linked_delivery = delivery
                     obj.save()
-                    messages.info(request, "Lieferung #" + str(lieferung.pk) +
-                                  " wurde mit dieser Notiz verknüpft.")
+                    messages.info(request, "Lieferung #%s wurde mit dieser Notiz verknüpft." % pk)
                 else:
                     messages.warning(
-                        request, "Lieferung #" + request.GET["from_lieferung"] + " konnte nicht gefunden werden. Die Notiz wurde trotzdem erstellt.")
+                        request, "Lieferung #%s konnte nicht gefunden werden. Die Notiz wurde trotzdem erstellt." % pk)
 
 
 class ProduktInlineKategorienInline(CustomTabularInline):
@@ -677,7 +672,7 @@ class ProduktAdmin(CustomModelAdmin):
     list_display_links = ('article_number', 'is_on_sale',)
     list_filter = ('lieferant', 'categories', 'lagerbestand')
     search_fields = ['article_number', 'name', 'short_description',
-                     'description', 'note', 'notiz__name', 'notiz__description']
+                     'description', 'note', 'linked_note__name', 'linked_note__description']
 
     readonly_fields = ["linked_note_html"]
 
@@ -687,7 +682,7 @@ class ProduktAdmin(CustomModelAdmin):
 
     save_on_top = True
 
-    list_select_related = ["notiz"]
+    list_select_related = ["linked_note"]
 
     # Actions
 

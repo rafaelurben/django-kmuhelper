@@ -37,7 +37,7 @@ class CustomModel(models.Model):
 
         return urlencode(self.to_dict)
 
-    @admin.display(description=_("🔗 Notiz"), ordering='notiz')
+    @admin.display(description=_("🔗 Notiz"), ordering='linked_note')
     def linked_note_html(self):
         is_app = getattr(self.__class__, "IS_APP_MODEL", False)
         relname = getattr(self.__class__, "NOTE_RELATION", None)
@@ -45,13 +45,13 @@ class CustomModel(models.Model):
         if relname is None:
             return None
 
-        if hasattr(self, "notiz"):
+        if hasattr(self, "linked_note"):
             if is_app:
                 viewname = "admin:kmuhelper_app_todo_change"
             else:
                 viewname = "admin:kmuhelper_notiz_change"
 
-            link = reverse(viewname, kwargs={"object_id": self.notiz.pk})
+            link = reverse(viewname, kwargs={"object_id": self.linked_note.pk})
             text = gettext("Notiz ansehen")
         else:
             if is_app:
@@ -59,7 +59,7 @@ class CustomModel(models.Model):
             else:
                 viewname = "admin:kmuhelper_notiz_add"
 
-            link = reverse(viewname) + '?from_bestellung='+str(self.pk)
+            link = reverse(viewname) + f'?from_{relname}={self.pk}'
             text = gettext("Notiz erstellen")
         return format_html('<a target="_blank" href="{}">{}</a>', link, text)
 

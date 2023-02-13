@@ -55,11 +55,11 @@ class App_AdminBase(CustomModelAdmin):
 
 
 @admin.register(App_ToDo)
-class App_ToDoenAdmin(App_AdminBase, NotizenAdmin):
-    list_editable = ["priority", "erledigt"]
+class App_ToDoAdmin(App_AdminBase, NotizenAdmin):
+    list_editable = ["priority", "done"]
     list_filter = ["priority"]
 
-    ordering = ["-priority", "erstellt_am"]
+    ordering = ["-priority", "created_at"]
 
 
 @admin.register(App_Warenausgang)
@@ -105,7 +105,7 @@ class App_WareneingangenAdmin(App_AdminBase, LieferungenAdmin):
 
 
 modeladmins = [
-    (App_ToDo, App_ToDoenAdmin),
+    (App_ToDo, App_ToDoAdmin),
     (App_Warenausgang, App_WarenausgangAdmin),
     (App_Zahlungseingang, App_ZahlungseingangAdmin),
     (App_Lagerbestand, App_LagerbestandAdmin),
