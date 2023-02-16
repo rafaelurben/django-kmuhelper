@@ -641,19 +641,25 @@ class Bestellung(CustomModel):
     def tracking_link(self):
         return f'https://www.post.ch/swisspost-tracking?formattedParcelCodes={self.tracking_number}' if self.tracking_number else None
 
-    def unstrukturierte_mitteilung(self):
+    def get_unstructured_message(self):
+        "Returns the unstructured message for the QR-Invoice"
+
         if self.payment_receiver.mode == "QRR":
             return str(self.date.strftime("%d.%m.%Y"))
         return _("Referenznummer")+": "+str(self.id)
 
-    def referenznummer(self):
+    def get_qr_reference_number(self):
+        "Returns the formatted reference number for the QR-Invoice"
+
         a = self.pkfill(22)+"0000"
         b = a+str(modulo10rekursiv(a))
         c = b[0:2]+" "+b[2:7]+" "+b[7:12]+" " + \
             b[12:17]+" "+b[17:22]+" "+b[22:27]
         return c
 
-    def rechnungsinformationen(self):
+    def get_qr_billing_information(self):
+        "Returns the billing information for the QR-Invoice "
+
         date = (self.invoice_date or self.date).strftime("%y%m%d")
 
         output = f'//S1/10/{self.pk}/11/{date}'
