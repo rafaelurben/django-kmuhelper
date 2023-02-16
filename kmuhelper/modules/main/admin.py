@@ -232,12 +232,12 @@ class BestellungsAdmin(CustomModelAdmin):
 
     @admin.action(description="Bestellungen von WooCommerce aktualisieren", permissions=["change"])
     def wc_update(self, request, queryset):
-        result = WooCommerce.order_bulk_update(queryset.all())
+        successcount, errorcount = WooCommerce.order_bulk_update(queryset.all())
         messages.success(request, ((
-            '{} Bestellungen' if result[0] != 1 else 'Eine Bestellung') + ' von WooCommerce aktualisiert!').format(result[0]))
-        if result[1]:
+            '{} Bestellungen' if successcount != 1 else 'Eine Bestellung') + ' von WooCommerce aktualisiert!').format(successcount))
+        if errorcount:
             messages.error(request, ('Beim Import von ' + (
-                '{} Bestellungen' if result[1] != 1 else 'einer Bestellung') + ' von WooCommerce ist ein Fehler aufgetreten!').format(result[1]))
+                '{} Bestellungen' if errorcount != 1 else 'einer Bestellung') + ' von WooCommerce ist ein Fehler aufgetreten!').format(errorcount))
 
     actions = [mark_as_paid, wc_update]
 
@@ -369,12 +369,12 @@ class KundenAdmin(CustomModelAdmin):
 
     @admin.action(description="Kunden von WooCommerce aktualisieren", permissions=["change"])
     def wc_update(self, request, queryset):
-        result = WooCommerce.customer_bulk_update(queryset.all())
+        successcount, errorcount = WooCommerce.customer_bulk_update(queryset.all())
         messages.success(request, ((
-            '{} Kunden' if result[0] != 1 else 'Ein Kunde') + ' von WooCommerce aktualisiert!').format(result[0]))
-        if result[1]:
+            '{} Kunden' if successcount != 1 else 'Ein Kunde') + ' von WooCommerce aktualisiert!').format(successcount))
+        if errorcount:
             messages.error(request, ('Beim Import von ' + (
-                '{} Kunden' if result[1] != 1 else 'einem Kunden') + ' von WooCommerce ist ein Fehler aufgetreten!').format(result[1]))
+                '{} Kunden' if errorcount != 1 else 'einem Kunden') + ' von WooCommerce ist ein Fehler aufgetreten!').format(errorcount))
 
     actions = ["wc_update"]
 
@@ -689,12 +689,12 @@ class ProduktAdmin(CustomModelAdmin):
 
     @admin.action(description="Produkte von WooCommerce aktualisieren", permissions=["change"])
     def wc_update(self, request, queryset):
-        result = WooCommerce.product_bulk_update(queryset.all())
+        successcount, errorcount = WooCommerce.product_bulk_update(queryset.all())
         messages.success(request, ((
-            '{} Produkte' if result[0] != 1 else 'Ein Produkt') + ' von WooCommerce aktualisiert!').format(result[0]))
-        if result[1]:
+            '{} Produkte' if successcount != 1 else 'Ein Produkt') + ' von WooCommerce aktualisiert!').format(successcount))
+        if errorcount:
             messages.error(request, ('Beim Import von ' + (
-                '{} Produkten' if result[1] != 1 else 'einem Produkt') + ' von WooCommerce ist ein Fehler aufgetreten!').format(result[1]))
+                '{} Produkten' if errorcount != 1 else 'einem Produkt') + ' von WooCommerce ist ein Fehler aufgetreten!').format(errorcount))
 
     @admin.action(description="Lagerbestand zurücksetzen", permissions=["change"])
     def lagerbestand_zuruecksetzen(self, request, queryset):
@@ -770,12 +770,12 @@ class ProduktkategorienAdmin(CustomModelAdmin):
 
     @admin.action(description="Kategorien von WooCommerce aktualisieren", permissions=["change"])
     def wc_update(self, request, queryset):
-        result = WooCommerce.category_bulk_update(queryset.all())
+        successcount, errorcount = WooCommerce.category_bulk_update(queryset.all())
         messages.success(request, ((
-            '{} Kategorien' if result[0] != 1 else 'Eine Kategorie') + ' von WooCommerce aktualisiert!').format(result[0]))
-        if result[1]:
+            '{} Kategorien' if successcount != 1 else 'Eine Kategorie') + ' von WooCommerce aktualisiert!').format(successcount))
+        if errorcount:
             messages.error(request, ('Beim Import von ' + (
-                '{} Kategorien' if result[1] != 1 else 'einer Kategorie') + ' von WooCommerce ist ein Fehler aufgetreten!').format(result[1]))
+                '{} Kategorien' if errorcount != 1 else 'einer Kategorie') + ' von WooCommerce ist ein Fehler aufgetreten!').format(errorcount))
 
     actions = ["wc_update"]
 

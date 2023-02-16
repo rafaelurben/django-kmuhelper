@@ -70,10 +70,10 @@ class WooCommerce():
         if product["manage_stock"]:
             newproduct.lagerbestand = product["stock_quantity"]
         for category in product["categories"]:
-            tup = Produktkategorie.objects.get_or_create(woocommerceid=category["id"])
-            if tup[1]:
-                cls.category_update(tup[0], api=wcapi)
-            newproduct.categories.add(tup[0])
+            obj, created = Produktkategorie.objects.get_or_create(woocommerceid=category["id"])
+            if created:
+                cls.category_update(obj, api=wcapi)
+            newproduct.categories.add(obj)
         newproduct.save()
         log("Produkt erstellt:", str(newproduct))
         return newproduct
@@ -114,10 +114,10 @@ class WooCommerce():
         product.categories.clear()
         newcategories = []
         for category in newproduct["categories"]:
-            tup = Produktkategorie.objects.get_or_create(woocommerceid=category["id"])
-            if tup[1]:
-                cls.category_update(tup[0], api=wcapi)
-            newcategories.append(tup[0])
+            obj, created = Produktkategorie.objects.get_or_create(woocommerceid=category["id"])
+            if created:
+                cls.category_update(obj, api=wcapi)
+            newcategories.append(obj)
         product.categories.add(*newcategories)
 
         product.save()
@@ -350,11 +350,11 @@ class WooCommerce():
         category.image_url = (
             newcategory["image"]["src"]) if newcategory["image"] else ""
         if newcategory["parent"]:
-            tup = Produktkategorie.objects.get_or_create(
+            obj, created = Produktkategorie.objects.get_or_create(
                 woocommerceid=newcategory["parent"])
-            if tup[1]:
-                cls.category_update(tup[0], api=wcapi)
-            category.parent_category = tup[0]
+            if created:
+                cls.category_update(obj, api=wcapi)
+            category.parent_category = obj
         category.save()
         log("Kategorie aktualisiert:", str(category))
         return category
@@ -414,10 +414,10 @@ class WooCommerce():
             if categorieswithparents:
                 task_process2 = progress.add_task(
                     PREFIX + " [cyan]Kategorieabhängigkeiten verarbeiten...", total=len(categorieswithparents))
-                for tup in categorieswithparents:
-                    tup[0].parent_category = Produktkategorie.objects.get(
-                        woocommerceid=tup[1])
-                    tup[0].save()
+                for cat, parentwcid in categorieswithparents:
+                    cat.parent_category = Produktkategorie.objects.get(
+                        woocommerceid=parentwcid)
+                    cat.save()
                     progress.update(task_process2, advance=1)
                 progress.stop_task(task_process2)
         return len(categorylist)
@@ -486,24 +486,20 @@ class WooCommerce():
         )
         neworder.date = order["date_created_gmt"] + "+00:00"
         if order["customer_id"]:
-            customer = Kunde.objects.get_or_create(
+            customer, created = Kunde.objects.get_or_create(
                 woocommerceid=int(order["customer_id"]))
-            if customer[1]:
-                customer = cls.customer_update(customer[0], api=wcapi)
-            else:
-                customer = customer[0]
+            if created:
+                customer = cls.customer_update(customer, api=wcapi)
 
             neworder.customer = customer
             neworder.addr_shipping_email = customer.addr_shipping_email
             neworder.addr_shipping_phone = customer.addr_shipping_phone
 
         for item in order["line_items"]:
-            product = Produkt.objects.get_or_create(
+            product, created = Produkt.objects.get_or_create(
                 woocommerceid=int(item["product_id"]))
-            if product[1]:
-                product = cls.product_update(product[0], api=wcapi)
-            else:
-                product = product[0]
+            if created:
+                product = cls.product_update(product, api=wcapi)
 
             neworder.products.add(
                 product, 
