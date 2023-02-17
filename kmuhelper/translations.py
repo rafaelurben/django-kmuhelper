@@ -54,7 +54,7 @@ def autotranslate_quantity_description(quantity_description, quantity=1):
             )
     return quantity_description
 
-def autotranslate_kosten_name(name):
+def autotranslate_fee_name(name):
     match name:
         case "Versandkosten":
             return "[:de]Versandkosten[:fr]Frais d'envoi[:it]Spese di spedizione[:en]Delivery costs[:]"

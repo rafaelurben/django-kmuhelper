@@ -6,7 +6,7 @@ from rich.progress import Progress
 from woocommerce import API as WCAPI
 
 from kmuhelper import settings, constants
-from kmuhelper.modules.main.models import Produkt, Kunde, Produktkategorie, Bestellung, Kosten
+from kmuhelper.modules.main.models import Product, Customer, ProductCategory, Order, Fee
 from kmuhelper.utils import runden
 
 
@@ -51,7 +51,7 @@ class WooCommerce():
         except ValueError:
             selling_price = 0.0
 
-        newproduct = Produkt.objects.create(
+        newproduct = Product.objects.create(
             woocommerceid=product["id"],
             article_number=product["sku"],
             name=preparestring(product["name"]),
@@ -68,9 +68,9 @@ class WooCommerce():
                           if product["sale_price"] else None)
         )
         if product["manage_stock"]:
-            newproduct.lagerbestand = product["stock_quantity"]
+            newproduct.stock_current = product["stock_quantity"]
         for category in product["categories"]:
-            obj, created = Produktkategorie.objects.get_or_create(woocommerceid=category["id"])
+            obj, created = ProductCategory.objects.get_or_create(woocommerceid=category["id"])
             if created:
                 cls.category_update(obj, api=wcapi)
             newproduct.categories.add(obj)
@@ -113,7 +113,7 @@ class WooCommerce():
         product.categories.clear()
         newcategories = []
         for category in newproduct["categories"]:
-            obj, created = Produktkategorie.objects.get_or_create(woocommerceid=category["id"])
+            obj, created = ProductCategory.objects.get_or_create(woocommerceid=category["id"])
             if created:
                 cls.category_update(obj, api=wcapi)
             newcategories.append(obj)
@@ -132,7 +132,7 @@ class WooCommerce():
             task_prepare = progress.add_task(
                 PREFIX + " [orange_red1]Preparing product download...", total=1)
 
-            excludeids = ",".join([obj.woocommerceid for obj in Produkt.objects.all().exclude(
+            excludeids = ",".join([obj.woocommerceid for obj in Product.objects.all().exclude(
                 woocommerceid=0)])
             productlist = []
 
@@ -187,7 +187,7 @@ class WooCommerce():
     @classmethod
     def customer_create(cls, customer):
         """Create a new customer from WooCommerce data"""
-        newcustomer = Kunde.objects.create(
+        newcustomer = Customer.objects.create(
             woocommerceid=customer["id"],
 
             email=customer["email"],
@@ -279,7 +279,7 @@ class WooCommerce():
             task_prepare = progress.add_task(
                 PREFIX + " [orange_red1]Preparing customer download...", total=1)
 
-            excludeids = str([obj.woocommerceid for obj in Kunde.objects.all().exclude(
+            excludeids = str([obj.woocommerceid for obj in Customer.objects.all().exclude(
                 woocommerceid=0)])[1:-1]
             customerlist = []
 
@@ -349,7 +349,7 @@ class WooCommerce():
         category.image_url = (
             newcategory["image"]["src"]) if newcategory["image"] else ""
         if newcategory["parent"]:
-            obj, created = Produktkategorie.objects.get_or_create(
+            obj, created = ProductCategory.objects.get_or_create(
                 woocommerceid=newcategory["parent"])
             if created:
                 cls.category_update(obj, api=wcapi)
@@ -367,7 +367,7 @@ class WooCommerce():
             task_prepare = progress.add_task(
                 PREFIX + " [orange_red1]Preparing category download...", total=1)
 
-            excludeids = str([obj.woocommerceid for obj in Produktkategorie.objects.all().exclude(
+            excludeids = str([obj.woocommerceid for obj in ProductCategory.objects.all().exclude(
                 woocommerceid=0)])[1:-1]
             categorylist = []
 
@@ -396,7 +396,7 @@ class WooCommerce():
                 task_process = progress.add_task(
                     PREFIX + " [cyan]Processing categories...", total=len(categorylist))
                 for category in categorylist:
-                    newcategory = Produktkategorie.objects.create(
+                    newcategory = ProductCategory.objects.create(
                         name=preparestring(category["name"]),
                         description=preparestring(category["description"]),
                         image_url=(category["image"]["src"]
@@ -414,7 +414,7 @@ class WooCommerce():
                 task_process2 = progress.add_task(
                     PREFIX + " [cyan]Processing category dependencies...", total=len(categorieswithparents))
                 for cat, parentwcid in categorieswithparents:
-                    cat.parent_category = Produktkategorie.objects.get(
+                    cat.parent_category = ProductCategory.objects.get(
                         woocommerceid=parentwcid)
                     cat.save()
                     progress.update(task_process2, advance=1)
@@ -446,7 +446,7 @@ class WooCommerce():
         """Create a new order from WooCommerce data"""
         wcapi = api or cls.get_api()
 
-        neworder = Bestellung.objects.create(
+        neworder = Order.objects.create(
             woocommerceid=order["id"],
 
             status=order["status"],
@@ -485,7 +485,7 @@ class WooCommerce():
         )
         neworder.date = order["date_created_gmt"] + "+00:00"
         if order["customer_id"]:
-            customer, created = Kunde.objects.get_or_create(
+            customer, created = Customer.objects.get_or_create(
                 woocommerceid=int(order["customer_id"]))
             if created:
                 customer = cls.customer_update(customer, api=wcapi)
@@ -495,7 +495,7 @@ class WooCommerce():
             neworder.addr_shipping_phone = customer.addr_shipping_phone
 
         for item in order["line_items"]:
-            product, created = Produkt.objects.get_or_create(
+            product, created = Product.objects.get_or_create(
                 woocommerceid=int(item["product_id"]))
             if created:
                 product = cls.product_update(product, api=wcapi)
@@ -508,8 +508,8 @@ class WooCommerce():
                 }
             )
         for item in order["shipping_lines"]:
-            neworder.kosten.through.objects.create(
-                bestellung=neworder,
+            neworder.fees.through.objects.create(
+                order=neworder,
                 name=item['method_title'],
                 price=float(item["total"]),
                 vat_rate=(constants.VAT_RATE_DEFAULT if float(item["total_tax"]) > 0 else 0)
@@ -575,7 +575,7 @@ class WooCommerce():
             task_prepare = progress.add_task(
                 PREFIX + " [orange_red1]Preparing order download...", total=1)
 
-            excludeids = str([obj.woocommerceid for obj in Bestellung.objects.all().exclude(
+            excludeids = str([obj.woocommerceid for obj in Order.objects.all().exclude(
                 woocommerceid=0)])[1:-1]
             orderlist = []
 

@@ -9,7 +9,7 @@ from kmuhelper.modules.settings.forms import SettingsForm
 _ = gettext_lazy
 
 @login_required(login_url=reverse_lazy('admin:login'))
-@permission_required('kmuhelper.change_einstellung')
+@permission_required('kmuhelper.change_setting')
 def settings_form(request):
     if request.method == 'POST':
         form = SettingsForm(request.POST)

@@ -49,7 +49,7 @@ class CustomModel(models.Model):
             if is_app:
                 viewname = "admin:kmuhelper_app_todo_change"
             else:
-                viewname = "admin:kmuhelper_notiz_change"
+                viewname = "admin:kmuhelper_note_change"
 
             link = reverse(viewname, kwargs={"object_id": self.linked_note.pk})
             text = gettext("Notiz ansehen")
@@ -57,7 +57,7 @@ class CustomModel(models.Model):
             if is_app:
                 viewname = "admin:kmuhelper_app_todo_add"
             else:
-                viewname = "admin:kmuhelper_notiz_add"
+                viewname = "admin:kmuhelper_note_add"
 
             link = reverse(viewname) + f'?from_{relname}={self.pk}'
             text = gettext("Notiz erstellen")

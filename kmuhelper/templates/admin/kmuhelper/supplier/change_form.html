@@ -1,0 +1,8 @@
+{% extends 'admin/kmuhelper/change_form.html' %}
+
+{% block object-tools-items %}
+    {% if change and perms.kmuhelper.change_product %}
+        <li><a href="{% url 'admin:kmuhelper_supplier_assign' object_id %}">Zuordnen</a></li>
+    {% endif %}
+    {{ block.super }}
+{% endblock %}

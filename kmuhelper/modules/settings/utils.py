@@ -3,7 +3,7 @@
 from django.conf import settings as djangoconfig
 from django.core.exceptions import ObjectDoesNotExist
 
-from kmuhelper.modules.settings.models import Einstellung, Geheime_Einstellung
+from kmuhelper.modules.settings.models import Setting, SettingHidden
 from kmuhelper.modules.settings.constants import SETTINGS, SECRET_SETTINGS
 
 DEBUG = djangoconfig.DEBUG
@@ -14,11 +14,11 @@ def setup_settings():
     """Setup the database settings"""
 
     for key, value in SETTINGS.items():
-        Einstellung.objects.update_or_create(
+        Setting.objects.update_or_create(
             id=key, defaults={'typ': value['typ']})
 
     for key, value in SECRET_SETTINGS.items():
-        Geheime_Einstellung.objects.update_or_create(
+        SettingHidden.objects.update_or_create(
             id=key, defaults={'typ': value['typ']})
 
 
@@ -39,10 +39,10 @@ def has_file_setting(name):
 
 
 def get_db_setting(settingid, default=None):
-    """Get a setting from the 'Einstellung' model"""
+    """Get a setting from the 'Setting' model"""
 
     try:
-        setting = Einstellung.objects.get(id=settingid)
+        setting = Setting.objects.get(id=settingid)
         if setting.typ in ['char', 'text'] and setting.content == "":
             return default
         return setting.content
@@ -51,10 +51,10 @@ def get_db_setting(settingid, default=None):
 
 
 def get_secret_db_setting(settingid, default=None):
-    """Get a setting from the 'Geheime_Einstellung' model"""
+    """Get a setting from the 'SettingHidden' model"""
 
     try:
-        return Geheime_Einstellung.objects.get(id=settingid).content
+        return SettingHidden.objects.get(id=settingid).content
     except ObjectDoesNotExist:
         return default
 
@@ -65,7 +65,7 @@ def set_db_setting(settingid, content):
     """Update a database setting"""
 
     try:
-        obj = Einstellung.objects.get(id=settingid)
+        obj = Setting.objects.get(id=settingid)
         obj.content = content
         obj.save()
         return True
@@ -77,7 +77,7 @@ def set_secret_db_setting(settingid, content):
     """Update a secret database setting"""
 
     try:
-        obj = Geheime_Einstellung.objects.get(id=settingid)
+        obj = SettingHidden.objects.get(id=settingid)
         obj.content = content
         obj.save()
         return True

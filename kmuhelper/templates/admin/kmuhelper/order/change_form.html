@@ -40,16 +40,16 @@
                 <b>PDF generieren</b>
                 <hr>
                 <i>Rechnung</i>
-                <a href="{% url 'admin:kmuhelper_bestellung_pdf' object_id %}?preset=invoice" target="_blank" onclick="return openURL(this.href, false);" rel="noopener">Digital</a>
-                <a href="{% url 'admin:kmuhelper_bestellung_pdf' object_id %}?preset=invoice&print" target="_blank" onclick="return openURL(this.href, true);" rel="noopener">Druck</a>
+                <a href="{% url 'admin:kmuhelper_order_pdf' object_id %}?preset=invoice" target="_blank" onclick="return openURL(this.href, false);" rel="noopener">Digital</a>
+                <a href="{% url 'admin:kmuhelper_order_pdf' object_id %}?preset=invoice&print" target="_blank" onclick="return openURL(this.href, true);" rel="noopener">Druck</a>
                 <hr>
                 <i>Zahlungserinnerung</i>
-                <a href="{% url 'admin:kmuhelper_bestellung_pdf' object_id %}?preset=payment-reminder" target="_blank" onclick="return openURL(this.href, false);" rel="noopener">Digital</a>
-                <a href="{% url 'admin:kmuhelper_bestellung_pdf' object_id %}?preset=payment-reminder&print" target="_blank" onclick="return openURL(this.href, true);" rel="noopener">Druck</a>
+                <a href="{% url 'admin:kmuhelper_order_pdf' object_id %}?preset=payment-reminder" target="_blank" onclick="return openURL(this.href, false);" rel="noopener">Digital</a>
+                <a href="{% url 'admin:kmuhelper_order_pdf' object_id %}?preset=payment-reminder&print" target="_blank" onclick="return openURL(this.href, true);" rel="noopener">Druck</a>
                 <hr>
                 <i>Mehr</i>
-                <a href="{% url 'admin:kmuhelper_bestellung_pdf' object_id %}?preset=delivery-note" target="_blank" rel="noopener">Lieferschein</a>
-                <a href="{% url 'admin:kmuhelper_bestellung_pdf_form' object_id %}">Benutzerdefiniert</a>
+                <a href="{% url 'admin:kmuhelper_order_pdf' object_id %}?preset=delivery-note" target="_blank" rel="noopener">Lieferschein</a>
+                <a href="{% url 'admin:kmuhelper_order_pdf_form' object_id %}">Benutzerdefiniert</a>
             </div>
         </li>
 
@@ -74,8 +74,8 @@
                             {% if original.email_link_invoice and perms.kmuhelper.view_email %}
                                 <a href="{% url 'admin:kmuhelper_email_change' original.email_link_invoice.pk %}">Rechnungsemail ansehen</a>
                             {% endif %}
-                            {% if perms.kmuhelper.add_email and perms.kmuhelper.change_bestellung %}
-                                <a href="{% url 'admin:kmuhelper_bestellung_email_invoice' object_id %}">Rechnungsemail generieren</a>
+                            {% if perms.kmuhelper.add_email and perms.kmuhelper.change_order %}
+                                <a href="{% url 'admin:kmuhelper_order_email_invoice' object_id %}">Rechnungsemail generieren</a>
                             {% endif %}
                         {% else %}
                             <a href="#" class="disabled">Rechnungsemail</a>
@@ -85,8 +85,8 @@
                             {% if original.email_link_shipped and perms.kmuhelper.view_email %}
                                 <a href="{% url 'admin:kmuhelper_email_change' original.email_link_shipped.pk %}">Lieferungsemail ansehen</a>
                             {% endif %}
-                            {% if perms.kmuhelper.add_email and perms.kmuhelper.change_bestellung %}
-                                <a href="{% url 'admin:kmuhelper_bestellung_email_shipped' object_id %}">Lieferungsemail generieren</a>
+                            {% if perms.kmuhelper.add_email and perms.kmuhelper.change_order %}
+                                <a href="{% url 'admin:kmuhelper_order_email_shipped' object_id %}">Lieferungsemail generieren</a>
                             {% endif %}
                         {% else %}
                             <a href="#" class="disabled">Lieferungsemail</a>
@@ -97,7 +97,7 @@
             {% endif %}
         {% endif %}
 
-        {% if perms.kmuhelper.change_bestellung and original.woocommerceid %}
+        {% if perms.kmuhelper.change_order and original.woocommerceid %}
             <li>
                 <abbr title="Achtung: Hier abgeänderte Werte werden überschrieben, sofern diese in WooCommerce gespeichert werden können!">
                     <a href="{% url 'kmuhelper:wc-update-order' object_id %}">Von WooCommerce importieren und ersetzen</a>
@@ -105,10 +105,10 @@
             </li>
         {% endif %}
 
-        {% if perms.kmuhelper.add_lieferung and original.is_shipped %}
+        {% if perms.kmuhelper.add_supply and original.is_shipped %}
             <li>
                 <attr title="Die Produkte dieser Bestellung zu einer Lieferung kopieren">
-                    <a href="{% url 'admin:kmuhelper_bestellung_copy_to_delivery' object_id %}" rel="noopener">Rücksendung</a>
+                    <a href="{% url 'admin:kmuhelper_order_copy_to_supply' object_id %}" rel="noopener">Rücksendung</a>
                 </attr>
             </li>
         {% endif %}

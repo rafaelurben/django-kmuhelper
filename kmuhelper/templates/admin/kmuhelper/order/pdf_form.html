@@ -7,8 +7,8 @@
 {% block breadcrumbs %}
     <div id="breadcrumbs" class="breadcrumbs">
         <a href="{% url 'admin:app_list' app_label='kmuhelper' %}">KMUHelper Admin</a>
-        &rsaquo; <a href="{% url 'admin:kmuhelper_bestellung_changelist' %}">Bestellungen</a>
-        &rsaquo; <a href="{% url 'admin:kmuhelper_bestellung_change' object_id=original.pk %}">{{ original }}</a>
+        &rsaquo; <a href="{% url 'admin:kmuhelper_order_changelist' %}">Bestellungen</a>
+        &rsaquo; <a href="{% url 'admin:kmuhelper_order_change' object_id=original.pk %}">{{ original }}</a>
         &rsaquo; PDF generieren
     </div>
 {% endblock %}

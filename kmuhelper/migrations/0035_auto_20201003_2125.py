@@ -7,7 +7,7 @@ import kmuhelper.modules.main.models
 
 
 def resave_bestellungskosten(apps, schema_editor):
-    for k in kmuhelper.modules.main.models.Bestellungskosten.objects.all():
+    for k in kmuhelper.modules.main.models.OrderFees.objects.all():
         k.save()
 
 
@@ -33,5 +33,5 @@ class Migration(migrations.Migration):
             name='produktpreis',
             field=models.FloatField(default=0.0, verbose_name='Produktpreis (exkl. MwSt)'),
         ),
-        migrations.RunPython(resave_bestellungskosten),
+        migrations.RunPython(resave_bestellungskosten, elidable=True),
     ]

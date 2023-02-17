@@ -1,6 +1,6 @@
 from django import forms
 
-from kmuhelper.modules.settings.models import Einstellung
+from kmuhelper.modules.settings.models import Setting
 from kmuhelper.modules.settings.constants import SETTINGS, SETTINGS_FIELDSETS
 from kmuhelper.modules.settings.utils import get_db_setting, set_db_setting
 
@@ -10,7 +10,7 @@ class SettingsForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        for obj in Einstellung.objects.all():
+        for obj in Setting.objects.all():
             if obj.id in SETTINGS:
                 self.fields[obj.id] = obj.get_field()
 

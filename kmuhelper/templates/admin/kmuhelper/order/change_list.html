@@ -18,7 +18,7 @@
 
     {% load kmuhelper_tags %}
     {% kmuhelper_woocommerce_connected as woocommerce_is_connected %}
-    {% if woocommerce_is_connected and perms.kmuhelper.add_bestellung %}
+    {% if woocommerce_is_connected and perms.kmuhelper.add_order %}
         <li>
             <a onclick="laden();" href="{% url 'kmuhelper:wc-import-orders' %}" class="addlink">Bestellungen von WooCommerce importieren</a>
         </li>

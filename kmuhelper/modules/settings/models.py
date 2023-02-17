@@ -12,7 +12,7 @@ from kmuhelper.modules.settings.constants import SETTINGS
 
 _ = gettext_lazy
 
-EINSTELLUNGSTYPEN = [
+SETTINGTYPES = [
     ("char", _("Text")),
     ("text", _("Mehrzeiliger Text")),
     ("bool", _("Wahrheitswert")),
@@ -24,8 +24,8 @@ EINSTELLUNGSTYPEN = [
 ]
 
 
-class SettingsBase(CustomModel):
-    """Base model for 'Einstellung' and 'Geheime_Einstellung'"""
+class SettingBase(CustomModel):
+    """Base model for 'Setting' and 'SettingHidden'"""
 
     id = models.CharField(
         verbose_name=_("ID"),
@@ -36,7 +36,7 @@ class SettingsBase(CustomModel):
         verbose_name=_("Typ"),
         max_length=5,
         default="char",
-        choices=EINSTELLUNGSTYPEN,
+        choices=SETTINGTYPES,
     )
 
     content_char = models.CharField(
@@ -107,7 +107,7 @@ class SettingsBase(CustomModel):
     objects = models.Manager()
 
 
-class Einstellung(SettingsBase):
+class Setting(SettingBase):
     """Model representing an editable setting"""
 
     @property
@@ -165,18 +165,10 @@ class Einstellung(SettingsBase):
     admin_icon = "fas fa-cog"
 
 
-class Geheime_Einstellung(SettingsBase):
+class SettingHidden(SettingBase):
     """Model representing a hidden setting
 
     Hidden settings should only be edited through code and are not
     meant to be seen by the user.
 
     Example usage: WooCommerce authentication data"""
-
-    @admin.display(description=_("Geheime Einstellung"))
-    def __str__(self):
-        return str(self.id)
-
-    class Meta:
-        verbose_name = _("Geheime Einstellung")
-        verbose_name_plural = _("Geheime Einstellungen")

@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.db import models
 from django.utils.translation import gettext_lazy, gettext
 
-from kmuhelper.modules.main.models import Notiz, Bestellung, Produkt, Lieferung
+from kmuhelper.modules.main.models import Note, Order, Product, Supply
 
 _ = gettext_lazy
 
@@ -14,7 +14,7 @@ class App_ToDoManager(models.Manager):
         return super().get_queryset().filter(done=False)
 
 
-class App_ToDo(Notiz):
+class App_ToDo(Note):
     IS_APP_MODEL = True
 
     objects = App_ToDoManager()
@@ -33,7 +33,7 @@ class App_WarenausgangManager(models.Manager):
         return super().get_queryset().filter(is_shipped=False)
 
 
-class App_Warenausgang(Bestellung):
+class App_Warenausgang(Order):
     IS_APP_MODEL = True
 
     objects = App_WarenausgangManager()
@@ -53,7 +53,7 @@ class App_ZahlungseingangManager(models.Manager):
         return super().get_queryset().filter(is_paid=False)
 
 
-class App_Zahlungseingang(Bestellung):
+class App_Zahlungseingang(Order):
     IS_APP_MODEL = True
 
     objects = App_ZahlungseingangManager()
@@ -68,7 +68,7 @@ class App_Zahlungseingang(Bestellung):
     admin_icon = "fas fa-hand-holding-dollar"
 
 
-class App_Lagerbestand(Produkt):
+class App_Lagerbestand(Product):
     IS_APP_MODEL = True
 
     @admin.display(description=_("Preis"))
@@ -93,7 +93,7 @@ class App_WareneingangsManager(models.Manager):
         return super().get_queryset().filter(is_added_to_stock=False)
 
 
-class App_Wareneingang(Lieferung):
+class App_Wareneingang(Supply):
     IS_APP_MODEL = True
 
     objects = App_WareneingangsManager()

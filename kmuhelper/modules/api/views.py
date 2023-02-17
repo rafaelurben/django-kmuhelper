@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from kmuhelper.utils import package_version, python_version, formatprice
-from kmuhelper.modules.main.models import Bestellung
+from kmuhelper.modules.main.models import Order
 from kmuhelper.modules.api.constants import ENDPOINT_NOT_FOUND, SUCCESSFULLY_CHANGED
 from kmuhelper.modules.api.decorators import require_object, api_read, api_write, api_readwrite
 
@@ -40,9 +40,9 @@ def versions(request):
 def orders_unpaid(request):
     """Get sums of currently unpaid orders."""
 
-    sum_unsent = Bestellung.objects.filter(is_paid=False, is_shipped=False).aggregate(
+    sum_unsent = Order.objects.filter(is_paid=False, is_shipped=False).aggregate(
         models.Sum('cached_sum'))["cached_sum__sum"] or 0
-    sum_sent = Bestellung.objects.filter(is_paid=False, is_shipped=True).aggregate(
+    sum_sent = Order.objects.filter(is_paid=False, is_shipped=True).aggregate(
         models.Sum('cached_sum'))["cached_sum__sum"] or 0
 
     context = {
@@ -57,7 +57,7 @@ def orders_unpaid(request):
 
 @csrf_exempt
 @api_write(['kmuhelper.change_order'])
-@require_object(Bestellung)
+@require_object(Order)
 def orders_set_paid(request, obj):
     """Set an order as paid"""
 

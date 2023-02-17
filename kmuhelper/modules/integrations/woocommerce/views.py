@@ -15,7 +15,7 @@ from django.utils.translation import gettext_lazy, gettext, ngettext
 
 from kmuhelper import settings
 from kmuhelper.decorators import require_object
-from kmuhelper.modules.main.models import Produkt, Kunde, Produktkategorie, Bestellung
+from kmuhelper.modules.main.models import Product, Customer, ProductCategory, Order
 from kmuhelper.modules.integrations.woocommerce.api import WooCommerce
 from kmuhelper.modules.integrations.woocommerce.utils import is_connected
 from kmuhelper.utils import render_error
@@ -76,7 +76,7 @@ def wc_auth_end(request):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.change_einstellung")
+@permission_required("kmuhelper.change_setting")
 def wc_auth_start(request):
     shopurl = settings.get_db_setting("wc-url", "Bestätigt")
 
@@ -99,7 +99,7 @@ def wc_auth_start(request):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.add_produkt")
+@permission_required("kmuhelper.add_product")
 def wc_import_products(request):
     if not is_connected():
         messages.error(
@@ -111,11 +111,11 @@ def wc_import_products(request):
             '%d new products have been imported from WooCommerce!',
             count
         ))
-    return redirect(reverse("admin:kmuhelper_produkt_changelist"))
+    return redirect(reverse("admin:kmuhelper_product_changelist"))
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.add_kunde")
+@permission_required("kmuhelper.add_customer")
 def wc_import_customers(request):
     if not is_connected():
         messages.error(
@@ -127,11 +127,11 @@ def wc_import_customers(request):
             '%d new customers have been imported from WooCommerce!',
             count
         ))
-    return redirect(reverse("admin:kmuhelper_kunde_changelist"))
+    return redirect(reverse("admin:kmuhelper_customer_changelist"))
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.add_kategorie")
+@permission_required("kmuhelper.add_productcategory")
 def wc_import_categories(request):
     if not is_connected():
         messages.error(
@@ -143,11 +143,11 @@ def wc_import_categories(request):
             '%d new product categories have been imported from WooCommerce!',
             count
         ))
-    return redirect(reverse("admin:kmuhelper_kategorie_changelist"))
+    return redirect(reverse("admin:kmuhelper_productcategory_changelist"))
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.add_bestellung")
+@permission_required("kmuhelper.add_order")
 def wc_import_orders(request):
     if not is_connected():
         messages.error(
@@ -159,12 +159,12 @@ def wc_import_orders(request):
             '%d new orders have been imported from WooCommerce!',
             count
         ))
-    return redirect(reverse("admin:kmuhelper_bestellung_changelist"))
+    return redirect(reverse("admin:kmuhelper_order_changelist"))
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.change_produkt")
-@require_object(Produkt)
+@permission_required("kmuhelper.change_product")
+@require_object(Product)
 def wc_update_product(request, obj):
     if not is_connected():
         messages.error(
@@ -172,12 +172,12 @@ def wc_update_product(request, obj):
     else:
         product = WooCommerce.product_update(obj)
         messages.success(request, gettext("Product '%s' updated!") % str(product))
-    return redirect(reverse("admin:kmuhelper_produkt_change", args=[obj.pk]))
+    return redirect(reverse("admin:kmuhelper_product_change", args=[obj.pk]))
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.change_kunde")
-@require_object(Kunde)
+@permission_required("kmuhelper.change_customer")
+@require_object(Customer)
 def wc_update_customer(request, obj):
     if not is_connected():
         messages.error(
@@ -185,12 +185,12 @@ def wc_update_customer(request, obj):
     else:
         customer = WooCommerce.customer_update(obj)
         messages.success(request, gettext("Customer '%s' updated!") % str(customer))
-    return redirect(reverse("admin:kmuhelper_kunde_change", args=[obj.pk]))
+    return redirect(reverse("admin:kmuhelper_customer_change", args=[obj.pk]))
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.change_kategorie")
-@require_object(Produktkategorie)
+@permission_required("kmuhelper.change_productcategory")
+@require_object(ProductCategory)
 def wc_update_category(request, obj):
     if not is_connected():
         messages.error(
@@ -198,12 +198,12 @@ def wc_update_category(request, obj):
     else:
         category = WooCommerce.category_update(obj)
         messages.success(request, gettext("Product category '%s' updated!") % str(category))
-    return redirect(reverse("admin:kmuhelper_kategorie_change", args=[obj.pk]))
+    return redirect(reverse("admin:kmuhelper_productcategory_change", args=[obj.pk]))
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.change_bestellung")
-@require_object(Bestellung)
+@permission_required("kmuhelper.change_order")
+@require_object(Order)
 def wc_update_order(request, obj):
     if not is_connected():
         messages.error(
@@ -211,7 +211,7 @@ def wc_update_order(request, obj):
     else:
         order = WooCommerce.order_update(obj)
         messages.success(request, gettext("Order '%s' updated!") % str(order))
-    return redirect(reverse("admin:kmuhelper_bestellung_change", args=[obj.pk]))
+    return redirect(reverse("admin:kmuhelper_order_change", args=[obj.pk]))
 
 
 @csrf_exempt
@@ -247,36 +247,36 @@ def wc_webhooks(request):
     topic = request.headers["x-wc-webhook-topic"]
     obj = json.loads(request.body)
     if topic in ("product.updated", "product.created"):
-        if Produkt.objects.filter(woocommerceid=obj["id"]).exists():
+        if Product.objects.filter(woocommerceid=obj["id"]).exists():
             WooCommerce.product_update(
-                Produkt.objects.get(woocommerceid=obj["id"]), obj)
+                Product.objects.get(woocommerceid=obj["id"]), obj)
         else:
             WooCommerce.product_create(obj)
     elif topic == "product.deleted":
-        if Produkt.objects.filter(woocommerceid=obj["id"]).exists():
-            product = Produkt.objects.get(woocommerceid=obj["id"])
+        if Product.objects.filter(woocommerceid=obj["id"]).exists():
+            product = Product.objects.get(woocommerceid=obj["id"])
             product.woocommerceid = 0
             product.save()
     elif topic in ("customer.updated", "customer.created"):
-        if Kunde.objects.filter(woocommerceid=obj["id"]).exists():
+        if Customer.objects.filter(woocommerceid=obj["id"]).exists():
             WooCommerce.customer_update(
-                Kunde.objects.get(woocommerceid=obj["id"]), obj)
+                Customer.objects.get(woocommerceid=obj["id"]), obj)
         else:
             WooCommerce.customer_create(obj)
     elif topic == "customer.deleted":
-        if Kunde.objects.filter(woocommerceid=obj["id"]).exists():
-            customer = Kunde.objects.get(woocommerceid=obj["id"])
+        if Customer.objects.filter(woocommerceid=obj["id"]).exists():
+            customer = Customer.objects.get(woocommerceid=obj["id"])
             customer.woocommerceid = 0
             customer.save()
     elif topic in ("order.updated", "order.created"):
-        if Bestellung.objects.filter(woocommerceid=obj["id"]).exists():
+        if Order.objects.filter(woocommerceid=obj["id"]).exists():
             WooCommerce.order_update(
-                Bestellung.objects.get(woocommerceid=obj["id"]), obj)
+                Order.objects.get(woocommerceid=obj["id"]), obj)
         else:
             WooCommerce.order_create(obj)
     elif topic == "order.deleted":
-        if Bestellung.objects.filter(woocommerceid=obj["id"]).exists():
-            order = Bestellung.objects.get(woocommerceid=obj["id"])
+        if Order.objects.filter(woocommerceid=obj["id"]).exists():
+            order = Order.objects.get(woocommerceid=obj["id"])
             order.woocommerceid = 0
             order.save()
     else:

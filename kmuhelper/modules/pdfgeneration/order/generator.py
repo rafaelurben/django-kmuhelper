@@ -3,7 +3,7 @@
 from datetime import datetime
 
 from kmuhelper import settings
-from kmuhelper.translations import autotranslate_quantity_description, autotranslate_kosten_name, langselect
+from kmuhelper.translations import autotranslate_quantity_description, autotranslate_fee_name, langselect
 from kmuhelper.utils import formatprice
 from kmuhelper.modules.pdfgeneration.base import PDFGenerator
 from kmuhelper.modules.pdfgeneration.swiss_qr_invoice import QRInvoiceFlowable
@@ -38,14 +38,14 @@ class _PDFOrderPriceTable(Table):
 
         h_products = 0
 
-        for bp in order.products.through.objects.filter(bestellung=order):
+        for bp in order.products.through.objects.filter(order=order):
             subtotal_without_discount = bp.calc_subtotal_without_discount()
             data.append((
-                bp.produkt.article_number,
-                Paragraph(langselect(bp.produkt.name, lang)),
+                bp.product.article_number,
+                Paragraph(langselect(bp.product.name, lang)),
                 str(bp.quantity),
                 langselect(autotranslate_quantity_description(
-                    bp.produkt.quantity_description, bp.quantity), lang),
+                    bp.product.quantity_description, bp.quantity), lang),
                 formatprice(bp.product_price),
                 formatprice(subtotal_without_discount)
             ))
@@ -75,10 +75,10 @@ class _PDFOrderPriceTable(Table):
 
         h_costs = 0
 
-        for bk in order.kosten.through.objects.filter(bestellung=order):
+        for bk in order.fees.through.objects.filter(order=order):
             data.append((
                 "",
-                Paragraph(langselect(autotranslate_kosten_name(bk.name), lang)),
+                Paragraph(langselect(autotranslate_fee_name(bk.name), lang)),
                 "",
                 "",
                 "",
@@ -208,13 +208,13 @@ class _PDFOrderProductTable(Table):
 
         # Products
 
-        for bp in order.products.through.objects.filter(bestellung=order):
+        for bp in order.products.through.objects.filter(order=order):
             data.append((
-                bp.produkt.article_number,
-                Paragraph(langselect(bp.produkt.name, lang)),
+                bp.product.article_number,
+                Paragraph(langselect(bp.product.name, lang)),
                 str(bp.quantity),
                 langselect(autotranslate_quantity_description(
-                    bp.produkt.quantity_description, bp.quantity), lang),
+                    bp.product.quantity_description, bp.quantity), lang),
             ))
             if bp.note:
                 data.append((

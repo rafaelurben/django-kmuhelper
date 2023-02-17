@@ -4,8 +4,8 @@ from kmuhelper.modules.settings import models
 from kmuhelper.overrides import CustomModelAdmin
 
 
-@admin.register(models.Einstellung)
-class EinstellungenAdmin(CustomModelAdmin):
+@admin.register(models.Setting)
+class SettingAdmin(CustomModelAdmin):
     list_display = ('name', 'content_display')
     ordering = ('id',)
 
@@ -27,5 +27,5 @@ class EinstellungenAdmin(CustomModelAdmin):
 #
 
 modeladmins = [
-    (models.Einstellung, EinstellungenAdmin),
+    (models.Setting, SettingAdmin),
 ]

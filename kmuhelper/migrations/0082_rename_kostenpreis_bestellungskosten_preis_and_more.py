@@ -124,5 +124,5 @@ class Migration(migrations.Migration):
                 verbose_name="Mehrwertsteuersatz",
             ),
         ),
-        migrations.RunPython(migrate_bestellungskosten, migrations.RunPython.noop),
+        migrations.RunPython(migrate_bestellungskosten, migrations.RunPython.noop, elidable=True),
     ]

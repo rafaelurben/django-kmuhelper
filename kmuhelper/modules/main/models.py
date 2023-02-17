@@ -34,14 +34,14 @@ def default_delivery_title():
 
 
 def default_payment_recipient():
-    if Zahlungsempfaenger.objects.exists():
-        return Zahlungsempfaenger.objects.first().pk
+    if PaymentReceiver.objects.exists():
+        return PaymentReceiver.objects.first().pk
     return None
 
 
 def default_contact_person():
-    if Ansprechpartner.objects.exists():
-        return Ansprechpartner.objects.first().pk
+    if ContactPerson.objects.exists():
+        return ContactPerson.objects.first().pk
     return None
 
 
@@ -55,7 +55,7 @@ def default_payment_conditions():
 #############
 
 
-class Ansprechpartner(CustomModel):
+class ContactPerson(CustomModel):
     """Model representing a contact person"""
 
     name = models.CharField(
@@ -86,16 +86,17 @@ class Ansprechpartner(CustomModel):
     admin_icon = "fas fa-user-tie"
 
 
-class Bestellungskosten(CustomModel):
-    """Model representing costs for an order (e.g. shipping costs)"""
+class OrderFee(CustomModel):
+    """Model representing fees for an order (e.g. shipping costs)"""
 
     # Links to other models
-    bestellung = models.ForeignKey(
-        to='Bestellung',
+    order = models.ForeignKey(
+        to='Order',
         on_delete=models.CASCADE,
     )
-    kosten = models.ForeignKey(
-        to='Kosten',
+    linked_fee = models.ForeignKey(
+        to='Fee',
+        verbose_name=_("Verknüpfte Kosten"),
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -158,15 +159,15 @@ class Bestellungskosten(CustomModel):
 
     @admin.display(description=_("Bestellungskosten"))
     def __str__(self):
-        if self.kosten:
-            return f"({self.pk}) {self.clean_name()} ({self.kosten.pk})"
+        if self.linked_fee:
+            return f"({self.pk}) {self.clean_name()} ({self.linked_fee.pk})"
         return f"({self.pk}) {self.clean_name()}"
 
     def save(self, *args, **kwargs):
-        if self.pk is None and self.kosten is not None:
-            self.name = self.kosten.name
-            self.price = self.kosten.price
-            self.vat_rate = self.kosten.vat_rate
+        if self.pk is None and self.linked_fee is not None:
+            self.name = self.linked_fee.name
+            self.price = self.linked_fee.price
+            self.vat_rate = self.linked_fee.vat_rate
         super().save(*args, **kwargs)
 
     class Meta:
@@ -175,22 +176,23 @@ class Bestellungskosten(CustomModel):
 
     objects = models.Manager()
 
-    def copyto(self, bestellung):
+    def copyto(self, order):
         self.pk = None
         self._state.adding = True
-        self.bestellung = bestellung
+        self.order = order
         self.save()
 
 
-class Bestellungsposten(CustomModel):
-    """Model representing the connection between 'Bestellung' and 'Produkt'"""
+class OrderItem(CustomModel):
+    """Model representing the connection between 'Order' and 'Product'"""
 
-    bestellung = models.ForeignKey(
-        to='Bestellung',
+    order = models.ForeignKey(
+        to='Order',
         on_delete=models.CASCADE,
     )
-    produkt = models.ForeignKey(
-        to='Produkt',
+    product = models.ForeignKey(
+        to='Product',
+        verbose_name=_("Produkt"),
         on_delete=models.PROTECT,
     )
     note = models.CharField(
@@ -232,7 +234,7 @@ class Bestellungsposten(CustomModel):
     # Display methods
     @admin.display(description=_("MwSt-Satz"))
     def display_vat_rate(self):
-        return formatprice(self.produkt.vat_rate)
+        return formatprice(self.product.vat_rate)
 
     @admin.display(description=_("Zwischensumme (exkl. MwSt)"))
     def display_subtotal(self):
@@ -240,11 +242,11 @@ class Bestellungsposten(CustomModel):
 
     @admin.display(description=_("Bestellungsposten"))
     def __str__(self):
-        return f'({self.pk}) {self.quantity}x {self.produkt.clean_name()} ({self.produkt.pk})'
+        return f'({self.pk}) {self.quantity}x {self.product.clean_name()} ({self.product.pk})'
 
     def save(self, *args, **kwargs):
         if not self.product_price:
-            self.product_price = runden(self.produkt.get_current_price())
+            self.product_price = runden(self.product.get_current_price())
         super().save(*args, **kwargs)
 
     class Meta:
@@ -253,14 +255,14 @@ class Bestellungsposten(CustomModel):
 
     objects = models.Manager()
 
-    def copyto(self, bestellung):
+    def copyto(self, order):
         self.pk = None
         self._state.adding = True
-        self.bestellung = bestellung
+        self.order = order
         self.save()
 
 
-class Bestellung(CustomModel):
+class Order(CustomModel):
     """Model representing an order"""
 
     NOTE_RELATION = 'order'
@@ -365,20 +367,20 @@ class Bestellung(CustomModel):
     )
 
     customer = models.ForeignKey(
-        to='Kunde',
+        to='Customer',
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
         related_name='orders',
     )
     payment_receiver = models.ForeignKey(
-        to='Zahlungsempfaenger',
+        to='PaymentReceiver',
         on_delete=models.PROTECT,
         verbose_name=_("Zahlungsempfänger"),
         default=default_payment_recipient,
     )
     contact_person = models.ForeignKey(
-        to='Ansprechpartner',
+        to='ContactPerson',
         verbose_name=_("Ansprechpartner"),
         on_delete=models.PROTECT,
         default=default_contact_person,
@@ -555,15 +557,15 @@ class Bestellung(CustomModel):
     # Connections
 
     products = models.ManyToManyField(
-        to='Produkt',
-        through='Bestellungsposten',
-        through_fields=('bestellung', 'produkt'),
+        to='Product',
+        through='OrderItem',
+        through_fields=('order', 'product'),
     )
 
-    kosten = models.ManyToManyField(
-        to='Kosten',
-        through='Bestellungskosten',
-        through_fields=('bestellung', 'kosten'),
+    fees = models.ManyToManyField(
+        to='Fee',
+        through='OrderFee',
+        through_fields=('order', 'linked_fee'),
     )
 
     email_link_invoice = models.ForeignKey(
@@ -621,9 +623,9 @@ class Bestellung(CustomModel):
 
         self.cached_sum = self.calc_total()
         if self.is_shipped and (not self.is_removed_from_stock):
-            for i in self.products.through.objects.filter(bestellung=self):
-                i.produkt.lagerbestand -= i.quantity
-                i.produkt.save()
+            for i in self.products.through.objects.filter(order=self):
+                i.product.stock_current -= i.quantity
+                i.product.save()
             self.is_removed_from_stock = True
 
         super().save(*args, **kwargs)
@@ -694,12 +696,12 @@ class Bestellung(CustomModel):
     def get_vat_dict(self):
         "Get the VAT as a dictionary"
         vat_dict = {}
-        for p in self.products.through.objects.filter(bestellung=self).select_related('produkt'):
-            if str(p.produkt.vat_rate) in vat_dict:
-                vat_dict[str(p.produkt.vat_rate)] += p.calc_subtotal()
+        for p in self.products.through.objects.filter(order=self).select_related('product'):
+            if str(p.product.vat_rate) in vat_dict:
+                vat_dict[str(p.product.vat_rate)] += p.calc_subtotal()
             else:
-                vat_dict[str(p.produkt.vat_rate)] = p.calc_subtotal()
-        for k in self.kosten.through.objects.filter(bestellung=self).select_related('kosten'):
+                vat_dict[str(p.product.vat_rate)] = p.calc_subtotal()
+        for k in self.fees.through.objects.filter(order=self).select_related('linked_fee'):
             if str(k.vat_rate) in vat_dict:
                 vat_dict[str(k.vat_rate)] += k.calc_subtotal()
             else:
@@ -710,9 +712,9 @@ class Bestellung(CustomModel):
 
     def calc_total_without_vat(self):
         total = 0
-        for i in self.products.through.objects.filter(bestellung=self).select_related("produkt"):
+        for i in self.products.through.objects.filter(order=self).select_related("product"):
             total += i.calc_subtotal()
-        for i in self.kosten.through.objects.filter(bestellung=self).select_related("kosten"):
+        for i in self.fees.through.objects.filter(order=self).select_related("linked_fee"):
             total += i.calc_subtotal()
         return runden(total)
 
@@ -819,7 +821,7 @@ class Bestellung(CustomModel):
                 subject=subject,
                 to=self.addr_billing_email,
                 language=lang,
-                html_template="bestellung_rechnung.html",
+                html_template="order_rechnung.html",
                 html_context=context,
                 notes=gettext("Diese E-Mail wurde automatisch aus Bestellung #%d generiert.") % self.pk,
             )
@@ -863,7 +865,7 @@ class Bestellung(CustomModel):
                 subject=subject,
                 to=self.addr_shipping_email,
                 language=lang,
-                html_template="bestellung_lieferung.html",
+                html_template="order_supply.html",
                 html_context=context,
                 notes=gettext("Diese E-Mail wurde automatisch aus Bestellung #%d generiert.") % self.pk,
             )
@@ -898,7 +900,7 @@ class Bestellung(CustomModel):
                 email = EMail.objects.create(
                     subject=gettext("[KMUHelper] - Lagerbestand knapp!"),
                     to=email_receiver,
-                    html_template="bestellung_stock_warning.html",
+                    html_template="order_stock_warning.html",
                     html_context={
                         "warnings": warnings,
                     },
@@ -920,7 +922,7 @@ class Bestellung(CustomModel):
         verbose_name_plural = _("Bestellungen")
 
     def duplicate(self):
-        new = Bestellung.objects.create(
+        new = Order.objects.create(
             customer=self.customer,
             payment_receiver=self.payment_receiver,
             contact_person=self.contact_person,
@@ -935,19 +937,19 @@ class Bestellung(CustomModel):
         for field in constants.ADDR_SHIPPING_FIELDS+constants.ADDR_BILLING_FIELDS:
             setattr(new, field, getattr(self, field))
 
-        for bp in self.products.through.objects.filter(bestellung=self):
+        for bp in self.products.through.objects.filter(order=self):
             bp.copyto(new)
-        for bk in self.kosten.through.objects.filter(bestellung=self):
+        for bk in self.fees.through.objects.filter(order=self):
             bk.copyto(new)
         new.save()
         return new
 
-    def copy_to_delivery(self):
-        new = Lieferung.objects.create(
+    def copy_to_supply(self):
+        new = Supply.objects.create(
             name=gettext("Rücksendung von Bestellung #%d") % self.pk,
         )
-        for lp in self.products.through.objects.filter(bestellung=self):
-            new.products.add(lp.produkt, through_defaults={"quantity": lp.quantity})
+        for lp in self.products.through.objects.filter(order=self):
+            new.products.add(lp.product, through_defaults={"quantity": lp.quantity})
         new.save()
         return new
 
@@ -955,12 +957,12 @@ class Bestellung(CustomModel):
 
     admin_icon = "fas fa-clipboard-list"
 
-    DICT_EXCLUDE_FIELDS = ['products', 'kosten', 'email_link_invoice', 'email_link_shipped', 'customer',
+    DICT_EXCLUDE_FIELDS = ['products', 'fees', 'email_link_invoice', 'email_link_shipped', 'customer',
                            'contact_person', 'payment_receiver', 'is_removed_from_stock',
                            'is_shipped', 'is_paid', 'payment_method', 'order_key']
 
 
-class Kosten(CustomModel):
+class Fee(CustomModel):
     """Model representing additional costs"""
 
     name = models.CharField(
@@ -998,7 +1000,7 @@ class Kosten(CustomModel):
     admin_icon = "fas fa-coins"
 
 
-class Kunde(CustomModel):
+class Customer(CustomModel):
     """Model representing a customer"""
 
     NOTE_RELATION = 'customer'
@@ -1300,7 +1302,7 @@ class Kunde(CustomModel):
                 subject=gettext("Registrierung erfolgreich!"),
                 to=self.email,
                 language=lang,
-                html_template="kunde_registriert.html",
+                html_template="customer_registriert.html",
                 html_context=context,
                 notes=gettext("Diese E-Mail wurde automatisch aus Kunde #%d generiert.") % self.pk,
             )
@@ -1315,7 +1317,7 @@ class Kunde(CustomModel):
     DICT_EXCLUDE_FIELDS = ['email_link_registered', 'combine_with']
 
 
-class Lieferant(CustomModel):
+class Supplier(CustomModel):
     """Model representing a supplier (used only for categorizing)"""
 
     abbreviation = models.CharField(
@@ -1377,11 +1379,11 @@ class Lieferant(CustomModel):
     def __str__(self):
         return f'{self.name} ({self.pk})'
 
-    def zuordnen(self):
-        products = Produkt.objects.filter(lieferant=None)
-        for produkt in products:
-            produkt.lieferant = self
-            produkt.save()
+    def assign(self):
+        products = Product.objects.filter(supplier=None)
+        for product in products:
+            product.supplier = self
+            product.save()
         return products.count()
 
     class Meta:
@@ -1393,15 +1395,16 @@ class Lieferant(CustomModel):
     admin_icon = "fas fa-truck"
 
 
-class Lieferungsposten(CustomModel):
-    """Model representing the connection between 'Lieferung' and 'Produkt'"""
+class SupplyItem(CustomModel):
+    """Model representing the connection between 'Supply' and 'Product'"""
 
-    lieferung = models.ForeignKey(
-        to="Lieferung",
+    supply = models.ForeignKey(
+        to="Supply",
         on_delete=models.CASCADE,
     )
-    produkt = models.ForeignKey(
-        to="Produkt",
+    product = models.ForeignKey(
+        to="Product",
+        verbose_name=_("Produkt"),
         on_delete=models.PROTECT,
     )
     quantity = models.IntegerField(
@@ -1411,7 +1414,7 @@ class Lieferungsposten(CustomModel):
 
     @admin.display(description=_("Lieferungsposten"))
     def __str__(self):
-        return f'({self.lieferung.pk}) -> {self.quantity}x {self.produkt}'
+        return f'({self.supply.pk}) -> {self.quantity}x {self.product}'
 
     class Meta:
         verbose_name = _("Lieferungsposten")
@@ -1420,7 +1423,7 @@ class Lieferungsposten(CustomModel):
     objects = models.Manager()
 
 
-class Lieferung(CustomModel):
+class Supply(CustomModel):
     """Model representing an *incoming* delivery"""
 
     NOTE_RELATION = 'delivery'
@@ -1435,16 +1438,17 @@ class Lieferung(CustomModel):
         auto_now_add=True,
     )
 
-    lieferant = models.ForeignKey(
-        to="Lieferant",
+    supplier = models.ForeignKey(
+        to="Supplier",
+        verbose_name=_("Lieferant"),
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
     )
     products = models.ManyToManyField(
-        to="Produkt",
-        through="Lieferungsposten",
-        through_fields=("lieferung", "produkt"),
+        to="Product",
+        through="SupplyItem",
+        through_fields=("supply", "product"),
     )
 
     is_added_to_stock = models.BooleanField(
@@ -1454,13 +1458,13 @@ class Lieferung(CustomModel):
 
     @admin.display(description=_("Anzahl Produkte"))
     def total_quantity(self):
-        return self.products.through.objects.filter(lieferung=self).aggregate(models.Sum('quantity'))["quantity__sum"]
+        return self.products.through.objects.filter(supply=self).aggregate(models.Sum('quantity'))["quantity__sum"]
 
-    def einlagern(self):
+    def add_to_stock(self):
         if not self.is_added_to_stock:
-            for i in self.products.through.objects.filter(lieferung=self):
-                i.produkt.lagerbestand += i.quantity
-                i.produkt.save()
+            for i in self.products.through.objects.filter(supply=self):
+                i.product.stock_current += i.quantity
+                i.product.save()
             self.is_added_to_stock = True
             self.save()
             return True
@@ -1479,7 +1483,7 @@ class Lieferung(CustomModel):
     admin_icon = "fas fa-truck-ramp-box"
 
 
-class Notiz(CustomModel):
+class Note(CustomModel):
     """Model representing a note"""
 
     name = models.CharField(
@@ -1508,28 +1512,28 @@ class Notiz(CustomModel):
     )
 
     linked_order = models.OneToOneField(
-        to="Bestellung",
+        to="Order",
         blank=True,
         null=True,
         on_delete=models.CASCADE,
         related_name="linked_note",
     )
     linked_product = models.OneToOneField(
-        to="Produkt",
+        to="Product",
         blank=True,
         null=True,
         on_delete=models.CASCADE,
         related_name="linked_note",
     )
     linked_customer = models.OneToOneField(
-        to="Kunde",
+        to="Customer",
         blank=True,
         null=True,
         on_delete=models.CASCADE,
         related_name="linked_note",
     )
-    linked_delivery = models.OneToOneField(
-        to="Lieferung",
+    linked_supply = models.OneToOneField(
+        to="Supply",
         blank=True,
         null=True,
         on_delete=models.CASCADE,
@@ -1543,25 +1547,25 @@ class Notiz(CustomModel):
     def links(self):
         text = ""
         if self.linked_order:
-            url = reverse("admin:kmuhelper_bestellung_change",
+            url = reverse("admin:kmuhelper_order_change",
                           kwargs={"object_id": self.linked_order.pk})
             text += _("Bestellung")
             text += f" <a href='{url}'>#{self.linked_order.pk}</a><br>"
         if self.linked_product:
-            url = reverse("admin:kmuhelper_produkt_change",
+            url = reverse("admin:kmuhelper_product_change",
                           kwargs={"object_id": self.linked_product.pk})
             text += _("Produkt")
             text += f" <a href='{url}'>#{self.linked_product.pk}</a><br>"
         if self.linked_customer:
-            url = reverse("admin:kmuhelper_kunde_change",
+            url = reverse("admin:kmuhelper_customer_change",
                           kwargs={"object_id": self.linked_customer.pk})
             text += _("Kunde")
             text += f" <a href='{url}'>#{self.linked_customer.pk}</a><br>"
-        if self.linked_delivery:
-            url = reverse("admin:kmuhelper_lieferung_change",
-                          kwargs={"object_id": self.linked_delivery.pk})
+        if self.linked_supply:
+            url = reverse("admin:kmuhelper_supply_change",
+                          kwargs={"object_id": self.linked_supply.pk})
             text += _("Lieferung")
-            text += f" <a href='{url}'>#{self.linked_delivery.pk}</a><br>"
+            text += f" <a href='{url}'>#{self.linked_supply.pk}</a><br>"
         return mark_safe(text) or gettext("Diese Notiz hat keine Verknüpfungen.")
 
     class Meta:
@@ -1573,7 +1577,7 @@ class Notiz(CustomModel):
     admin_icon = "fas fa-note-sticky"
 
 
-class Produkt(CustomModel):
+class Product(CustomModel):
     """Model representing a product"""
 
     NOTE_RELATION = 'product'
@@ -1623,11 +1627,11 @@ class Produkt(CustomModel):
         default=constants.VAT_RATE_DEFAULT,
     )
 
-    lagerbestand = models.IntegerField(
+    stock_current = models.IntegerField(
         verbose_name=_("Lagerbestand"),
         default=0,
     )
-    soll_lagerbestand = models.IntegerField(
+    stock_target = models.IntegerField(
         verbose_name=_("Soll-Lagerbestand"),
         default=1,
     )
@@ -1667,35 +1671,35 @@ class Produkt(CustomModel):
         blank=True,
     )
 
-    lieferant = models.ForeignKey(
-        to="Lieferant",
+    supplier = models.ForeignKey(
+        to="Supplier",
         verbose_name=_("Lieferant"),
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
     )
-    lieferant_preis = models.CharField(
+    supplier_price = models.CharField(
         verbose_name=_("Einkaufspreis"),
         default="",
         blank=True,
         max_length=20,
     )
-    lieferant_article_number = models.CharField(
+    supplier_article_number = models.CharField(
         verbose_name=_("Lieferantenartikelnummer"),
         default="",
         blank=True,
         max_length=25,
     )
-    lieferant_url = models.URLField(
+    supplier_url = models.URLField(
         verbose_name=_("Lieferantenurl (Für Nachbestellungen)"),
         default="",
         blank=True,
     )
 
     categories = models.ManyToManyField(
-        to="Produktkategorie",
-        through="ProduktProduktkategorieVerbindung",
-        through_fields=("produkt", "kategorie"),
+        to="ProductCategory",
+        through="ProductProductCategoryConnection",
+        through_fields=("product", "category"),
         verbose_name=_("Kategorien"),
         related_name="products",
     )
@@ -1731,10 +1735,10 @@ class Produkt(CustomModel):
         return ""
 
     def get_reserved_stock(self):
-        return Bestellungsposten.objects.filter(bestellung__is_shipped=False, produkt_id=self.pk).aggregate(models.Sum("quantity"))["quantity__sum"] or 0
+        return OrderItem.objects.filter(order__is_shipped=False, product_id=self.pk).aggregate(models.Sum("quantity"))["quantity__sum"] or 0
 
     def get_incoming_stock(self):
-        return Lieferungsposten.objects.filter(lieferung__is_added_to_stock=False, produkt__id=self.pk).aggregate(models.Sum("quantity"))["quantity__sum"] or 0
+        return SupplyItem.objects.filter(supply__is_added_to_stock=False, product__id=self.pk).aggregate(models.Sum("quantity"))["quantity__sum"] or 0
 
     def get_stock_data(self, includemessage=False):
         """Get the stock and product information as a dictionary"""
@@ -1743,10 +1747,10 @@ class Produkt(CustomModel):
         p_name = self.clean_name()
         p_article_number = self.article_number
 
-        n_current = self.lagerbestand
+        n_current = self.stock_current
         n_going = self.get_reserved_stock()
         n_coming = self.get_incoming_stock()
-        n_min = self.soll_lagerbestand
+        n_min = self.stock_target
 
         data = {
             "product": {
@@ -1774,7 +1778,7 @@ class Produkt(CustomModel):
                 stockstring += f" | {t_coming}: { n_coming }"
 
             adminurl = reverse(
-                f'admin:kmuhelper_produkt_change', args=[self.pk])
+                f'admin:kmuhelper_product_change', args=[self.pk])
             adminlink = format_html('<a href="{}">{}</a>', adminurl, p_name)
 
             formatdata = (adminlink, p_article_number, stockstring)
@@ -1809,7 +1813,7 @@ class Produkt(CustomModel):
     admin_icon = "fas fa-cubes"
 
 
-class Produktkategorie(CustomModel):
+class ProductCategory(CustomModel):
     """Model representing a category for products"""
 
     woocommerceid = models.IntegerField(
@@ -1870,21 +1874,23 @@ class Produktkategorie(CustomModel):
 
     admin_icon = "fas fa-folder-tree"
 
-class ProduktProduktkategorieVerbindung(CustomModel):
-    """Model representing the connection between 'Produkt' and 'Produktkategorie'"""
+class ProductProductCategoryConnection(CustomModel):
+    """Model representing the connection between 'Product' and 'ProductCategory'"""
 
-    produkt = models.ForeignKey(
-        to='Produkt',
+    product = models.ForeignKey(
+        to='Product',
+        verbose_name=_("Produkt"),
         on_delete=models.CASCADE,
     )
-    kategorie = models.ForeignKey(
-        to='Produktkategorie',
+    category = models.ForeignKey(
+        to='ProductCategory',
+        verbose_name=_("Produktkategorie"),
         on_delete=models.CASCADE,
     )
 
     @admin.display(description=_("Produkt-Kategorie-Verknüpfung"))
     def __str__(self):
-        return f'({self.kategorie.pk}) {self.kategorie.clean_name()} <-> {self.produkt}'
+        return f'({self.category.pk}) {self.category.clean_name()} <-> {self.product}'
 
     class Meta:
         verbose_name = _("Produkt-Kategorie-Verknüpfung")
@@ -1893,7 +1899,7 @@ class ProduktProduktkategorieVerbindung(CustomModel):
     objects = models.Manager()
 
 
-class Zahlungsempfaenger(CustomModel):
+class PaymentReceiver(CustomModel):
     """Model representing a payment receiver for the qr bill"""
 
     mode = models.CharField(

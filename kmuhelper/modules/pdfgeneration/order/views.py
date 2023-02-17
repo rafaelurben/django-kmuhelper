@@ -10,7 +10,7 @@ from django.utils import translation
 _ = translation.gettext
 
 from kmuhelper import constants
-from kmuhelper.modules.main.models import Bestellung
+from kmuhelper.modules.main.models import Order
 from kmuhelper.decorators import require_object
 from kmuhelper.utils import render_error
 from kmuhelper.translations import Language
@@ -21,8 +21,8 @@ from kmuhelper.modules.pdfgeneration.order.generator import PDFOrder
 # Views
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.view_bestellung")
-@require_object(Bestellung)
+@permission_required("kmuhelper.view_order")
+@require_object(Order)
 def order_view_pdf(request, obj):
     order = obj
     is_print_version = 'print' in request.GET
@@ -81,8 +81,8 @@ def order_view_pdf(request, obj):
         return pdf.get_response(as_attachment=is_download, filename=filename)
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.view_bestellung")
-@require_object(Bestellung)
+@permission_required("kmuhelper.view_order")
+@require_object(Order)
 def order_create_pdf_form(request, obj):
     initial={
         'language': obj.language,
@@ -94,12 +94,12 @@ def order_create_pdf_form(request, obj):
         form = PDFOrderForm(request.POST)
         if form.is_valid():
             form.update_order_settings(obj)
-            url = reverse('admin:kmuhelper_bestellung_pdf', args=[obj.id])
+            url = reverse('admin:kmuhelper_order_pdf', args=[obj.id])
             return redirect(url+form.get_url_params())
     else:
         form = PDFOrderForm(initial=initial)
 
-    return render(request, 'admin/kmuhelper/bestellung/pdf_form.html', {
+    return render(request, 'admin/kmuhelper/order/pdf_form.html', {
         'form': form,
         'has_permission': True,
         'original': obj,

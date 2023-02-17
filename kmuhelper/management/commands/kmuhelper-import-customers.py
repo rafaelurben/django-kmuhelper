@@ -2,7 +2,7 @@ import csv
 
 from django.core.management.base import BaseCommand, CommandError
 
-from kmuhelper.modules.main.models import Kunde
+from kmuhelper.modules.main.models import Customer
 from kmuhelper.utils import getfirstindex
 
 
@@ -50,7 +50,7 @@ class Command(BaseCommand):
             index_address_2 = getfirstindex(
                 indexrow, ["Adresszeile2", "Zusatz"])
 
-            index_notiz = getfirstindex(
+            index_note = getfirstindex(
                 indexrow, ["Notiz"])
             index_web = getfirstindex(
                 indexrow, ["Webseite", "Homepage"])
@@ -77,13 +77,13 @@ class Command(BaseCommand):
                 country = row[index_country] if index_country is not None else ""
                 phone = row[index_phone] if index_phone is not None else ""
 
-                notiz = row[index_notiz] if index_notiz is not None else ""
+                note = row[index_note] if index_note is not None else ""
                 website = row[index_web] if index_web is not None else ""
 
-                oldwithid = Kunde.objects.filter(pk=objid).exists()
-                oldwithemail = Kunde.objects.filter(
+                oldwithid = Customer.objects.filter(pk=objid).exists()
+                oldwithemail = Customer.objects.filter(
                     email=email).exists() if email else False
-                oldwithidandemail = Kunde.objects.filter(
+                oldwithidandemail = Customer.objects.filter(
                     pk=objid, email=email).exists()
 
                 self.stdout.write(self.style.SUCCESS(""))
@@ -96,7 +96,7 @@ class Command(BaseCommand):
                                                          "\n  Nachname:   " + last_name +
                                                          "\n  Firma:      " + company
                                                          ))
-                    Kunde.objects.create(
+                    Customer.objects.create(
                         pk=objid,
 
                         email=email,
@@ -128,7 +128,7 @@ class Command(BaseCommand):
                         addr_shipping_country=country,
 
                         website=website,
-                        note=notiz
+                        note=note
                     )
                 elif oldwithidandemail:
                     self.stdout.write(self.style.SUCCESS("Kunde existiert bereits!" +
@@ -139,7 +139,7 @@ class Command(BaseCommand):
                                                          "\n  Firma:      " + company
                                                          ))
                 elif oldwithemail and not oldwithid:
-                    old = Kunde.objects.get(email=email)
+                    old = Customer.objects.get(email=email)
                     self.stdout.write(self.style.SUCCESS("Kunde mit der E-Mail '"+email+"' existiert bereits, jedoch ist die ID unterschiedlich!" +
                                                          "\n  KMUHelper-Daten:" +
                                                          "\n    ID:       " + str(old.pk) +
@@ -157,13 +157,13 @@ class Command(BaseCommand):
                         old.pk = int(objid)
                         old.save()
                         new = old
-                        old = Kunde.objects.get(objid=oldid)
+                        old = Customer.objects.get(objid=oldid)
                         new.combine_with = old
                         new.save()
                         self.stdout.write(
                             self.style.SUCCESS("ID aktualisiert!"))
                 elif not oldwithemail and oldwithid:
-                    old = Kunde.objects.get(pk=objid)
+                    old = Customer.objects.get(pk=objid)
                     self.stdout.write(self.style.SUCCESS("Kunde mit der ID '"+str(objid)+"' existiert bereits, jedoch ist die E-Mail unterschiedlich!" +
                                                          "\n  KMUHelper-Daten:" +
                                                          "\n    E-Mail:   " + old.email +

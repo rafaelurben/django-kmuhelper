@@ -20,7 +20,7 @@ class QRInvoiceFlowable(Flowable):
 
         self.total: float = total
         self.address: dict = address
-        self.payment_receiver: models.Zahlungsempfaenger = payment_receiver
+        self.payment_receiver: models.PaymentReceiver = payment_receiver
         self.billing_information: str = billing_information
         self.qr_reference_number: str = qr_refernce_number
         self.unstructured_message: str = unstructured_message

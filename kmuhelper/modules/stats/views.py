@@ -10,7 +10,7 @@ from django.utils.translation import gettext_lazy, gettext
 
 from kmuhelper.utils import render_error
 from kmuhelper.translations import langselect
-from kmuhelper.modules.main.models import Bestellungsposten, Bestellung
+from kmuhelper.modules.main.models import OrderItem, Order
 
 _ = gettext_lazy
 
@@ -23,9 +23,9 @@ def stats(request):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.view_produkt")
+@permission_required("kmuhelper.view_product")
 def stats_products_price(request):
-    if not Bestellung.objects.exists():
+    if not Order.objects.exists():
         return render_error(request, status=400,
                             message=_("Keine Bestellungen vorhanden."))
 
@@ -33,19 +33,19 @@ def stats_products_price(request):
         from_date = timezone.make_aware(datetime.datetime.strptime(
             str(request.GET.get("from")), "%Y-%m-%d"))
     except (ValueError, IndexError):
-        from_date = Bestellung.objects.order_by("date").first().date
+        from_date = Order.objects.order_by("date").first().date
 
     try:
         to_date = timezone.make_aware(datetime.datetime.strptime(
             str(request.GET.get("to")), "%Y-%m-%d"))
     except (ValueError, IndexError):
-        to_date = Bestellung.objects.order_by("date").last().date
+        to_date = Order.objects.order_by("date").last().date
 
     products_sold = {}
 
-    for bp in Bestellungsposten.objects.filter(bestellung__date__gte=from_date, bestellung__date__lte=to_date).order_by("bestellung__date").values("bestellung__date", "quantity"):
-        d = datetime.date(year=bp["bestellung__date"].year,
-                          month=bp["bestellung__date"].month, day=1).isoformat()
+    for bp in OrderItem.objects.filter(order__date__gte=from_date, order__date__lte=to_date).order_by("order__date").values("order__date", "quantity"):
+        d = datetime.date(year=bp["order__date"].year,
+                          month=bp["order__date"].month, day=1).isoformat()
         if d in products_sold:
             products_sold[d] += bp["quantity"]
         else:
@@ -57,7 +57,7 @@ def stats_products_price(request):
 
     money_income = {}
 
-    for b in Bestellung.objects.filter(date__gte=from_date, date__lte=to_date).order_by("date").values("date", "cached_sum"):
+    for b in Order.objects.filter(date__gte=from_date, date__lte=to_date).order_by("date").values("date", "cached_sum"):
         d = datetime.date(year=b["date"].year,
                           month=b["date"].month, day=1).isoformat()
         if d in money_income:
@@ -78,9 +78,9 @@ def stats_products_price(request):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.view_produkt")
+@permission_required("kmuhelper.view_product")
 def best_products(request):
-    if not Bestellung.objects.exists():
+    if not Order.objects.exists():
         return render_error(request, status=400,
                             message=_("Keine Bestellungen vorhanden."))
 
@@ -96,21 +96,21 @@ def best_products(request):
         from_date = timezone.make_aware(datetime.datetime.strptime(
             str(request.GET.get("from")), "%Y-%m-%d"))
     except (ValueError, IndexError):
-        from_date = Bestellung.objects.order_by("date").first().date
+        from_date = Order.objects.order_by("date").first().date
 
     try:
         to_date=timezone.make_aware(datetime.datetime.strptime(
             str(request.GET.get("to")), "%Y-%m-%d"))
     except (ValueError, IndexError):
-        to_date = Bestellung.objects.order_by("date").last().date
+        to_date = Order.objects.order_by("date").last().date
 
     products = {}
 
-    for bp in Bestellungsposten.objects.filter(bestellung__date__gte=from_date, bestellung__date__lte=to_date).order_by("produkt__name").values("produkt__name", "quantity"):
-        if bp["produkt__name"] in products:
-            products[langselect(bp["produkt__name"])] += bp["quantity"]
+    for bp in OrderItem.objects.filter(order__date__gte=from_date, order__date__lte=to_date).order_by("product__name").values("product__name", "quantity"):
+        if bp["product__name"] in products:
+            products[langselect(bp["product__name"])] += bp["quantity"]
         else:
-            products[langselect(bp["produkt__name"])] = bp["quantity"]
+            products[langselect(bp["product__name"])] = bp["quantity"]
 
     products = sorted(products.items(), key=lambda x: x[1], reverse=True)
     products = products[:max_count] if len(products) > max_count else products

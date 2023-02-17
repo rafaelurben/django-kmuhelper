@@ -10,8 +10,8 @@ from kmuhelper import constants
 from kmuhelper.modules.integrations.woocommerce import WooCommerce
 from kmuhelper.modules.main import views
 from kmuhelper.modules.main.models import (
-    Ansprechpartner, Bestellung, Produktkategorie, Kosten, Kunde,
-    Lieferant, Lieferung, Notiz, Produkt, Zahlungsempfaenger
+    ContactPerson, Order, ProductCategory, Fee, Customer,
+    Supplier, Supply, Note, Product, PaymentReceiver
 )
 from kmuhelper.overrides import CustomModelAdmin, CustomTabularInline, CustomStackedInline
 
@@ -20,8 +20,8 @@ _ = gettext_lazy
 #######
 
 
-@admin.register(Ansprechpartner)
-class AnsprechpartnerAdmin(CustomModelAdmin):
+@admin.register(ContactPerson)
+class ContactPersonAdmin(CustomModelAdmin):
     fieldsets = [
         ("Name", {'fields': ['name']}),
         ('Daten', {'fields': ['phone', 'email']})
@@ -33,15 +33,15 @@ class AnsprechpartnerAdmin(CustomModelAdmin):
     search_fields = ['name', 'phone', 'email']
 
 
-class BestellungInlineBestellungsposten(CustomTabularInline):
-    model = Bestellung.products.through
+class OrderAdminOrderItemInline(CustomTabularInline):
+    model = Order.products.through
     verbose_name = _("Bestellungsposten")
     verbose_name_plural = _("Bestellungsposten")
     extra = 0
 
-    fields = ('produkt', 'note', 'product_price', 'quantity', 'discount', 'display_subtotal', 'display_vat_rate',)
+    fields = ('product', 'note', 'product_price', 'quantity', 'discount', 'display_subtotal', 'display_vat_rate',)
 
-    readonly_fields = ('display_subtotal', 'display_vat_rate', 'produkt',)
+    readonly_fields = ('display_subtotal', 'display_vat_rate', 'product',)
 
     def get_additional_readonly_fields(self, request, obj=None):
         fields = ["product_price"]
@@ -62,18 +62,18 @@ class BestellungInlineBestellungsposten(CustomTabularInline):
     
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.select_related('produkt')
+        return qs.select_related('product')
 
-class BestellungInlineBestellungspostenAdd(CustomTabularInline):
-    model = Bestellung.products.through
+class OrderAdminOrderItemInlineAdd(CustomTabularInline):
+    model = Order.products.through
     verbose_name = _("Bestellungsposten")
     verbose_name_plural = _("Bestellungsposten hinzufügen")
     extra = 0
 
-    autocomplete_fields = ("produkt",)
+    autocomplete_fields = ("product",)
 
     fieldsets = [
-        (None, {'fields': ['produkt', 'note', 'quantity', 'discount']})
+        (None, {'fields': ['product', 'note', 'quantity', 'discount']})
     ]
 
     # Permissions
@@ -86,15 +86,15 @@ class BestellungInlineBestellungspostenAdd(CustomTabularInline):
         return False if (obj and (obj.is_shipped or obj.is_paid)) else super().has_add_permission(request, obj)
 
 
-class BestellungInlineBestellungskosten(CustomTabularInline):
-    model = Bestellung.kosten.through
+class OrderAdminOrderFeeInline(CustomTabularInline):
+    model = Order.fees.through
     verbose_name = _("Bestellungskosten")
     verbose_name_plural = _("Bestellungskosten")
     extra = 0
 
-    fields = ('kosten', 'name', 'price', 'discount', 'note', 'display_subtotal', 'vat_rate')
+    fields = ('linked_fee', 'name', 'price', 'discount', 'note', 'display_subtotal', 'vat_rate')
 
-    readonly_fields = ('kosten', 'display_subtotal',)
+    readonly_fields = ('linked_fee', 'display_subtotal',)
 
     def get_additional_readonly_fields(self, request, obj=None):
         if obj and obj.is_paid:
@@ -113,18 +113,18 @@ class BestellungInlineBestellungskosten(CustomTabularInline):
     
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.select_related('kosten')
+        return qs.select_related('linked_fee')
 
 
-class BestellungInlineBestellungskostenImport(CustomTabularInline):
-    model = Bestellung.kosten.through
+class OrderAdminOrderFeeInlineImport(CustomTabularInline):
+    model = Order.fees.through
     verbose_name = _("Bestellungskosten")
     verbose_name_plural = _("Bestellungskosten importieren")
     extra = 0
 
-    autocomplete_fields = ("kosten",)
+    autocomplete_fields = ("linked_fee",)
 
-    fields = ('kosten', 'note', 'discount',)
+    fields = ('linked_fee', 'note', 'discount',)
 
     # Permissions
 
@@ -136,8 +136,8 @@ class BestellungInlineBestellungskostenImport(CustomTabularInline):
         return False if (obj and obj.is_paid) else super().has_add_permission(request, obj)
 
 
-@admin.register(Bestellung)
-class BestellungsAdmin(CustomModelAdmin):
+@admin.register(Order)
+class OrderAdmin(CustomModelAdmin):
     list_display = ('id', 'date', 'customer', 'status', 'payment_method',
                     'is_shipped', 'is_paid', 'display_cached_sum', 'linked_note_html')
     list_filter = ('status', 'is_paid', 'is_shipped', 'payment_method', 'payment_receiver', 'contact_person')
@@ -146,8 +146,8 @@ class BestellungsAdmin(CustomModelAdmin):
 
     ordering = ("is_shipped", "is_paid", "-date")
 
-    inlines = [BestellungInlineBestellungsposten, BestellungInlineBestellungspostenAdd,
-               BestellungInlineBestellungskosten, BestellungInlineBestellungskostenImport]
+    inlines = [OrderAdminOrderItemInline, OrderAdminOrderItemInlineAdd,
+               OrderAdminOrderFeeInline, OrderAdminOrderFeeInlineImport]
 
     autocomplete_fields = ("customer", "payment_receiver", "contact_person", )
 
@@ -288,14 +288,14 @@ class BestellungsAdmin(CustomModelAdmin):
                  name='%s_%s_email_shipped' % info),
             path('<path:object_id>/duplicate/', self.admin_site.admin_view(views.duplicate_order),
                  name='%s_%s_duplicate' % info),
-            path('<path:object_id>/return/', self.admin_site.admin_view(views.copy_order_to_delivery),
-                 name='%s_%s_copy_to_delivery' % info),
+            path('<path:object_id>/return/', self.admin_site.admin_view(views.copy_order_to_supply),
+                 name='%s_%s_copy_to_supply' % info),
         ]
         return my_urls + urls
 
 
-@admin.register(Kosten)
-class KostenAdmin(CustomModelAdmin):
+@admin.register(Fee)
+class FeeAdmin(CustomModelAdmin):
     list_display = ["clean_name", "price", "vat_rate"]
 
     search_fields = ('name', 'price')
@@ -307,8 +307,8 @@ class KostenAdmin(CustomModelAdmin):
     ]
 
 
-class KundenAdminBestellungsInline(CustomTabularInline):
-    model = Bestellung
+class CustomerAdminOrderInline(CustomTabularInline):
+    model = Order
     verbose_name = _("Bestellung")
     verbose_name_plural = _("Bestellungen")
     extra = 0
@@ -333,8 +333,8 @@ class KundenAdminBestellungsInline(CustomTabularInline):
     NO_DELETE = True
 
 
-@admin.register(Kunde)
-class KundenAdmin(CustomModelAdmin):
+@admin.register(Customer)
+class CustomerAdmin(CustomModelAdmin):
     def get_fieldsets(self, request, obj=None):
         default = [
             (_('Infos'), {'fields': [
@@ -375,7 +375,7 @@ class KundenAdmin(CustomModelAdmin):
 
     autocomplete_fields = ["combine_with"]
 
-    inlines = [KundenAdminBestellungsInline]
+    inlines = [CustomerAdminOrderInline]
 
     save_on_top = True
 
@@ -412,8 +412,8 @@ class KundenAdmin(CustomModelAdmin):
         return my_urls + urls
 
 
-@admin.register(Lieferant)
-class LieferantenAdmin(CustomModelAdmin):
+@admin.register(Supplier)
+class SupplierAdmin(CustomModelAdmin):
     fieldsets = [
         (_('Infos'), {'fields': ['abbreviation', 'name']}),
         (_('Firma'), {'fields': ['website', 'phone', 'email', 'address']}),
@@ -440,21 +440,21 @@ class LieferantenAdmin(CustomModelAdmin):
         urls = super().get_urls()
 
         my_urls = [
-            path('<path:object_id>/zuordnen/', self.admin_site.admin_view(views.lieferant_zuordnen),
-                 name='%s_%s_zuordnen' % info),
+            path('<path:object_id>/assign/', self.admin_site.admin_view(views.supplier_assign),
+                 name='%s_%s_assign' % info),
         ]
         return my_urls + urls
 
 
-class LieferungInlineProdukte(CustomTabularInline):
-    model = Lieferung.products.through
+class SupplyInlineSupplyItem(CustomTabularInline):
+    model = Supply.products.through
     verbose_name = _("Produkt")
     verbose_name_plural = _("Produkte")
     extra = 0
 
-    readonly_fields = ("produkt",)
+    readonly_fields = ("product",)
 
-    fields = ("produkt", "quantity",)
+    fields = ("product", "quantity",)
 
     # Permissions
 
@@ -467,15 +467,15 @@ class LieferungInlineProdukte(CustomTabularInline):
         return False if obj and obj.is_added_to_stock else super().has_delete_permission(request, obj)
 
 
-class LieferungInlineProdukteAdd(CustomTabularInline):
-    model = Lieferung.products.through
+class SupplyInlineProductsAdd(CustomTabularInline):
+    model = Supply.products.through
     verbose_name = _("Produkt")
     verbose_name_plural = _("Produkte hinzufügen")
     extra = 0
 
-    autocomplete_fields = ("produkt",)
+    autocomplete_fields = ("product",)
 
-    fields = ("produkt", "quantity",)
+    fields = ("product", "quantity",)
 
     # Permissions
 
@@ -487,40 +487,40 @@ class LieferungInlineProdukteAdd(CustomTabularInline):
         return False if obj and obj.is_added_to_stock else super().has_add_permission(request, obj)
 
 
-@admin.register(Lieferung)
-class LieferungenAdmin(CustomModelAdmin):
+@admin.register(Supply)
+class SupplyAdmin(CustomModelAdmin):
     list_display = ('name', 'date', 'total_quantity',
-                    'lieferant', 'is_added_to_stock', 'linked_note_html')
-    list_filter = ("is_added_to_stock", "lieferant", )
+                    'supplier', 'is_added_to_stock', 'linked_note_html')
+    list_filter = ("is_added_to_stock", "supplier", )
 
-    search_fields = ["name", "date", "lieferant__name", "lieferant__abbreviation",
+    search_fields = ["name", "date", "supplier__name", "supplier__abbreviation",
                      "linked_note__name", "linked_note__description"]
 
     readonly_fields = ["linked_note_html"]
 
-    autocomplete_fields = ("lieferant", )
+    autocomplete_fields = ("supplier", )
 
     ordering = ('-date',)
 
     fieldsets = [
         (_('Infos'), {'fields': ['name', 'linked_note_html']}),
-        (_('Lieferant'), {'fields': ['lieferant']})
+        (_('Lieferant'), {'fields': ['supplier']})
     ]
 
-    inlines = [LieferungInlineProdukte, LieferungInlineProdukteAdd]
+    inlines = [SupplyInlineSupplyItem, SupplyInlineProductsAdd]
 
     save_on_top = True
 
-    list_select_related = ("lieferant", "linked_note", )
+    list_select_related = ("supplier", "linked_note", )
 
     # Actions
 
     @admin.action(description=_("Lieferungen einlagern"), permissions=["change"])
-    def einlagern(self, request, queryset):
+    def add_to_stock(self, request, queryset):
         successcount = 0
         errorcount = 0
-        for lieferung in queryset.all():
-            if lieferung.einlagern():
+        for supply in queryset.all():
+            if supply.add_to_stock():
                 successcount += 1
             else:
                 errorcount += 1
@@ -536,7 +536,7 @@ class LieferungenAdmin(CustomModelAdmin):
                 errorcount
             ))
 
-    actions = ["einlagern"]
+    actions = ["add_to_stock"]
 
     # Views
 
@@ -546,14 +546,14 @@ class LieferungenAdmin(CustomModelAdmin):
         urls = super().get_urls()
 
         my_urls = [
-            path('<path:object_id>/einlagern/', self.admin_site.admin_view(views.lieferung_einlagern),
-                 name='%s_%s_einlagern' % info),
+            path('<path:object_id>/add_to_stock/', self.admin_site.admin_view(views.supply_add_to_stock),
+                 name='%s_%s_add_to_stock' % info),
         ]
         return my_urls + urls
 
 
-@admin.register(Notiz)
-class NotizenAdmin(CustomModelAdmin):
+@admin.register(Note)
+class NoteAdmin(CustomModelAdmin):
     list_display = ["name", "description", "priority", "done", "created_at"]
     list_filter = ["done", "priority"]
 
@@ -595,8 +595,8 @@ class NotizenAdmin(CustomModelAdmin):
                 t = _('Kunde #%d') % pk
                 form.base_fields['name'].initial = t
                 form.base_fields['description'].initial += f'\n\n[{t}]'
-            if "from_delivery" in request.GET:
-                pk = request.GET.get("from_delivery")
+            if "from_supply" in request.GET:
+                pk = request.GET.get("from_supply")
                 t = _('Lieferung #%d') % pk
                 form.base_fields['name'].initial = t
                 form.base_fields['description'].initial += f'\n\n[{t}]'
@@ -609,8 +609,8 @@ class NotizenAdmin(CustomModelAdmin):
         if not change:
             if "from_order" in request.GET:
                 pk = request.GET["from_order"]
-                if Bestellung.objects.filter(pk=pk).exists():
-                    order = Bestellung.objects.get(pk=pk)
+                if Order.objects.filter(pk=pk).exists():
+                    order = Order.objects.get(pk=pk)
                     obj.linked_order = order
                     obj.save()
                     messages.info(
@@ -620,8 +620,8 @@ class NotizenAdmin(CustomModelAdmin):
                         request, _("Bestellung #%s konnte nicht gefunden werden. Die Notiz wurde trotzdem erstellt.") % pk)
             if "from_product" in request.GET:
                 pk = request.GET["from_product"]
-                if Produkt.objects.filter(pk=pk).exists():
-                    product = Produkt.objects.get(pk=pk)
+                if Product.objects.filter(pk=pk).exists():
+                    product = Product.objects.get(pk=pk)
                     obj.linked_product = product
                     obj.save()
                     messages.info(
@@ -631,19 +631,19 @@ class NotizenAdmin(CustomModelAdmin):
                         request, _("Produkt #%s konnte nicht gefunden werden. Die Notiz wurde trotzdem erstellt.") % pk)
             if "from_customer" in request.GET:
                 pk = request.GET["from_customer"]
-                if Kunde.objects.filter(pk=pk).exists():
-                    customer = Kunde.objects.get(pk=pk)
+                if Customer.objects.filter(pk=pk).exists():
+                    customer = Customer.objects.get(pk=pk)
                     obj.linked_customer = customer
                     obj.save()
                     messages.info(request, _("Kunde #%s wurde mit dieser Notiz verknüpft.") % pk)
                 else:
                     messages.warning(
                         request, _("Kunde #%s konnte nicht gefunden werden. Die Notiz wurde trotzdem erstellt.") % pk)
-            if "from_delivery" in request.GET:
-                pk = request.GET["from_delivery"]
-                if Lieferung.objects.filter(pk=pk).exists():
-                    delivery = Lieferung.objects.get(pk=pk)
-                    obj.linked_delivery = delivery
+            if "from_supply" in request.GET:
+                pk = request.GET["from_supply"]
+                if Supply.objects.filter(pk=pk).exists():
+                    supply = Supply.objects.get(pk=pk)
+                    obj.linked_supply = supply
                     obj.save()
                     messages.info(request, _("Lieferung #%s wurde mit dieser Notiz verknüpft.") % pk)
                 else:
@@ -651,25 +651,25 @@ class NotizenAdmin(CustomModelAdmin):
                         request, _("Lieferung #%s konnte nicht gefunden werden. Die Notiz wurde trotzdem erstellt.") % pk)
 
 
-class ProduktInlineKategorienInline(CustomTabularInline):
-    model = Produkt.categories.through
+class ProductAdminProductCategoryInline(CustomTabularInline):
+    model = Product.categories.through
     extra = 0
 
-    autocomplete_fields = ("kategorie", )
+    autocomplete_fields = ("category", )
 
     # Custom queryset
     
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.select_related('kategorie', 'produkt')
+        return qs.select_related('category', 'product')
 
     # Permissions
 
     NO_CHANGE = True
 
 
-@admin.register(Produkt)
-class ProduktAdmin(CustomModelAdmin):
+@admin.register(Product)
+class ProductAdmin(CustomModelAdmin):
     def get_fieldsets(self, request, obj=None):
         return [
             (_('Infos'), {'fields': ['article_number', 'name']}),
@@ -677,10 +677,10 @@ class ProduktAdmin(CustomModelAdmin):
                 'fields': ['short_description', 'description'],
                 'classes': ["collapse start-open"]}),
             (_('Daten'), {'fields': [
-                'quantity_description', 'selling_price', 'vat_rate', 'lagerbestand', 'soll_lagerbestand']}),
+                'quantity_description', 'selling_price', 'vat_rate', 'stock_current', 'stock_target']}),
             (_('Lieferant'), {
                 'fields': [
-                    'lieferant', 'lieferant_preis', 'lieferant_article_number', 'lieferant_url'
+                    'supplier', 'supplier_price', 'supplier_article_number', 'supplier_url'
                 ], 'classes': ["collapse start-open"]}),
             (_('Aktion'), {
                 'fields': [
@@ -699,17 +699,17 @@ class ProduktAdmin(CustomModelAdmin):
     ordering = ('article_number', 'name')
 
     list_display = ('article_number', 'clean_name', 'clean_short_description',
-                    'clean_description', 'get_current_price', 'is_on_sale', 'lagerbestand', 'html_image', 'linked_note_html')
+                    'clean_description', 'get_current_price', 'is_on_sale', 'stock_current', 'html_image', 'linked_note_html')
     list_display_links = ('article_number', 'is_on_sale',)
-    list_filter = ('lieferant', 'categories', 'lagerbestand')
+    list_filter = ('supplier', 'categories', 'stock_current')
     search_fields = ['article_number', 'name', 'short_description',
                      'description', 'note', 'linked_note__name', 'linked_note__description']
 
     readonly_fields = ["linked_note_html"]
 
-    autocomplete_fields = ("lieferant", )
+    autocomplete_fields = ("supplier", )
 
-    inlines = (ProduktInlineKategorienInline,)
+    inlines = (ProductAdminProductCategoryInline,)
 
     save_on_top = True
 
@@ -733,10 +733,10 @@ class ProduktAdmin(CustomModelAdmin):
             ))
 
     @admin.action(description=_("Lagerbestand zurücksetzen"), permissions=["change"])
-    def lagerbestand_zuruecksetzen(self, request, queryset):
-        for produkt in queryset.all():
-            produkt.lagerbestand = 0
-            produkt.save()
+    def reset_stock(self, request, queryset):
+        for product in queryset.all():
+            product.stock_current = 0
+            product.save()
         messages.success(request, ngettext(
             'Lagerbestand von %d Produkt zurückgesetzt.',
             'Lagerbestand von %d Produkten zurückgesetzt.',
@@ -745,16 +745,16 @@ class ProduktAdmin(CustomModelAdmin):
 
     @admin.action(description=_("Aktion beenden"), permissions=["change"])
     def end_sale(self, request, queryset):
-        for produkt in queryset.all():
-            produkt.sale_to = timezone.now()
-            produkt.save()
+        for product in queryset.all():
+            product.sale_to = timezone.now()
+            product.save()
         messages.success(request, ngettext(
             'Aktion von %d Produkt beendet.',
             'Aktion von %d Produkten beendet.',
             queryset.count()
         ))
 
-    actions = ["wc_update", "lagerbestand_zuruecksetzen", "end_sale"]
+    actions = ["wc_update", "reset_stock", "end_sale"]
 
     # Save
 
@@ -764,27 +764,27 @@ class ProduktAdmin(CustomModelAdmin):
             obj.show_stock_warning(request)
 
 
-class ProduktkategorienAdminProduktInline(CustomStackedInline):
-    model = Produkt.categories.through
+class ProductCategoryAdminProductInline(CustomStackedInline):
+    model = Product.categories.through
     verbose_name = _("Produkt in dieser Kategorie")
     verbose_name_plural = _("Produkte in dieser Kategorie")
     extra = 0
 
-    autocomplete_fields = ("produkt", )
+    autocomplete_fields = ("product", )
 
     # Custom queryset
     
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.select_related('kategorie', 'produkt')
+        return qs.select_related('category', 'product')
 
     # Permissions
 
     NO_CHANGE = True
 
 
-@admin.register(Produktkategorie)
-class ProduktkategorienAdmin(CustomModelAdmin):
+@admin.register(ProductCategory)
+class ProductCategoryAdmin(CustomModelAdmin):
     fieldsets = [
         (_('Infos'), {'fields': ['name', 'description', 'image_url']}),
         (_('Übergeordnete Kategorie'), {'fields': ['parent_category']})
@@ -796,7 +796,7 @@ class ProduktkategorienAdmin(CustomModelAdmin):
 
     ordering = ("parent_category", "name")
 
-    inlines = [ProduktkategorienAdminProduktInline]
+    inlines = [ProductCategoryAdminProductInline]
 
     list_select_related = ("parent_category",)
 
@@ -828,8 +828,8 @@ class ProduktkategorienAdmin(CustomModelAdmin):
     actions = ["wc_update"]
 
 
-@admin.register(Zahlungsempfaenger)
-class ZahlungsempfaengerAdmin(CustomModelAdmin):
+@admin.register(PaymentReceiver)
+class PaymentReceiverAdmin(CustomModelAdmin):
     fieldsets = [
         (_("Infos"), {
             "fields": ["name", "swiss_uid", "logourl", "website"]
@@ -867,14 +867,14 @@ class ZahlungsempfaengerAdmin(CustomModelAdmin):
 
 
 modeladmins = [
-    (Ansprechpartner, AnsprechpartnerAdmin),
-    (Bestellung, BestellungsAdmin),
-    (Produktkategorie, ProduktkategorienAdmin),
-    (Kosten, KostenAdmin),
-    (Kunde, KundenAdmin),
-    (Lieferant, LieferantenAdmin),
-    (Lieferung, LieferungenAdmin),
-    (Notiz, NotizenAdmin),
-    (Produkt, ProduktAdmin),
-    (Zahlungsempfaenger, ZahlungsempfaengerAdmin),
+    (ContactPerson, ContactPersonAdmin),
+    (Order, OrderAdmin),
+    (ProductCategory, ProductCategoryAdmin),
+    (Fee, FeeAdmin),
+    (Customer, CustomerAdmin),
+    (Supplier, SupplierAdmin),
+    (Supply, SupplyAdmin),
+    (Note, NoteAdmin),
+    (Product, ProductAdmin),
+    (PaymentReceiver, PaymentReceiverAdmin),
 ]

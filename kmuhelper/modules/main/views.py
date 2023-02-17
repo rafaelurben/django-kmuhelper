@@ -4,7 +4,7 @@ from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext_lazy, gettext
 
-from kmuhelper.modules.main.models import Kunde, Lieferant, Lieferung, Bestellung
+from kmuhelper.modules.main.models import Customer, Supplier, Supply, Order
 from kmuhelper.decorators import confirm_action, require_object
 from kmuhelper.utils import render_error
 
@@ -20,11 +20,11 @@ from kmuhelper.modules.pdfgeneration.order.views import order_view_pdf, order_cr
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.change_produkt")
-@require_object(Lieferant)
+@permission_required("kmuhelper.change_product")
+@require_object(Supplier)
 @confirm_action(_("Lieferant allen Produkten ohne Lieferant zuordnen"))
-def lieferant_zuordnen(request, obj):
-    count = obj.zuordnen()
+def supplier_assign(request, obj):
+    count = obj.assign()
     if count == 1:
         messages.success(
             request, _('Lieferant wurde einem neuen Produkt zugeordnet!'))
@@ -34,27 +34,27 @@ def lieferant_zuordnen(request, obj):
     else:
         messages.success(
             request, _('Lieferant wurde %d neuen Produkten einem neuen Produkt zugeordnet!') % count)
-    return redirect(reverse("admin:kmuhelper_lieferant_change", args=[obj.pk]))
+    return redirect(reverse("admin:kmuhelper_supplier_change", args=[obj.pk]))
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.change_produkt")
-@require_object(Lieferung)
+@permission_required("kmuhelper.change_product")
+@require_object(Supply)
 @confirm_action(_("Lieferung einlagern"))
-def lieferung_einlagern(request, obj):
-    if obj.einlagern():
+def supply_add_to_stock(request, obj):
+    if obj.add_to_stock():
         messages.success(request, _("Lieferung eingelagert!"))
     else:
         messages.error(
             request, _("Lieferung konnte nicht eingelagert werden!"))
-    return redirect(reverse("admin:kmuhelper_lieferung_change", args=[obj.pk]))
+    return redirect(reverse("admin:kmuhelper_supply_change", args=[obj.pk]))
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
 @permission_required(
-    ["kmuhelper.add_email", "kmuhelper.view_kunde", "kmuhelper.change_kunde"]
+    ["kmuhelper.add_email", "kmuhelper.view_customer", "kmuhelper.change_customer"]
 )
-@require_object(Kunde)
+@require_object(Customer)
 def create_customer_email_registered(request, obj):
     mail = obj.create_email_registered()
     messages.success(request, _("E-Mail wurde generiert!"))
@@ -63,9 +63,9 @@ def create_customer_email_registered(request, obj):
 
 @login_required(login_url=reverse_lazy("admin:login"))
 @permission_required(
-    ["kmuhelper.add_email", "kmuhelper.view_bestellung", "kmuhelper.change_bestellung"]
+    ["kmuhelper.add_email", "kmuhelper.view_order", "kmuhelper.change_order"]
 )
-@require_object(Bestellung)
+@require_object(Order)
 def create_order_email_invoice(request, obj):
     mail = obj.create_email_invoice()
     messages.success(request, _("E-Mail wurde generiert!"))
@@ -74,9 +74,9 @@ def create_order_email_invoice(request, obj):
 
 @login_required(login_url=reverse_lazy("admin:login"))
 @permission_required(
-    ["kmuhelper.add_email", "kmuhelper.view_bestellung", "kmuhelper.change_bestellung"]
+    ["kmuhelper.add_email", "kmuhelper.view_order", "kmuhelper.change_order"]
 )
-@require_object(Bestellung)
+@require_object(Order)
 def create_order_email_shipped(request, obj):
     mail = obj.create_email_shipped()
     messages.success(request, _("E-Mail wurde generiert!"))
@@ -84,23 +84,23 @@ def create_order_email_shipped(request, obj):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.add_bestellung")
-@require_object(Bestellung)
+@permission_required("kmuhelper.add_order")
+@require_object(Order)
 @confirm_action(_("Bestellung duplizieren"))
 def duplicate_order(request, obj):
     new = obj.duplicate()
     messages.success(
         request, _("Bestellung wurde dupliziert! HINWEIS: Dies ist die neu erstellte Bestellung!"))
-    return redirect(reverse("admin:kmuhelper_bestellung_change", args=[new.pk]))
+    return redirect(reverse("admin:kmuhelper_order_change", args=[new.pk]))
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.add_lieferung")
-@require_object(Bestellung)
+@permission_required("kmuhelper.add_supply")
+@require_object(Order)
 @confirm_action(_("Bestellung zu Lieferung kopieren"))
-def copy_order_to_delivery(request, obj):
-    new = obj.copy_to_delivery()
+def copy_order_to_supply(request, obj):
+    new = obj.copy_to_supply()
     messages.success(
         request, _("Bestellung wurde zu einer Lieferung kopiert!"))
-    return redirect(reverse("admin:kmuhelper_lieferung_change", args=[new.pk]))
+    return redirect(reverse("admin:kmuhelper_supply_change", args=[new.pk]))
 

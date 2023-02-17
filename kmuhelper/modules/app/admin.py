@@ -6,7 +6,7 @@ from django.views.decorators.clickjacking import xframe_options_sameorigin as al
 from django.views.generic import RedirectView
 
 from kmuhelper.modules.app.models import App_ToDo, App_Warenausgang, App_Zahlungseingang, App_Lagerbestand, App_Wareneingang
-from kmuhelper.modules.main.admin import NotizenAdmin, BestellungsAdmin, LieferungenAdmin, ProduktAdmin
+from kmuhelper.modules.main.admin import NoteAdmin, OrderAdmin, SupplyAdmin, ProductAdmin
 from kmuhelper.overrides import CustomModelAdmin
 
 #######
@@ -55,7 +55,7 @@ class App_AdminBase(CustomModelAdmin):
 
 
 @admin.register(App_ToDo)
-class App_ToDoAdmin(App_AdminBase, NotizenAdmin):
+class App_ToDoAdmin(App_AdminBase, NoteAdmin):
     list_editable = ["priority", "done"]
     list_filter = ["priority"]
 
@@ -63,7 +63,7 @@ class App_ToDoAdmin(App_AdminBase, NotizenAdmin):
 
 
 @admin.register(App_Warenausgang)
-class App_WarenausgangAdmin(App_AdminBase, BestellungsAdmin):
+class App_WarenausgangAdmin(App_AdminBase, OrderAdmin):
     list_display = ('id', 'info', 'status', 'shipped_on', 'is_shipped',
                     'tracking_number', 'linked_note_html')
     list_editable = ("shipped_on", "is_shipped", "status", "tracking_number")
@@ -75,7 +75,7 @@ class App_WarenausgangAdmin(App_AdminBase, BestellungsAdmin):
 
 
 @admin.register(App_Zahlungseingang)
-class App_ZahlungseingangAdmin(App_AdminBase, BestellungsAdmin):
+class App_ZahlungseingangAdmin(App_AdminBase, OrderAdmin):
     list_display = ('id', 'info', 'status', 'paid_on', 'is_paid',
                     'display_cached_sum', 'display_payment_conditions', 'linked_note_html')
     list_editable = ("paid_on", "is_paid", "status")
@@ -87,17 +87,17 @@ class App_ZahlungseingangAdmin(App_AdminBase, BestellungsAdmin):
 
 
 @admin.register(App_Lagerbestand)
-class App_LagerbestandAdmin(App_AdminBase, ProduktAdmin):
-    list_display = ('nr', 'clean_name', 'lagerbestand',
+class App_LagerbestandAdmin(App_AdminBase, ProductAdmin):
+    list_display = ('nr', 'clean_name', 'stock_current',
                     'get_current_price', 'note', 'linked_note_html')
     list_display_links = ('nr',)
-    list_editable = ["lagerbestand"]
+    list_editable = ["stock_current"]
 
-    actions = ["lagerbestand_zuruecksetzen"]
+    actions = ["reset_stock"]
 
 
 @admin.register(App_Wareneingang)
-class App_WareneingangenAdmin(App_AdminBase, LieferungenAdmin):
+class App_WareneingangenAdmin(App_AdminBase, SupplyAdmin):
     list_display = ('name', 'date', 'total_quantity', 'linked_note_html')
     list_filter = ()
 

@@ -4,7 +4,7 @@
             <th colspan="2">Zahlung</th>
             <th>Bestellung
                 <a target="_blank"
-                    href="{% url 'admin:kmuhelper_bestellung_change' object_id=order.pk %}">
+                    href="{% url 'admin:kmuhelper_order_change' object_id=order.pk %}">
                     #{{ order.pk}}
                 </a>
             </th>
@@ -43,7 +43,7 @@
             <td>{{ payment.iban }}</td>
             <td>Kunde:</td>
             <td>
-                <a href="{% url 'admin:kmuhelper_kunde_change' object_id=order.customer.pk %}" target="_blank">
+                <a href="{% url 'admin:kmuhelper_customer_change' object_id=order.customer.pk %}" target="_blank">
                     {{ order.customer }}
                 </a>
             </td>

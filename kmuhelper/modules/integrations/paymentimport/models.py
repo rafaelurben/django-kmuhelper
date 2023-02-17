@@ -6,7 +6,7 @@ from django.db import models
 from django.utils.html import format_html, mark_safe
 from django.utils.translation import gettext_lazy, gettext
 
-from kmuhelper.modules.main.models import Bestellung
+from kmuhelper.modules.main.models import Order
 from kmuhelper.overrides import CustomModel
 from kmuhelper.utils import formatprice
 
@@ -75,7 +75,7 @@ class PaymentImport(CustomModel):
                     data['relatedpayments'] = relatedpayments.all()
 
                 try:
-                    order = Bestellung.objects.get(pk=oid)
+                    order = Order.objects.get(pk=oid)
 
                     data['order'] = order
 
