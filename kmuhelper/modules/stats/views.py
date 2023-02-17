@@ -6,11 +6,13 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.utils import timezone
+from django.utils.translation import gettext_lazy, gettext
 
 from kmuhelper.utils import render_error
 from kmuhelper.translations import langselect
 from kmuhelper.modules.main.models import Bestellungsposten, Bestellung
 
+_ = gettext_lazy
 
 #####
 
@@ -25,7 +27,7 @@ def stats(request):
 def stats_products_price(request):
     if not Bestellung.objects.exists():
         return render_error(request, status=400,
-                            message="Keine Bestellungen vorhanden.")
+                            message=_("Keine Bestellungen vorhanden."))
 
     try:
         from_date = timezone.make_aware(datetime.datetime.strptime(
@@ -80,7 +82,7 @@ def stats_products_price(request):
 def best_products(request):
     if not Bestellung.objects.exists():
         return render_error(request, status=400,
-                            message="Keine Bestellungen vorhanden.")
+                            message=_("Keine Bestellungen vorhanden."))
 
     try:
         if "max" in request.GET:

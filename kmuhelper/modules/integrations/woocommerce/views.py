@@ -11,6 +11,8 @@ from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 
+from django.utils.translation import gettext_lazy, gettext, ngettext
+
 from kmuhelper import settings
 from kmuhelper.decorators import require_object
 from kmuhelper.modules.main.models import Produkt, Kunde, Produktkategorie, Bestellung
@@ -18,9 +20,12 @@ from kmuhelper.modules.integrations.woocommerce.api import WooCommerce
 from kmuhelper.modules.integrations.woocommerce.utils import is_connected
 from kmuhelper.utils import render_error
 
+_ = gettext_lazy
 
 def log(string, *args):
     print("[deep_pink4][KMUHelper][/] -", string, *args)
+ 
+NOT_CONNECTED_ERRMSG = _("WooCommerce wurde scheinbar nicht richtig verbunden!")
 
 #####
 
@@ -64,9 +69,9 @@ def wc_auth_key(request):
 @login_required(login_url=reverse_lazy("admin:login"))
 def wc_auth_end(request):
     if request.GET.get("success") == "1":
-        messages.success(request, "WooCommerce erfolgreich verbunden!")
+        messages.success(request, gettext("WooCommerce erfolgreich verbunden!"))
     else:
-        messages.error(request, "WooCommerce konnte nicht verbunden werden!")
+        messages.error(request, gettext("WooCommerce konnte nicht verbunden werden!"))
     return redirect(reverse('kmuhelper:settings'))
 
 
@@ -75,9 +80,8 @@ def wc_auth_end(request):
 def wc_auth_start(request):
     shopurl = settings.get_db_setting("wc-url", "Bestätigt")
 
-    if "Bestätigt" in shopurl or not shopurl:
-        messages.error(
-            request, "Bitte gib zuerst eine gültige Url ein, bevor du WooCommerce (neu) verbinden kannst!")
+    if not shopurl or not shopurl.startswith("http"):
+        messages.error(request, gettext("Please enter a valid WooCommerce URL in the settings, beginning with 'http'!"))
         return redirect(reverse('kmuhelper:settings'))
 
     kmuhelperurl = request.get_host()
@@ -90,9 +94,6 @@ def wc_auth_start(request):
     }
     query_string = urlencode(params)
 
-    if "https://" not in shopurl and "http://" not in shopurl:
-        shopurl = "https://" + shopurl
-
     url = "%s%s?%s" % (shopurl, '/wc-auth/v1/authorize', query_string)
     return redirect(url)
 
@@ -102,11 +103,14 @@ def wc_auth_start(request):
 def wc_import_products(request):
     if not is_connected():
         messages.error(
-            request, "WooCommerce wurde scheinbar nicht richtig verbunden!")
+            request, NOT_CONNECTED_ERRMSG)
     else:
         count = WooCommerce.product_import()
-        messages.success(request, (('{} neue Produkte' if count !=
-                                    1 else 'Ein neues Produkt') + ' von WooCommerce importiert!').format(count))
+        messages.success(request, ngettext(
+            '%d new product has been imported from WooCommerce!',
+            '%d new products have been imported from WooCommerce!',
+            count
+        ))
     return redirect(reverse("admin:kmuhelper_produkt_changelist"))
 
 
@@ -115,11 +119,14 @@ def wc_import_products(request):
 def wc_import_customers(request):
     if not is_connected():
         messages.error(
-            request, "WooCommerce wurde scheinbar nicht richtig verbunden!")
+            request, NOT_CONNECTED_ERRMSG)
     else:
         count = WooCommerce.customer_import()
-        messages.success(request, (('{} neue Kunden' if count !=
-                                    1 else 'Ein neuer Kunde') + ' von WooCommerce importiert!').format(count))
+        messages.success(request, ngettext(
+            '%d new customer has been imported from WooCommerce!',
+            '%d new customers have been imported from WooCommerce!',
+            count
+        ))
     return redirect(reverse("admin:kmuhelper_kunde_changelist"))
 
 
@@ -128,11 +135,14 @@ def wc_import_customers(request):
 def wc_import_categories(request):
     if not is_connected():
         messages.error(
-            request, "WooCommerce wurde scheinbar nicht richtig verbunden!")
+            request, NOT_CONNECTED_ERRMSG)
     else:
         count = WooCommerce.category_import()
-        messages.success(request, (('{} neue Kategorien' if count !=
-                                    1 else 'Eine neue Kategorie') + ' von WooCommerce importiert!').format(count))
+        messages.success(request, ngettext(
+            '%d new product category has been imported from WooCommerce!',
+            '%d new product categories have been imported from WooCommerce!',
+            count
+        ))
     return redirect(reverse("admin:kmuhelper_kategorie_changelist"))
 
 
@@ -141,11 +151,14 @@ def wc_import_categories(request):
 def wc_import_orders(request):
     if not is_connected():
         messages.error(
-            request, "WooCommerce wurde scheinbar nicht richtig verbunden!")
+            request, NOT_CONNECTED_ERRMSG)
     else:
         count = WooCommerce.order_import()
-        messages.success(request, (('{} neue Bestellungen' if count !=
-                                    1 else 'Eine neue Bestellung') + ' von WooCommerce importiert!').format(count))
+        messages.success(request, ngettext(
+            '%d new order has been imported from WooCommerce!',
+            '%d new orders have been imported from WooCommerce!',
+            count
+        ))
     return redirect(reverse("admin:kmuhelper_bestellung_changelist"))
 
 
@@ -155,10 +168,10 @@ def wc_import_orders(request):
 def wc_update_product(request, obj):
     if not is_connected():
         messages.error(
-            request, "WooCommerce wurde scheinbar nicht richtig verbunden!")
+            request, NOT_CONNECTED_ERRMSG)
     else:
         product = WooCommerce.product_update(obj)
-        messages.success(request, "Produkt aktualisiert: " + str(product))
+        messages.success(request, gettext("Product '%s' updated!") % str(product))
     return redirect(reverse("admin:kmuhelper_produkt_change", args=[obj.pk]))
 
 
@@ -168,10 +181,10 @@ def wc_update_product(request, obj):
 def wc_update_customer(request, obj):
     if not is_connected():
         messages.error(
-            request, "WooCommerce wurde scheinbar nicht richtig verbunden!")
+            request, NOT_CONNECTED_ERRMSG)
     else:
         customer = WooCommerce.customer_update(obj)
-        messages.success(request, "Kunde aktualisiert: " + str(customer))
+        messages.success(request, gettext("Customer '%s' updated!") % str(customer))
     return redirect(reverse("admin:kmuhelper_kunde_change", args=[obj.pk]))
 
 
@@ -181,10 +194,10 @@ def wc_update_customer(request, obj):
 def wc_update_category(request, obj):
     if not is_connected():
         messages.error(
-            request, "WooCommerce wurde scheinbar nicht richtig verbunden!")
+            request, NOT_CONNECTED_ERRMSG)
     else:
         category = WooCommerce.category_update(obj)
-        messages.success(request, "Kategorie aktualisiert: " + str(category))
+        messages.success(request, gettext("Product category '%s' updated!") % str(category))
     return redirect(reverse("admin:kmuhelper_kategorie_change", args=[obj.pk]))
 
 
@@ -194,17 +207,17 @@ def wc_update_category(request, obj):
 def wc_update_order(request, obj):
     if not is_connected():
         messages.error(
-            request, "WooCommerce wurde scheinbar nicht richtig verbunden!")
+            request, NOT_CONNECTED_ERRMSG)
     else:
         order = WooCommerce.order_update(obj)
-        messages.success(request, "Bestellung aktualisiert: " + str(order))
+        messages.success(request, gettext("Order '%s' updated!") % str(order))
     return redirect(reverse("admin:kmuhelper_bestellung_change", args=[obj.pk]))
 
 
 @csrf_exempt
 def wc_webhooks(request):
     if request.method != "POST":
-        messages.warning(request, "Dieser Endpunkt ist für Bots reserviert!")
+        messages.warning(request, gettext("This endpoint is only available via POST and not meant to be used by humans!"))
         return render_error(request, status=405)
 
     if not ("x-wc-webhook-topic" in request.headers and "x-wc-webhook-source" in request.headers):
@@ -213,20 +226,23 @@ def wc_webhooks(request):
             "info": "Request was accepted but ignored because it doesn't contain any usable info!"
         }, status=202)
 
-    erwartete_url = settings.get_secret_db_setting("wc-url").lstrip(
+    stored_url = settings.get_secret_db_setting("wc-url").lstrip(
         "https://").lstrip("http://").split("/")[0]
-    erhaltene_url = request.headers["x-wc-webhook-source"].lstrip(
+    received_url = request.headers["x-wc-webhook-source"].lstrip(
         "https://").lstrip("http://").split("/")[0]
 
-    if not erhaltene_url == erwartete_url:
-        log("[orange_red1]WooCommerce Webhook von einer falschen Webseite ignoriert![/] " +
-            "- Erwartet:", erwartete_url, "- Erhalten:", erhaltene_url)
+    if not received_url == stored_url:
+        log("[orange_red1]WooCommerce Webhook ignored (unexpected domain)![/] " +
+            "- Expected:", stored_url, "- Received:", received_url)
         return JsonResponse({
             "accepted": False,
             "reason": "Unknown domain!",
         }, status=403)
 
-    log("WooCommerce Webhook erhalten...")
+    ## TODO: Check if the webhook is valid (e.g. by checking the signature)
+    ## https://woocommerce.github.io/woocommerce-rest-api-docs/#webhooks
+
+    log("WooCommerce Webhook received...")
 
     topic = request.headers["x-wc-webhook-topic"]
     obj = json.loads(request.body)

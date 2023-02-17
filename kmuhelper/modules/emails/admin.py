@@ -1,9 +1,12 @@
 from django.contrib import admin
 from django.urls import path
+from django.utils.translation import gettext_lazy
 
 from kmuhelper.modules.emails import views
 from kmuhelper.modules.emails.models import EMail, EMailAttachment, Attachment, EMailTemplate
 from kmuhelper.overrides import CustomModelAdmin, CustomTabularInline
+
+_ = gettext_lazy
 
 #######
 
@@ -30,13 +33,13 @@ class AttachmentAdmin(CustomModelAdmin):
 
     def get_fieldsets(self, request, obj=None):
         default = [
-            ('Datei', {'fields': ['filename', 'file']}),
-            ('Infos', {'fields': ['description']})
+            (_('Datei'), {'fields': ['filename', 'file']}),
+            (_('Infos'), {'fields': ['description']})
         ]
 
         if obj:
             return default + [
-                ('Daten', {'fields': ['autocreated', 'time_created']}),
+                (_('Daten'), {'fields': ['autocreated', 'time_created']}),
             ]
 
         return default
@@ -57,8 +60,8 @@ class AttachmentAdmin(CustomModelAdmin):
 
 class EMailAdminAttachmentInline(CustomTabularInline):
     model = EMailAttachment
-    verbose_name = "Anhang"
-    verbose_name_plural = "Anhänge"
+    verbose_name = _("Anhang")
+    verbose_name_plural = _("Anhänge")
     extra = 0
 
     show_change_link = True
@@ -74,18 +77,18 @@ class EMailAdminAttachmentInline(CustomTabularInline):
 class EMailAdmin(CustomModelAdmin):
     def get_fieldsets(self, request, obj=None):
         default = [
-            ('Infos', {
+            (_('Infos'), {
                 'fields': ['subject', 'to']}),
-            ('Zusätzliche Empfänger', {
+            (_('Zusätzliche Empfänger'), {
                 'fields': ['cc', 'bcc'],
                 'classes': ['collapse']}),
-            ('Inhalt', {
+            (_('Inhalt'), {
                 'fields': ['html_template', 'text', 'html_context']}),
         ]
 
         if obj:
             return default + [
-                ('Zeiten', {'fields': ['time_created', 'time_sent']}),
+                (_('Zeiten'), {'fields': ['time_created', 'time_sent']}),
             ]
 
         return default
@@ -141,11 +144,11 @@ class EMailTemplateAdmin(CustomModelAdmin):
     ordering = ['title']
 
     fieldsets = [
-        ('Infos', {
+        (_('Infos'), {
             'fields': ['title', 'description']}),
-        ('Inhalt', {
+        (_('Inhalt'), {
             'fields': ['mail_to', 'mail_subject', 'mail_text']}),
-        ('Optionen', {
+        (_('Optionen'), {
             'fields': ['mail_template', 'mail_context']}),
     ]
 

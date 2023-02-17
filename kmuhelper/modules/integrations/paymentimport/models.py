@@ -4,10 +4,13 @@ from django.contrib import admin, messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.utils.html import format_html, mark_safe
+from django.utils.translation import gettext_lazy, gettext
 
 from kmuhelper.modules.main.models import Bestellung
 from kmuhelper.overrides import CustomModel
 from kmuhelper.utils import formatprice
+
+_ = gettext_lazy
 
 
 #############
@@ -15,30 +18,30 @@ from kmuhelper.utils import formatprice
 
 class PaymentImport(CustomModel):
     time_imported = models.DateTimeField(
-        verbose_name="Importiert am",
+        verbose_name=_("Importiert am"),
         auto_now_add=True,
     )
     is_processed = models.BooleanField(
-        verbose_name="Verarbeitet?",
+        verbose_name=_("Verarbeitet?"),
         default=False,
     )
 
     data_msgid = models.CharField(
-        verbose_name="Nachrichtenid",
+        verbose_name=_("Nachrichtenid"),
         max_length=50,
     )
     data_creationdate = models.DateTimeField(
-        verbose_name="Erstellt am"
+        verbose_name=_("Erstellt am")
     )
 
     # Display
 
-    @admin.display(description="Anzahl Einträge")
+    @admin.display(description=_("Anzahl Einträge"))
     def entrycount(self):
         if hasattr(self, 'entries'):
             return self.entries.count()
 
-    @admin.display(description="Zahlungsimport")
+    @admin.display(description=_("Zahlungsimport"))
     def __str__(self):
         return f"{self.time_imported} ({self.pk})"
 
@@ -91,8 +94,8 @@ class PaymentImport(CustomModel):
         return context
 
     class Meta:
-        verbose_name = "Zahlungsimport"
-        verbose_name_plural = "Zahlungsimporte"
+        verbose_name = _("Zahlungsimport")
+        verbose_name_plural = _("Zahlungsimporte")
 
     admin_icon = "fas fa-hand-holding-dollar"
 
@@ -105,44 +108,44 @@ class PaymentImportEntry(models.Model):
     )
 
     ref = models.CharField(
-        verbose_name="Referenznummer",
+        verbose_name=_("Referenznummer"),
         max_length=50,
         default="",
     )
     additionalref = models.CharField(
-        verbose_name="Zusätzliche Referenz",
+        verbose_name=_("Zusätzliche Referenz"),
         max_length=250,
         default="",
     )
     iban = models.CharField(
-        verbose_name="IBAN",
+        verbose_name=_("IBAN"),
         max_length=22,
         default="",
     )
     name = models.CharField(
-        verbose_name="Name",
+        verbose_name=_("Name"),
         max_length=250,
         default="",
     )
 
     valuedate = models.DateField(
-        verbose_name="Valuta",
+        verbose_name=_("Valuta"),
         null=True,
     )
 
     amount = models.FloatField(
-        verbose_name="Betrag",
+        verbose_name=_("Betrag"),
     )
     currency = models.CharField(
-        verbose_name="Währung",
+        verbose_name=_("Währung"),
         max_length=10,
     )
 
-    @admin.display(description="Betrag", ordering='amount')
+    @admin.display(description=_("Betrag"), ordering='amount')
     def betrag(self):
         return formatprice(self.amount)
 
-    @admin.display(description="ID", ordering='ref')
+    @admin.display(description=_("ID"), ordering='ref')
     def order_id(self):
         if (
                 len(self.ref) == 27 and
@@ -151,13 +154,13 @@ class PaymentImportEntry(models.Model):
             return str(self.ref).lstrip('0')[:-5]
         return None
 
-    @admin.display(description="Eintrag")
+    @admin.display(description=_("Eintrag"))
     def __str__(self):
         return f"{self.currency} {self.amount} - {self.order_id()} - {self.name} ({self.pk})"
 
     class Meta:
-        verbose_name = "Zahlungsimport-Eintrag"
-        verbose_name_plural = "Zahlungsimport-Einträge"
+        verbose_name = _("Zahlungsimport-Eintrag")
+        verbose_name_plural = _("Zahlungsimport-Einträge")
         default_permissions = ()
 
     objects = models.Manager()

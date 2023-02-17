@@ -7,7 +7,11 @@ from django.contrib import messages
 from django.core.validators import FileExtensionValidator
 from django.shortcuts import redirect, reverse
 
+from django.utils.translation import gettext_lazy, gettext
+
 from kmuhelper.modules.integrations.paymentimport.models import PaymentImport, PaymentImportEntry
+
+_ = gettext_lazy
 
 
 def log(string, *args):
@@ -22,15 +26,14 @@ class CamtUploadForm(forms.Form):
     # Fieldsets
 
     fieldsets = [
-        {'fields': ['file'], 'name': "Dateiupload"}
+        {'fields': ['file'], 'name': _("Dateiupload")}
     ]
 
     # Fields
 
     file = forms.FileField(
-        label="XML-Datei",
-        help_text="Die Datei muss nach dem camt.053.001.04 Standard aufgebaut sein und "
-                  "Detailinformationen enthalten.",
+        label=_("XML-Datei"),
+        help_text=_("Die Datei muss nach dem camt.053.001.04 Standard aufgebaut sein und Detailinformationen enthalten."),
         validators=[FileExtensionValidator(['xml'])],
     )
 
@@ -45,13 +48,13 @@ class CamtUploadForm(forms.Form):
 
                 if 'camt.053.001.04' not in str(root.tag) or msg is None:
                     raise forms.ValidationError(
-                        "Die Datei liegt nicht im korrekten Format vor!"
+                        gettext("Die Datei liegt nicht im korrekten Format vor!")
                     )
 
                 self.cleaned_data["camt.053.001.04"] = msg
             except ParseError as error:
                 raise forms.ValidationError(
-                    f"Die Datei kann nicht verarbeitet werden! {error}"
+                    gettext("Die Datei kann nicht verarbeitet werden! Fehler: %s") % error
                 )
 
         return file
@@ -66,14 +69,11 @@ class CamtUploadForm(forms.Form):
                 dbentry = PaymentImport.objects.get(data_msgid=msgid)
                 messages.error(
                     request,
-                    f"Eine Datei mit der Nachrichtenid '{msgid}' wurde bereits "
-                    "zu einem früheren Zeitpunkt importiert! "
-                    "Der Import wurde abgebrochen!")
+                    _("Eine Datei mit der Nachrichtenid '%s' wurde bereits zu einem früheren Zeitpunkt importiert! Der Import wurde abgebrochen!") % msgid)
                 return redirect(reverse('admin:kmuhelper_paymentimport_change', args=[dbentry.pk]))
 
             creationdate = msg.find('./{*}GrpHdr/{*}CreDtTm').text
-            log(
-                f"Start processing - Message id: '{msgid}' - Creation date: '{creationdate}'")
+            log(f"Start processing - Message id: '{msgid}' - Creation date: '{creationdate}'")
 
             dbentry = PaymentImport.objects.create(
                 data_msgid=msgid,
@@ -122,11 +122,11 @@ class CamtUploadForm(forms.Form):
                             )
 
             messages.success(
-                request, "Zahlungsimport wurde erfolgreich importiert!"
+                request, _("Zahlungsimport wurde erfolgreich importiert!")
             )
             return redirect(reverse('admin:kmuhelper_paymentimport_process', args=[dbentry.pk]))
         except AttributeError as error:
             log(error)
             messages.error(
-                request, f"Bei der Verarbeitung ist ein Fehler aufgetreten: {error}")
+                request, _("Bei der Verarbeitung ist ein Fehler aufgetreten: %s") % error)
             return redirect(reverse('admin:kmuhelper_paymentimport_upload'))

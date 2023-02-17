@@ -1,62 +1,74 @@
+from django.utils.functional import lazy
+from django.utils.translation import gettext_lazy
+from django.utils.text import format_lazy
+from django.utils.html import format_html
+
 from kmuhelper.utils import faq
+
+_ = gettext_lazy
+_t = format_lazy
+_h = lazy(format_html, str)
 
 SETTINGS = {
     "wc-url": {
         "typ": "url",
-        "name": "WooCommerce Shop-Url",
-        "description": "Falls vorhanden: Die URL der Wordpress-Seite."
+        "name": _("WooCommerce Shop-Url"),
+        "description": _("Falls vorhanden: Die URL der Wordpress-Seite.")
     },
     "email-stock-warning-receiver": {
         "typ": "email",
-        "name": "E-Mail-Adresse für Warnungen zum Lagerbestand",
-        "description": "Wenn durch den Import von Bestellungen der Lagerbestand-Soll-Wert unterschritten wird, " +
-                       "wird eine Warnung an diese E-Mail-Adresse gesendet.\n\n" +
-                       "Leer lassen, um diese E-Mails zu deaktivieren.\n\n" +
-                       "Bemerkung: Entsteht die Unterschreitung durch eine manuelle Aktion, wird eine Warnung direkt angezeigt."
+        "name": _("E-Mail-Adresse für Warnungen zum Lagerbestand"),
+        "description": _t("{}\n\n{}\n\n{}",
+            _("Wenn durch den Import von Bestellungen der Lagerbestand-Soll-Wert unterschritten wird, wird eine Warnung an diese E-Mail-Adresse gesendet."),
+            _("Leer lassen, um diese E-Mails zu deaktivieren."),
+            _("Bemerkung: Entsteht die Unterschreitung durch eine manuelle Aktion, wird eine Warnung direkt angezeigt.")
+        )
     },
     "email-show-buttons": {
         "typ": "bool",
-        "name": "E-Mail-Knöpfe anzeigen",
-        "description": "Aktivieren oder Deaktivieren der E-Mail-Knöpfe bei Bestellungen und Kunden."
+        "name": _("E-Mail-Knöpfe anzeigen"),
+        "description": _("Aktivieren oder Deaktivieren der E-Mail-Knöpfe bei Bestellungen und Kunden.")
     },
     "email-signature": {
         "typ": "text",
-        "name": "E-Mail-Signatur",
-        "description": "Standardsignatur für E-Mails"
+        "name": _("E-Mail-Signatur"),
+        "description": _("Standardsignatur für E-Mails")
     },
     "default-payment-conditions": {
         "typ": "char",
-        "name": "Standardzahlungskonditionen",
-        "description": "Standardwert der Zahlungskonditionen für neue Bestellungen. " +
-                       "Wenn leer gelassen, wird '0:30' als Standard verwendet.\n\n"
-                       "Weitere Informationen zu Zahlungskonditionen befinden sich " +
-                       faq('wie-funktionieren-zahlungskonditionen', 'hier')
+        "name": _("Standardzahlungskonditionen"),
+        "description": _h("{} {}\n\n{} -> {}",
+            _("Standardwert der Zahlungskonditionen für neue Bestellungen."),
+            _("Wenn leer gelassen, wird '0:30' als Standard verwendet."),
+            _("Mehr über Zahlungskonditionen erfahren"),
+            faq('wie-funktionieren-zahlungskonditionen')
+        )
     },
     "print-payment-conditions": {
         "typ": "bool",
-        "name": "Zahlungskonditionen drucken",
-        "description": "Wenn aktiviert, werden die Zahlungskonditionen bei Rechnungen " +
-                       "in menschenlesbarer Form unter dem Rechnungstotal gedruckt.\n\n" +
-                       "Die Zahlungskonditionen werden unabhängig von dieser Einstellung " +
-                       "immer auch in manschinenlesbarer Form im QR-Code integriert.\n\n" +
-                       "Weitere Informationen zu Zahlungskonditionen befinden sich " +
-                       faq('wie-funktionieren-zahlungskonditionen', 'hier')
+        "name": _("Zahlungskonditionen drucken"),
+        "description": _h("{}\n\n{}\n\n{} -> {}",
+            _("Wenn aktiviert, werden die Zahlungskonditionen bei Rechnungen in menschenlesbarer Form unter dem Rechnungstotal gedruckt."),
+            _("Die Zahlungskonditionen werden unabhängig von dieser Einstellung immer auch in manschinenlesbarer Form im QR-Code integriert."),
+            _("Mehr über Zahlungskonditionen erfahren"),
+            faq('wie-funktionieren-zahlungskonditionen')
+        )
     },
 }
 
 SETTINGS_FIELDSETS = [
     {
-        'name': 'Zahlungskonditionen',
+        'name': _('Zahlungskonditionen'),
         'fields': ['default-payment-conditions', 'print-payment-conditions'],
         'classes': 'wide',
     },
     {
-        'name': 'E-Mails',
+        'name': _('E-Mails'),
         'fields': ['email-show-buttons', 'email-signature', 'email-stock-warning-receiver'],
         'classes': 'wide',
     },
     {
-        'name': 'WooCommerce-Integration',
+        'name': _('WooCommerce-Integration'),
         'fields': ['wc-url'],
         'classes': 'wide',
     },

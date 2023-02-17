@@ -1,15 +1,19 @@
 from django.contrib import admin, messages
 from django.urls import path
 
+from django.utils.translation import gettext_lazy, gettext
+
 from kmuhelper.overrides import CustomModelAdmin
 from kmuhelper.modules.integrations.paymentimport.models import PaymentImport, PaymentImportEntry
 from kmuhelper.modules.integrations.paymentimport import views
 
+_ = gettext_lazy
+
 
 class PaymentImportAdminEntryInline(admin.TabularInline):
     model = PaymentImportEntry
-    verbose_name = "Eintrag"
-    verbose_name_plural = "Einträge"
+    verbose_name = _("Eintrag")
+    verbose_name_plural = _("Einträge")
     extra = 0
 
     fields = ('currency', 'betrag', 'ref', 'order_id',

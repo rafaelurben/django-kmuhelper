@@ -2,10 +2,13 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.urls import reverse_lazy, reverse
 from django.shortcuts import render, redirect
+from django.utils.translation import gettext_lazy, gettext
 
 from kmuhelper.decorators import require_object
 from kmuhelper.modules.integrations.paymentimport.forms import CamtUploadForm
 from kmuhelper.modules.integrations.paymentimport.models import PaymentImport
+
+_ = gettext_lazy
 
 
 @login_required(login_url=reverse_lazy('admin:login'))
@@ -31,11 +34,11 @@ def process(request, obj):
     if request.method == 'POST':
         obj.is_processed = True
         obj.save()
-        messages.success(request, "Zahlungsimport wurde als verarbeitet markiert!")
+        messages.success(request, gettext("Zahlungsimport wurde als verarbeitet markiert!"))
         return redirect(reverse('admin:kmuhelper_paymentimport_changelist'))
     
     if obj.is_processed:
-        messages.warning(request, "Achtung! Dieser Zahlungsimport wurde bereits als verarbeitet markiert!")
+        messages.warning(request, gettext("Achtung! Dieser Zahlungsimport wurde bereits als verarbeitet markiert!"))
 
     ctx = obj.get_processing_context()
     return render(request, 'admin/kmuhelper/paymentimport/process.html', {

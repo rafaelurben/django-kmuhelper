@@ -73,13 +73,13 @@ class Ansprechpartner(CustomModel):
         help_text=_("Auf Rechnung ersichtlich!"),
     )
 
-    @admin.display(description=pgettext_lazy("singular", "Ansprechpartner"), ordering="name")
+    @admin.display(description=_("Ansprechpartner"), ordering="name")
     def __str__(self):
         return f"{self.name} ({self.pk})"
 
     class Meta:
-        verbose_name = pgettext_lazy("singular", "Ansprechpartner")
-        verbose_name_plural = pgettext_lazy("plural", "Ansprechpartner")
+        verbose_name = _("Ansprechpartner")
+        verbose_name_plural = _("Ansprechpartner")
 
     objects = models.Manager()
 
@@ -156,7 +156,7 @@ class Bestellungskosten(CustomModel):
     def display_subtotal(self):
         return formatprice(self.calc_subtotal()) + " CHF"
 
-    @admin.display(description=pgettext_lazy("singular", "Bestellungskosten"))
+    @admin.display(description=_("Bestellungskosten"))
     def __str__(self):
         if self.kosten:
             return f"({self.pk}) {self.clean_name()} ({self.kosten.pk})"
@@ -170,8 +170,8 @@ class Bestellungskosten(CustomModel):
         super().save(*args, **kwargs)
 
     class Meta:
-        verbose_name = pgettext_lazy("singular", "Bestellungskosten")
-        verbose_name_plural = pgettext_lazy("plural", "Bestellungskosten")
+        verbose_name = _("Bestellungskosten")
+        verbose_name_plural = _("Bestellungskosten")
 
     objects = models.Manager()
 
@@ -238,7 +238,7 @@ class Bestellungsposten(CustomModel):
     def display_subtotal(self):
         return formatprice(self.calc_subtotal()) + " CHF"
 
-    @admin.display(description=pgettext_lazy("singular", "Bestellungsposten"))
+    @admin.display(description=_("Bestellungsposten"))
     def __str__(self):
         return f'({self.pk}) {self.quantity}x {self.produkt.clean_name()} ({self.produkt.pk})'
 
@@ -248,8 +248,8 @@ class Bestellungsposten(CustomModel):
         super().save(*args, **kwargs)
 
     class Meta:
-        verbose_name = pgettext_lazy("singular", "Bestellungsposten")
-        verbose_name_plural = pgettext_lazy("plural", "Bestellungsposten")
+        verbose_name = _("Bestellungsposten")
+        verbose_name_plural = _("Bestellungsposten")
 
     objects = models.Manager()
 
@@ -374,12 +374,12 @@ class Bestellung(CustomModel):
     payment_receiver = models.ForeignKey(
         to='Zahlungsempfaenger',
         on_delete=models.PROTECT,
-        verbose_name=pgettext_lazy("singular", "Zahlungsempfänger"),
+        verbose_name=_("Zahlungsempfänger"),
         default=default_payment_recipient,
     )
     contact_person = models.ForeignKey(
         to='Ansprechpartner',
-        verbose_name=pgettext_lazy("singular", "Ansprechpartner"),
+        verbose_name=_("Ansprechpartner"),
         on_delete=models.PROTECT,
         default=default_contact_person,
     )
@@ -786,7 +786,7 @@ class Bestellung(CustomModel):
 
         return False
 
-    @admin.display(description=pgettext_lazy("singular", "Bestellung"))
+    @admin.display(description=_("Bestellung"))
     def __str__(self):
         return self.name()
 
@@ -983,15 +983,15 @@ class Kosten(CustomModel):
     def clean_name(self):
         return langselect(self.name)
 
-    @admin.display(description=pgettext_lazy("singular", "Kosten"))
+    @admin.display(description=_("Kosten"))
     def __str__(self):
         return f'{ self.clean_name() } ({ self.price } CHF' + \
             (f' + {self.vat_rate}% MwSt' if self.vat_rate else '') + \
             f') ({self.pk})'
 
     class Meta:
-        verbose_name = pgettext_lazy("singular", "Kosten")
-        verbose_name_plural = pgettext_lazy("plural", "Kosten")
+        verbose_name = _("Kosten")
+        verbose_name_plural = _("Kosten")
 
     objects = models.Manager()
 
@@ -1212,7 +1212,7 @@ class Kunde(CustomModel):
             return mark_safe('<img src="'+self.avatar_url+'" width="50px">')
         return ""
 
-    @admin.display(description=pgettext_lazy("singular", "Kunde"))
+    @admin.display(description=_("Kunde"))
     def __str__(self):
         s = f'{self.pkfill(8)} '
         if self.woocommerceid:
@@ -1228,8 +1228,8 @@ class Kunde(CustomModel):
         return s
 
     class Meta:
-        verbose_name = pgettext_lazy("singular", "Kunde")
-        verbose_name_plural = pgettext_lazy("plural", "Kunden")
+        verbose_name = _("Kunde")
+        verbose_name_plural = _("Kunden")
 
     def save(self, *args, **kwargs):
         if self.combine_with:
@@ -1373,7 +1373,7 @@ class Lieferant(CustomModel):
         blank=True,
     )
 
-    @admin.display(description=pgettext_lazy("singular", "Lieferant"))
+    @admin.display(description=_("Lieferant"))
     def __str__(self):
         return f'{self.name} ({self.pk})'
 
@@ -1385,8 +1385,8 @@ class Lieferant(CustomModel):
         return products.count()
 
     class Meta:
-        verbose_name = pgettext_lazy("singular", "Lieferant")
-        verbose_name_plural = pgettext_lazy("singular", "Lieferanten")
+        verbose_name = _("Lieferant")
+        verbose_name_plural = _("Lieferanten")
 
     objects = models.Manager()
 
@@ -1409,13 +1409,13 @@ class Lieferungsposten(CustomModel):
         default=1,
     )
 
-    @admin.display(description=pgettext_lazy("singular", "Lieferungsposten"))
+    @admin.display(description=_("Lieferungsposten"))
     def __str__(self):
         return f'({self.lieferung.pk}) -> {self.quantity}x {self.produkt}'
 
     class Meta:
-        verbose_name = pgettext_lazy("singular", "Lieferungsposten")
-        verbose_name_plural = pgettext_lazy("plural", "Lieferungsposten")
+        verbose_name = _("Lieferungsposten")
+        verbose_name_plural = _("Lieferungsposten")
 
     objects = models.Manager()
 
@@ -1466,13 +1466,13 @@ class Lieferung(CustomModel):
             return True
         return False
 
-    @admin.display(description=pgettext_lazy("singular", "Lieferung"))
+    @admin.display(description=_("Lieferung"))
     def __str__(self):
         return f'{self.name} ({self.pk})'
 
     class Meta:
-        verbose_name = pgettext_lazy("singular", "Lieferung")
-        verbose_name_plural = pgettext_lazy("plural", "Lieferungen")
+        verbose_name = _("Lieferung")
+        verbose_name_plural = _("Lieferungen")
 
     objects = models.Manager()
 
@@ -1545,28 +1545,28 @@ class Notiz(CustomModel):
         if self.linked_order:
             url = reverse("admin:kmuhelper_bestellung_change",
                           kwargs={"object_id": self.linked_order.pk})
-            text += pgettext("singular", "Bestellung")
+            text += _("Bestellung")
             text += f" <a href='{url}'>#{self.linked_order.pk}</a><br>"
         if self.linked_product:
             url = reverse("admin:kmuhelper_produkt_change",
                           kwargs={"object_id": self.linked_product.pk})
-            text += pgettext("singular", "Produkt")
+            text += _("Produkt")
             text += f" <a href='{url}'>#{self.linked_product.pk}</a><br>"
         if self.linked_customer:
             url = reverse("admin:kmuhelper_kunde_change",
                           kwargs={"object_id": self.linked_customer.pk})
-            text += pgettext("singular", "Kunde")
+            text += _("Kunde")
             text += f" <a href='{url}'>#{self.linked_customer.pk}</a><br>"
         if self.linked_delivery:
             url = reverse("admin:kmuhelper_lieferung_change",
                           kwargs={"object_id": self.linked_delivery.pk})
-            text += pgettext("singular", "Lieferung")
+            text += _("Lieferung")
             text += f" <a href='{url}'>#{self.linked_delivery.pk}</a><br>"
         return mark_safe(text) or gettext("Diese Notiz hat keine Verknüpfungen.")
 
     class Meta:
-        verbose_name = pgettext_lazy("singular", "Notiz")
-        verbose_name_plural = pgettext_lazy("plural", "Notizen")
+        verbose_name = _("Notiz")
+        verbose_name_plural = _("Notizen")
 
     objects = models.Manager()
 
@@ -1669,7 +1669,7 @@ class Produkt(CustomModel):
 
     lieferant = models.ForeignKey(
         to="Lieferant",
-        verbose_name=pgettext_lazy("singular", "Lieferant"),
+        verbose_name=_("Lieferant"),
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
@@ -1696,7 +1696,7 @@ class Produkt(CustomModel):
         to="Produktkategorie",
         through="ProduktProduktkategorieVerbindung",
         through_fields=("produkt", "kategorie"),
-        verbose_name=pgettext_lazy("plural", "Kategorien"),
+        verbose_name=_("Kategorien"),
         related_name="products",
     )
 
@@ -1796,13 +1796,13 @@ class Produkt(CustomModel):
         elif data["stock_in_danger"]:
             messages.warning(request, data["message"])
 
-    @admin.display(description=pgettext_lazy("singular", "Produkt"))
+    @admin.display(description=_("Produkt"))
     def __str__(self):
         return f'{self.article_number} - {self.clean_name()} ({self.pk})'
 
     class Meta:
-        verbose_name = pgettext_lazy("singular", "Produkt")
-        verbose_name_plural = pgettext_lazy("plural", "Produkte")
+        verbose_name = _("Produkt")
+        verbose_name_plural = _("Produkte")
 
     objects = models.Manager()
 
@@ -1858,13 +1858,13 @@ class Produktkategorie(CustomModel):
     def clean_description(self):
         return langselect(self.description)
 
-    @admin.display(description=pgettext_lazy("singular", "Kategorie"))
+    @admin.display(description=_("Kategorie"))
     def __str__(self):
         return f'{self.clean_name()} ({self.pk})'
 
     class Meta:
-        verbose_name = pgettext_lazy("singular", "Produktkategorie")
-        verbose_name_plural = pgettext_lazy("plural", "Produktkategorien")
+        verbose_name = _("Produktkategorie")
+        verbose_name_plural = _("Produktkategorien")
 
     objects = models.Manager()
 
@@ -1882,13 +1882,13 @@ class ProduktProduktkategorieVerbindung(CustomModel):
         on_delete=models.CASCADE,
     )
 
-    @admin.display(description=pgettext_lazy("singular", "Produkt-Kategorie-Verknüpfung"))
+    @admin.display(description=_("Produkt-Kategorie-Verknüpfung"))
     def __str__(self):
         return f'({self.kategorie.pk}) {self.kategorie.clean_name()} <-> {self.produkt}'
 
     class Meta:
-        verbose_name = pgettext_lazy("singular", "Produkt-Kategorie-Verknüpfung")
-        verbose_name_plural = pgettext_lazy("plural", "Produkt-Kategorie-Verknüpfungen")
+        verbose_name = _("Produkt-Kategorie-Verknüpfung")
+        verbose_name_plural = _("Produkt-Kategorie-Verknüpfungen")
 
     objects = models.Manager()
 
@@ -2029,13 +2029,13 @@ class Zahlungsempfaenger(CustomModel):
             log("Error while validating UID:", e)
             return False
 
-    @admin.display(description=pgettext_lazy("singular", "Zahlungsempfänger"))
+    @admin.display(description=_("Zahlungsempfänger"))
     def __str__(self):
         return f'{self.name} ({self.pk})'
 
     class Meta:
-        verbose_name = pgettext_lazy("singular", "Zahlungsempfänger")
-        verbose_name_plural = pgettext_lazy("plural", "Zahlungsempfänger")
+        verbose_name = _("Zahlungsempfänger")
+        verbose_name_plural = _("Zahlungsempfänger")
 
     objects = models.Manager()
 

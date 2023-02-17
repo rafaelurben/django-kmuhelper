@@ -41,9 +41,9 @@ def app_mobile_manifest(request):
 def app_desktop(request):
     return render(request, 'admin/kmuhelper/_special/app/app_index.html', {
         'app_label': 'kmuhelper',
-        'app_list': custom_app_list(request, [App_ToDo, App_Lagerbestand, App_Warenausgang, App_Wareneingang, App_Zahlungseingang], "KMUHelper App", reverse("kmuhelper:app-desktop")),
+        'app_list': custom_app_list(request, [App_ToDo, App_Lagerbestand, App_Warenausgang, App_Wareneingang, App_Zahlungseingang], _("KMUHelper App"), reverse("kmuhelper:app-desktop")),
         'has_permission': True,
         'is_nav_sidebar_enabled': False,
         'is_popup': False,
-        'title': 'KMUHelper App',
+        'title': _('KMUHelper App'),
     })

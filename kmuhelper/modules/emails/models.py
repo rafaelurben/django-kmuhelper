@@ -54,37 +54,37 @@ class Attachment(CustomModel):
     """Model representing an attachment"""
 
     filename = models.CharField(
-        verbose_name="Dateiname",
+        verbose_name=_("Dateiname"),
         max_length=50,
     )
     file = models.FileField(
-        verbose_name="Datei",
+        verbose_name=_("Datei"),
         upload_to=getfilepath,
         storage=storage.default_storage,
     )
 
     description = models.TextField(
-        verbose_name="Beschreibung",
+        verbose_name=_("Beschreibung"),
         default="",
         blank=True,
     )
     autocreated = models.BooleanField(
-        verbose_name="Automatisch generiert",
+        verbose_name=_("Automatisch generiert"),
         default=False,
     )
 
     token = models.UUIDField(
-        verbose_name="Token",
+        verbose_name=_("Token"),
         default=uuid.uuid4,
         editable=False,
     )
 
     time_created = models.DateTimeField(
-        verbose_name="Erstellt um",
+        verbose_name=_("Erstellt um"),
         auto_now_add=True,
     )
 
-    @admin.display(description="Anhang")
+    @admin.display(description=_("Anhang"))
     def __str__(self):
         return f"{self.filename} ({self.pk})"
 
@@ -102,8 +102,8 @@ class Attachment(CustomModel):
         return path+f"?token={self.token}"
 
     class Meta:
-        verbose_name = "Anhang"
-        verbose_name_plural = "Anhänge"
+        verbose_name = _("Anhang")
+        verbose_name_plural = _("Anhänge")
         default_permissions = ('add', 'change', 'view', 'delete', 'download')
 
     objects = AttachmentManager()
@@ -132,13 +132,13 @@ class EMailAttachment(CustomModel):
         on_delete=models.CASCADE,
     )
 
-    @admin.display(description="E-Mail-Anhang")
+    @admin.display(description=_("E-Mail-Anhang"))
     def __str__(self):
         return f'({self.email.pk}) -> {self.attachment}'
 
     class Meta:
-        verbose_name = "E-Mail-Anhang"
-        verbose_name_plural = "E-Mail-Anhänge"
+        verbose_name = _("E-Mail-Anhang")
+        verbose_name_plural = _("E-Mail-Anhänge")
 
     objects = models.Manager()
 
@@ -147,26 +147,26 @@ class EMail(CustomModel):
     """Model representing an email"""
 
     subject = models.CharField(
-        verbose_name="Betreff",
+        verbose_name=_("Betreff"),
         max_length=50,
         help_text="Wird Standardmässig auch als Untertitel verwendet.",
     )
 
     to = MultiEmailField(
-        verbose_name="Empfänger",
+        verbose_name=_("Empfänger"),
         help_text="Direkte Empfänger",
     )
     cc = MultiEmailField(
-        verbose_name="CC",
+        verbose_name=_("CC"),
         default="",
         blank=True,
-        help_text="Kopie",
+        help_text=_("Kopie"),
     )
     bcc = MultiEmailField(
-        verbose_name="BCC",
+        verbose_name=_("BCC"),
         default="",
         blank=True,
-        help_text="Blindkopie",
+        help_text=_("Blindkopie"),
     )
 
     language = models.CharField(
@@ -177,43 +177,42 @@ class EMail(CustomModel):
     )
 
     html_template = models.CharField(
-        verbose_name="Designvorlage",
+        verbose_name=_("Designvorlage"),
         default="default.html",
         max_length=50,
-        help_text="Dateiname der Designvorlage unter 'kmuhelper/emails/'.",
+        help_text=_("Dateiname der Designvorlage unter 'kmuhelper/emails/'."),
     )
     text = models.TextField(
-        verbose_name="Text",
+        verbose_name=_("Text"),
         default="",
         blank=True,
-        help_text="Hauptinhalt - wird nicht von allen Designvorlagen verwendet. " +
-                  "Links und E-Mail Adressen werden automatisch verlinkt.",
+        help_text=_("Hauptinhalt - wird nicht von allen Designvorlagen verwendet. Links und E-Mail Adressen werden automatisch verlinkt."),
     )
     html_context = models.JSONField(
-        verbose_name="Daten",
+        verbose_name=_("Daten"),
         default=dict,
         blank=True,
         null=True,
-        help_text="Daten im JSON-Format, mit welchen die Designvorlage befüllt wird.",
+        help_text=_("Daten im JSON-Format, mit welchen die Designvorlage befüllt wird."),
     )
 
     token = models.UUIDField(
-        verbose_name="Token",
+        verbose_name=_("Token"),
         default=uuid.uuid4,
         editable=False,
     )
 
     time_created = models.DateTimeField(
-        verbose_name="Erstellt am",
+        verbose_name=_("Erstellt am"),
         auto_now_add=True,
-        help_text="Datum und Zeit der Erstellung dieser E-Mail.",
+        help_text=_("Datum und Zeit der Erstellung dieser E-Mail."),
     )
     time_sent = models.DateTimeField(
-        verbose_name="Gesendet um",
+        verbose_name=_("Gesendet um"),
         blank=True,
         null=True,
         default=None,
-        help_text="Datum und Zeit des letzten erfolgreichen Sendeversuches.",
+        help_text=_("Datum und Zeit des letzten erfolgreichen Sendeversuches."),
     )
 
     sent = models.BooleanField(
@@ -225,7 +224,7 @@ class EMail(CustomModel):
         verbose_name="Notizen",
         blank=True,
         default="",
-        help_text="Diese Notizen haben keine Einwirkung auf die E-Mail selbst.",
+        help_text=_("Diese Notizen haben keine Einwirkung auf die E-Mail selbst."),
     )
 
     attachments = models.ManyToManyField(
@@ -233,7 +232,7 @@ class EMail(CustomModel):
         through='EMailAttachment',
     )
 
-    @admin.display(description="E-Mail")
+    @admin.display(description=_("E-Mail"))
     def __str__(self):
         return f"{self.subject} ({self.pk})"
 
@@ -257,18 +256,21 @@ class EMail(CustomModel):
             get_template(template)
         except TemplateDoesNotExist:
             errors.append(
-                f"Vorlage '{template}' wurde nicht gefunden."
+                gettext("Vorlage '%s' wurde nicht gefunden.") % template
             )
         except TemplateSyntaxError as error:
             errors.append(
-                f"Vorlage '{template}' enthält ungültige Syntax: {error}"
+                gettext("Vorlage '%(template)s' enthält ungültige Syntax: %(error)s") % {
+                    "template": template,
+                    "error": error,
+                }
             )
 
         # Check 2: Receiver
 
         if not self.to:
             warnings.append(
-                "Nachricht hat keine(n) Empfänger!"
+                gettext("Nachricht hat keine(n) Empfänger!")
             )
 
         # Add messages and return
@@ -375,8 +377,8 @@ class EMail(CustomModel):
         return None
 
     class Meta:
-        verbose_name = "E-Mail"
-        verbose_name_plural = "E-Mails"
+        verbose_name = _("E-Mail")
+        verbose_name_plural = _("E-Mails")
         default_permissions = ('add', 'change', 'view', 'delete', 'send')
 
     objects = models.Manager()
@@ -388,48 +390,48 @@ class EMailTemplate(CustomModel):
     """Model representing an email template (not to confuse with design template)"""
 
     title = models.CharField(
-        verbose_name="Titel",
+        verbose_name=_("Titel"),
         max_length=50,
     )
     description = models.TextField(
-        verbose_name="Beschreibung",
+        verbose_name=_("Beschreibung"),
         default="",
         blank=True,
     )
 
     mail_to = models.CharField(
-        verbose_name="Empfänger",
+        verbose_name=_("Empfänger"),
         max_length=50,
         default="",
         blank=True,
     )
     mail_subject = models.CharField(
-        verbose_name="Betreff",
+        verbose_name=_("Betreff"),
         max_length=50,
     )
     mail_text = models.TextField(
-        verbose_name="Text",
+        verbose_name=_("Text"),
     )
     mail_template = models.CharField(
-        verbose_name="Designvorlage",
+        verbose_name=_("Designvorlage"),
         default="default.html",
         max_length=50,
     )
     mail_context = models.JSONField(
-        verbose_name="Daten",
+        verbose_name=_("Daten"),
         default=dict,
         blank=True,
         null=True,
     )
 
-    @admin.display(description="E-Mail-Vorlage")
+    @admin.display(description=_("E-Mail-Vorlage"))
     def __str__(self):
         return f"{self.title} ({self.pk})"
 
-    @admin.display(description="Vorlage benutzen")
+    @admin.display(description=_("Vorlage benutzen"))
     def get_use_link(self):
         link = reverse("admin:kmuhelper_emailtemplate_use", args=[self.pk])
-        text = "Vorlage benutzen"
+        text = _("Vorlage benutzen")
         return format_html('<a href="{}">{}</a>', link, text)
 
     def create_mail(self, variables=dict()):
@@ -453,8 +455,8 @@ class EMailTemplate(CustomModel):
         return email
 
     class Meta:
-        verbose_name = "E-Mail-Vorlage"
-        verbose_name_plural = "E-Mail-Vorlagen"
+        verbose_name = _("E-Mail-Vorlage")
+        verbose_name_plural = _("E-Mail-Vorlagen")
 
     objects = models.Manager()
 

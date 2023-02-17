@@ -5,19 +5,22 @@ from django.db import models
 from django.contrib import admin
 from django.templatetags.static import static
 from django.utils.html import mark_safe, urlize
+from django.utils.translation import gettext_lazy, gettext
 
 from kmuhelper.overrides import CustomModel
 from kmuhelper.modules.settings.constants import SETTINGS
 
+_ = gettext_lazy
+
 EINSTELLUNGSTYPEN = [
-    ("char", "Text"),
-    ("text", "Mehrzeiliger Text"),
-    ("bool", "Wahrheitswert"),
-    ("int", "Zahl"),
-    ("float", "Fliesskommazahl"),
-    ("url", "Url"),
-    ("email", "E-Mail"),
-    ("json", "JSON Daten"),
+    ("char", _("Text")),
+    ("text", _("Mehrzeiliger Text")),
+    ("bool", _("Wahrheitswert")),
+    ("int", _("Zahl")),
+    ("float", _("Fliesskommazahl")),
+    ("url", _("Url")),
+    ("email", _("E-Mail")),
+    ("json", _("JSON Daten")),
 ]
 
 
@@ -25,45 +28,45 @@ class SettingsBase(CustomModel):
     """Base model for 'Einstellung' and 'Geheime_Einstellung'"""
 
     id = models.CharField(
-        verbose_name="ID",
+        verbose_name=_("ID"),
         max_length=50,
         primary_key=True,
     )
     typ = models.CharField(
-        verbose_name="Typ",
+        verbose_name=_("Typ"),
         max_length=5,
         default="char",
         choices=EINSTELLUNGSTYPEN,
     )
 
     content_char = models.CharField(
-        verbose_name="Inhalt (Text)",
+        verbose_name=_("Inhalt (Text)"),
         max_length=250,
         default="",
         blank=True,
     )
     content_text = models.TextField(
-        verbose_name="Inhalt (Mehrzeiliger Text)",
+        verbose_name=_("Inhalt (Mehrzeiliger Text)"),
         default="",
         blank=True,
     )
     content_bool = models.BooleanField(
-        verbose_name="Inhalt (Wahrheitswert)",
+        verbose_name=_("Inhalt (Wahrheitswert)"),
         default=False,
         blank=True,
     )
     content_int = models.IntegerField(
-        verbose_name="Inhalt (Zahl)",
+        verbose_name=_("Inhalt (Zahl)"),
         default=0,
         blank=True,
     )
     content_float = models.FloatField(
-        verbose_name="Inhalt (Fliesskommazahl)",
+        verbose_name=_("Inhalt (Fliesskommazahl)"),
         default=0.0,
         blank=True,
     )
     content_url = models.URLField(
-        verbose_name="Inhalt (Url)",
+        verbose_name=_("Inhalt (Url)"),
         default="",
         blank=True,
     )
@@ -74,14 +77,14 @@ class SettingsBase(CustomModel):
     )
 
     content_json = models.JSONField(
-        verbose_name="Inhalt (JSON)",
+        verbose_name=_("Inhalt (JSON)"),
         default=dict,
         blank=True,
         null=True,
     )
 
     @property
-    @admin.display(description="Inhalt")
+    @admin.display(description=_("Inhalt"))
     def content_display(self):
         if self.typ == "bool":
             return mark_safe('<img src="'+static(f"admin/img/icon-{'yes' if self.content_bool else 'no'}.svg")+'" />')
@@ -91,7 +94,7 @@ class SettingsBase(CustomModel):
 
     @property
     def content(self):
-        return getattr(self, f"content_{self.typ}", "ERROR! Unbekannter Einstellungstyp! Bitte kontaktiere den Entwickler!")
+        return getattr(self, f"content_{self.typ}", _("ERROR! Unbekannter Einstellungstyp! Bitte kontaktiere den Entwickler!"))
 
     @content.setter
     def content(self, var):
@@ -113,15 +116,15 @@ class Einstellung(SettingsBase):
         return SETTINGS.get(self.id, {})
 
     @property
-    @admin.display(description="Einstellung")
+    @admin.display(description=_("Einstellung"))
     def name(self):
-        s = self.info.get("name", "(unbekannte Einstellung)")
+        s = self.info.get("name", _("(unbekannte Einstellung)"))
         return mark_safe(s)
 
     @property
-    @admin.display(description="Beschreibung")
+    @admin.display(description=_("Beschreibung"))
     def description(self):
-        s = self.info.get("description", "(unbekannte Einstellung)")
+        s = self.info.get("description", _("(unbekannte Einstellung)"))
         s = s.replace("\n", "<br />")
         return mark_safe(s)
 
@@ -149,13 +152,13 @@ class Einstellung(SettingsBase):
             return forms.JSONField(**opt)
         raise ValueError("Unknown setting type! Can't get field!")
 
-    @admin.display(description="Einstellung")
+    @admin.display(description=_("Einstellung"))
     def __str__(self):
         return self.name
 
     class Meta:
-        verbose_name = "Einstellung"
-        verbose_name_plural = "Einstellungen"
+        verbose_name = _("Einstellung")
+        verbose_name_plural = _("Einstellungen")
 
     objects = models.Manager()
 
@@ -170,10 +173,10 @@ class Geheime_Einstellung(SettingsBase):
 
     Example usage: WooCommerce authentication data"""
 
-    @admin.display(description="Geheime Einstellung")
+    @admin.display(description=_("Geheime Einstellung"))
     def __str__(self):
         return str(self.id)
 
     class Meta:
-        verbose_name = "Geheime Einstellung"
-        verbose_name_plural = "Geheime Einstellungen"
+        verbose_name = _("Geheime Einstellung")
+        verbose_name_plural = _("Geheime Einstellungen")

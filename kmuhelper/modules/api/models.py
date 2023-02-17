@@ -3,20 +3,24 @@ import uuid
 from django.db import models
 from django.contrib import admin
 
+from django.utils.translation import gettext_lazy, gettext
+
 from kmuhelper import settings
 from kmuhelper.overrides import CustomModel
+
+_ = gettext_lazy
 
 
 class ApiKey(CustomModel):
     """Model representing an api key"""
 
     key = models.UUIDField(
-        verbose_name="Key",
+        verbose_name=_("Key"),
         default=uuid.uuid4,
         unique=True,
     )
     name = models.CharField(
-        verbose_name="Name",
+        verbose_name=_("Name"),
         max_length=100,
         default="",
         blank=True,
@@ -27,22 +31,22 @@ class ApiKey(CustomModel):
     )
 
     read = models.BooleanField(
-        verbose_name="Read permission?",
+        verbose_name=_("Read permission?"),
         default=True,
     )
     write = models.BooleanField(
-        verbose_name="Write permission?",
+        verbose_name=_("Write permission?"),
         default=False,
     )
 
     objects = models.Manager()
 
-    @admin.display(description="Api key")
+    @admin.display(description=_("Api key"))
     def __str__(self):
-        perms = "read" if self.read and not self.write else "write" if self.write and not self.read else "read/write" if self.read and self.write else "UNUSABLE"
+        perms = _("read") if self.read and not self.write else _("write") if self.write and not self.read else _("read/write") if self.read and self.write else _("UNUSABLE")
         return f"{self.name} ({perms}; {self.user.username})"
 
-    @admin.display(description="Key preview")
+    @admin.display(description=_("Key preview"))
     def key_preview(self):
         """Get the first and last letters of the key"""
         return str(self.key)[:4]+"..."+str(self.key)[-4:]
@@ -56,5 +60,5 @@ class ApiKey(CustomModel):
         return self.user.has_perms(*args, **kwargs)
 
     class Meta:
-        verbose_name = "Api key"
-        verbose_name_plural = "Api keys"
+        verbose_name = _("Api key")
+        verbose_name_plural = _("Api keys")

@@ -2,8 +2,11 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.urls import reverse_lazy
 from django.shortcuts import render, redirect
+from django.utils.translation import gettext_lazy, gettext
 
 from kmuhelper.modules.settings.forms import SettingsForm
+
+_ = gettext_lazy
 
 @login_required(login_url=reverse_lazy('admin:login'))
 @permission_required('kmuhelper.change_einstellung')
@@ -12,7 +15,7 @@ def settings_form(request):
         form = SettingsForm(request.POST)
         if form.is_valid():
             form.save_settings()
-            messages.success(request, "Einstellungen gespeichert!")
+            messages.success(request, gettext("Einstellungen gespeichert!"))
             # Redirect to prevent resending the form on reload
             return redirect('kmuhelper:settings')
     else:

@@ -4,6 +4,7 @@ from django.contrib import admin, messages
 from django.db.models import Count
 from django.urls import path
 from django.utils import timezone
+from django.utils.translation import gettext_lazy, gettext, ngettext
 
 from kmuhelper import constants
 from kmuhelper.modules.integrations.woocommerce import WooCommerce
@@ -14,6 +15,7 @@ from kmuhelper.modules.main.models import (
 )
 from kmuhelper.overrides import CustomModelAdmin, CustomTabularInline, CustomStackedInline
 
+_ = gettext_lazy
 
 #######
 
@@ -33,8 +35,8 @@ class AnsprechpartnerAdmin(CustomModelAdmin):
 
 class BestellungInlineBestellungsposten(CustomTabularInline):
     model = Bestellung.products.through
-    verbose_name = "Bestellungsposten"
-    verbose_name_plural = "Bestellungsposten"
+    verbose_name = _("Bestellungsposten")
+    verbose_name_plural = _("Bestellungsposten")
     extra = 0
 
     fields = ('produkt', 'note', 'product_price', 'quantity', 'discount', 'display_subtotal', 'display_vat_rate',)
@@ -64,8 +66,8 @@ class BestellungInlineBestellungsposten(CustomTabularInline):
 
 class BestellungInlineBestellungspostenAdd(CustomTabularInline):
     model = Bestellung.products.through
-    verbose_name = "Bestellungsposten"
-    verbose_name_plural = "Bestellungsposten hinzufügen"
+    verbose_name = _("Bestellungsposten")
+    verbose_name_plural = _("Bestellungsposten hinzufügen")
     extra = 0
 
     autocomplete_fields = ("produkt",)
@@ -86,8 +88,8 @@ class BestellungInlineBestellungspostenAdd(CustomTabularInline):
 
 class BestellungInlineBestellungskosten(CustomTabularInline):
     model = Bestellung.kosten.through
-    verbose_name = "Bestellungskosten"
-    verbose_name_plural = "Bestellungskosten"
+    verbose_name = _("Bestellungskosten")
+    verbose_name_plural = _("Bestellungskosten")
     extra = 0
 
     fields = ('kosten', 'name', 'price', 'discount', 'note', 'display_subtotal', 'vat_rate')
@@ -116,8 +118,8 @@ class BestellungInlineBestellungskosten(CustomTabularInline):
 
 class BestellungInlineBestellungskostenImport(CustomTabularInline):
     model = Bestellung.kosten.through
-    verbose_name = "Bestellungskosten"
-    verbose_name_plural = "Bestellungskosten importieren"
+    verbose_name = _("Bestellungskosten")
+    verbose_name_plural = _("Bestellungskosten importieren")
     extra = 0
 
     autocomplete_fields = ("kosten",)
@@ -158,38 +160,38 @@ class BestellungsAdmin(CustomModelAdmin):
     def get_fieldsets(self, request, obj=None):
         if obj:
             return [
-                ('Einstellungen', {
+                (_('Einstellungen'), {
                     'fields': ['payment_receiver', 'contact_person']
                 }),
-                ('Infos', {'fields': ['name', 'date', 'status']}),
-                ('Kunde', {'fields': ['customer']}),
-                ('Lieferung', {'fields': [('shipped_on', 'is_shipped'), 'tracking_number']}),
-                ('Bezahlungsoptionen', {
+                (_('Infos'), {'fields': ['name', 'date', 'status']}),
+                (_('Kunde'), {'fields': ['customer']}),
+                (_('Lieferung'), {'fields': [('shipped_on', 'is_shipped'), 'tracking_number']}),
+                (_('Bezahlungsoptionen'), {
                     'fields': ['payment_method', 'invoice_date', 'payment_conditions']
                 }),
-                ('Bezahlung', {
+                (_('Bezahlung'), {
                     'fields': [('display_total_breakdown', 'display_payment_conditions'), ('paid_on', 'is_paid')]
                 }),
-                ('Notizen & Texte', {
+                (_('Notizen & Texte'), {
                     'fields': ['customer_note', 'linked_note_html'],
                     'classes': ["collapse start-open"]}),
-                ('Rechnungsadresse', {
+                (_('Rechnungsadresse'), {
                     'fields': constants.ADDR_BILLING_FIELDS if obj.is_paid else constants.ADDR_BILLING_FIELDS_CATEGORIZED,
                     'classes': ["collapse default-open"]}),
-                ('Lieferadresse', {
+                (_('Lieferadresse'), {
                     'fields': constants.ADDR_SHIPPING_FIELDS if obj.is_shipped else constants.ADDR_SHIPPING_FIELDS_CATEGORIZED,
                     'classes': ["collapse start-open"]})
             ]
 
         return [
-            ('Einstellungen', {'fields': [
+            (_('Einstellungen'), {'fields': [
                 'payment_receiver', 'contact_person']}),
-            ('Infos', {'fields': ['status']}),
-            ('Kunde', {'fields': ['customer']}),
-            ('Bezahlungsoptionen', {
+            (_('Infos'), {'fields': ['status']}),
+            (_('Kunde'), {'fields': ['customer']}),
+            (_('Bezahlungsoptionen'), {
                 'fields': ['payment_method', 'invoice_date', 'payment_conditions'],
                 'classes': ["collapse start-open"]}),
-            ('Notizen & Texte', {
+            (_('Notizen & Texte'), {
                 'fields': ['customer_note'],
                 'classes': ["collapse start-open"]}),
         ]
@@ -211,7 +213,7 @@ class BestellungsAdmin(CustomModelAdmin):
 
     # Actions
 
-    @admin.action(description="Als bezahlt markieren", permissions=["change"])
+    @admin.action(description=_("Als bezahlt markieren"), permissions=["change"])
     def mark_as_paid(self, request, queryset):
         successcount = 0
         errorcount = 0
@@ -224,20 +226,32 @@ class BestellungsAdmin(CustomModelAdmin):
                     order.status = "completed"
                 order.save()
                 successcount += 1
-        messages.success(request, (('{} Bestellungen' if successcount !=
-                                    1 else 'Eine Bestellung') + ' als bezahlt markiert!').format(successcount))
+        messages.success(request, ngettext(
+            '%d Bestellung wurde als bezahlt markiert.',
+            '%d Bestellungen wurden als bezahlt markiert.',
+            successcount
+        ))
         if errorcount:
-            messages.error(request, ('Beim als bezahlt markieren von ' + ('{} Bestellungen' if errorcount !=
-                                                                          1 else 'einer Bestellung') + ' ist ein Fehler aufgetreten!').format(errorcount))
+            messages.warning(request, ngettext(
+                '%d Bestellung war bereits als bezahlt markiert.',
+                '%d Bestellungen waren bereits als bezahlt markiert.',
+                errorcount
+            ))
 
-    @admin.action(description="Bestellungen von WooCommerce aktualisieren", permissions=["change"])
+    @admin.action(description=_("Bestellungen von WooCommerce aktualisieren"), permissions=["change"])
     def wc_update(self, request, queryset):
         successcount, errorcount = WooCommerce.order_bulk_update(queryset.all())
-        messages.success(request, ((
-            '{} Bestellungen' if successcount != 1 else 'Eine Bestellung') + ' von WooCommerce aktualisiert!').format(successcount))
+        messages.success(request, ngettext(
+            '%d Bestellung wurde von WooCommerce aktualisiert.',
+            '%d Bestellungen wurden von WooCommerce aktualisiert.',
+            successcount
+        ))
         if errorcount:
-            messages.error(request, ('Beim Import von ' + (
-                '{} Bestellungen' if errorcount != 1 else 'einer Bestellung') + ' von WooCommerce ist ein Fehler aufgetreten!').format(errorcount))
+            messages.error(request, ngettext(
+                '%d Bestellung konnte nicht von WooCommerce aktualisiert werden.',
+                '%d Bestellungen konnten nicht von WooCommerce aktualisiert werden.',
+                errorcount
+            ))
 
     actions = [mark_as_paid, wc_update]
 
@@ -295,8 +309,8 @@ class KostenAdmin(CustomModelAdmin):
 
 class KundenAdminBestellungsInline(CustomTabularInline):
     model = Bestellung
-    verbose_name = "Bestellung"
-    verbose_name_plural = "Bestellungen"
+    verbose_name = _("Bestellung")
+    verbose_name_plural = _("Bestellungen")
     extra = 0
 
     show_change_link = True
@@ -323,29 +337,29 @@ class KundenAdminBestellungsInline(CustomTabularInline):
 class KundenAdmin(CustomModelAdmin):
     def get_fieldsets(self, request, obj=None):
         default = [
-            ('Infos', {'fields': [
+            (_('Infos'), {'fields': [
                 'first_name', 'last_name', 'company', 'email', 'language']}),
-            ('Rechnungsadresse', {
+            (_('Rechnungsadresse'), {
                 'fields': constants.ADDR_BILLING_FIELDS_CATEGORIZED}),
-            ('Lieferadresse', {
+            (_('Lieferadresse'), {
                 'fields': constants.ADDR_SHIPPING_FIELDS_CATEGORIZED,
                 'classes': ["collapse start-open"]}),
         ]
 
         if obj:
             return default + [
-                ('Diverses', {
+                (_('Diverses'), {
                     'fields': [
                         'website', 'note', 'linked_note_html'
                     ]}),
-                ('Erweitert', {
+                (_('Erweitert'), {
                     'fields': [
                         'combine_with'
                     ], 'classes': ["collapse"]})
             ]
 
         return default + [
-            ('Diverses', {'fields': ['website', 'note']})
+            (_('Diverses'), {'fields': ['website', 'note']})
         ]
 
     ordering = ('addr_billing_postcode', 'company', 'last_name', 'first_name')
@@ -367,14 +381,20 @@ class KundenAdmin(CustomModelAdmin):
 
     # Actions
 
-    @admin.action(description="Kunden von WooCommerce aktualisieren", permissions=["change"])
+    @admin.action(description=_("Kunden von WooCommerce aktualisieren"), permissions=["change"])
     def wc_update(self, request, queryset):
         successcount, errorcount = WooCommerce.customer_bulk_update(queryset.all())
-        messages.success(request, ((
-            '{} Kunden' if successcount != 1 else 'Ein Kunde') + ' von WooCommerce aktualisiert!').format(successcount))
+        messages.success(request, ngettext(
+            '%d Kunde wurde von WooCommerce aktualisiert.',
+            '%d Kunden wurden von WooCommerce aktualisiert.',
+            successcount
+        ))
         if errorcount:
-            messages.error(request, ('Beim Import von ' + (
-                '{} Kunden' if errorcount != 1 else 'einem Kunden') + ' von WooCommerce ist ein Fehler aufgetreten!').format(errorcount))
+            messages.error(request, ngettext(
+                '%d Kunde konnte nicht von WooCommerce aktualisiert werden.',
+                '%d Kunden konnten nicht von WooCommerce aktualisiert werden.',
+                errorcount
+            ))
 
     actions = ["wc_update"]
 
@@ -395,14 +415,14 @@ class KundenAdmin(CustomModelAdmin):
 @admin.register(Lieferant)
 class LieferantenAdmin(CustomModelAdmin):
     fieldsets = [
-        ('Infos', {'fields': ['abbreviation', 'name']}),
-        ('Firma', {'fields': ['website', 'phone', 'email', 'address']}),
-        ('Ansprechpartner', {
+        (_('Infos'), {'fields': ['abbreviation', 'name']}),
+        (_('Firma'), {'fields': ['website', 'phone', 'email', 'address']}),
+        (_('Ansprechpartner'), {
             'fields': [
                 'contact_person_name', 'contact_person_phone', 'contact_person_email'
             ],
             'classes': ["collapse", "start-open"]}),
-        ('Notiz', {
+        (_('Notiz'), {
             'fields': ['note'],
             'classes': ["collapse", "start-open"]}),
     ]
@@ -428,8 +448,8 @@ class LieferantenAdmin(CustomModelAdmin):
 
 class LieferungInlineProdukte(CustomTabularInline):
     model = Lieferung.products.through
-    verbose_name = "Produkt"
-    verbose_name_plural = "Produkte"
+    verbose_name = _("Produkt")
+    verbose_name_plural = _("Produkte")
     extra = 0
 
     readonly_fields = ("produkt",)
@@ -449,8 +469,8 @@ class LieferungInlineProdukte(CustomTabularInline):
 
 class LieferungInlineProdukteAdd(CustomTabularInline):
     model = Lieferung.products.through
-    verbose_name = "Produkt"
-    verbose_name_plural = "Produkte hinzufügen"
+    verbose_name = _("Produkt")
+    verbose_name_plural = _("Produkte hinzufügen")
     extra = 0
 
     autocomplete_fields = ("produkt",)
@@ -483,8 +503,8 @@ class LieferungenAdmin(CustomModelAdmin):
     ordering = ('-date',)
 
     fieldsets = [
-        ('Infos', {'fields': ['name', 'linked_note_html']}),
-        ('Lieferant', {'fields': ['lieferant']})
+        (_('Infos'), {'fields': ['name', 'linked_note_html']}),
+        (_('Lieferant'), {'fields': ['lieferant']})
     ]
 
     inlines = [LieferungInlineProdukte, LieferungInlineProdukteAdd]
@@ -495,7 +515,7 @@ class LieferungenAdmin(CustomModelAdmin):
 
     # Actions
 
-    @admin.action(description="Lieferungen einlagern", permissions=["change"])
+    @admin.action(description=_("Lieferungen einlagern"), permissions=["change"])
     def einlagern(self, request, queryset):
         successcount = 0
         errorcount = 0
@@ -504,11 +524,17 @@ class LieferungenAdmin(CustomModelAdmin):
                 successcount += 1
             else:
                 errorcount += 1
-        messages.success(request, (('{} Lieferungen' if successcount !=
-                                    1 else 'Eine Lieferung') + ' wurde eingelagert!').format(successcount))
+        messages.success(request, ngettext(
+            '%d Lieferung wurde als eingelagert markiert.',
+            '%d Lieferungen wurden als eingelagert markiert.',
+            successcount
+        ))
         if errorcount:
-            messages.error(request, ('Beim Einlagern von ' + ('{} Lieferungen' if errorcount !=
-                                                              1 else 'einer Lieferung') + ' ist ein Fehler aufgetreten!').format(errorcount))
+            messages.error(request, ngettext(
+                '%d Lieferung konnte nicht eingelagert werden.',
+                '%d Lieferungen konnten nicht eingelagert werden.',
+                errorcount
+            ))
 
     actions = ["einlagern"]
 
@@ -540,14 +566,14 @@ class NotizenAdmin(CustomModelAdmin):
     def get_fieldsets(self, request, obj=None):
         if obj:
             return [
-                ("Infos", {"fields": ["name", "description"]}),
-                ("Daten", {"fields": ["done", "priority"]}),
-                ("Verknüpfungen", {"fields": ["links"]}),
+                (_("Infos"), {"fields": ["name", "description"]}),
+                (_("Daten"), {"fields": ["done", "priority"]}),
+                (_("Verknüpfungen"), {"fields": ["links"]}),
             ]
 
         return [
-            ("Infos", {"fields": ["name", "description"]}),
-            ("Daten", {"fields": ["done", "priority"]}),
+            (_("Infos"), {"fields": ["name", "description"]}),
+            (_("Daten"), {"fields": ["done", "priority"]}),
         ]
 
     def get_form(self, request, obj=None, change=False, **kwargs):
@@ -556,20 +582,24 @@ class NotizenAdmin(CustomModelAdmin):
             form.base_fields['description'].initial = ""
             if "from_order" in request.GET:
                 pk = request.GET.get("from_order")
-                form.base_fields['name'].initial = 'Bestellung #' + pk
-                form.base_fields['description'].initial += '\n\n[Bestellung #' + pk + "]"
+                t = _('Bestellung #%d') % pk
+                form.base_fields['name'].initial = t
+                form.base_fields['description'].initial += f'\n\n[{t}]'
             if "from_product" in request.GET:
                 pk = request.GET.get("from_product")
-                form.base_fields['name'].initial = 'Produkt #' + pk
-                form.base_fields['description'].initial += '\n\n[Produkt #' + pk + "]"
+                t = _('Produkt #%d') % pk
+                form.base_fields['name'].initial = t
+                form.base_fields['description'].initial += f'\n\n[{t}]'
             if "from_customer" in request.GET:
                 pk = request.GET.get("from_customer")
-                form.base_fields['name'].initial = 'Kunde #' + pk
-                form.base_fields['description'].initial += '\n\n[Kunde #' + pk + "]"
+                t = _('Kunde #%d') % pk
+                form.base_fields['name'].initial = t
+                form.base_fields['description'].initial += f'\n\n[{t}]'
             if "from_delivery" in request.GET:
                 pk = request.GET.get("from_delivery")
-                form.base_fields['name'].initial = 'Lieferung #' + pk
-                form.base_fields['description'].initial += '\n\n[Lieferung #' + pk + "]"
+                t = _('Lieferung #%d') % pk
+                form.base_fields['name'].initial = t
+                form.base_fields['description'].initial += f'\n\n[{t}]'
         return form
 
     # Save
@@ -584,10 +614,10 @@ class NotizenAdmin(CustomModelAdmin):
                     obj.linked_order = order
                     obj.save()
                     messages.info(
-                        request, "Bestellung #%s wurde mit dieser Notiz verknüpft." % pk)
+                        request, _("Bestellung #%s wurde mit dieser Notiz verknüpft.") % pk)
                 else:
                     messages.warning(
-                        request, "Bestellung #%s konnte nicht gefunden werden. Die Notiz wurde trotzdem erstellt." % pk)
+                        request, _("Bestellung #%s konnte nicht gefunden werden. Die Notiz wurde trotzdem erstellt.") % pk)
             if "from_product" in request.GET:
                 pk = request.GET["from_product"]
                 if Produkt.objects.filter(pk=pk).exists():
@@ -595,30 +625,30 @@ class NotizenAdmin(CustomModelAdmin):
                     obj.linked_product = product
                     obj.save()
                     messages.info(
-                        request, "Produkt #%s wurde mit dieser Notiz verknüpft." % pk)
+                        request, _("Produkt #%s wurde mit dieser Notiz verknüpft.") % pk)
                 else:
                     messages.warning(
-                        request, "Produkt #%s konnte nicht gefunden werden. Die Notiz wurde trotzdem erstellt." % pk)
+                        request, _("Produkt #%s konnte nicht gefunden werden. Die Notiz wurde trotzdem erstellt.") % pk)
             if "from_customer" in request.GET:
                 pk = request.GET["from_customer"]
                 if Kunde.objects.filter(pk=pk).exists():
                     customer = Kunde.objects.get(pk=pk)
                     obj.linked_customer = customer
                     obj.save()
-                    messages.info(request, "Kunde #%s wurde mit dieser Notiz verknüpft." % pk)
+                    messages.info(request, _("Kunde #%s wurde mit dieser Notiz verknüpft.") % pk)
                 else:
                     messages.warning(
-                        request, "Kunde #%s konnte nicht gefunden werden. Die Notiz wurde trotzdem erstellt." % pk)
+                        request, _("Kunde #%s konnte nicht gefunden werden. Die Notiz wurde trotzdem erstellt.") % pk)
             if "from_delivery" in request.GET:
                 pk = request.GET["from_delivery"]
                 if Lieferung.objects.filter(pk=pk).exists():
                     delivery = Lieferung.objects.get(pk=pk)
                     obj.linked_delivery = delivery
                     obj.save()
-                    messages.info(request, "Lieferung #%s wurde mit dieser Notiz verknüpft." % pk)
+                    messages.info(request, _("Lieferung #%s wurde mit dieser Notiz verknüpft.") % pk)
                 else:
                     messages.warning(
-                        request, "Lieferung #%s konnte nicht gefunden werden. Die Notiz wurde trotzdem erstellt." % pk)
+                        request, _("Lieferung #%s konnte nicht gefunden werden. Die Notiz wurde trotzdem erstellt.") % pk)
 
 
 class ProduktInlineKategorienInline(CustomTabularInline):
@@ -642,25 +672,25 @@ class ProduktInlineKategorienInline(CustomTabularInline):
 class ProduktAdmin(CustomModelAdmin):
     def get_fieldsets(self, request, obj=None):
         return [
-            ('Infos', {'fields': ['article_number', 'name']}),
-            ('Beschrieb', {
+            (_('Infos'), {'fields': ['article_number', 'name']}),
+            (_('Beschrieb'), {
                 'fields': ['short_description', 'description'],
                 'classes': ["collapse start-open"]}),
-            ('Daten', {'fields': [
+            (_('Daten'), {'fields': [
                 'quantity_description', 'selling_price', 'vat_rate', 'lagerbestand', 'soll_lagerbestand']}),
-            ('Lieferant', {
+            (_('Lieferant'), {
                 'fields': [
                     'lieferant', 'lieferant_preis', 'lieferant_article_number', 'lieferant_url'
                 ], 'classes': ["collapse start-open"]}),
-            ('Aktion', {
+            (_('Aktion'), {
                 'fields': [
                     'sale_from', 'sale_to', 'sale_price'
                 ], 'classes': ["collapse start-open"]}),
-            ('Links', {
+            (_('Links'), {
                 'fields': [
                     'datasheet_url', 'image_url'
                 ], 'classes': ["collapse"]}),
-            ('Bemerkung / Notiz', {
+            (_('Bemerkung / Notiz'), {
                 'fields': [
                     'note', 'linked_note_html'] if obj else ['note'],
                 'classes': ["collapse start-open"]})
@@ -687,30 +717,42 @@ class ProduktAdmin(CustomModelAdmin):
 
     # Actions
 
-    @admin.action(description="Produkte von WooCommerce aktualisieren", permissions=["change"])
+    @admin.action(description=_("Produkte von WooCommerce aktualisieren"), permissions=["change"])
     def wc_update(self, request, queryset):
         successcount, errorcount = WooCommerce.product_bulk_update(queryset.all())
-        messages.success(request, ((
-            '{} Produkte' if successcount != 1 else 'Ein Produkt') + ' von WooCommerce aktualisiert!').format(successcount))
+        messages.success(request, ngettext(
+            '%d Produkt wurde von WooCommerce aktualisiert.',
+            '%d Produkte wurden von WooCommerce aktualisiert.',
+            successcount
+        ))
         if errorcount:
-            messages.error(request, ('Beim Import von ' + (
-                '{} Produkten' if errorcount != 1 else 'einem Produkt') + ' von WooCommerce ist ein Fehler aufgetreten!').format(errorcount))
+            messages.error(request, ngettext(
+                '%d Produkt konnte nicht von WooCommerce aktualisiert werden.',
+                '%d Produkte konnten nicht von WooCommerce aktualisiert werden.',
+                errorcount
+            ))
 
-    @admin.action(description="Lagerbestand zurücksetzen", permissions=["change"])
+    @admin.action(description=_("Lagerbestand zurücksetzen"), permissions=["change"])
     def lagerbestand_zuruecksetzen(self, request, queryset):
         for produkt in queryset.all():
             produkt.lagerbestand = 0
             produkt.save()
-        messages.success(request, (('Lagerbestand von {} Produkten' if queryset.count(
-        ) != 1 else 'Lagerbestand von einem Produkt') + ' zurückgesetzt!').format(queryset.count()))
+        messages.success(request, ngettext(
+            'Lagerbestand von %d Produkt zurückgesetzt.',
+            'Lagerbestand von %d Produkten zurückgesetzt.',
+            queryset.count()
+        ))
 
-    @admin.action(description="Aktion beenden", permissions=["change"])
+    @admin.action(description=_("Aktion beenden"), permissions=["change"])
     def end_sale(self, request, queryset):
         for produkt in queryset.all():
             produkt.sale_to = timezone.now()
             produkt.save()
-        messages.success(request, (('Aktion von {} Produkten' if queryset.count(
-        ) != 1 else 'Aktion von einem Produkt') + ' beendet!').format(queryset.count()))
+        messages.success(request, ngettext(
+            'Aktion von %d Produkt beendet.',
+            'Aktion von %d Produkten beendet.',
+            queryset.count()
+        ))
 
     actions = ["wc_update", "lagerbestand_zuruecksetzen", "end_sale"]
 
@@ -724,8 +766,8 @@ class ProduktAdmin(CustomModelAdmin):
 
 class ProduktkategorienAdminProduktInline(CustomStackedInline):
     model = Produkt.categories.through
-    verbose_name = "Produkt in dieser Kategorie"
-    verbose_name_plural = "Produkte in dieser Kategorie"
+    verbose_name = _("Produkt in dieser Kategorie")
+    verbose_name_plural = _("Produkte in dieser Kategorie")
     extra = 0
 
     autocomplete_fields = ("produkt", )
@@ -744,8 +786,8 @@ class ProduktkategorienAdminProduktInline(CustomStackedInline):
 @admin.register(Produktkategorie)
 class ProduktkategorienAdmin(CustomModelAdmin):
     fieldsets = [
-        ('Infos', {'fields': ['name', 'description', 'image_url']}),
-        ('Übergeordnete Kategorie', {'fields': ['parent_category']})
+        (_('Infos'), {'fields': ['name', 'description', 'image_url']}),
+        (_('Übergeordnete Kategorie'), {'fields': ['parent_category']})
     ]
 
     list_display = ('clean_name', 'clean_description',
@@ -768,14 +810,20 @@ class ProduktkategorienAdmin(CustomModelAdmin):
 
     # Actions
 
-    @admin.action(description="Kategorien von WooCommerce aktualisieren", permissions=["change"])
+    @admin.action(description=_("Kategorien von WooCommerce aktualisieren"), permissions=["change"])
     def wc_update(self, request, queryset):
         successcount, errorcount = WooCommerce.category_bulk_update(queryset.all())
-        messages.success(request, ((
-            '{} Kategorien' if successcount != 1 else 'Eine Kategorie') + ' von WooCommerce aktualisiert!').format(successcount))
+        messages.success(request, ngettext(
+            '%d Kategorie wurde von WooCommerce aktualisiert.',
+            '%d Kategorien wurden von WooCommerce aktualisiert.',
+            successcount
+        ))
         if errorcount:
-            messages.error(request, ('Beim Import von ' + (
-                '{} Kategorien' if errorcount != 1 else 'einer Kategorie') + ' von WooCommerce ist ein Fehler aufgetreten!').format(errorcount))
+            messages.error(request, ngettext(
+                '%d Kategorie konnte nicht von WooCommerce aktualisiert werden.',
+                '%d Kategorien konnten nicht von WooCommerce aktualisiert werden.',
+                errorcount
+            ))
 
     actions = ["wc_update"]
 
@@ -783,16 +831,16 @@ class ProduktkategorienAdmin(CustomModelAdmin):
 @admin.register(Zahlungsempfaenger)
 class ZahlungsempfaengerAdmin(CustomModelAdmin):
     fieldsets = [
-        ("Infos", {
+        (_("Infos"), {
             "fields": ["name", "swiss_uid", "logourl", "website"]
         }),
-        ("Adresse", {
+        (_("Adresse"), {
             "fields": ["address_1", "address_2", "country"]
         }),
-        ("Zahlungsdetails", {
+        (_("Zahlungsdetails"), {
             "fields": ["mode", "qriban", "iban"]
         }),
-        ("Kontaktdaten", {
+        (_("Kontaktdaten"), {
             "fields": ["email", "phone"],
             "classes": ["collapse"]
         })
@@ -811,11 +859,11 @@ class ZahlungsempfaengerAdmin(CustomModelAdmin):
         super().save_model(request, obj, form, change)
         if obj:
             if obj.mode == "QRR" and not obj.has_valid_qr_iban():
-                messages.error(request, "Ungültige QR-IBAN!")
+                messages.error(request, _("Ungültige QR-IBAN!"))
             if obj.mode == "NON" and not obj.has_valid_iban():
-                messages.error(request, "Ungültige IBAN!")
+                messages.error(request, _("Ungültige IBAN!"))
             if obj.swiss_uid and not obj.has_valid_uid():
-                messages.warning(request, "Ungültige UID!")
+                messages.warning(request, _("Ungültige UID!"))
 
 
 modeladmins = [

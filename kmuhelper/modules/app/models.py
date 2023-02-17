@@ -1,7 +1,10 @@
 from django.contrib import admin
 from django.db import models
+from django.utils.translation import gettext_lazy, gettext
 
 from kmuhelper.modules.main.models import Notiz, Bestellung, Produkt, Lieferung
+
+_ = gettext_lazy
 
 #####
 
@@ -18,11 +21,11 @@ class App_ToDo(Notiz):
 
     class Meta:
         proxy = True
-        verbose_name = "Notiz"
-        verbose_name_plural = "Notizen"
+        verbose_name = _("Notiz")
+        verbose_name_plural = _("Notizen")
         default_permissions = ('add', 'change', 'view')
 
-    admin_title = "ToDo-Liste"
+    admin_title = _("ToDo-Liste")
 
 
 class App_WarenausgangManager(models.Manager):
@@ -37,11 +40,11 @@ class App_Warenausgang(Bestellung):
 
     class Meta:
         proxy = True
-        verbose_name = "Bestellung"
-        verbose_name_plural = "Bestellungen"
+        verbose_name = _("Bestellung")
+        verbose_name_plural = _("Bestellungen")
         default_permissions = ('add', 'change', 'view')
 
-    admin_title = "Warenausgang"
+    admin_title = _("Warenausgang")
     admin_icon = "fas fa-box-open"
 
 
@@ -57,32 +60,32 @@ class App_Zahlungseingang(Bestellung):
 
     class Meta:
         proxy = True
-        verbose_name = "Bestellung"
-        verbose_name_plural = "Bestellung"
+        verbose_name = _("Bestellung")
+        verbose_name_plural = _("Bestellungen")
         default_permissions = ('add', 'change', 'view')
 
-    admin_title = "Zahlungseingang"
+    admin_title = _("Zahlungseingang")
     admin_icon = "fas fa-hand-holding-dollar"
 
 
 class App_Lagerbestand(Produkt):
     IS_APP_MODEL = True
 
-    @admin.display(description="Preis")
+    @admin.display(description=_("Preis"))
     def get_current_price(self, *args, **kwargs):
         return super().get_current_price(*args, **kwargs)
 
-    @admin.display(description="Nr.", ordering="article_number")
+    @admin.display(description=_("Nr."), ordering="article_number")
     def nr(self):
         return self.article_number
 
     class Meta:
         proxy = True
-        verbose_name = "Produkt"
-        verbose_name_plural = "Produkte"
+        verbose_name = _("Produkt")
+        verbose_name_plural = _("Produkte")
         default_permissions = ('add', 'change', 'view')
 
-    admin_title = "Lagerbestand"
+    admin_title = _("Lagerbestand")
 
 
 class App_WareneingangsManager(models.Manager):
@@ -97,8 +100,8 @@ class App_Wareneingang(Lieferung):
 
     class Meta:
         proxy = True
-        verbose_name = "Lieferung"
-        verbose_name_plural = "Lieferungen"
+        verbose_name = _("Lieferung")
+        verbose_name_plural = _("Lieferungen")
         default_permissions = ('add', 'change', 'view')
 
-    admin_title = "Wareneingang"
+    admin_title = _("Wareneingang")

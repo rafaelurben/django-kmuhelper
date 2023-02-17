@@ -10,7 +10,7 @@ from kmuhelper.modules.main.models import Produkt, Kunde, Produktkategorie, Best
 from kmuhelper.utils import runden
 
 
-PREFIX = "[deep_pink4][KMUHelper][/] -"
+PREFIX = "[deep_pink4][KMUHelper WooCommerce][/] -"
 
 
 def log(string, *args):
@@ -75,7 +75,7 @@ class WooCommerce():
                 cls.category_update(obj, api=wcapi)
             newproduct.categories.add(obj)
         newproduct.save()
-        log("Produkt erstellt:", str(newproduct))
+        log("Product created:", str(newproduct))
         return newproduct
 
     @classmethod
@@ -92,8 +92,7 @@ class WooCommerce():
             pass
         except KeyError:
             if "code" in newproduct and newproduct["code"] == "woocommerce_rest_product_invalid_id":
-                log(PREFIX +
-                    " [red]Produkt existiert in WooCommerce nicht![/]")
+                log("[red]Product does not exist in WooCommerce![/] Link removed!", str(product))
                 product.woocommerceid = 0
                 product.save()
                 return product
@@ -121,7 +120,7 @@ class WooCommerce():
         product.categories.add(*newcategories)
 
         product.save()
-        log("Produkt aktualisiert:", str(product))
+        log("Product updated:", str(product))
         return product
 
     @classmethod
@@ -131,17 +130,17 @@ class WooCommerce():
 
         with Progress() as progress:
             task_prepare = progress.add_task(
-                PREFIX + " [orange_red1]Produktdownload vorbereiten...", total=1)
+                PREFIX + " [orange_red1]Preparing product download...", total=1)
 
-            excludeids = str([obj.woocommerceid for obj in Produkt.objects.all().exclude(
-                woocommerceid=0)])[1:-1]
+            excludeids = ",".join([obj.woocommerceid for obj in Produkt.objects.all().exclude(
+                woocommerceid=0)])
             productlist = []
 
             progress.update(task_prepare, advance=1)
             progress.stop_task(task_prepare)
 
             task_download = progress.add_task(
-                PREFIX + " [green]Produkte herunterladen...")
+                PREFIX + " [green]Downloading products...")
 
             r = wcapi.get("products?exclude=" + excludeids)
             productlist += r.json()
@@ -158,7 +157,7 @@ class WooCommerce():
 
             if productlist:
                 task_process = progress.add_task(
-                    PREFIX + " [cyan]Produkte verarbeiten...", total=len(productlist))
+                    PREFIX + " [cyan]Processing products...", total=len(productlist))
                 for product in productlist:
                     cls.product_create(product, api=wcapi)
                     progress.update(task_process, advance=1)
@@ -172,7 +171,7 @@ class WooCommerce():
 
         with Progress() as progress:
             task = progress.add_task(
-                PREFIX + " [orange_red1]Produkte aktualisieren...", total=products.count())
+                PREFIX + " [orange_red1]Updating products...", total=products.count())
             successcount = 0
             errorcount = 0
             for product in products:
@@ -222,7 +221,7 @@ class WooCommerce():
             addr_shipping_email="",
             addr_shipping_phone="",
         )
-        log("Kunde erstellt:", str(newcustomer))
+        log("Customer created:", str(newcustomer))
         return newcustomer
 
     @classmethod
@@ -234,7 +233,7 @@ class WooCommerce():
             newcustomer = wcapi.get(f'customers/{customer.woocommerceid}').json()
 
         if "code" in newcustomer and newcustomer["code"] == "woocommerce_rest_customer_invalid_id":
-            log("[red]Kunde existiert in WooCommerce nicht![/]")
+            log("[red]Customer does not exist in WooCommerce![/] Link removed.", str(customer))
             customer.woocommerceid = 0
             customer.save()
             return customer
@@ -268,7 +267,7 @@ class WooCommerce():
         customer.addr_shipping_postcode = newcustomer["shipping"]["postcode"]
         customer.addr_shipping_country = newcustomer["shipping"]["country"]
         customer.save()
-        log("Kunde aktualisiert:", str(customer))
+        log("Customer updated:", str(customer))
         return customer
 
     @classmethod
@@ -278,7 +277,7 @@ class WooCommerce():
 
         with Progress() as progress:
             task_prepare = progress.add_task(
-                PREFIX + " [orange_red1]Kundendownload vorbereiten...", total=1)
+                PREFIX + " [orange_red1]Preparing customer download...", total=1)
 
             excludeids = str([obj.woocommerceid for obj in Kunde.objects.all().exclude(
                 woocommerceid=0)])[1:-1]
@@ -288,7 +287,7 @@ class WooCommerce():
             progress.stop_task(task_prepare)
 
             task_download = progress.add_task(
-                PREFIX + " [green]Kunden herunterladen...")
+                PREFIX + " [green]Downloading customers...")
 
             r = wcapi.get("customers?exclude=" + excludeids)
             customerlist += r.json()
@@ -304,7 +303,7 @@ class WooCommerce():
 
             if customerlist:
                 task_process = progress.add_task(
-                    PREFIX + " [cyan]Kunden verarbeiten...", total=len(customerlist))
+                    PREFIX + " [cyan]Processing customers...", total=len(customerlist))
                 for customer in customerlist:
                     cls.customer_create(customer)
                     progress.update(task_process, advance=1)
@@ -318,7 +317,7 @@ class WooCommerce():
 
         with Progress() as progress:
             task = progress.add_task(
-                PREFIX + " [orange_red1]Kunden aktualisieren...", total=customers.count())
+                PREFIX + " [orange_red1]Updating customers...", total=customers.count())
             successcount = 0
             errorcount = 0
             for customer in customers:
@@ -340,7 +339,7 @@ class WooCommerce():
             newcategory = wcapi.get(f'products/categories/{category.woocommerceid}').json()
 
         if "code" in newcategory and newcategory["code"] == "woocommerce_rest_category_invalid_id":
-            log("[red]Kategorie existiert in WooCommerce nicht![/]")
+            log("[red]Category does not exist in WooCommerce![/] Link removed.", str(category))
             category.woocommerceid = 0
             category.save()
             return category
@@ -356,7 +355,7 @@ class WooCommerce():
                 cls.category_update(obj, api=wcapi)
             category.parent_category = obj
         category.save()
-        log("Kategorie aktualisiert:", str(category))
+        log("Category updated:", str(category))
         return category
 
     @classmethod
@@ -366,7 +365,7 @@ class WooCommerce():
 
         with Progress() as progress:
             task_prepare = progress.add_task(
-                PREFIX + " [orange_red1]Kategoriendownload vorbereiten...", total=1)
+                PREFIX + " [orange_red1]Preparing category download...", total=1)
 
             excludeids = str([obj.woocommerceid for obj in Produktkategorie.objects.all().exclude(
                 woocommerceid=0)])[1:-1]
@@ -376,7 +375,7 @@ class WooCommerce():
             progress.stop_task(task_prepare)
 
             task_download = progress.add_task(
-                PREFIX + " [green]Kategorien herunterladen...")
+                PREFIX + " [green]Downloading categories...")
 
             r = wcapi.get("products/categories?exclude=" + excludeids)
             categorylist += r.json()
@@ -395,7 +394,7 @@ class WooCommerce():
 
             if categorylist:
                 task_process = progress.add_task(
-                    PREFIX + " [cyan]Kategorien verarbeiten...", total=len(categorylist))
+                    PREFIX + " [cyan]Processing categories...", total=len(categorylist))
                 for category in categorylist:
                     newcategory = Produktkategorie.objects.create(
                         name=preparestring(category["name"]),
@@ -404,7 +403,7 @@ class WooCommerce():
                                   ) if category["image"] else "",
                         woocommerceid=category["id"]
                     )
-                    log("Kategorie erstellt:", category["name"])
+                    log("Category created:", category["name"])
                     if category["parent"]:
                         categorieswithparents.append(
                             (newcategory, category["parent"]))
@@ -413,7 +412,7 @@ class WooCommerce():
 
             if categorieswithparents:
                 task_process2 = progress.add_task(
-                    PREFIX + " [cyan]Kategorieabhängigkeiten verarbeiten...", total=len(categorieswithparents))
+                    PREFIX + " [cyan]Processing category dependencies...", total=len(categorieswithparents))
                 for cat, parentwcid in categorieswithparents:
                     cat.parent_category = Produktkategorie.objects.get(
                         woocommerceid=parentwcid)
@@ -429,7 +428,7 @@ class WooCommerce():
 
         with Progress() as progress:
             task = progress.add_task(
-                PREFIX + " [orange_red1]Kategorien aktualisieren...", total=categories.count())
+                PREFIX + " [orange_red1]Updating categories...", total=categories.count())
             successcount = 0
             errorcount = 0
             for category in categories:
@@ -517,7 +516,7 @@ class WooCommerce():
             )
         neworder.save()
         neworder.second_save()
-        log("Bestellung erstellt:", str(neworder))
+        log("Order created:", str(neworder))
 
         if sendstockwarning:
             neworder.email_stock_warning()
@@ -532,7 +531,7 @@ class WooCommerce():
             neworder = wcapi.get(f'orders/{order.woocommerceid}').json()
 
         if "code" in neworder and neworder["code"] == "woocommerce_rest_order_invalid_id":
-            log("[red]Bestellung existiert in WooCommerce nicht![/]")
+            log("[red]Order does not exist in WooCommerce![/] Link removed.", str(order))
             order.woocommerceid = 0
             order.save()
             return order
@@ -564,7 +563,7 @@ class WooCommerce():
         order.addr_shipping_postcode = neworder["shipping"]["postcode"]
         order.addr_shipping_country = neworder["shipping"]["country"]
         order.save()
-        log("Bestellung aktualisiert: ", str(order))
+        log("Order updated: ", str(order))
         return order
 
     @classmethod
@@ -574,7 +573,7 @@ class WooCommerce():
 
         with Progress() as progress:
             task_prepare = progress.add_task(
-                PREFIX + " [orange_red1]Bestellungsdownload vorbereiten...", total=1)
+                PREFIX + " [orange_red1]Preparing order download...", total=1)
 
             excludeids = str([obj.woocommerceid for obj in Bestellung.objects.all().exclude(
                 woocommerceid=0)])[1:-1]
@@ -584,7 +583,7 @@ class WooCommerce():
             progress.stop_task(task_prepare)
 
             task_download = progress.add_task(
-                PREFIX + " [green]Bestellungen herunterladen...")
+                PREFIX + " [green]Downloading orders...")
 
             r = wcapi.get("orders?exclude=" + excludeids)
             orderlist += r.json()
@@ -600,7 +599,7 @@ class WooCommerce():
 
             if orderlist:
                 task_process = progress.add_task(
-                    PREFIX + " [cyan]Bestellungen verarbeiten...", total=len(orderlist))
+                    PREFIX + " [cyan]Processing orders...", total=len(orderlist))
                 for order in orderlist:
                     cls.order_create(order, api=wcapi, sendstockwarning=False)
                     progress.update(task_process, advance=1)
@@ -614,7 +613,7 @@ class WooCommerce():
 
         with Progress() as progress:
             task = progress.add_task(
-                PREFIX + " [orange_red1]Bestellungen aktualisieren...", total=orders.count())
+                PREFIX + " [orange_red1]Updating orders...", total=orders.count())
             successcount = 0
             errorcount = 0
             for order in orders:
