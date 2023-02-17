@@ -1,8 +1,10 @@
 from django import template
 from django.urls import reverse
 from django.apps import apps
+from django.utils.html import format_html
 
 from kmuhelper import settings
+from kmuhelper.modules import config
 from kmuhelper.modules.integrations.woocommerce.utils import is_connected as is_woocommerce_connected
 
 register = template.Library()
@@ -19,6 +21,20 @@ def kmuhelper_email_show_buttons():
     show = bool(settings.get_db_setting("email-show-buttons"))
     return show
 
+@register.simple_tag(name="get_admin_model", takes_context=True)
+def get_admin_model(context, model_name=None):
+    model = config.get_model_from_context(context, model_name)
+    return model
+
+@register.simple_tag(name="kmuhelper_branding", takes_context=True)
+def kmuhelper_branding(context, module_name=None):
+    module = config.get_module_from_context(context, module_name)
+
+    url_home = reverse("kmuhelper:home")
+    url_module = reverse(module.get('viewname'))
+
+    return format_html('<h1 id="site-name"><a target="_top" href="{}">{}</a> | <a id="app-link" target="_top" href="{}">{}</a></h1>',
+                       url_home, 'KMUHelper', url_module, module.get('title'))
 
 @register.filter
 def kmuhelper_breadcrumbs(value, args=None):

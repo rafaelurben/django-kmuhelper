@@ -1,6 +1,6 @@
 {% extends 'admin/kmuhelper/base_site.html' %}
 
-{% load static %}
+{% load static kmuhelper_tags %}
 
 {% block title %}Einstellungen | KMUHelper{% endblock %}
 
@@ -8,10 +8,7 @@
 {% endblock %}
 
 {% block branding %}
-    <h1 id="site-name">
-        <a target="_top" href="{% url 'kmuhelper:home' %}">KMUHelper</a> | 
-        <a href="{% url 'kmuhelper:settings' %}">Einstellungen</a>
-    </h1>
+    {% kmuhelper_branding 'settings' %}
 {% endblock %}
 
 {% block extrastyle %}

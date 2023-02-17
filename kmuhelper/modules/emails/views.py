@@ -8,7 +8,8 @@ from django.utils.translation import gettext_lazy, gettext
 
 from kmuhelper.decorators import require_object, confirm_action
 from kmuhelper.modules.emails.models import EMail, Attachment, EMailTemplate
-from kmuhelper.utils import render_error, custom_app_list
+from kmuhelper.utils import render_error
+import kmuhelper.modules.config as config
 
 _ = gettext_lazy
 
@@ -169,11 +170,4 @@ def emailtemplate_use(request, obj):
 
 @login_required(login_url=reverse_lazy("admin:login"))
 def email_index(request):
-    return render(request, 'admin/kmuhelper/_special/emails/app_index.html', {
-        'app_label': 'kmuhelper',
-        'app_list': custom_app_list(request, [EMail, EMailTemplate, Attachment], _("KMUHelper E-Mails"), reverse('kmuhelper:email-index')),
-        'has_permission': True,
-        'is_nav_sidebar_enabled': False,
-        'is_popup': False,
-        'title': _('KMUHelper E-Mails'),
-    })
+    return render(request, 'admin/kmuhelper/_special/emails/app_index.html', config.get_module_home_context(request, 'emails'))

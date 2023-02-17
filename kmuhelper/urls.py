@@ -14,7 +14,7 @@ urlpatterns = [
                     views._templatetest, name="_templatetest"),
 
     # Main modules
-    path('',            include('kmuhelper.modules.main')),
+    path('main/',       include('kmuhelper.modules.main')),
     path('api/',        include('kmuhelper.modules.api')),
     path('app/',        include('kmuhelper.modules.app')),
     path('emails/',     include('kmuhelper.modules.emails')),

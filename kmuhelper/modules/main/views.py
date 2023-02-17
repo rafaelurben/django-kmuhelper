@@ -104,3 +104,6 @@ def copy_order_to_supply(request, obj):
         request, _("Bestellung wurde zu einer Lieferung kopiert!"))
     return redirect(reverse("admin:kmuhelper_supply_change", args=[new.pk]))
 
+
+def index(request):
+    return redirect(reverse("admin:app_list", args=["kmuhelper"]))

@@ -1,5 +1,7 @@
 {% extends "admin/kmuhelper/app_index.html" %}
 
+{% load kmuhelper_tags %}
+
 {% block title %}KMUHelper E-Mails{% endblock %}
 
 {% block content_title %}
@@ -7,7 +9,7 @@
 {% endblock %}
 
 {% block branding %}
-    <h1 id="site-name"><a target="_top" href="{% url 'kmuhelper:home' %}">KMUHelper</a> | <a target="_top" href="{% url 'kmuhelper:email-index' %}">E-Mails</a></h1>
+    {% kmuhelper_branding module_name='emails' %}
 {% endblock %}
 
 {% block pageinfo %}

@@ -2,10 +2,6 @@
 
 {% load kmuhelper_tags %}
 
-{% block branding %}
-    <h1 id="site-name"><a target="_top" href="{% url 'kmuhelper:home' %}">KMUHelper</a> | <a target="_top" href="{% url 'kmuhelper:email-index' %}">E-Mails</a></h1>
-{% endblock %}
-
 {% block breadcrumbs %}
     {{ block.super | kmuhelper_breadcrumbs:"KMUHelper E-Mails|kmuhelper:email-index" | safe }}
 {% endblock %}

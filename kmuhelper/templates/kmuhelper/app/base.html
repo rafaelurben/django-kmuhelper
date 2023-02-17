@@ -1,11 +1,11 @@
 {% extends "admin/base.html" %}
 
-{% load static %}
+{% load static kmuhelper_tags %}
 
 {% block title %}{% block subtitle %}{% endblock %} | KMUHelper App{% endblock %}
 
 {% block branding %}
-    <h1 id="site-name"><a target="_top" href="{% url 'kmuhelper:home' %}">KMUHelper</a> | <a target="_top" href="{% url 'kmuhelper:app-mobile' %}">App</a></h1>
+    {% kmuhelper_branding 'app' %}
 {% endblock %}
 
 {% block breadcrumbs %}{% endblock %}

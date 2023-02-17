@@ -1,14 +1,12 @@
 {% extends 'admin/kmuhelper/change_form.html' %}
 
-{% load admin_urls %}
-
-{% block branding %}
-    <h1 id="site-name"><a target="_top" href="{% url 'kmuhelper:home' %}">KMUHelper</a> | <a id="app-link" target="_top" href="{% url 'kmuhelper:app-desktop' %}">App</a></h1>
-{% endblock %}
+{% load admin_urls kmuhelper_tags %}
 
 {% block breadcrumbs %}
+    {% get_admin_model as model %}
+
     <div id="breadcrumbs" class="breadcrumbs" style="display: block">
-        <a href="{% url 'kmuhelper:app-desktop' %}">KMUHelper App</a> &gt; <a href="{% url opts|admin_urlname:'changelist' %}">{% block modulename %}{{ opts.verbose_name_plural }}{% endblock %}</a> &gt; {% if change %}{{ original }}{% else %}{{ opts.verbose_name }} hinzufügen{% endif %}
+        <a href="{% url 'kmuhelper:app-desktop' %}">KMUHelper App</a> &gt; <a href="{% url opts|admin_urlname:'changelist' %}">{{ model.admin_title }}</a> &gt; {% if change %}{{ original }}{% else %}{{ opts.verbose_name }} hinzufügen{% endif %}
     </div>
     <div id="alternate-breadcrumbs" class="breadcrumbs" style="display: none">
         <a href="{% url opts|admin_urlname:'changelist' %}">&lt; Zurück</a>
