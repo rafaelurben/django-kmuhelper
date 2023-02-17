@@ -28,15 +28,15 @@ class App_ToDo(Note):
     admin_title = _("ToDo-Liste")
 
 
-class App_WarenausgangManager(models.Manager):
+class App_ShippingManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(is_shipped=False)
 
 
-class App_Warenausgang(Order):
+class App_Shipping(Order):
     IS_APP_MODEL = True
 
-    objects = App_WarenausgangManager()
+    objects = App_ShippingManager()
 
     class Meta:
         proxy = True
@@ -48,15 +48,15 @@ class App_Warenausgang(Order):
     admin_icon = "fas fa-box-open"
 
 
-class App_ZahlungseingangManager(models.Manager):
+class App_IncomingPaymentsManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(is_paid=False)
 
 
-class App_Zahlungseingang(Order):
+class App_IncomingPayments(Order):
     IS_APP_MODEL = True
 
-    objects = App_ZahlungseingangManager()
+    objects = App_IncomingPaymentsManager()
 
     class Meta:
         proxy = True
@@ -68,7 +68,7 @@ class App_Zahlungseingang(Order):
     admin_icon = "fas fa-hand-holding-dollar"
 
 
-class App_Lagerbestand(Product):
+class App_Stock(Product):
     IS_APP_MODEL = True
 
     @admin.display(description=_("Preis"))
@@ -88,15 +88,15 @@ class App_Lagerbestand(Product):
     admin_title = _("Lagerbestand")
 
 
-class App_WareneingangsManager(models.Manager):
+class App_ArrivalManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(is_added_to_stock=False)
 
 
-class App_Wareneingang(Supply):
+class App_Arrival(Supply):
     IS_APP_MODEL = True
 
-    objects = App_WareneingangsManager()
+    objects = App_ArrivalManager()
 
     class Meta:
         proxy = True

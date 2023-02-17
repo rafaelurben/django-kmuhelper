@@ -37,10 +37,10 @@ MODULES = {
         'viewname': 'kmuhelper:app-desktop',
         'model_names': [
             'App_ToDo',
-            'App_Lagerbestand',
-            'App_Warenausgang',
-            'App_Wareneingang',
-            'App_Zahlungseingang',
+            'App_Stock',
+            'App_Shipping',
+            'App_Arrival',
+            'App_IncomingPayments',
         ],
     },
     'settings': {

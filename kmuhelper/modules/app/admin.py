@@ -5,7 +5,7 @@ from django.urls import path
 from django.views.decorators.clickjacking import xframe_options_sameorigin as allow_iframe
 from django.views.generic import RedirectView
 
-from kmuhelper.modules.app.models import App_ToDo, App_Warenausgang, App_Zahlungseingang, App_Lagerbestand, App_Wareneingang
+from kmuhelper.modules.app.models import App_ToDo, App_Shipping, App_IncomingPayments, App_Stock, App_Arrival
 from kmuhelper.modules.main.admin import NoteAdmin, OrderAdmin, SupplyAdmin, ProductAdmin
 from kmuhelper.overrides import CustomModelAdmin
 
@@ -62,8 +62,8 @@ class App_ToDoAdmin(App_AdminBase, NoteAdmin):
     ordering = ["-priority", "created_at"]
 
 
-@admin.register(App_Warenausgang)
-class App_WarenausgangAdmin(App_AdminBase, OrderAdmin):
+@admin.register(App_Shipping)
+class App_ShippingAdmin(App_AdminBase, OrderAdmin):
     list_display = ('id', 'info', 'status', 'shipped_on', 'is_shipped',
                     'tracking_number', 'linked_note_html')
     list_editable = ("shipped_on", "is_shipped", "status", "tracking_number")
@@ -74,8 +74,8 @@ class App_WarenausgangAdmin(App_AdminBase, OrderAdmin):
     actions = ()
 
 
-@admin.register(App_Zahlungseingang)
-class App_ZahlungseingangAdmin(App_AdminBase, OrderAdmin):
+@admin.register(App_IncomingPayments)
+class App_IncomingPaymentsAdmin(App_AdminBase, OrderAdmin):
     list_display = ('id', 'info', 'status', 'paid_on', 'is_paid',
                     'display_cached_sum', 'display_payment_conditions', 'linked_note_html')
     list_editable = ("paid_on", "is_paid", "status")
@@ -86,8 +86,8 @@ class App_ZahlungseingangAdmin(App_AdminBase, OrderAdmin):
     actions = ()
 
 
-@admin.register(App_Lagerbestand)
-class App_LagerbestandAdmin(App_AdminBase, ProductAdmin):
+@admin.register(App_Stock)
+class App_StockAdmin(App_AdminBase, ProductAdmin):
     list_display = ('nr', 'clean_name', 'stock_current',
                     'get_current_price', 'note', 'linked_note_html')
     list_display_links = ('nr',)
@@ -96,8 +96,8 @@ class App_LagerbestandAdmin(App_AdminBase, ProductAdmin):
     actions = ["reset_stock"]
 
 
-@admin.register(App_Wareneingang)
-class App_WareneingangenAdmin(App_AdminBase, SupplyAdmin):
+@admin.register(App_Arrival)
+class App_ArrivalAdmin(App_AdminBase, SupplyAdmin):
     list_display = ('name', 'date', 'total_quantity', 'linked_note_html')
     list_filter = ()
 
@@ -106,8 +106,8 @@ class App_WareneingangenAdmin(App_AdminBase, SupplyAdmin):
 
 modeladmins = [
     (App_ToDo, App_ToDoAdmin),
-    (App_Warenausgang, App_WarenausgangAdmin),
-    (App_Zahlungseingang, App_ZahlungseingangAdmin),
-    (App_Lagerbestand, App_LagerbestandAdmin),
-    (App_Wareneingang, App_WareneingangenAdmin),
+    (App_Shipping, App_ShippingAdmin),
+    (App_IncomingPayments, App_IncomingPaymentsAdmin),
+    (App_Stock, App_StockAdmin),
+    (App_Arrival, App_ArrivalAdmin),
 ]

@@ -45,23 +45,23 @@
                 <i class="fas fa-clipboard-list"></i>
             </a>
             {% endif %}
-            {% if perms.kmuhelper.view_app_warenausgang %}
-            <a href="#warenausgang" id="warenausgang" url="{% url 'admin:kmuhelper_app_warenausgang_changelist' %}" class="item">
+            {% if perms.kmuhelper.view_app_shipping %}
+            <a href="#shipping" id="shipping" url="{% url 'admin:kmuhelper_app_shipping_changelist' %}" class="item">
                 <i class="fas fa-shipping-fast"></i>
             </a>
             {% endif %}
-            {% if perms.kmuhelper.view_app_zahlungseingang %}
-            <a href="#zahlungseingang" id="zahlungseingang" url="{% url 'admin:kmuhelper_app_zahlungseingang_changelist' %}" class="item">
+            {% if perms.kmuhelper.view_app_incomingpayments %}
+            <a href="#incomingpayments" id="incomingpayments" url="{% url 'admin:kmuhelper_app_incomingpayments_changelist' %}" class="item">
                 <i class="fas fa-hand-holding-usd"></i>
             </a>
             {% endif %}
-            {% if perms.kmuhelper.view_app_lagerbestand %}
-            <a href="#lagerbestand" id="lagerbestand" url="{% url 'admin:kmuhelper_app_lagerbestand_changelist' %}" class="item">
+            {% if perms.kmuhelper.view_app_stock %}
+            <a href="#stock" id="stock" url="{% url 'admin:kmuhelper_app_stock_changelist' %}" class="item">
                 <i class="fas fa-warehouse"></i>
             </a>
             {% endif %}
-            {% if perms.kmuhelper.view_app_wareneingang %}
-            <a href="#wareneingang" id="wareneingang" url="{% url 'admin:kmuhelper_app_wareneingang_changelist' %}" class="item">
+            {% if perms.kmuhelper.view_app_arrival %}
+            <a href="#arrival" id="arrival" url="{% url 'admin:kmuhelper_app_arrival_changelist' %}" class="item">
                 <i class="fas fa-truck-loading"></i>
             </a>
             {% endif %}
