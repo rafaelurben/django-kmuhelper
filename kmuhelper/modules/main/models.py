@@ -7,6 +7,7 @@ import string
 from django.db import models
 from django.contrib import admin, messages
 from django.core.validators import RegexValidator, MinValueValidator, MaxValueValidator
+from django.forms import ValidationError
 from django.utils import timezone
 from django.utils.html import mark_safe, format_html
 from django.urls import reverse
@@ -2019,15 +2020,10 @@ class PaymentReceiver(CustomModel):
         except IndexError:
             return False
 
-    def has_valid_qr_iban(self):
-        return self._check_iban(self.qriban)
-
-    def has_valid_iban(self):
-        return self._check_iban(self.iban)
-
-    def has_valid_uid(self):
+    @classmethod
+    def _check_uid(cls, uid: str):
         try:
-            u = self.swiss_uid.split("-")[1].replace(".", "")
+            u = uid.split("-")[1].replace(".", "")
             p = 11 - (((int(u[0])*5)+(int(u[1])*4)+(int(u[2])*3)+(int(u[3])*2) +
                        (int(u[4])*7)+(int(u[5])*6)+(int(u[6])*5)+(int(u[7])*4)) % 11)
             return int(u[8]) == p
@@ -2035,9 +2031,33 @@ class PaymentReceiver(CustomModel):
             log("Error while validating UID:", e)
             return False
 
+    def has_valid_qr_iban(self):
+        return self._check_iban(self.qriban)
+
+    def has_valid_iban(self):
+        return self._check_iban(self.iban)
+
+    def has_valid_uid(self):
+        return self._check_uid(self.swiss_uid)
+
     @admin.display(description=_("Zahlungsempfänger"))
     def __str__(self):
         return f'{self.name} ({self.pk})'
+
+    def clean(self):
+        super().clean()
+
+        errors = {}
+
+        if self.mode == "QRR" and not self.has_valid_qr_iban():
+            errors['qriban'] = ValidationError(_("Im Modus 'QR-Referenz' muss eine gültige QR-IBAN angegeben werden!"))
+        if self.mode == "NON" and not self.has_valid_iban():
+            errors['iban'] = ValidationError(_("Im Modus 'Ohne Referenz' muss eine gültige IBAN angegeben werden!"))
+        if self.swiss_uid and not self.has_valid_uid():
+            errors['swiss_uid'] = ValidationError(_("Die UID ist ungültig!"), code="invalid")
+        
+        if errors:
+            raise ValidationError(errors)
 
     class Meta:
         verbose_name = _("Zahlungsempfänger")

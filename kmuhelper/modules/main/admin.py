@@ -853,18 +853,6 @@ class PaymentReceiverAdmin(CustomModelAdmin):
 
     save_on_top = True
 
-    # Save
-
-    def save_model(self, request, obj, form, change):
-        super().save_model(request, obj, form, change)
-        if obj:
-            if obj.mode == "QRR" and not obj.has_valid_qr_iban():
-                messages.error(request, _("Ungültige QR-IBAN!"))
-            if obj.mode == "NON" and not obj.has_valid_iban():
-                messages.error(request, _("Ungültige IBAN!"))
-            if obj.swiss_uid and not obj.has_valid_uid():
-                messages.warning(request, _("Ungültige UID!"))
-
 
 modeladmins = [
     (ContactPerson, ContactPersonAdmin),
