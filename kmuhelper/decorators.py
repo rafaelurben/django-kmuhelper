@@ -4,9 +4,11 @@ from django.contrib import messages
 from django.http import Http404
 from django.urls import reverse
 from django.shortcuts import redirect, render
+from django.utils.translation import gettext
 
 from kmuhelper.utils import render_error
 
+_ = gettext
 
 def confirm_action(action_message):
     """Decorator to show a confirm page where the user has to 
@@ -37,7 +39,7 @@ def require_object(model, redirect_url=None, raise_404=False, show_errorpage=Fal
                 return custom_response
 
             messages.warning(
-                request, f'{model._meta.verbose_name} mit ID "{object_id}" wurde nicht gefunden!')
+                request, _("%(name)s with ID %(id)s was not found!") % {"name": model._meta.verbose_name, "id": object_id})
 
             if raise_404:
                 raise Http404
