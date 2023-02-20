@@ -6,7 +6,7 @@ permalink: /manual/integrations/woocommerce
 
 Sie können den KMUHelper mit einem WooCommerce Shop verbinden, um Bestellungen, Produkte und Kunden von WooCommerce zu importieren.
 
-Besuchen Sie in den Einstellungen auf `Zu den WooCommerce-Einstellungen` und folgen Sie den Anweisungen.
+Klicken Sie in den Einstellungen auf `Zu den WooCommerce-Einstellungen` und folgen Sie den Anweisungen.
 
 Die Integration mit WooCommerce ist einseitig. Das heisst, dass die Daten aus WooCommerce in den KMUHelper importiert werden, aber nicht umgekehrt. Wenn Sie also z.B. eine Bestellung im KMUHelper erstellen, wird diese nicht in WooCommerce übernommen. (WICHTIG: Manche Daten im KMUHelper werden bei Erhalt der Daten von WooCommerce ÜBERSCHRIEBEN! Deshalb sollten Sie Änderungen an Produkten und Kunden vorzugsweise in WooCommerce vornehmen, anstatt im KMUHelper, um Fehler zu vermeiden.)
 
