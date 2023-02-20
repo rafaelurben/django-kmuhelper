@@ -15,6 +15,11 @@ SETTINGS = {
         "name": _("WooCommerce Shop-Url"),
         "description": _("Falls vorhanden: Die URL der Wordpress-Seite.")
     },
+    "wc-webhook-secret": {
+        "typ": "char",
+        "name": _("WooCommerce Webhook-Secret"),
+        "description": _("Falls vorhanden: Das Webhook-Secret für WooCommerce-Webhooks.")
+    },
     "email-stock-warning-receiver": {
         "typ": "email",
         "name": _("E-Mail-Adresse für Warnungen zum Lagerbestand"),
@@ -69,7 +74,7 @@ SETTINGS_FIELDSETS = [
     },
     {
         'name': _('WooCommerce-Integration'),
-        'fields': ['wc-url'],
+        'fields': ['wc-url', 'wc-webhook-secret'],
         'classes': 'wide',
     },
 ]

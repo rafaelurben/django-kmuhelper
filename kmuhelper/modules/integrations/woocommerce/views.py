@@ -17,7 +17,7 @@ from kmuhelper import settings
 from kmuhelper.decorators import require_object
 from kmuhelper.modules.main.models import Product, Customer, ProductCategory, Order
 from kmuhelper.modules.integrations.woocommerce.api import WooCommerce
-from kmuhelper.modules.integrations.woocommerce.utils import is_connected
+from kmuhelper.modules.integrations.woocommerce.utils import is_connected, base64_hmac_sha256
 from kmuhelper.utils import render_error
 
 _ = gettext_lazy
@@ -216,15 +216,23 @@ def wc_update_order(request, obj):
 
 @csrf_exempt
 def wc_webhooks(request):
+    "Endpoint for WooCommerce webhooks"
+
+    # 1. Check request method
+
     if request.method != "POST":
         messages.warning(request, gettext("This endpoint is only available via POST and not meant to be used by humans!"))
         return render_error(request, status=405)
 
+    # 2. Check request source
+
     if not ("x-wc-webhook-topic" in request.headers and "x-wc-webhook-source" in request.headers):
+        log("[orange_red1]WooCommerce Webhook accepted but ignored (no usable headers)![/] " + \
+            "(Might be a test request from WooCommerce)")
         return JsonResponse({
             "accepted": True,
             "info": "Request was accepted but ignored because it doesn't contain any usable info!"
-        }, status=202)
+        }, status=200)
 
     stored_url = settings.get_secret_db_setting("wc-url").lstrip(
         "https://").lstrip("http://").split("/")[0]
@@ -232,17 +240,44 @@ def wc_webhooks(request):
         "https://").lstrip("http://").split("/")[0]
 
     if not received_url == stored_url:
-        log("[orange_red1]WooCommerce Webhook ignored (unexpected domain)![/] " +
+        log("[orange_red1]WooCommerce Webhook rejected (unexpected domain)![/] " +
             "- Expected:", stored_url, "- Received:", received_url)
         return JsonResponse({
             "accepted": False,
             "reason": "Unknown domain!",
         }, status=403)
 
-    ## TODO: Check if the webhook is valid (e.g. by checking the signature)
-    ## https://woocommerce.github.io/woocommerce-rest-api-docs/#webhooks
+    # 3. Check request signature
 
-    log("WooCommerce Webhook received...")
+    if not ("x-wc-webhook-signature" in request.headers):
+        log("[orange_red1]WooCommerce Webhook rejected (no signature)![/]")
+        return JsonResponse({
+            "accepted": False,
+            "reason": "Invalid signature!",
+        }, status=403)
+
+    secret = settings.get_db_setting("wc-webhook-secret")
+
+    if secret:
+        received_signature = bytes(request.headers["x-wc-webhook-signature"], encoding="utf-8")
+        expected_signature = base64_hmac_sha256(str(secret).encode(), request.body)
+
+        if received_signature == expected_signature:
+            log("[green]WooCommerce Webhook signature check successful![/]")
+        else:
+            log("[orange_red1]WooCommerce Webhook signature check failed![/] " +
+                "- Expected:", expected_signature, "- Received:", received_signature)
+            return JsonResponse({
+                "accepted": False,
+                "reason": "Signature mismatch!",
+            }, status=403)
+
+    else:
+        log("[orange_red1]Skipped WooCommerce Webhook signature check (no secret available)![/]")
+
+    # Do stuff
+
+    log("WooCommerce Webhook is being processed...")
 
     topic = request.headers["x-wc-webhook-topic"]
     obj = json.loads(request.body)
