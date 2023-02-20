@@ -31,4 +31,9 @@ urlpatterns = [
          views.wc_update_order, name="wc-update-order"),
 
     path('webhooks', views.wc_webhooks, name="wc-webhooks"),
+
+    # User Interface
+
+    path('settings', views.wc_settings, name="wc-settings"),
+    path('system-status', views.wc_system_status, name="wc-system-status"),
 ]

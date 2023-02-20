@@ -7,7 +7,7 @@ from rich import print
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.http import JsonResponse
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 
@@ -17,7 +17,8 @@ from kmuhelper import settings
 from kmuhelper.decorators import require_object
 from kmuhelper.modules.main.models import Product, Customer, ProductCategory, Order
 from kmuhelper.modules.integrations.woocommerce.api import WooCommerce
-from kmuhelper.modules.integrations.woocommerce.utils import is_connected, base64_hmac_sha256
+from kmuhelper.modules.integrations.woocommerce.utils import is_connected, base64_hmac_sha256, random_secret
+from kmuhelper.modules.integrations.woocommerce.forms import WooCommerceSettingsForm
 from kmuhelper.utils import render_error
 
 _ = gettext_lazy
@@ -55,10 +56,6 @@ def wc_auth_key(request):
                 "wc-consumer_secret",
                 data["consumer_secret"])
 
-            settings.set_db_setting(
-                "wc-url",
-                "Bestätigt: " + storeurl +
-                " (Änderungen werden nur nach erneutem Verbinden angewendet!)")
             return JsonResponse({"success": True}, status=200)
 
         return JsonResponse({"success": False, "reason": "Unknown URL!"}, status=401)
@@ -72,7 +69,7 @@ def wc_auth_end(request):
         messages.success(request, gettext("WooCommerce erfolgreich verbunden!"))
     else:
         messages.error(request, gettext("WooCommerce konnte nicht verbunden werden!"))
-    return redirect(reverse('kmuhelper:settings'))
+    return redirect(reverse('kmuhelper:wc-settings'))
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
@@ -81,8 +78,8 @@ def wc_auth_start(request):
     shopurl = settings.get_db_setting("wc-url", "Bestätigt")
 
     if not shopurl or not shopurl.startswith("http"):
-        messages.error(request, gettext("Please enter a valid WooCommerce URL in the settings, beginning with 'http'!"))
-        return redirect(reverse('kmuhelper:settings'))
+        messages.error(request, gettext("Please enter a valid WooCommerce URL, beginning with 'https://'!"))
+        return redirect(reverse('kmuhelper:wc-settings'))
 
     kmuhelperurl = request.get_host()
     params = {
@@ -96,6 +93,22 @@ def wc_auth_start(request):
 
     url = "%s%s?%s" % (shopurl, '/wc-auth/v1/authorize', query_string)
     return redirect(url)
+
+
+@login_required(login_url=reverse_lazy("admin:login"))
+@permission_required("kmuhelper.view_setting")
+def wc_system_status(request):
+    if not is_connected():
+        messages.error(request, NOT_CONNECTED_ERRMSG)
+    else:
+        status = WooCommerce.get_system_status()
+        if status:
+            messages.success(
+                request, _("WooCommerce is connected and works!"))
+        else:
+            messages.error(
+                request, _("WooCommerce doesn't seem to work!"))
+    return redirect(reverse("kmuhelper:wc-settings"))
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
@@ -318,3 +331,27 @@ def wc_webhooks(request):
         log(f"[orange_red1]Unbekanntes Thema: '{topic}'")
 
     return JsonResponse({"accepted": True})
+
+# Settings
+
+@login_required(login_url=reverse_lazy('admin:login'))
+@permission_required('kmuhelper.change_setting')
+def wc_settings(request):
+    if request.method == 'POST':
+        form = WooCommerceSettingsForm(request.POST)
+        if form.is_valid():
+            form.save_settings()
+            messages.success(request, gettext("Einstellungen gespeichert!"))
+            # Redirect to prevent resending the form on reload
+            return redirect('kmuhelper:wc-settings')
+    else:
+        form = WooCommerceSettingsForm()
+
+    return render(request, 'kmuhelper/integrations/woocommerce/settings.html', {
+        'form': form,
+        'has_permission': True,
+        'random_secret': random_secret(),
+        'kmuhelper_url': request.get_host(),
+        'wc_url': settings.get_secret_db_setting('wc-url'),
+        'is_connected': is_connected(),
+    })

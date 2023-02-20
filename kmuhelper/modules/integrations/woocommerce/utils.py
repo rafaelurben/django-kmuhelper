@@ -1,6 +1,7 @@
 import base64
 import hmac
 import hashlib
+import secrets
 
 from kmuhelper import settings
 
@@ -13,3 +14,8 @@ def base64_hmac_sha256(key: bytes, message: bytes) -> bytes:
     """Calculate HMAC-SHA256 hash of message using key"""
 
     return base64.b64encode(hmac.new(key, message, hashlib.sha256).digest())
+
+def random_secret() -> str:
+    """Generate a random secret"""
+
+    return secrets.token_urlsafe(32)

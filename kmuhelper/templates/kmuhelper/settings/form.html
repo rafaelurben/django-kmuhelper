@@ -33,11 +33,9 @@
     <hr style="margin-top: 2em; margin-bottom: 2em;">
     <h2>Weitere Optionen</h2>
 
-    {% if perms.kmuhelper.change_setting %}
-        <div style="margin-top: 2em;">
-            <a href="{% url 'kmuhelper:wc-auth-start' %}"><button class="button">WooCommerce verbinden</button></a>
-        </div>
-    {% endif %}
+    <div style="margin-top: 2em;">
+        <a href="{% url 'kmuhelper:wc-settings' %}"><button class="button">Zu den WooCommerce-Einstellungen</button></a>
+    </div>
 
     <div style="margin-top: 2em;">
         <i>

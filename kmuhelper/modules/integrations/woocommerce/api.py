@@ -39,6 +39,18 @@ class WooCommerce():
                 "wc-consumer_secret")
         )
 
+    # System status
+    
+    @classmethod
+    def get_system_status(cls):
+        """Get system status from WooCommerce"""
+        wcapi = cls.get_api()
+        try:
+            return wcapi.get("system_status").json()
+        except Exception as e:
+            log("Error while getting system status: ", e)
+            return False
+
     # General methods
 
     @classmethod

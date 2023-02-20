@@ -12,13 +12,13 @@ _h = lazy(format_html, str)
 SETTINGS = {
     "wc-url": {
         "typ": "url",
-        "name": _("WooCommerce Shop-Url"),
-        "description": _("Falls vorhanden: Die URL der Wordpress-Seite.")
+        "name": _("Shop-URL"),
+        "description": _("URL des WooCommerce-/Wordpress-Shops, z.B. https://shop.example.com")
     },
     "wc-webhook-secret": {
         "typ": "char",
-        "name": _("WooCommerce Webhook-Secret"),
-        "description": _("Falls vorhanden: Das Webhook-Secret für WooCommerce-Webhooks.")
+        "name": _("Webhook-Secret"),
+        "description": _("Secret-Key für WooCommerce-Webhooks")
     },
     "email-stock-warning-receiver": {
         "typ": "email",
@@ -70,11 +70,6 @@ SETTINGS_FIELDSETS = [
     {
         'name': _('E-Mails'),
         'fields': ['email-show-buttons', 'email-signature', 'email-stock-warning-receiver'],
-        'classes': 'wide',
-    },
-    {
-        'name': _('WooCommerce-Integration'),
-        'fields': ['wc-url', 'wc-webhook-secret'],
         'classes': 'wide',
     },
 ]

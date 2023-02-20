@@ -1,0 +1,107 @@
+{% extends 'admin/kmuhelper/base_site.html' %}
+
+{% load static kmuhelper_tags %}
+
+{% block title %}WooCommerce Einstellungen | KMUHelper{% endblock %}
+
+{% block breadcrumbs %}
+{% endblock %}
+
+{% block branding %}
+    {% kmuhelper_branding 'settings' %}
+{% endblock %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/forms.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/kmuhelper/css/style.css' %}">
+{% endblock %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <script src="{% static 'admin/kmuhelper/js/beforeunload.js' %}" type="text/javascript"></script>
+    <script src="{% static 'admin/js/vendor/jquery/jquery.js' %}" type="text/javascript"></script>
+{% endblock %}
+
+{% block content_title %}
+    <h1>Einstellungen</h1>
+{% endblock %}
+
+{% block content %}
+    {% include 'kmuhelper/_includes/form.html' with submit_text="Einstellungen speichern" %}
+
+    <hr style="margin-top: 2em; margin-bottom: 2em;">
+    <h2>Einrichtung</h2>
+
+    <div style="margin-top: 2em;">
+        <h3>Schritt 1: WooCommerce verbinden</h3>
+        <p>
+            Um die WooCommerce Schnittstelle zu nutzen, muss diese zuerst mit dem KMUHelper verbunden werden.
+            Dazu muss der KMUHelper <b>Lese-Zugriff</b> auf die WooCommerce API erhalten.
+            Dieser Zugriff kann jederzeit widerrufen werden.
+            Tragen Sie dazu oben die URL Ihrer WooCommerce Installation ein und klicken Sie auf "Einstellungen speichern".
+            Klicken Sie anschliessend auf folgenden Knopf und melden Sie sich mit Ihren WooCommerce/WordPress Zugangsdaten an:
+        </p>
+        <a href="{% url 'kmuhelper:wc-auth-start' %}">
+            <button class="button">API verbinden</button>
+        </a>
+
+        <br><br>
+
+        <h3>Schritt 2: Webhooks einrichten</h3>
+        <p>
+            Damit Daten automatisch von WooCommerce an den KMUHelper übertragen werden können, müssen Webhooks eingerichtet werden.
+            Dieser Schritt muss manuell durchgeführt werden.
+            Öffnen Sie die WooCommerce Einstellungen via Knopf unten und folgen Sie folgenden Anweisungen:
+        </p>
+        <p>
+            Erstellen Sie für die nachfolgende Themen je einen Webhook.
+            Wählen Sie jeweils den Status "Aktiviert" und die API-Version "v3".
+            Verwenden Sie überall dasselbe Secret wie oben, z. B. <code>{{ random_secret }}</code>
+            (Dieses Secret ist zufällig generiert und kann problemlos verwendet werden.
+            Nicht vergessen, es auch oben einzutragen und die Einstellungen zu speichern!)
+            und geben Sie als URL folgende Adresse an:
+            <code>https://{{ kmuhelper_url }}{% url 'kmuhelper:wc-webhooks' %}</code>
+            <ul>
+                <li>Bestellung erstellt (order.created)</li>
+                <li>Bestellung aktualisiert (order.updated)</li>
+                <li>Bestellung gelöscht (order.deleted)</li>
+                <li>Kunde erstellt (customer.created)</li>
+                <li>Kunde aktualisiert (customer.updated)</li>
+                <li>Kunde gelöscht (customer.deleted)</li>
+                <li>Produkt erstellt (product.created)</li>
+                <li>Produkt aktualisiert (product.updated)</li>
+                <li>Produkt entfernt (product.deleted)</li>
+            </ul>
+        </p>
+        <a href="{{ wc_url }}/wp-admin/admin.php?page=wc-settings&tab=advanced&section=webhooks" target="_blank">
+            <button class="button">Webhooks einrichten</button>
+        </a>
+
+        <br><br>
+
+        <h3>Schritt 3: Status überprüfen</h3>
+        {% if is_connected %}
+        <p>
+            Die WooCommerce-Schnittstelle wurde erfolgreich eingerichtet.
+            Über folgenden Knopf können Sie überprüfen, ob die Verbindung funktioniert:
+        </p>
+
+        <a href="{% url 'kmuhelper:wc-system-status' %}">
+            <button class="button">Verbindung überprüfen</button>
+        </a>
+        {% else %}
+        <p>
+            Die WooCommerce-Schnittstelle wurde noch nicht eingerichtet.
+            Bitte folgen Sie den Anweisungen oben.
+        </p>
+        {% endif %}
+    </div>
+
+    <hr style="margin-top: 2em; margin-bottom: 2em;">
+    <div style="margin-top: 2em;">
+        <i>
+            Zurück zu den <a href="{% url 'kmuhelper:settings' %}">Einstellungen</a>
+        </i>
+    </div>
+{% endblock %}
