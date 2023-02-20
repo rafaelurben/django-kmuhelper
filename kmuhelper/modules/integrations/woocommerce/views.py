@@ -102,7 +102,7 @@ def wc_system_status(request):
         messages.error(request, NOT_CONNECTED_ERRMSG)
     else:
         status = WooCommerce.get_system_status()
-        print(status)
+
         if status:
             messages.success(
                 request, _("WooCommerce is connected and works!"))
