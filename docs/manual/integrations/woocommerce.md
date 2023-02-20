@@ -6,35 +6,13 @@ permalink: /manual/integrations/woocommerce
 
 Sie können den KMUHelper mit einem WooCommerce Shop verbinden, um Bestellungen, Produkte und Kunden von WooCommerce zu importieren.
 
-Import einrichten:
+Besuchen Sie in den Einstellungen auf `Zu den WooCommerce-Einstellungen` und folgen Sie den Anweisungen.
 
-1. Öffnen Sie `/admin/kmuhelper/`
-2. Klicken Sie auf `Einstellungen`
-3. Klicken Sie auf `WooCommerce Shop-Url`
-4. Geben Sie die Domain Ihrer Wordpress-Seite ein
-5. Klicken Sie auf `Sichern`
-6. Klicken Sie oben rechts auf `WooCommerce verbinden`
+Die Integration mit WooCommerce ist einseitig. Das heisst, dass die Daten aus WooCommerce in den KMUHelper importiert werden, aber nicht umgekehrt. Wenn Sie also z.B. eine Bestellung im KMUHelper erstellen, wird diese nicht in WooCommerce übernommen. (WICHTIG: Manche Daten im KMUHelper werden bei Erhalt der Daten von WooCommerce ÜBERSCHRIEBEN! Deshalb sollten Sie Änderungen an Produkten und Kunden vorzugsweise in WooCommerce vornehmen, anstatt im KMUHelper, um Fehler zu vermeiden.)
 
-Sie sollten nun auf Ihren Shop weitergeleitet werden, wo Sie dem KMUHelper Lese-Berechtigungen erteilen können. Sobald Sie die Berechtigungen erteilt haben, sollten Sie zurück auf den KMUHelper weitergeleitet werden und eine Meldung mit dem Inhalt `WooCommerce erfolgreich verbunden` erhalten. Ebenfalls sollte bei der URL nun `Bestätigt` stehen.
+Damit die Daten im KMUHelper auch automatisch importiert und aktualisiert werden, können sogenannte "Webhooks" eingerichtet werden, welche bei jeder Änderung in WooCommerce den KMUHelper darüber informieren. Dies ist jedoch nicht zwingend notwendig, da die Daten auch manuell importiert werden können.
 
-Damit die Daten im KMUHelper auch automatisch aktualisiert werden, können sogenannte "Webhooks" eingerichtet werden, welche bei jeder Änderung in WooCommerce den KMUHelper darüber informieren. (WICHTIG: Manche Daten im KMUHelper werden bei Erhalt der Daten von WooCommerce ÜBERSCHRIEBEN! Deshalb sollten Sie Änderungen an Produkten und Kunden vorzugsweise in WooCommerce vornehmen, anstatt im KMUHelper, um Fehler zu vermeiden.)
-
-Webhooks einrichten:
-
-1. Gehen Sie in den Wordpress-Adminbereich Ihrer Wordpress-Seite
-2. Gehen Sie zu `WooCommerce -> Einstellungen -> Erweitert -> Webhooks`
-3. Fügen Sie für folgende Themen je einen Webhook mit der Auslieferungs-URL `https://EXAMPLE.COM/kmuhelper/integrations/woocommerce/webhooks` hinzu:
-   - Bestellung erstellt (order.created)
-   - Bestellung aktualisiert (order.updated)
-   - Bestellung gelöscht (order.deleted)
-   - Kunde erstellt (customer.created)
-   - Kunde aktualisiert (customer.updated)
-   - Kunde gelöscht (customer.deleted)
-   - Produkt erstellt (product.created)
-   - Produkt aktualisiert (product.updated)
-   - Produkt entfernt (product.deleted)
-
-Hinweis: Beim löschen einer Bestellung in WooCommerce wird diese im KMUHelper nicht automatisch gelöscht! Es wird lediglich die Verknüpfung entfernt.
+Hinweis: Beim Löschen eines Objektes in WooCommerce wird dieses im KMUHelper nicht automatisch gelöscht! Es wird lediglich die Verknüpfung entfernt.
 
 ## Verwendung
 
