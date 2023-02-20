@@ -2,6 +2,7 @@ import base64
 import hmac
 import hashlib
 import secrets
+import requests
 
 from kmuhelper import settings
 
@@ -19,3 +20,14 @@ def random_secret() -> str:
     """Generate a random secret"""
 
     return secrets.token_urlsafe(32)
+
+def test_wc_url(url: str) -> bool:
+    """Test if a URL is a WooCommerce store"""
+
+    try:
+        response = requests.get(url.rstrip("/")+"/wp-json/wc/v3")
+        response.raise_for_status()
+    except requests.exceptions.RequestException:
+        return False
+
+    return True

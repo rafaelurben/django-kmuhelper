@@ -17,7 +17,7 @@ from kmuhelper import settings
 from kmuhelper.decorators import require_object
 from kmuhelper.modules.main.models import Product, Customer, ProductCategory, Order
 from kmuhelper.modules.integrations.woocommerce.api import WooCommerce
-from kmuhelper.modules.integrations.woocommerce.utils import is_connected, base64_hmac_sha256, random_secret
+from kmuhelper.modules.integrations.woocommerce.utils import is_connected, base64_hmac_sha256, random_secret, test_wc_url
 from kmuhelper.modules.integrations.woocommerce.forms import WooCommerceSettingsForm
 from kmuhelper.utils import render_error
 
@@ -102,6 +102,7 @@ def wc_system_status(request):
         messages.error(request, NOT_CONNECTED_ERRMSG)
     else:
         status = WooCommerce.get_system_status()
+        print(status)
         if status:
             messages.success(
                 request, _("WooCommerce is connected and works!"))
@@ -347,11 +348,15 @@ def wc_settings(request):
     else:
         form = WooCommerceSettingsForm()
 
+    secreturl = settings.get_secret_db_setting('wc-url', None)
+    url = settings.get_db_setting('wc-url', None)
+
     return render(request, 'kmuhelper/integrations/woocommerce/settings.html', {
         'form': form,
         'has_permission': True,
         'random_secret': random_secret(),
         'kmuhelper_url': request.get_host(),
-        'wc_url': settings.get_secret_db_setting('wc-url'),
+        'wc_url': secreturl,
         'is_connected': is_connected(),
+        'is_url_valid': test_wc_url(url),
     })

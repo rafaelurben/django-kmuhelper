@@ -42,13 +42,44 @@
             Tragen Sie dazu oben die URL Ihrer WooCommerce Installation ein und klicken Sie auf "Einstellungen speichern".
             Klicken Sie anschliessend auf folgenden Knopf und melden Sie sich mit Ihren WooCommerce/WordPress Zugangsdaten an:
         </p>
-        <a href="{% url 'kmuhelper:wc-auth-start' %}">
-            <button class="button">API verbinden</button>
-        </a>
+        {% if is_url_valid %}
+            {% if is_connected %}
+            <a href="{% url 'kmuhelper:wc-auth-start' %}">
+                <button class="button">API erneut verbinden</button>
+            </a>
+            {% else %}
+            <a href="{% url 'kmuhelper:wc-auth-start' %}">
+                <button class="button">API verbinden</button>
+            </a>
+            {% endif %}
+        {% else %}
+        <button class="button" disabled>Die angegebene URL ist ungültig</button>
+        {% endif %}
 
         <br><br>
 
-        <h3>Schritt 2: Webhooks einrichten</h3>
+        <h3>Schritt 2: Status überprüfen (optional)</h3>
+        {% if is_connected %}
+        <p>
+            Die WooCommerce-Schnittstelle wurde erfolgreich eingerichtet.
+            Über folgenden Knopf können Sie überprüfen, ob die Verbindung funktioniert:
+        </p>
+
+        <a href="{% url 'kmuhelper:wc-system-status' %}">
+            <button class="button">Verbindung überprüfen</button>
+        </a>
+        {% else %}
+        <p>
+            Die WooCommerce-Schnittstelle wurde noch nicht eingerichtet.
+            Bitte folgen Sie den Anweisungen oben.
+        </p>
+
+        <button class="button" disabled>Schritt 1 muss zuerst abgeschlossen werden</button>
+        {% endif %}
+
+        <br><br>
+
+        <h3>Schritt 3: Webhooks einrichten (optional, aber empfohlen)</h3>
         <p>
             Damit Daten automatisch von WooCommerce an den KMUHelper übertragen werden können, müssen Webhooks eingerichtet werden.
             Dieser Schritt muss manuell durchgeführt werden.
@@ -74,28 +105,20 @@
                 <li>Produkt entfernt (product.deleted)</li>
             </ul>
         </p>
+        {% if is_connected %}
         <a href="{{ wc_url }}/wp-admin/admin.php?page=wc-settings&tab=advanced&section=webhooks" target="_blank">
             <button class="button">Webhooks einrichten</button>
         </a>
+        {% else %}
+        <button class="button" disabled>Schritt 1 muss zuerst abgeschlossen werden</button>
+        {% endif %} 
 
         <br><br>
 
-        <h3>Schritt 3: Status überprüfen</h3>
-        {% if is_connected %}
+        <h3>Schritt 4: Status der Webhooks überprüfen (optional)</h3>
         <p>
-            Die WooCommerce-Schnittstelle wurde erfolgreich eingerichtet.
-            Über folgenden Knopf können Sie überprüfen, ob die Verbindung funktioniert:
+            Der Status der Webhooks kann nur manuell überprüft werden, indem Daten in WooCommerce verändert werden (z. B. eine Bestellung erstellen).
         </p>
-
-        <a href="{% url 'kmuhelper:wc-system-status' %}">
-            <button class="button">Verbindung überprüfen</button>
-        </a>
-        {% else %}
-        <p>
-            Die WooCommerce-Schnittstelle wurde noch nicht eingerichtet.
-            Bitte folgen Sie den Anweisungen oben.
-        </p>
-        {% endif %}
     </div>
 
     <hr style="margin-top: 2em; margin-bottom: 2em;">

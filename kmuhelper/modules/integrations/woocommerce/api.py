@@ -46,7 +46,9 @@ class WooCommerce():
         """Get system status from WooCommerce"""
         wcapi = cls.get_api()
         try:
-            return wcapi.get("system_status").json()
+            request = wcapi.get("system_status")
+            request.raise_for_status()
+            return request.json()
         except Exception as e:
             log("Error while getting system status: ", e)
             return False
