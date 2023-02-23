@@ -822,7 +822,7 @@ class Order(CustomModel):
                 subject=subject,
                 to=self.addr_billing_email,
                 language=lang,
-                html_template="order_rechnung.html",
+                html_template="order_invoice.html",
                 html_context=context,
                 notes=gettext("Diese E-Mail wurde automatisch aus Bestellung #%d generiert.") % self.pk,
             )
@@ -1303,7 +1303,7 @@ class Customer(CustomModel):
                 subject=gettext("Registrierung erfolgreich!"),
                 to=self.email,
                 language=lang,
-                html_template="customer_registriert.html",
+                html_template="customer_registered.html",
                 html_context=context,
                 notes=gettext("Diese E-Mail wurde automatisch aus Kunde #%d generiert.") % self.pk,
             )
