@@ -265,50 +265,47 @@ class _PDFOrderHeader(Flowable):
 
     def draw_header(self):
         order = self.order
-        ze = order.payment_receiver
+        recv = order.payment_receiver
 
         c = self.canv
         c.saveState()
 
         # Logo
-        if ze.logourl:
-            c.drawImage(ImageReader(ze.logourl), 120*mm, 67*mm,
+        if recv.logourl:
+            c.drawImage(ImageReader(recv.logourl), 120*mm, 67*mm,
                         width=20*mm, height=-20*mm, mask="auto", anchor="nw")
 
-        # Company name
+        # Payment receiver name
         c.setFont("Helvetica-Bold", 14)
-        c.drawString(12*mm, 64*mm, ze.name)
+        c.drawString(12*mm, 64*mm, recv.display_name)
 
-        # Company address
+        # Payment receiver address
         t = c.beginText(12*mm, 57*mm)
         t.setFont("Helvetica", 10)
-        t.textLine(ze.address_1)
-        if ze.country == "CH":
-            t.textLine(ze.address_2)
-        else:
-            t.textLine(f"{ze.country}-{ze.address_2}")
+        t.textLine(recv.display_address_1)
+        t.textLine(recv.display_address_2)
         c.drawText(t)
 
-        # Company info: Title
+        # Company / contact person info: Title
         t = c.beginText(12*mm, 46*mm)
         t.setFont("Helvetica", 8)
         t.textLine(pgettext('Text on generated order PDF', "Tel."))
         t.textLine(pgettext('Text on generated order PDF', "E-Mail"))
-        if ze.website:
+        if recv.website:
             t.textLine(pgettext('Text on generated order PDF', "Web"))
-        if ze.swiss_uid:
+        if recv.swiss_uid:
             t.textLine(pgettext('Text on generated order PDF', "MwSt"))
         c.drawText(t)
 
-        # Company info: Content
+        # Company / contact person info: Content
         t = c.beginText(24*mm, 46*mm)
         t.setFont("Helvetica", 8)
         t.textLine(order.contact_person.phone)
         t.textLine(order.contact_person.email)
-        if ze.website:
-            t.textLine(ze.website)
-        if ze.swiss_uid:
-            t.textLine(ze.swiss_uid)
+        if recv.website:
+            t.textLine(recv.website)
+        if recv.swiss_uid:
+            t.textLine(recv.swiss_uid)
         c.drawText(t)
 
         # Customer/Order info: Title

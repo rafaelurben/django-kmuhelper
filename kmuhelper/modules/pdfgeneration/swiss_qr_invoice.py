@@ -88,17 +88,17 @@ class QRInvoiceFlowable(Flowable):
         # - - - AdrTp
         ln("K")
         # - - - Name
-        ln(recv.name)
+        ln(recv.invoice_name)
         # - - - StrtNmOrAdrLine1
-        ln(recv.address_1)
+        ln(recv.invoice_address_1)
         # - - - BldgNbOrAdrLine2
-        ln(recv.address_2)
+        ln(recv.invoice_address_2)
         # - - - PstCd
         ln()
         # - - - TwnNm
         ln()
         # - - - Ctry (2-stelliger Landescode gemäss ISO 3166-1)
-        ln(recv.country)
+        ln(recv.invoice_country)
 
         # - UltmtCdtr (Entgültiger Zahlungsempfänger)
         # - - AdrTp
@@ -219,9 +219,9 @@ class QRInvoiceFlowable(Flowable):
         t = c.beginText(5*mm, 90*mm)
         titel(t, pgettext('QR-Invoice / fixed by SIX group style guide', "Konto / Zahlbar an"), True)
         t.textLine(recv.qriban if recv.mode == "QRR" else recv.iban)
-        t.textLine(recv.name)
-        t.textLine(recv.address_1)
-        t.textLine(recv.address_2)
+        t.textLine(recv.invoice_name)
+        t.textLine(recv.invoice_address_1)
+        t.textLine(recv.invoice_address_2)
         t.moveCursor(0, 9)
         if recv.mode == "QRR":
             titel(t, pgettext('QR-Invoice / fixed by SIX group style guide', "Referenz"), True)
@@ -237,9 +237,9 @@ class QRInvoiceFlowable(Flowable):
         t = c.beginText(118*mm, 97*mm)
         titel(t, pgettext('QR-Invoice / fixed by SIX group style guide', "Konto / Zahlbar an"))
         t.textLine(recv.qriban if recv.mode == "QRR" else recv.iban)
-        t.textLine(recv.name)
-        t.textLine(recv.address_1)
-        t.textLine(recv.address_2)
+        t.textLine(recv.invoice_name)
+        t.textLine(recv.invoice_address_1)
+        t.textLine(recv.invoice_address_2)
         t.moveCursor(0, 9)
         if recv.mode == "QRR":
             titel(t, pgettext('QR-Invoice / fixed by SIX group style guide', "Referenz"))

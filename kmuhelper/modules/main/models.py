@@ -1903,6 +1903,16 @@ class ProductProductCategoryConnection(CustomModel):
 class PaymentReceiver(CustomModel):
     """Model representing a payment receiver for the qr bill"""
 
+    # Internal
+
+    internal_name = models.CharField(
+        verbose_name=_("Interne Bezeichnung"),
+        max_length=250,
+        default="",
+    )
+
+    # Payment
+
     mode = models.CharField(
         verbose_name=_("Modus"),
         max_length=15,
@@ -1940,6 +1950,34 @@ class PaymentReceiver(CustomModel):
         default="",
     )
 
+    # Display information
+
+    display_name = models.CharField(
+        verbose_name=_("Anzeigename"),
+        max_length=70,
+        default="",
+        help_text=_("Wird oben auf der Rechnung angezeigt."),
+    )
+    display_address_1 = models.CharField(
+        verbose_name=_("Adresszeile 1"),
+        max_length=70,
+        default="",
+        help_text=_("Wird oben auf der Rechnung angezeigt."),
+    )
+    display_address_2 = models.CharField(
+        verbose_name=_("Adresszeile 2"),
+        max_length=70,
+        default="",
+        help_text=_("Wird oben auf der Rechnung angezeigt."),
+    )
+
+    website = models.URLField(
+        verbose_name=_("Webseite"),
+        default="",
+        blank=True,
+        help_text=_("Auf der Rechnung ersichtlich, sofern vorhanden!"),
+    )
+
     logourl = models.URLField(
         verbose_name=_("Logo (URL)"),
         validators=[
@@ -1953,11 +1991,7 @@ class PaymentReceiver(CustomModel):
         blank=True,
         default="",
     )
-    name = models.CharField(
-        verbose_name=_("Name"),
-        max_length=70,
-        help_text="Name der Firma oder des Empfängers",
-    )
+
     swiss_uid = models.CharField(
         verbose_name=_("Firmen-UID"),
         max_length=15,
@@ -1971,52 +2005,53 @@ class PaymentReceiver(CustomModel):
         blank=True,
         default="",
     )
-    address_1 = models.CharField(
-        verbose_name=_("Strasse und Hausnummer oder 'Postfach'"),
+
+    # Payment information
+
+    invoice_name = models.CharField(
+        verbose_name=_("Name"),
         max_length=70,
+        help_text=_("In QR-Rechnung 'Zahlbar an' - Kontoinhaber / Firma"),
     )
-    address_2 = models.CharField(
-        verbose_name=_("PLZ und Ort"),
+    invoice_address_1 = models.CharField(
+        verbose_name=_("Adresszeile 1"),
         max_length=70,
+        help_text=_("In QR-Rechnung 'Zahlbar an' - Strasse und Hausnummer oder 'Postfach'"),
     )
-    country = models.CharField(
+    invoice_address_2 = models.CharField(
+        verbose_name=_("Adresszeile 2"),
+        max_length=70,
+        help_text=_("In QR-Rechnung 'Zahlbar an' - PLZ und Ort"),
+    )
+    invoice_country = models.CharField(
         verbose_name=_("Land"),
         max_length=2,
         choices=constants.COUNTRIES,
         default="CH",
-    )
-    email = models.EmailField(
-        verbose_name=_("E-Mail"),
-        default="",
-        blank=True,
-        help_text=_("Nicht auf der Rechnung ersichtlich"),
-    )
-    phone = models.CharField(
-        verbose_name=_("Telefon"),
-        max_length=70,
-        default="",
-        blank=True,
-        help_text=_("Nicht auf der Rechnung ersichtlich"),
-    )
-    website = models.URLField(
-        verbose_name=_("Webseite"),
-        default="",
-        blank=True,
-        help_text=_("Auf der Rechnung ersichtlich, sofern vorhanden!"),
+        help_text=_("In QR-Rechnung 'Zahlbar an'"),
     )
 
+    # Validation
+
     @classmethod
-    def _check_iban(cls, iban: str):
+    def _check_iban(cls, iban: str, qr_required=False):
         try:
             b = ''
+            # Translate letters to numbers
             for i in (0, 1):
                 a = str(iban)[i].upper()
                 if a not in string.ascii_uppercase:
                     return False
                 b += str(ord(a)-55)
-            Nr = ''.join([z for z in str(iban)
+            # Select only digits
+            num = ''.join([z for z in str(iban)
                           [2:] if z in string.digits])
-            return int(int(Nr[2:] + b + Nr[:2]) % 97) == 1
+            # Check if QR-IBAN is required
+            if qr_required and not num[2] == "3":
+                return False
+            # Validate IBAN
+            result = int(int(num[2:] + b + num[:2]) % 97) == 1
+            return result
         except IndexError:
             return False
 
@@ -2032,7 +2067,7 @@ class PaymentReceiver(CustomModel):
             return False
 
     def has_valid_qr_iban(self):
-        return self._check_iban(self.qriban)
+        return self._check_iban(self.qriban, qr_required=True)
 
     def has_valid_iban(self):
         return self._check_iban(self.iban)
@@ -2040,9 +2075,23 @@ class PaymentReceiver(CustomModel):
     def has_valid_uid(self):
         return self._check_uid(self.swiss_uid)
 
+    # Properties
+
+    @property
+    @admin.display(description=_("Interne Bezeichnung"))
+    def admin_name(self):
+        return self.internal_name or self.display_name or self.invoice_name
+
+    @property
+    @admin.display(description=_("IBAN"))
+    def active_iban(self):
+        return self.qriban if self.mode == "QRR" else self.iban
+
+    # More
+
     @admin.display(description=_("Zahlungsempfänger"))
     def __str__(self):
-        return f'{self.name} ({self.pk})'
+        return f'{self.admin_name} ({self.pk})'
 
     def clean(self):
         super().clean()

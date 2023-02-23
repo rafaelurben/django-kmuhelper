@@ -831,25 +831,28 @@ class ProductCategoryAdmin(CustomModelAdmin):
 @admin.register(PaymentReceiver)
 class PaymentReceiverAdmin(CustomModelAdmin):
     fieldsets = [
-        (_("Infos"), {
-            "fields": ["name", "swiss_uid", "logourl", "website"]
+        (None, {
+            "fields": ["internal_name"]
         }),
-        (_("Adresse"), {
-            "fields": ["address_1", "address_2", "country"]
+        (_("Anzeigeinformationen"), {
+            "fields": ["display_name", "display_address_1", "display_address_2"]
         }),
-        (_("Zahlungsdetails"), {
+        (_("Zahlungsinformationen"), {
             "fields": ["mode", "qriban", "iban"]
         }),
-        (_("Kontaktdaten"), {
-            "fields": ["email", "phone"],
-            "classes": ["collapse"]
-        })
+        (_("Rechnungsadresse"), {
+            "fields": ["invoice_name", "invoice_address_1", "invoice_address_2", "invoice_country"]
+        }),
+        (_("Weitere Informationen & Darstellung"), {
+            "fields": ["swiss_uid", "website", "logourl"]
+        }),
     ]
 
-    list_display = ('name', 'swiss_uid', 'mode', 'qriban', 'iban')
-    list_filter = ('mode',)
-    search_fields = ['name', 'address_1',
-                     'address_2', 'qriban', 'iban', 'swiss_uid']
+    list_display = ('admin_name', 'mode', 'active_iban')
+    list_filter = ('mode', 'invoice_country',)
+    search_fields = ['internal_name', 'display_name', 'display_address_1', 'display_address_2', 
+                     'invoice_name', 'invoice_address_1', 'invoice_address_2', 'invoice_country',
+                     'swiss_uid', 'website', 'logourl', 'qriban', 'iban']
 
     save_on_top = True
 
