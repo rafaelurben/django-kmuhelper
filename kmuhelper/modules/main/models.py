@@ -2006,6 +2006,14 @@ class PaymentReceiver(CustomModel):
         default="",
     )
 
+    invoice_display_mode = models.CharField(
+        verbose_name=_("Anzeigemodus für Rechnungen"),
+        max_length=25,
+        choices=constants.INVOICE_DISPLAY_MODES,
+        default="business_orders",
+        help_text=_("Je nach Modus werden andere Daten auf der Rechnung angezeigt."),
+    )
+
     # Payment information
 
     invoice_name = models.CharField(

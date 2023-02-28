@@ -263,6 +263,92 @@ class _PDFOrderHeader(Flowable):
         elem.is_delivery_note = is_delivery_note
         return elem
 
+    def get_address_lines(self) -> list:
+        data = []
+
+        if self.is_delivery_note:
+            addr = self.order.addr_shipping
+        else:
+            addr = self.order.addr_billing
+
+        if addr["company"]:
+            data.append(addr["company"])
+        if addr["first_name"] or addr["last_name"]:
+            data.append(f'{addr["first_name"]} {addr["last_name"]}'.strip())
+        data.append(addr["address_1"])
+        if addr["address_2"]:
+            data.append(addr["address_2"])
+        data.append(f'{addr["postcode"]} {addr["city"]}'.strip())
+
+        return data
+
+    def get_header_block1(self) -> list:
+        "Get titles and data for the first header block"
+
+        order = self.order
+        recv = order.payment_receiver
+        cp = order.contact_person
+
+        data = [
+            (pgettext('Text on generated order PDF', "Kontakt"), cp.name),
+            (pgettext('Text on generated order PDF', "Tel."), cp.phone),
+            (pgettext('Text on generated order PDF', "E-Mail"), cp.email),
+        ]
+
+        if recv.website:
+            data.append(
+                (pgettext('Text on generated order PDF', "Web"), recv.website)
+            )
+        if recv.swiss_uid:
+            data.append(
+                (pgettext('Text on generated order PDF', "MwSt."), recv.swiss_uid)
+            )
+
+        if len(data) > 4:
+            # Only return last 4 elements if 4 lines are exceeded
+            return data[-4:]
+        return data
+
+    def get_header_block2(self) -> list:
+        "Get titles and data for the second header block"
+
+        order = self.order
+        recv = order.payment_receiver
+
+        match recv.invoice_display_mode:
+            case "business_orders":
+                data = [
+                    (pgettext('Text on generated order PDF', "Ihre Kundennummer"), order.customer.pkfill(9) if order.customer else "-"*9),
+                    (pgettext('Text on generated order PDF', "Bestellnummer"), order.pkfill(9)),
+                    (pgettext('Text on generated order PDF', "Bestelldatum"), order.date.strftime("%d.%m.%Y")),
+                ]
+
+                if self.is_delivery_note:
+                    data.append((pgettext('Text on generated order PDF', "Generiert am"), datetime.now().date().strftime("%d.%m.%Y")))
+                else:
+                    data.append((pgettext('Text on generated order PDF', "Rechnungsdatum"), order.invoice_date.strftime("%d.%m.%Y")))
+
+                return data
+            case "business_services":
+                data = [
+                    (pgettext('Text on generated order PDF', "Ihre Kundennummer"), order.customer.pkfill(9) if order.customer else "-"*9),
+                    (pgettext('Text on generated order PDF', "Rechnungsnummer"), order.pkfill(9)),
+                    (pgettext('Text on generated order PDF', "Rechnungsdatum"), order.invoice_date.strftime("%d.%m.%Y")),
+                    (pgettext('Text on generated order PDF', "Generiert am"), datetime.now().date().strftime("%d.%m.%Y")),
+                ]
+
+                return data
+            case "club" | "private":
+                data = [
+                    (pgettext('Text on generated order PDF', "Identifikation"), order.customer.pkfill(9) if order.customer else "-"*9),
+                    (pgettext('Text on generated order PDF', "Rechnungsnummer"), order.pkfill(9)),
+                    (pgettext('Text on generated order PDF', "Rechnungsdatum"), order.invoice_date.strftime("%d.%m.%Y")),
+                    (pgettext('Text on generated order PDF', "Generiert am"), datetime.now().date().strftime("%d.%m.%Y")),
+                ]
+
+                return data
+
+
     def draw_header(self):
         order = self.order
         recv = order.payment_receiver
@@ -286,72 +372,47 @@ class _PDFOrderHeader(Flowable):
         t.textLine(recv.display_address_2)
         c.drawText(t)
 
-        # Company / contact person info: Title
-        t = c.beginText(12*mm, 46*mm)
-        t.setFont("Helvetica", 8)
-        t.textLine(pgettext('Text on generated order PDF', "Tel."))
-        t.textLine(pgettext('Text on generated order PDF', "E-Mail"))
-        if recv.website:
-            t.textLine(pgettext('Text on generated order PDF', "Web"))
-        if recv.swiss_uid:
-            t.textLine(pgettext('Text on generated order PDF', "MwSt"))
-        c.drawText(t)
+        # Header block 1: Company / contact person info
+        block1 = self.get_header_block1()
 
-        # Company / contact person info: Content
-        t = c.beginText(24*mm, 46*mm)
-        t.setFont("Helvetica", 8)
-        t.textLine(order.contact_person.phone)
-        t.textLine(order.contact_person.email)
-        if recv.website:
-            t.textLine(recv.website)
-        if recv.swiss_uid:
-            t.textLine(recv.swiss_uid)
-        c.drawText(t)
+        t1t = c.beginText(12*mm, 46*mm) # Title
+        t1t.setFont("Helvetica", 8)
+        maxlen = max([len(title) for title, _ in block1])
+        t1d = c.beginText((16+maxlen*1.35)*mm, 46*mm) # Data
+        t1d.setFont("Helvetica", 8)
 
-        # Customer/Order info: Title
-        t = c.beginText(12*mm, 27*mm)
-        t.setFont("Helvetica", 12)
-        t.textLine(pgettext('Text on generated order PDF', "Ihre Kundennummer"))
-        t.textLine(pgettext('Text on generated order PDF', "Bestellnummer"))
-        t.textLine(pgettext('Text on generated order PDF', "Bestelldatum"))
-        if self.is_delivery_note:
-            t.textLine(pgettext('Text on generated order PDF', "Datum"))
-        else:
-            t.textLine(pgettext('Text on generated order PDF', "Rechnungsdatum"))
-        c.drawText(t)
+        for title, data in block1:
+            t1t.textLine(title)
+            t1d.textLine(data)
 
-        # Customer/Order info: Content
-        t = c.beginText(64*mm, 27*mm)
-        t.setFont("Helvetica", 12)
-        t.textLine(order.customer.pkfill(9) if order.customer else "-"*9)
-        t.textLine(order.pkfill(9))
-        t.textLine(order.date.strftime("%d.%m.%Y"))
-        if self.is_delivery_note:
-            t.textLine(datetime.now().date().strftime("%d.%m.%Y"))
-        else:
-            t.textLine(order.invoice_date.strftime("%d.%m.%Y"))
-        c.drawText(t)
+        c.drawText(t1t)
+        c.drawText(t1d)
 
-        # Customer address
+        # Header block 2: Customer/Order/Invoice info
+        block2 = self.get_header_block2()
+
+        t2t = c.beginText(12*mm, 27*mm)
+        t2t.setFont("Helvetica", 12)
+        t2d = c.beginText(64*mm, 27*mm)
+        t2d.setFont("Helvetica", 12)
+
+        for title, data in block2:
+            t2t.textLine(title)
+            t2d.textLine(data)
+
+        c.drawText(t2t)
+        c.drawText(t2d)
+
+        # Customer address block
         t = c.beginText(120*mm, 27*mm)
         t.setFont("Helvetica", 12)
-        if self.is_delivery_note:
-            addr = order.addr_shipping
-        else:
-            addr = order.addr_billing
 
-        if addr["company"]:
-            t.textLine(addr["company"])
-        if addr["first_name"] or addr["last_name"]:
-            t.textLine(f'{addr["first_name"]} {addr["last_name"]}'.strip())
-        t.textLine(addr["address_1"])
-        if addr["address_2"]:
-            t.textLine(addr["address_2"])
-        t.textLine(f'{addr["postcode"]} {addr["city"]}'.strip())
+        for line in self.get_address_lines():
+            t.textLine(line)
 
         c.drawText(t)
 
-        # Title and date
+        # Title and date line
         c.setFont("Helvetica-Bold", 10)
         c.drawString(12*mm, 0*mm, self.title)
 

@@ -99,3 +99,10 @@ ADDR_SHIPPING_FIELDS_CATEGORIZED = [
     ('addr_shipping_state', 'addr_shipping_country'),
     ('addr_shipping_email', 'addr_shipping_phone')
 ]
+
+INVOICE_DISPLAY_MODES = [
+    ('business_orders', _('Geschäftlich (Bestellungen)')),
+    ('business_services', _('Geschäftlich (Dienstleistungen)')),
+    ('club', _('Verein')),
+    ('private', _('Privat'))
+]

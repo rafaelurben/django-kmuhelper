@@ -843,13 +843,16 @@ class PaymentReceiverAdmin(CustomModelAdmin):
         (_("Rechnungsadresse"), {
             "fields": ["invoice_name", "invoice_address_1", "invoice_address_2", "invoice_country"]
         }),
+        (_("Optionen"), {
+            "fields": ["invoice_display_mode"]
+        }),
         (_("Weitere Informationen & Darstellung"), {
             "fields": ["swiss_uid", "website", "logourl"]
         }),
     ]
 
-    list_display = ('admin_name', 'mode', 'active_iban')
-    list_filter = ('mode', 'invoice_country',)
+    list_display = ('admin_name', 'mode', 'active_iban', 'invoice_display_mode')
+    list_filter = ('mode', 'invoice_country', 'invoice_display_mode',)
     search_fields = ['internal_name', 'display_name', 'display_address_1', 'display_address_2', 
                      'invoice_name', 'invoice_address_1', 'invoice_address_2', 'invoice_country',
                      'swiss_uid', 'website', 'logourl', 'qriban', 'iban']
