@@ -167,7 +167,7 @@ class OrderAdmin(CustomModelAdmin):
                 (_('Kunde'), {'fields': ['customer']}),
                 (_('Lieferung'), {'fields': [('shipped_on', 'is_shipped'), 'tracking_number']}),
                 (_('Bezahlungsoptionen'), {
-                    'fields': ['payment_method', 'invoice_date', 'payment_conditions']
+                    'fields': ['payment_method', 'invoice_date', 'payment_conditions', 'payment_purpose']
                 }),
                 (_('Bezahlung'), {
                     'fields': [('display_total_breakdown', 'display_payment_conditions'), ('paid_on', 'is_paid')]

@@ -353,6 +353,14 @@ class Order(CustomModel):
         null=True,
     )
 
+    payment_purpose = models.CharField(
+        verbose_name=_("Zahlungszweck"),
+        max_length=50,
+        default="",
+        blank=True,
+        help_text=_("Wird in QR-Rechnung verwendet."),
+    )
+
     customer_note = models.TextField(
         verbose_name=_("Kundennotiz"),
         default="",
@@ -647,6 +655,8 @@ class Order(CustomModel):
     def get_unstructured_message(self):
         "Returns the unstructured message for the QR-Invoice"
 
+        if self.payment_purpose:
+            return self.payment_purpose
         if self.payment_receiver.mode == "QRR":
             return str(self.date.strftime("%d.%m.%Y"))
         return _("Referenznummer")+": "+str(self.id)
