@@ -112,6 +112,10 @@ class _PDFOrderPriceTable(Table):
 
         vat_dict = dict(order.get_vat_dict())
         for vat_rate in vat_dict:
+            if float(vat_rate) == 0.0 and not settings.get_file_setting('PRINT_ZERO_VAT', False):
+                # Skip zero VAT if not explicitly enabled
+                continue
+
             data.append((
                 "",
                 pgettext('Text on generated order PDF', "MwSt"),
