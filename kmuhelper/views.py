@@ -5,6 +5,7 @@ from django.template import TemplateDoesNotExist, TemplateSyntaxError
 from django.template.loader import get_template
 from django.utils.translation import gettext
 
+from kmuhelper.decorators import require_kmuhelper_perms
 from kmuhelper.utils import render_error
 from kmuhelper.constants import URL_MANUAL
 
@@ -14,6 +15,7 @@ _ = gettext
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
+@require_kmuhelper_perms()
 def home(request):
     grid = [
         [

@@ -1,6 +1,7 @@
 from functools import wraps
 
 from django.contrib import messages
+from django.contrib.auth.decorators import user_passes_test, PermissionDenied
 from django.http import Http404
 from django.urls import reverse
 from django.shortcuts import redirect, render
@@ -50,3 +51,32 @@ def require_object(model, redirect_url=None, raise_404=False, show_errorpage=Fal
             return redirect(redirect_url or reverse(f"admin:{model._meta.app_label}_{model._meta.model_name}_changelist"))
         return wrap
     return decorator
+
+
+def require_kmuhelper_perms(perms=[], login_url=None, raise_exception=True):
+    """
+    Decorator for views that checks whether a user has ANY (of the given) kmuhelper
+    permission enabled, redirecting to the log-in page if necessary.
+    If the raise_exception parameter is given the PermissionDenied exception
+    is raised.
+    """
+
+    def check_perms(user):
+        # First check if the user has any kmuhelper permission
+        if user.has_module_perms('kmuhelper'):
+            # If no permissions are given, the user has access
+            if not perms:
+                return True
+
+            # Check if the user has any of the given permissions
+            for perm in perms:
+                if user.has_perm(f'kmuhelper.{perm}'):
+                    return True
+
+        # In case the 403 handler should be called raise the exception
+        if raise_exception:
+            raise PermissionDenied
+        # As the last resort, show the login form
+        return False
+
+    return user_passes_test(check_perms, login_url=login_url)

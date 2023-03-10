@@ -6,7 +6,7 @@ from django.urls import reverse, reverse_lazy
 
 from django.utils.translation import gettext_lazy, gettext
 
-from kmuhelper.decorators import require_object, confirm_action
+from kmuhelper.decorators import require_object, confirm_action, require_kmuhelper_perms
 from kmuhelper.modules.emails.models import EMail, Attachment, EMailTemplate
 from kmuhelper.utils import render_error
 import kmuhelper.modules.config as config
@@ -169,5 +169,6 @@ def emailtemplate_use(request, obj):
 # Custom fake admin
 
 @login_required(login_url=reverse_lazy("admin:login"))
+@require_kmuhelper_perms(['view_email', 'view_emailtemplate', 'view_attachment'])
 def email_index(request):
     return render(request, 'admin/kmuhelper/_special/emails/app_index.html', config.get_module_home_context(request, 'emails'))

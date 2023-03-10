@@ -4,12 +4,13 @@ from django.urls import reverse_lazy
 from django.shortcuts import render, redirect
 from django.utils.translation import gettext_lazy, gettext
 
+from kmuhelper.decorators import require_kmuhelper_perms
 from kmuhelper.modules.settings.forms import SettingsForm
 
 _ = gettext_lazy
 
 @login_required(login_url=reverse_lazy('admin:login'))
-@permission_required('kmuhelper.change_setting')
+@require_kmuhelper_perms('change_setting')
 def settings_form(request):
     if request.method == 'POST':
         form = SettingsForm(request.POST)
@@ -27,5 +28,6 @@ def settings_form(request):
     })
 
 @login_required(login_url=reverse_lazy('admin:login'))
+@require_kmuhelper_perms()
 def build_info(request):
     return render(request, 'kmuhelper/settings/build_info.html')
