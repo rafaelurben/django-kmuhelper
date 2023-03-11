@@ -186,7 +186,7 @@ class OrderAdmin(CustomModelAdmin):
             (_('Infos'), {'fields': ['status']}),
             (_('Kunde'), {'fields': ['customer']}),
             (_('Bezahlungsoptionen'), {
-                'fields': ['payment_method', 'invoice_date', 'payment_conditions'],
+                'fields': ['payment_method', 'invoice_date', 'payment_conditions', 'payment_purpose'],
                 'classes': ["collapse start-open"]}),
             (_('Notizen & Texte'), {
                 'fields': ['customer_note'],
