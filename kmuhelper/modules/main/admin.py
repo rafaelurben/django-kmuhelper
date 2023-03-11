@@ -146,9 +146,6 @@ class OrderAdmin(CustomModelAdmin):
 
     ordering = ("is_shipped", "is_paid", "-date")
 
-    inlines = [OrderAdminOrderItemInline, OrderAdminOrderItemInlineAdd,
-               OrderAdminOrderFeeInline, OrderAdminOrderFeeInlineImport]
-
     autocomplete_fields = ("customer", "payment_receiver", "contact_person", )
 
     save_on_top = True
@@ -210,6 +207,15 @@ class OrderAdmin(CustomModelAdmin):
             if obj.woocommerceid:
                 fields += ["customer_note"]
         return fields
+
+    def get_inlines(self, request, obj=None):
+        inlines = [OrderAdminOrderItemInline]
+        if request.user.has_perm('kmuhelper.view_product'):
+            inlines += [OrderAdminOrderItemInlineAdd]
+        inlines += [OrderAdminOrderFeeInline]
+        if request.user.has_perm('kmuhelper.view_fee'):
+            inlines += [OrderAdminOrderFeeInlineImport]
+        return inlines
 
     # Actions
 
@@ -484,6 +490,8 @@ class SupplyInlineProductsAdd(CustomTabularInline):
     NO_DELETE = True
 
     def has_add_permission(self, request, obj=None):
+        if not (request.user.has_perm('kmuhelper.view_product') or request.user.has_perm('kmuhelper.change_product')):
+            return False
         return False if obj and obj.is_added_to_stock else super().has_add_permission(request, obj)
 
 
@@ -667,6 +675,11 @@ class ProductAdminProductCategoryInline(CustomTabularInline):
 
     NO_CHANGE = True
 
+    def has_add_permission(self, request, obj=None):
+        if not request.user.has_perm('kmuhelper.view_productcategory'):
+            return False
+        return super().has_add_permission(request, obj)
+
 
 @admin.register(Product)
 class ProductAdmin(CustomModelAdmin):
@@ -781,6 +794,11 @@ class ProductCategoryAdminProductInline(CustomStackedInline):
     # Permissions
 
     NO_CHANGE = True
+
+    def has_add_permission(self, request, obj=None):
+        if not (request.user.has_perm('kmuhelper.view_product') or request.user.has_perm('kmuhelper.change_product')):
+            return False
+        return super().has_add_permission(request, obj)
 
 
 @admin.register(ProductCategory)
