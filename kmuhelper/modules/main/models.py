@@ -35,12 +35,18 @@ def default_delivery_title():
 
 
 def default_payment_recipient():
+    if Order.objects.exists():
+        newest_order = Order.objects.order_by('-date').first()
+        return newest_order.payment_receiver_id
     if PaymentReceiver.objects.exists():
         return PaymentReceiver.objects.first().pk
     return None
 
 
 def default_contact_person():
+    if Order.objects.exists():
+        newest_order = Order.objects.order_by('-date').first()
+        return newest_order.contact_person_id
     if ContactPerson.objects.exists():
         return ContactPerson.objects.first().pk
     return None
