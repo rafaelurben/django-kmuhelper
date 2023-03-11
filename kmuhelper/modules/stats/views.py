@@ -8,6 +8,7 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.translation import gettext_lazy, gettext
 
+from kmuhelper.decorators import require_all_kmuhelper_perms
 from kmuhelper.utils import render_error
 from kmuhelper.translations import langselect
 from kmuhelper.modules.main.models import OrderItem, Order
@@ -23,7 +24,7 @@ def stats(request):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.view_product")
+@require_all_kmuhelper_perms(["view_product", "view_order"])
 def stats_products_price(request):
     if not Order.objects.exists():
         return render_error(request, status=400,
@@ -78,7 +79,7 @@ def stats_products_price(request):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.view_product")
+@require_all_kmuhelper_perms(["view_product", "view_order"])
 def best_products(request):
     if not Order.objects.exists():
         return render_error(request, status=400,

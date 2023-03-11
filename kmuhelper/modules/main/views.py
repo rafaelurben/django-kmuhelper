@@ -5,7 +5,7 @@ from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext_lazy, gettext
 
 from kmuhelper.modules.main.models import Customer, Supplier, Supply, Order
-from kmuhelper.decorators import confirm_action, require_object
+from kmuhelper.decorators import confirm_action, require_object, require_all_kmuhelper_perms
 from kmuhelper.utils import render_error
 
 _ = gettext_lazy
@@ -20,7 +20,7 @@ from kmuhelper.modules.pdfgeneration.order.views import order_view_pdf, order_cr
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.change_product")
+@require_all_kmuhelper_perms(["change_product", "view_supplier"])
 @require_object(Supplier)
 @confirm_action(_("Lieferant allen Produkten ohne Lieferant zuordnen"))
 def supplier_assign(request, obj):
@@ -38,7 +38,7 @@ def supplier_assign(request, obj):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.change_product")
+@require_all_kmuhelper_perms(["change_product", "view_supply"])
 @require_object(Supply)
 @confirm_action(_("Lieferung einlagern"))
 def supply_add_to_stock(request, obj):
@@ -51,9 +51,7 @@ def supply_add_to_stock(request, obj):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required(
-    ["kmuhelper.add_email", "kmuhelper.view_customer", "kmuhelper.change_customer"]
-)
+@require_all_kmuhelper_perms(["add_email", "view_customer", "change_customer"])
 @require_object(Customer)
 def create_customer_email_registered(request, obj):
     mail = obj.create_email_registered()
@@ -62,9 +60,7 @@ def create_customer_email_registered(request, obj):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required(
-    ["kmuhelper.add_email", "kmuhelper.view_order", "kmuhelper.change_order"]
-)
+@require_all_kmuhelper_perms(["add_email", "view_order", "change_order"])
 @require_object(Order)
 def create_order_email_invoice(request, obj):
     mail = obj.create_email_invoice()
@@ -73,9 +69,7 @@ def create_order_email_invoice(request, obj):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required(
-    ["kmuhelper.add_email", "kmuhelper.view_order", "kmuhelper.change_order"]
-)
+@permission_required(["add_email", "view_order", "change_order"])
 @require_object(Order)
 def create_order_email_shipped(request, obj):
     mail = obj.create_email_shipped()
@@ -84,7 +78,7 @@ def create_order_email_shipped(request, obj):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.add_order")
+@require_all_kmuhelper_perms(["add_order", "view_order"])
 @require_object(Order)
 @confirm_action(_("Bestellung duplizieren"))
 def duplicate_order(request, obj):
@@ -95,7 +89,7 @@ def duplicate_order(request, obj):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.add_supply")
+@require_all_kmuhelper_perms(["add_supply", "view_order"])
 @require_object(Order)
 @confirm_action(_("Bestellung zu Lieferung kopieren"))
 def copy_order_to_supply(request, obj):

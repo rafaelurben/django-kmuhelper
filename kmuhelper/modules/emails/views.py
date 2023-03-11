@@ -6,7 +6,7 @@ from django.urls import reverse, reverse_lazy
 
 from django.utils.translation import gettext_lazy, gettext
 
-from kmuhelper.decorators import require_object, confirm_action, require_kmuhelper_perms
+from kmuhelper.decorators import require_object, confirm_action, require_any_kmuhelper_perms, require_all_kmuhelper_perms
 from kmuhelper.modules.emails.models import EMail, Attachment, EMailTemplate
 from kmuhelper.utils import render_error
 import kmuhelper.modules.config as config
@@ -19,7 +19,7 @@ _ = gettext_lazy
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.send_email")
+@require_all_kmuhelper_perms(["send_email"])
 @require_object(EMail)
 @confirm_action(_("E-Mail-Nachricht senden"))
 def email_send(request, obj):
@@ -36,7 +36,7 @@ def email_send(request, obj):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.send_email")
+@require_all_kmuhelper_perms(["send_email"])
 @require_object(EMail)
 @confirm_action(_("E-Mail Nachricht ERNEUT senden"))
 def email_resend(request, obj):
@@ -53,7 +53,7 @@ def email_resend(request, obj):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.view_email")
+@require_all_kmuhelper_perms(["view_email"])
 @require_object(EMail)
 def email_preview(request, obj):
     if obj.is_valid(request):
@@ -87,7 +87,7 @@ def email_view(request, obj):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.download_attachment")
+@require_all_kmuhelper_perms(["download_attachment"])
 @require_object(Attachment)
 def attachment_download(request, obj):
     download = not "preview" in request.GET
@@ -124,7 +124,7 @@ def attachment_view(request, obj):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required(["kmuhelper.view_emailtemplate"])
+@require_all_kmuhelper_perms(["view_emailtemplate"])
 def emailtemplate_savevars(request):
     """Save variables into session for usage in template"""
 
@@ -137,7 +137,7 @@ def emailtemplate_savevars(request):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required(["kmuhelper.view_emailtemplate"])
+@require_all_kmuhelper_perms(["view_emailtemplate"])
 def emailtemplate_resetvars(request):
     """Reset saved session variables for email templates"""
 
@@ -150,7 +150,7 @@ def emailtemplate_resetvars(request):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required(["kmuhelper.view_emailtemplate", "kmuhelper.add_email"])
+@require_all_kmuhelper_perms(["view_emailtemplate", "add_email"])
 @require_object(EMailTemplate)
 def emailtemplate_use(request, obj):
     """Use a template"""
@@ -169,6 +169,6 @@ def emailtemplate_use(request, obj):
 # Custom fake admin
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@require_kmuhelper_perms(['view_email', 'view_emailtemplate', 'view_attachment'])
+@require_any_kmuhelper_perms(['view_email', 'view_emailtemplate', 'view_attachment'])
 def email_index(request):
     return render(request, 'admin/kmuhelper/_special/emails/app_index.html', config.get_module_home_context(request, 'emails'))

@@ -36,7 +36,7 @@ def versions(request):
     return JsonResponse(context)
 
 
-@api_read()
+@api_read(['view_order'])
 def orders_unpaid(request):
     """Get sums of currently unpaid orders."""
 
@@ -56,7 +56,7 @@ def orders_unpaid(request):
 
 
 @csrf_exempt
-@api_write(['kmuhelper.change_order'])
+@api_write(['change_order'])
 @require_object(Order)
 def orders_set_paid(request, obj):
     """Set an order as paid"""

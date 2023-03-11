@@ -14,7 +14,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.translation import gettext_lazy, gettext, ngettext
 
 from kmuhelper import settings
-from kmuhelper.decorators import require_object
+from kmuhelper.decorators import require_object, require_all_kmuhelper_perms, require_any_kmuhelper_perms
 from kmuhelper.modules.main.models import Product, Customer, ProductCategory, Order
 from kmuhelper.modules.integrations.woocommerce.api import WooCommerce
 from kmuhelper.modules.integrations.woocommerce.utils import is_connected, base64_hmac_sha256, random_secret, test_wc_url
@@ -64,6 +64,7 @@ def wc_auth_key(request):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
+@require_any_kmuhelper_perms()
 def wc_auth_end(request):
     if request.GET.get("success") == "1":
         messages.success(request, gettext("WooCommerce erfolgreich verbunden!"))
@@ -73,7 +74,7 @@ def wc_auth_end(request):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.change_setting")
+@require_all_kmuhelper_perms(["change_setting"])
 def wc_auth_start(request):
     shopurl = settings.get_db_setting("wc-url", "Bestätigt")
 
@@ -95,8 +96,9 @@ def wc_auth_start(request):
     return redirect(url)
 
 
+# Note: Change permission is required because the view redirects to the settings page
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.view_setting")
+@require_all_kmuhelper_perms(['change_setting'])
 def wc_system_status(request):
     if not is_connected():
         messages.error(request, NOT_CONNECTED_ERRMSG)
@@ -113,7 +115,7 @@ def wc_system_status(request):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.add_product")
+@require_all_kmuhelper_perms(["add_product"])
 def wc_import_products(request):
     if not is_connected():
         messages.error(
@@ -129,7 +131,7 @@ def wc_import_products(request):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.add_customer")
+@require_all_kmuhelper_perms(["add_customer"])
 def wc_import_customers(request):
     if not is_connected():
         messages.error(
@@ -145,7 +147,7 @@ def wc_import_customers(request):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.add_productcategory")
+@require_all_kmuhelper_perms(["add_productcategory"])
 def wc_import_categories(request):
     if not is_connected():
         messages.error(
@@ -161,7 +163,7 @@ def wc_import_categories(request):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.add_order")
+@require_all_kmuhelper_perms(["add_order"])
 def wc_import_orders(request):
     if not is_connected():
         messages.error(
@@ -177,7 +179,7 @@ def wc_import_orders(request):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.change_product")
+@require_all_kmuhelper_perms(["change_product"])
 @require_object(Product)
 def wc_update_product(request, obj):
     if not is_connected():
@@ -190,7 +192,7 @@ def wc_update_product(request, obj):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.change_customer")
+@require_all_kmuhelper_perms(["change_customer"])
 @require_object(Customer)
 def wc_update_customer(request, obj):
     if not is_connected():
@@ -203,7 +205,7 @@ def wc_update_customer(request, obj):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.change_productcategory")
+@require_all_kmuhelper_perms(["change_productcategory"])
 @require_object(ProductCategory)
 def wc_update_category(request, obj):
     if not is_connected():
@@ -216,7 +218,7 @@ def wc_update_category(request, obj):
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.change_order")
+@require_all_kmuhelper_perms(["change_order"])
 @require_object(Order)
 def wc_update_order(request, obj):
     if not is_connected():
@@ -336,7 +338,7 @@ def wc_webhooks(request):
 # Settings
 
 @login_required(login_url=reverse_lazy('admin:login'))
-@permission_required('kmuhelper.change_setting')
+@require_all_kmuhelper_perms(['change_setting'])
 def wc_settings(request):
     if request.method == 'POST':
         form = WooCommerceSettingsForm(request.POST)

@@ -4,7 +4,7 @@ from django.urls import reverse_lazy, reverse
 from django.shortcuts import render, redirect
 from django.utils.translation import gettext_lazy, gettext
 
-from kmuhelper.decorators import require_object
+from kmuhelper.decorators import require_object, require_all_kmuhelper_perms
 from kmuhelper.modules.integrations.paymentimport.forms import CamtUploadForm
 from kmuhelper.modules.integrations.paymentimport.models import PaymentImport
 
@@ -12,7 +12,7 @@ _ = gettext_lazy
 
 
 @login_required(login_url=reverse_lazy('admin:login'))
-@permission_required('kmuhelper.add_paymentimport')
+@require_all_kmuhelper_perms(['add_paymentimport'])
 def upload(request):
     if request.method == 'POST':
         form = CamtUploadForm(request.POST, request.FILES)
@@ -28,7 +28,7 @@ def upload(request):
 
 
 @login_required(login_url=reverse_lazy('admin:login'))
-@permission_required('kmuhelper.change_paymentimport')
+@require_all_kmuhelper_perms(['change_paymentimport'])
 @require_object(PaymentImport)
 def process(request, obj):
     if request.method == 'POST':

@@ -11,7 +11,7 @@ _ = translation.gettext
 
 from kmuhelper import constants
 from kmuhelper.modules.main.models import Order
-from kmuhelper.decorators import require_object
+from kmuhelper.decorators import require_object, require_all_kmuhelper_perms
 from kmuhelper.utils import render_error
 from kmuhelper.translations import Language
 
@@ -21,7 +21,7 @@ from kmuhelper.modules.pdfgeneration.order.generator import PDFOrder
 # Views
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.view_order")
+@require_all_kmuhelper_perms(["view_order"])
 @require_object(Order)
 def order_view_pdf(request, obj):
     order = obj
@@ -81,7 +81,7 @@ def order_view_pdf(request, obj):
         return pdf.get_response(as_attachment=is_download, filename=filename)
 
 @login_required(login_url=reverse_lazy("admin:login"))
-@permission_required("kmuhelper.view_order")
+@require_all_kmuhelper_perms(["view_order"])
 @require_object(Order)
 def order_create_pdf_form(request, obj):
     initial={

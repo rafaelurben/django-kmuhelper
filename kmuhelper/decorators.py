@@ -52,8 +52,36 @@ def require_object(model, redirect_url=None, raise_404=False, show_errorpage=Fal
         return wrap
     return decorator
 
+def require_all_kmuhelper_perms(permissions_required=[], login_url=None, raise_exception=True):
+    """
+    Decorator for views that checks whether a user has ALL of the given kmuhelper
+    permission enabled, redirecting to the log-in page if necessary.
+    If the raise_exception parameter is given the PermissionDenied exception
+    is raised.
+    """
 
-def require_kmuhelper_perms(perms=[], login_url=None, raise_exception=True):
+    def check_perms(user):
+        if isinstance(permissions_required, str):
+            perms = [permissions_required]
+        else:
+            perms = permissions_required
+
+        perms = [f'kmuhelper.{perm}' if not '.' in perm else perm for perm in perms]
+        print(perms)
+
+        # First check if the user has the permission (even anon users)
+        if user.has_perms(perms):
+            return True
+        # In case the 403 handler should be called raise the exception
+        if raise_exception:
+            raise PermissionDenied
+        # As the last resort, show the login form
+        return False
+
+    return user_passes_test(check_perms, login_url=login_url)
+
+
+def require_any_kmuhelper_perms(permissions=[], login_url=None, raise_exception=True):
     """
     Decorator for views that checks whether a user has ANY (of the given) kmuhelper
     permission enabled, redirecting to the log-in page if necessary.
@@ -62,6 +90,11 @@ def require_kmuhelper_perms(perms=[], login_url=None, raise_exception=True):
     """
 
     def check_perms(user):
+        if isinstance(permissions, str):
+            perms = [permissions]
+        else:
+            perms = permissions
+
         # First check if the user has any kmuhelper permission
         if user.has_module_perms('kmuhelper'):
             # If no permissions are given, the user has access
@@ -70,7 +103,7 @@ def require_kmuhelper_perms(perms=[], login_url=None, raise_exception=True):
 
             # Check if the user has any of the given permissions
             for perm in perms:
-                if user.has_perm(f'kmuhelper.{perm}'):
+                if user.has_perm(f'kmuhelper.{perm}' if not '.' in perm else perm):
                     return True
 
         # In case the 403 handler should be called raise the exception

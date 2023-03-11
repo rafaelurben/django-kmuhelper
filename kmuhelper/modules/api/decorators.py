@@ -17,18 +17,25 @@ def _is_valid_uuid(val):
         return False
 
 
-def protected(read=False, write=False, perms_required=()):
+def protected(read=False, write=False, perms_required=[]):
     """Decorator: Protect an api view from unauthorized access."""
     def decorator(function):
         @wraps(function)
         def wrap(request, *args, **kwargs):
             apikey = request.GET.get("apikey", None)
 
+            if isinstance(perms_required, str):
+                perms = [perms_required]
+            else:
+                perms = perms_required
+
+            perms = [f'kmuhelper.{perm}' if not '.' in perm else perm for perm in perms]
+
             if apikey:
                 if _is_valid_uuid(apikey) and ApiKey.objects.filter(key=apikey).exists():
                     keyobject = ApiKey.objects.get(key=apikey)
 
-                    if ((not read) or keyobject.read) and ((not write) or keyobject.write) and keyobject.has_perms(perms_required):
+                    if ((not read) or keyobject.read) and ((not write) or keyobject.write) and keyobject.has_perms(perms):
                         return function(request, *args, **kwargs)
 
                     return NO_PERMISSION_APIKEY
@@ -36,7 +43,7 @@ def protected(read=False, write=False, perms_required=()):
                 return APIKEY_INVALID
 
             if request.user.is_authenticated:
-                if request.user.has_perms(perms_required):
+                if request.user.has_perms(perms):
                     return function(request, *args, **kwargs)
 
                 return NO_PERMISSION_SESSION
@@ -48,17 +55,17 @@ def protected(read=False, write=False, perms_required=()):
 # Shortcuts
 
 
-def api_read(perms_required=()):
+def api_read(perms_required=[]):
     """Decorator: Requires a read api key or a logged in user to access this view"""
     return protected(read=True, write=False, perms_required=perms_required)
 
 
-def api_write(perms_required=()):
+def api_write(perms_required=[]):
     """Decorator: Requires a write api key or a logged in user to access this view"""
     return protected(read=False, write=True, perms_required=perms_required)
 
 
-def api_readwrite(perms_required=()):
+def api_readwrite(perms_required=[]):
     """Decorator: Requires a read/write api key or a logged in user to access this view"""
     return protected(read=True, write=True, perms_required=perms_required)
 
