@@ -117,8 +117,8 @@
             <li><a target="_blank" href="{{ original.tracking_link }}" rel="noopener">Tracking</a></li>
         {% endif %}
 
-        {% if not original.is_shipped %}
-            <li><a href="#id_addr_shipping_first_name" onclick="copyform();">Rechnungsadresse -> Lieferadresse</a></li>
+        {% if has_change_permission and not original.is_shipped %}
+            <li><a href="#id_addr_shipping_first_name" onclick="copyform();">Rechnungsadresse -&gt; Lieferadresse</a></li>
             <script>
                 function copyform(){
                     document.getElementById("id_addr_shipping_first_name").value = document.getElementById("id_addr_billing_first_name").value;

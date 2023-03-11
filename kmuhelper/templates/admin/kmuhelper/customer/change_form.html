@@ -43,19 +43,21 @@
             {% endblock %}
         {% endif %}{% endif %}
 
-        <li><a href="#id_addr_shipping_first_name" onclick="copyform();">Rechnungsadresse -> Lieferadresse</a></li>
-        <script>
-        function copyform(){
-            document.getElementById("id_addr_shipping_first_name").value = document.getElementById("id_addr_billing_first_name").value;
-            document.getElementById("id_addr_shipping_last_name").value = document.getElementById("id_addr_billing_last_name").value;
-            document.getElementById("id_addr_shipping_company").value = document.getElementById("id_addr_billing_company").value;
-            document.getElementById("id_addr_shipping_address_1").value = document.getElementById("id_addr_billing_address_1").value;
-            document.getElementById("id_addr_shipping_address_2").value = document.getElementById("id_addr_billing_address_2").value;
-            document.getElementById("id_addr_shipping_city").value = document.getElementById("id_addr_billing_city").value;
-            document.getElementById("id_addr_shipping_state").value = document.getElementById("id_addr_billing_state").value;
-            document.getElementById("id_addr_shipping_postcode").value = document.getElementById("id_addr_billing_postcode").value;
-            document.getElementById("id_addr_shipping_country").value = document.getElementById("id_addr_billing_country").value;
-        }
-        </script>
+        {% if has_change_permission %}
+            <li><a href="#id_addr_shipping_first_name" onclick="copyform();">Rechnungsadresse -&gt; Lieferadresse</a></li>
+            <script>
+            function copyform(){
+                document.getElementById("id_addr_shipping_first_name").value = document.getElementById("id_addr_billing_first_name").value;
+                document.getElementById("id_addr_shipping_last_name").value = document.getElementById("id_addr_billing_last_name").value;
+                document.getElementById("id_addr_shipping_company").value = document.getElementById("id_addr_billing_company").value;
+                document.getElementById("id_addr_shipping_address_1").value = document.getElementById("id_addr_billing_address_1").value;
+                document.getElementById("id_addr_shipping_address_2").value = document.getElementById("id_addr_billing_address_2").value;
+                document.getElementById("id_addr_shipping_city").value = document.getElementById("id_addr_billing_city").value;
+                document.getElementById("id_addr_shipping_state").value = document.getElementById("id_addr_billing_state").value;
+                document.getElementById("id_addr_shipping_postcode").value = document.getElementById("id_addr_billing_postcode").value;
+                document.getElementById("id_addr_shipping_country").value = document.getElementById("id_addr_billing_country").value;
+            }
+            </script>
+        {% endif %}
     </ul>
 {% endblock %}
