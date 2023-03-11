@@ -12,14 +12,14 @@ _ = gettext
 #####
 
 
-@login_required(login_url=reverse_lazy("admin:login"))
+@login_required(login_url=reverse_lazy("kmuhelper:login"))
 @require_kmuhelper_module_perms('app')
 def app_mobile_main(request):
     return render(request, "kmuhelper/app/mobile/main.html", {})
 
 
 @allow_iframe
-@login_required(login_url=reverse_lazy("admin:login"))
+@login_required(login_url=reverse_lazy("kmuhelper:login"))
 @require_kmuhelper_module_perms('app')
 def app_mobile_home(request):
     return render(request, "kmuhelper/app/mobile/home.html", {
@@ -28,7 +28,7 @@ def app_mobile_home(request):
 
 
 @allow_iframe
-@login_required(login_url=reverse_lazy("admin:login"))
+@login_required(login_url=reverse_lazy("kmuhelper:login"))
 @require_kmuhelper_module_perms('app')
 def app_mobile_error(request):
     return render(request, "kmuhelper/app/mobile/error.html", {
@@ -44,7 +44,7 @@ def app_mobile_manifest(request):
 
 
 @allow_iframe
-@login_required(login_url=reverse_lazy("admin:login"))
+@login_required(login_url=reverse_lazy("kmuhelper:login"))
 @require_kmuhelper_module_perms('app')
 def app_desktop(request):
     return render(request, 'admin/kmuhelper/_special/app/app_index.html', config.get_module_home_context(request, 'app'))

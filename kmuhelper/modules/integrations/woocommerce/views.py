@@ -63,7 +63,7 @@ def wc_auth_key(request):
         return JsonResponse({"success": False, "reason": "Useless data!"}, status=400)
 
 
-@login_required(login_url=reverse_lazy("admin:login"))
+@login_required(login_url=reverse_lazy("kmuhelper:login"))
 @require_any_kmuhelper_perms()
 def wc_auth_end(request):
     if request.GET.get("success") == "1":
@@ -73,7 +73,7 @@ def wc_auth_end(request):
     return redirect(reverse('kmuhelper:wc-settings'))
 
 
-@login_required(login_url=reverse_lazy("admin:login"))
+@login_required(login_url=reverse_lazy("kmuhelper:login"))
 @require_all_kmuhelper_perms(["change_setting"])
 def wc_auth_start(request):
     shopurl = settings.get_db_setting("wc-url", "Bestätigt")
@@ -97,7 +97,7 @@ def wc_auth_start(request):
 
 
 # Note: Change permission is required because the view redirects to the settings page
-@login_required(login_url=reverse_lazy("admin:login"))
+@login_required(login_url=reverse_lazy("kmuhelper:login"))
 @require_all_kmuhelper_perms(['change_setting'])
 def wc_system_status(request):
     if not is_connected():
@@ -114,7 +114,7 @@ def wc_system_status(request):
     return redirect(reverse("kmuhelper:wc-settings"))
 
 
-@login_required(login_url=reverse_lazy("admin:login"))
+@login_required(login_url=reverse_lazy("kmuhelper:login"))
 @require_all_kmuhelper_perms(["add_product"])
 def wc_import_products(request):
     if not is_connected():
@@ -130,7 +130,7 @@ def wc_import_products(request):
     return redirect(reverse("admin:kmuhelper_product_changelist"))
 
 
-@login_required(login_url=reverse_lazy("admin:login"))
+@login_required(login_url=reverse_lazy("kmuhelper:login"))
 @require_all_kmuhelper_perms(["add_customer"])
 def wc_import_customers(request):
     if not is_connected():
@@ -146,7 +146,7 @@ def wc_import_customers(request):
     return redirect(reverse("admin:kmuhelper_customer_changelist"))
 
 
-@login_required(login_url=reverse_lazy("admin:login"))
+@login_required(login_url=reverse_lazy("kmuhelper:login"))
 @require_all_kmuhelper_perms(["add_productcategory"])
 def wc_import_categories(request):
     if not is_connected():
@@ -162,7 +162,7 @@ def wc_import_categories(request):
     return redirect(reverse("admin:kmuhelper_productcategory_changelist"))
 
 
-@login_required(login_url=reverse_lazy("admin:login"))
+@login_required(login_url=reverse_lazy("kmuhelper:login"))
 @require_all_kmuhelper_perms(["add_order"])
 def wc_import_orders(request):
     if not is_connected():
@@ -178,7 +178,7 @@ def wc_import_orders(request):
     return redirect(reverse("admin:kmuhelper_order_changelist"))
 
 
-@login_required(login_url=reverse_lazy("admin:login"))
+@login_required(login_url=reverse_lazy("kmuhelper:login"))
 @require_all_kmuhelper_perms(["change_product"])
 @require_object(Product)
 def wc_update_product(request, obj):
@@ -191,7 +191,7 @@ def wc_update_product(request, obj):
     return redirect(reverse("admin:kmuhelper_product_change", args=[obj.pk]))
 
 
-@login_required(login_url=reverse_lazy("admin:login"))
+@login_required(login_url=reverse_lazy("kmuhelper:login"))
 @require_all_kmuhelper_perms(["change_customer"])
 @require_object(Customer)
 def wc_update_customer(request, obj):
@@ -204,7 +204,7 @@ def wc_update_customer(request, obj):
     return redirect(reverse("admin:kmuhelper_customer_change", args=[obj.pk]))
 
 
-@login_required(login_url=reverse_lazy("admin:login"))
+@login_required(login_url=reverse_lazy("kmuhelper:login"))
 @require_all_kmuhelper_perms(["change_productcategory"])
 @require_object(ProductCategory)
 def wc_update_category(request, obj):
@@ -217,7 +217,7 @@ def wc_update_category(request, obj):
     return redirect(reverse("admin:kmuhelper_productcategory_change", args=[obj.pk]))
 
 
-@login_required(login_url=reverse_lazy("admin:login"))
+@login_required(login_url=reverse_lazy("kmuhelper:login"))
 @require_all_kmuhelper_perms(["change_order"])
 @require_object(Order)
 def wc_update_order(request, obj):

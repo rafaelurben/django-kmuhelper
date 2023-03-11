@@ -18,12 +18,12 @@ _ = gettext_lazy
 #####
 
 
-@login_required(login_url=reverse_lazy("admin:login"))
+@login_required(login_url=reverse_lazy("kmuhelper:login"))
 def stats(request):
     return render(request, "kmuhelper/stats/index.html", {"has_permission": True})
 
 
-@login_required(login_url=reverse_lazy("admin:login"))
+@login_required(login_url=reverse_lazy("kmuhelper:login"))
 @require_all_kmuhelper_perms(["view_product", "view_order"])
 def stats_products_price(request):
     if not Order.objects.exists():
@@ -78,7 +78,7 @@ def stats_products_price(request):
     return render(request, "kmuhelper/stats/products_price.html", context)
 
 
-@login_required(login_url=reverse_lazy("admin:login"))
+@login_required(login_url=reverse_lazy("kmuhelper:login"))
 @require_all_kmuhelper_perms(["view_product", "view_order"])
 def best_products(request):
     if not Order.objects.exists():

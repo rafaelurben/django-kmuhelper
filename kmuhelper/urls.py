@@ -8,6 +8,7 @@ from kmuhelper import startup
 app_name = 'kmuhelper'
 urlpatterns = [
     path('',        views.home, name="home"),
+    path('login',   views.login, name="login"),
 
     # Developing tools
     path('_templatetest/<path:templatename>',

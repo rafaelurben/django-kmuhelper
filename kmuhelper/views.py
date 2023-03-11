@@ -1,6 +1,7 @@
+from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
 from django.urls import NoReverseMatch, reverse_lazy, reverse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.template import TemplateDoesNotExist, TemplateSyntaxError
 from django.template.loader import get_template
 from django.utils.translation import gettext
@@ -15,7 +16,7 @@ _ = gettext
 # Create your views here.
 
 
-@login_required(login_url=reverse_lazy("admin:login"))
+@login_required(login_url=reverse_lazy("kmuhelper:login"))
 @require_any_kmuhelper_perms()
 def home(request):
     grid = [
@@ -78,6 +79,10 @@ def home(request):
     ]
     return render(request, "kmuhelper/home.html", {"has_permission": True, "grid": grid})
 
+def login(request):
+    search = request.GET.urlencode()
+    url = settings.LOGIN_URL or reverse("admin:login")
+    return redirect(url+("?"+search if search else ""))
 
 @require_any_kmuhelper_perms()
 def error(request):

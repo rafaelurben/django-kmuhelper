@@ -168,7 +168,7 @@ def emailtemplate_use(request, obj):
 
 # Custom fake admin
 
-@login_required(login_url=reverse_lazy("admin:login"))
+@login_required(login_url=reverse_lazy("kmuhelper:login"))
 @require_kmuhelper_module_perms('emails')
 def email_index(request):
     return render(request, 'admin/kmuhelper/_special/emails/app_index.html', config.get_module_home_context(request, 'emails'))
