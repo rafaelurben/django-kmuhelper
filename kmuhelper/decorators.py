@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.shortcuts import redirect, render
 from django.utils.translation import gettext
 
+import kmuhelper.modules.config as config
 from kmuhelper.utils import render_error
 
 _ = gettext
@@ -105,6 +106,28 @@ def require_any_kmuhelper_perms(permissions=[], login_url=None, raise_exception=
             for perm in perms:
                 if user.has_perm(f'kmuhelper.{perm}' if not '.' in perm else perm):
                     return True
+
+        # In case the 403 handler should be called raise the exception
+        if raise_exception:
+            raise PermissionDenied
+        # As the last resort, show the login form
+        return False
+
+    return user_passes_test(check_perms, login_url=login_url)
+
+
+def require_kmuhelper_module_perms(module_name, login_url=None, raise_exception=True):
+    """
+    Decorator for views that checks whether a user has permissions for a kmuhelper
+    module, redirecting to the log-in page if necessary.
+    If the raise_exception parameter is given the PermissionDenied exception
+    is raised.
+    """
+
+    def check_perms(user):
+        # First check if the user has the permission (even anon users)
+        if config.user_has_module_permission(user, module_name):
+            return True
 
         # In case the 403 handler should be called raise the exception
         if raise_exception:

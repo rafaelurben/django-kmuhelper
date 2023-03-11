@@ -116,8 +116,8 @@ def get_module_home_context(request, module_name):
                         'change': request.user.has_perm(f"kmuhelper.change_{model._meta.model_name}"),
                         'delete': request.user.has_perm(f"kmuhelper.delete_{model._meta.model_name}"),
                         'view': request.user.has_perm(f"kmuhelper.view_{model._meta.model_name}")},
-                    'view_only': False
-                } for model in get_models(module.get('model_names'))
+                    'view_only': not request.user.has_perm(f"kmuhelper.change_{model._meta.model_name}"),
+                } for model in get_models(module.get('model_names')) if request.user.has_perm(f"kmuhelper.view_{model._meta.model_name}")
             ],
             'name': module.get('title'),
         }],
@@ -126,3 +126,11 @@ def get_module_home_context(request, module_name):
         'is_popup': False,
         'title': module.get('full_title'),
     }
+
+
+def user_has_module_permission(user, module_name):
+    module = MODULES.get(module_name)
+    for model_name in module.get('model_names'):
+        if user.has_perm(f"kmuhelper.view_{model_name.lower()}"):
+            return True
+    return False

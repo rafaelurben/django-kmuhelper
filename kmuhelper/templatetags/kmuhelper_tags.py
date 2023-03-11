@@ -15,11 +15,14 @@ register = template.Library()
 def kmuhelper_woocommerce_connected():
     return is_woocommerce_connected()
 
+@register.simple_tag(name="kmuhelper_has_module_permission", takes_context=True)
+def kmuhelper_has_module_permission(context, module_name):
+    return config.user_has_module_permission(context.get("user"), module_name)
 
-@register.simple_tag(name="kmuhelper_email_show_buttons")
-def kmuhelper_email_show_buttons():
+@register.simple_tag(name="kmuhelper_email_show_buttons", takes_context=True)
+def kmuhelper_email_show_buttons(context):
     show = bool(settings.get_db_setting("email-show-buttons"))
-    return show
+    return show and context.get('user').has_perm('kmuhelper.view_email')
 
 @register.simple_tag(name="get_admin_model", takes_context=True)
 def get_admin_model(context, model_name=None):

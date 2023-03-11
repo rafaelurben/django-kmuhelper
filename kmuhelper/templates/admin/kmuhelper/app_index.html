@@ -40,7 +40,7 @@
         <br>
     {% endblock %}
 
-    {% if "old_design" in request.GET %}
+    {% if "old_design" in request.GET or "old" in request.GET %}
         {{ block.super }}
     {% else %}
         {% kmuhelper_pagechooser_from_model_list app_list.0.models %}
