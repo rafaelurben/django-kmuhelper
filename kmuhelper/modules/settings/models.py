@@ -71,7 +71,7 @@ class SettingBase(CustomModel):
         blank=True,
     )
     content_email = models.EmailField(
-        verbose_name="Inhalt (E-Mail)",
+        verbose_name=_("Inhalt (E-Mail)"),
         default="",
         blank=True,
     )
@@ -159,6 +159,7 @@ class Setting(SettingBase):
     class Meta:
         verbose_name = _("Einstellung")
         verbose_name_plural = _("Einstellungen")
+        default_permissions = ("change",)
 
     objects = models.Manager()
 
@@ -172,3 +173,8 @@ class SettingHidden(SettingBase):
     meant to be seen by the user.
 
     Example usage: WooCommerce authentication data"""
+
+    class Meta:
+        verbose_name = _("Versteckte Einstellung")
+        verbose_name_plural = _("Versteckte Einstellungen")
+        default_permissions = ()
