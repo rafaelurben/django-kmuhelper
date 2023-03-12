@@ -68,7 +68,6 @@ def require_all_kmuhelper_perms(permissions_required=[], login_url=None, raise_e
             perms = permissions_required
 
         perms = [f'kmuhelper.{perm}' if not '.' in perm else perm for perm in perms]
-        print(perms)
 
         # First check if the user has the permission (even anon users)
         if user.has_perms(perms):
