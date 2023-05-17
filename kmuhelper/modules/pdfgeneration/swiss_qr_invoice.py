@@ -164,8 +164,6 @@ class QRInvoiceFlowable(Flowable):
 
     def draw_qr_invoice(self):
         billing_info = self.billing_information
-        strdbkginf = (billing_info[:len(billing_info)//2],
-                      billing_info[len(billing_info)//2:])
         ref = self.qr_reference_number
         total = format(self.total, ",.2f").replace(",", " ")
         recv = self.payment_receiver
@@ -247,8 +245,11 @@ class QRInvoiceFlowable(Flowable):
             t.moveCursor(0, 9)
         titel(t, pgettext('QR-Invoice / fixed by SIX group style guide', "Zusätzliche Informationen"))
         t.textLine(self.unstructured_message)
-        t.textLine(strdbkginf[0])
-        t.textLine(strdbkginf[1])
+        # Note: The billing information was originally printed on the
+        #       invoice but is now exclusively included in the QR code.
+        #       Reason: It's not human readable and just confusing.
+        # t.textLine(billing_info[:len(billing_info)//2)
+        # t.textLine(billing_info[len(billing_info)//2:])
         t.moveCursor(0, 9)
         titel(t, pgettext('QR-Invoice / fixed by SIX group style guide', "Zahlbar durch"))
         t.textLine(addr["company"] or f"{addr['first_name']} {addr['last_name']}")
