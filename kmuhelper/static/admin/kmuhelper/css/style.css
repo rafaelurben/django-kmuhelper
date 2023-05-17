@@ -1,6 +1,6 @@
 @import "colors-kmuhelper.css";
 
-:root {
+html[data-theme="light"], html[data-theme="dark"], :root {
     --primary: var(--kmuhelper-default);
     --secondary: var(--kmuhelper-darkest);
     --link-fg: var(--kmuhelper-dark);
