@@ -2,7 +2,7 @@ Django==4.2.7
 gunicorn==21.2.0
 requests==2.31.0
 WooCommerce==3.0.0
-reportlab==4.0.6
+reportlab==4.0.7
 rich==13.6.0
 packaging==23.2
 defusedxml==0.7.1
