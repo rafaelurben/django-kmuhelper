@@ -3,14 +3,14 @@
     <tr>
         <th>Bestellung
             <a target="_blank"
-               href="{% url 'admin:kmuhelper_order_change' object_id=order.pk %}">
+               href="{% url 'admin:kmuhelper_order_change' object_id=order.pk %}" rel="noopener noreferrer">
                 #{{ order.pk }}
             </a>
         </th>
         <th>
             <abbr title="Hier klicken, um die Bestellung als bezahlt zu markieren">
                 <a class="button markpaid{% if order.is_paid %} success{% endif %}"
-                   url="{% url 'kmuhelper:api-orders-set-paid' order.pk %}">
+                   data-url="{% url 'kmuhelper:api-orders-set-paid' order.pk %}" rel="noopener noreferrer">
                     Bezahlt
                 </a>
             </abbr>

@@ -4,10 +4,14 @@
     {% if change %}
         <li><a target="_blank" href="{{ original.get_url }}">Öffentliche URL</a></li>
         {% if perms.kmuhelper.download_attachment %}
-            <li><a target="_blank" href="{% url 'admin:kmuhelper_attachment_download' object_id %}?preview">Datei
-                ansehen</a></li>
-            <li><a download="{{ original.filename }}" href="{% url 'admin:kmuhelper_attachment_download' object_id %}">Datei
-                Herunterladen</a></li>
+            <li>
+                <a target="_blank" href="{% url 'admin:kmuhelper_attachment_download' object_id %}?preview"
+                   rel="noopener noreferrer">Datei ansehen</a>
+            </li>
+            <li>
+                <a download="{{ original.filename }}" href="{% url 'admin:kmuhelper_attachment_download' object_id %}"
+                   rel="noopener noreferrer">Datei herunterladen</a>
+            </li>
         {% endif %}
     {% endif %}
     {{ block.super }}

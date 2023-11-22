@@ -75,14 +75,17 @@
 
     <p>
         Noch nicht bezahlte Bestellungen
-        (<a target="_blank" href="{% url 'admin:kmuhelper_order_changelist' %}?is_paid__exact=0">
+        (<a target="_blank" href="{% url 'admin:kmuhelper_order_changelist' %}?is_paid__exact=0"
+            rel="noopener noreferrer">
         Alle
-    </a>/<a target="_blank" href="{% url 'admin:kmuhelper_order_changelist' %}?is_paid__exact=0&is_shipped__exact=1">
-        Versendet
-    </a>/<a target="_blank" href="{% url 'admin:kmuhelper_order_changelist' %}?is_paid__exact=0&is_shipped__exact=0">
-        Noch nicht versendet
-    </a>)
-        </ul>
+        </a>/<a target="_blank" href="{% url 'admin:kmuhelper_order_changelist' %}?is_paid__exact=0&is_shipped__exact=1"
+                rel="noopener noreferrer">
+            Versendet
+        </a>/<a target="_blank" href="{% url 'admin:kmuhelper_order_changelist' %}?is_paid__exact=0&is_shipped__exact=0"
+                rel="noopener noreferrer">
+            Noch nicht versendet
+        </a>)
+    </p>
 
     <h3>Einträge</h3>
 
@@ -160,11 +163,11 @@
         $ = window.django.jQuery
 
         $('a.markpaid:not(.success)').click(event => {
-            let url = event.target.getAttribute('url');
+            let url = event.target.getAttribute('data-url');
             event.target.setAttribute('disabled', 'true')
             $.post(
-                url = url,
-                success = (data, status) => {
+                url,
+                (data, status) => {
                     console.log("Request success: Data: ", data, "\nStatus: ", status);
                     event.target.classList.add('success');
                     event.target.removeAttribute('disabled');
