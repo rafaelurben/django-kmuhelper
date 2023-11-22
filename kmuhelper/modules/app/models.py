@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.db import models
-from django.utils.translation import gettext_lazy, gettext
+from django.utils.translation import gettext_lazy
 
 from kmuhelper.modules.main.models import Note, Order, Product, Supply
 
@@ -23,7 +23,7 @@ class App_ToDo(Note):
         proxy = True
         verbose_name = _("Notiz")
         verbose_name_plural = _("Notizen")
-        default_permissions = ("add", "change", "view")
+        default_permissions = []
 
     admin_title = _("ToDo-Liste")
 
@@ -42,7 +42,7 @@ class App_Shipping(Order):
         proxy = True
         verbose_name = _("Bestellung")
         verbose_name_plural = _("Bestellungen")
-        default_permissions = ("add", "change", "view")
+        default_permissions = []
 
     admin_title = _("Warenausgang")
     admin_icon = "fas fa-box-open"
@@ -62,7 +62,7 @@ class App_IncomingPayments(Order):
         proxy = True
         verbose_name = _("Bestellung")
         verbose_name_plural = _("Bestellungen")
-        default_permissions = ("add", "change", "view")
+        default_permissions = []
 
     admin_title = _("Zahlungseingang")
     admin_icon = "fas fa-hand-holding-dollar"
@@ -83,7 +83,7 @@ class App_Stock(Product):
         proxy = True
         verbose_name = _("Produkt")
         verbose_name_plural = _("Produkte")
-        default_permissions = ("add", "change", "view")
+        default_permissions = []
 
     admin_title = _("Lagerbestand")
 
@@ -102,6 +102,6 @@ class App_Arrival(Supply):
         proxy = True
         verbose_name = _("Lieferung")
         verbose_name_plural = _("Lieferungen")
-        default_permissions = ("add", "change", "view")
+        default_permissions = []
 
     admin_title = _("Wareneingang")
