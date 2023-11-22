@@ -27,7 +27,7 @@ Die neusten Änderungen können im [Änderungsprotokoll](https://github.com/rafa
 - [Issues](https://github.com/rafaelurben/django-kmuhelper/issues) - Bugs und Feature requests
 - [Kontakt](mailto:kmuhelper@rafaelurben.ch) - Dringende Anfragen und Sicherheitslücken
 
-Geplante Änderungen und aktuelle Programmierfortschritte können im [Projekt-Board](https://github.com/users/rafaelurben/projects/5/views/2) gefunden werden.
+Geplante Änderungen und aktuelle Programmierfortschritte können im [Projekt-Board](https://github.com/users/rafaelurben/projects/5/) gefunden werden.
 
 ## Installation
 
