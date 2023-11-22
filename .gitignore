@@ -131,4 +131,5 @@ dmypy.json
 
 # CUSTOM
 
-affinity/
+.idea/
+.vscode/
