@@ -2,10 +2,11 @@ import uuid
 
 from django.contrib import admin, messages
 from django.core import mail
+from django.core.exceptions import ValidationError
 from django.core.files import storage
 from django.db import models
 from django.http import FileResponse
-from django.template import TemplateDoesNotExist, TemplateSyntaxError
+from django.template import TemplateDoesNotExist, TemplateSyntaxError, Template, Context
 from django.template.loader import get_template
 from django.urls import reverse
 from django.utils import timezone
@@ -410,13 +411,16 @@ class EMailTemplate(CustomModel):
         max_length=50,
         default="",
         blank=True,
+        help_text=_("Unterstützt Platzhalter. Siehe unten für mehr Informationen."),
     )
     mail_subject = models.CharField(
         verbose_name=_("Betreff"),
         max_length=50,
+        help_text=_("Unterstützt Platzhalter. Siehe unten für mehr Informationen."),
     )
     mail_text = models.TextField(
         verbose_name=_("Text"),
+        help_text=_("Unterstützt Platzhalter. Siehe unten für mehr Informationen."),
     )
     mail_template = models.CharField(
         verbose_name=_("Designvorlage"),
@@ -434,26 +438,45 @@ class EMailTemplate(CustomModel):
     def __str__(self):
         return f"{self.title} ({self.pk})"
 
+    def clean(self):
+        """Check if the template fields are valid"""
+
+        errors = {}
+
+        for field in ["mail_to", "mail_subject", "mail_text"]:
+            try:
+                Template(getattr(self, field))
+            except TemplateSyntaxError as error:
+                errors[field] = gettext(
+                    "Vorlage enthält ungültige Syntax: %(error)s"
+                ) % {
+                    "error": error,
+                }
+
+        if errors:
+            raise ValidationError(errors)
+
     @admin.display(description=_("Vorlage benutzen"))
     def get_use_link(self):
         link = reverse("admin:kmuhelper_emailtemplate_use", args=[self.pk])
         text = _("Vorlage benutzen")
         return format_html('<a href="{}">{}</a>', link, text)
 
-    def create_mail(self, variables=dict()):
+    def create_mail(self, variables=None):
         """Use this template and replace variables"""
 
-        def parse_vars(text):
-            for var in variables:
-                vartext = f"@{ var.upper() }@"
-                varcontent = variables[var]
-                text = text.replace(vartext, varcontent)
-            return text
+        if variables is None:
+            variables = dict()
+
+        def template_parse(template_string):
+            template = Template(template_string)
+            context = Context(variables)
+            return template.render(context)
 
         email = EMail.objects.create(
-            to=parse_vars(self.mail_to),
-            subject=parse_vars(self.mail_subject),
-            text=parse_vars(self.mail_text),
+            to=template_parse(self.mail_to),
+            subject=template_parse(self.mail_subject),
+            text=template_parse(self.mail_text),
             html_template=self.mail_template,
             html_context=self.mail_context,
         )

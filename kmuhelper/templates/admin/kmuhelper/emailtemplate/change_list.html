@@ -2,11 +2,41 @@
 
 {% block object-tools-items %}
     {% if perms.kmuhelper.add_email %}
-        {% if 'emailtemplate-vars' in request.session %}
+        {% if 'kmuhelper_emailtemplate_vars' in request.session %}
             <li>
-                <a href="{% url 'admin:kmuhelper_emailtemplate_resetvars' %}">Gespeicherte Variablen löschen</a>
+                <a href="{% url 'admin:kmuhelper_emailtemplate_resetvars' %}">Platzhaltervariablen löschen</a>
             </li>
         {% endif %}
     {% endif %}
     {{ block.super }}
+{% endblock %}
+
+{% block content %}
+    {{ block.super }}
+
+    <h2>Platzhaltervariablen</h2>
+    <h3>Verwendung von Platzhaltern</h3>
+    <blockquote>
+        Erklärung der Platzhaltervariablen:
+        <a href="{% url 'admin:kmuhelper_emailtemplate_add' %}#platzhalter-info">hier</a>
+    </blockquote>
+    {% if 'kmuhelper_emailtemplate_vars' in request.session %}
+        <h3>Aktuell gespeicherte Variablen</h3>
+        <blockquote>
+            <table>
+                <thead>
+                <tr>
+                    <th>Variable</th>
+                    <th>Inhalt</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for key, value in request.session.kmuhelper_emailtemplate_vars.items %}
+                    <tr><td>{{ key }}</td><td>{{ value }}</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <p><a href="{% url 'admin:kmuhelper_emailtemplate_resetvars' %}">Gespeicherte Variablen löschen</a></p>
+        </blockquote>
+    {% endif %}
 {% endblock %}

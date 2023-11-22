@@ -3,9 +3,9 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
-
 from django.utils.translation import gettext_lazy, gettext
 
+import kmuhelper.modules.config as config
 from kmuhelper.decorators import (
     require_object,
     confirm_action,
@@ -14,7 +14,6 @@ from kmuhelper.decorators import (
 )
 from kmuhelper.modules.emails.models import EMail, Attachment, EMailTemplate
 from kmuhelper.utils import render_error
-import kmuhelper.modules.config as config
 
 _ = gettext_lazy
 
@@ -149,14 +148,13 @@ def emailtemplate_savevars(request):
     """Save variables into session for usage in template"""
 
     data = request.GET.dict()
-    request.session["emailtemplate-vars"] = data
+    request.session["kmuhelper_emailtemplate_vars"] = data
 
     messages.success(
         request,
         gettext(
-            "Folgende Daten wurden gespeichert, um die nächste Vorlage auszufüllen: %s"
-        )
-        % data,
+            "Daten wurden erfolgreich zwischengespeichert, um die nächste Vorlage auszufüllen."
+        ),
     )
     return redirect(reverse("admin:kmuhelper_emailtemplate_changelist"))
 
@@ -166,8 +164,8 @@ def emailtemplate_savevars(request):
 def emailtemplate_resetvars(request):
     """Reset saved session variables for email templates"""
 
-    if "emailtemplate-vars" in request.session:
-        del request.session["emailtemplate-vars"]
+    if "kmuhelper_emailtemplate_vars" in request.session:
+        del request.session["kmuhelper_emailtemplate_vars"]
 
     messages.success(request, _("Gespeicherte Daten wurden gelöscht!"))
     return redirect(reverse("admin:kmuhelper_emailtemplate_changelist"))
@@ -179,7 +177,7 @@ def emailtemplate_resetvars(request):
 def emailtemplate_use(request, obj):
     """Use a template"""
 
-    savedvars = request.session.pop("emailtemplate-vars", dict())
+    savedvars = request.session.pop("kmuhelper_emailtemplate_vars", dict())
     requestvars = request.GET.dict()
     data = {**savedvars, **requestvars}
 

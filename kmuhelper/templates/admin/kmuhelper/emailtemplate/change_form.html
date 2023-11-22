@@ -17,18 +17,17 @@
 
     <h3 id="platzhalter-info">Wozu Platzhalter</h3>
     <blockquote>
-        Mit Platzhaltern können ganz einfach bestimmte Werte
-        einer Bestellung oder eines Kunden direkt in einer Vorlage verwendet werden. Um diese Werte zu verwenden kann
-        auf der
-        entsprechenden Seite der Bestellung oder des Kunden auf "Zu E-Mail-Vorlage" geklickt werden. Die Werte werden
-        dann
-        zwischengespeichert und bei der nächsten Verwendung einer Vorlage automatisch eingesetzt.
+        Mit Platzhaltern können ganz einfach bestimmte Werte einer Bestellung oder eines Kunden direkt in einer
+        Vorlage verwendet werden. Um diese Werte zu verwenden kann auf der entsprechenden Seite der Bestellung
+        oder des Kunden auf "Zu E-Mail-Vorlage" geklickt werden. Die Werte werden dann zwischengespeichert und
+        bei der nächsten Verwendung einer Vorlage automatisch eingesetzt.
     </blockquote>
     <h3>Verwendung von Platzhaltern</h3>
     <blockquote>
-        Um einen Platzhalter zu verwenden, kann '@VARIABLENNAME@' in diese Vorlage eingesetzt werden.
-        Platzhalter können in allen Feldern der Kategorie 'Inhalt' verwendet werden.
-        Der Variablenname muss in GROSSBUCHSTABEN geschrieben werden.
+        Um einen Platzhalter zu verwenden, kann <b>{% verbatim %}{{ variablenname }}{% endverbatim %}</b> in diese
+        Vorlage eingesetzt werden. Platzhalter können in allen Feldern der Kategorie 'Inhalt' verwendet werden.
+        Der Variablenname muss der exakten Gross-/Kleinschreibung der Vorlage entsprechen (normalerweise ist dies
+        alles in <b>kleinbuchstaben</b>).
     </blockquote>
     <h3>Beispiele von Platzhaltern</h3>
     <blockquote>
@@ -43,19 +42,21 @@
             <tbody>
             <tr>
                 <td>Empfänger</td>
-                <td>@ADDR_BILLING_EMAIL@</td>
+                <td>{% verbatim %}{{ addr_billing_email }}{% endverbatim %}</td>
             </tr>
             <tr>
                 <td>Betreff</td>
-                <td>Ihre Bestellung #@ID@ wurde versendet</td>
+                <td>Ihre Bestellung #{% verbatim %}{{ id }}{% endverbatim %} wurde versendet</td>
             </tr>
             <tr>
                 <td>Text</td>
                 <td>
                     Guten Tag<br><br>
-                    Ihre Bestellung mit der ID @ID@ wurde versendet und sollte in den nächsten Tagen eintreffen.<br>
+                    Ihre Bestellung mit der ID {% verbatim %}{{ id }}{% endverbatim %} wurde versendet und sollte in
+                    den nächsten Tagen eintreffen.<br>
                     Sie können die Bestellung unter folgendem Link verfolgen:
-                    https://www.post.ch/swisspost-tracking?formattedParcelCodes=@TRACKINGNUMMER@
+                    https://www.post.ch/swisspost-tracking?formattedParcelCodes={% verbatim %}{{ trackingnummer }}
+                {% endverbatim %}
                 </td>
             </tr>
             </tbody>
