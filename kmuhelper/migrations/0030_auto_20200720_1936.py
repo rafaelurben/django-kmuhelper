@@ -5,29 +5,39 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0029_notiz_produkt'),
+        ("kmuhelper", "0029_notiz_produkt"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='kunde',
-            name='notiz',
+            model_name="kunde",
+            name="notiz",
         ),
         migrations.AddField(
-            model_name='kunde',
-            name='bemerkung',
-            field=models.TextField(blank=True, default='', verbose_name='Bemerkung'),
+            model_name="kunde",
+            name="bemerkung",
+            field=models.TextField(blank=True, default="", verbose_name="Bemerkung"),
         ),
         migrations.AddField(
-            model_name='notiz',
-            name='kunde',
-            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='notiz', to='kmuhelper.Kunde'),
+            model_name="notiz",
+            name="kunde",
+            field=models.OneToOneField(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="notiz",
+                to="kmuhelper.Kunde",
+            ),
         ),
         migrations.AlterField(
-            model_name='produkt',
-            name='mengenbezeichnung',
-            field=models.CharField(blank=True, default='[:de]Stück[:fr]Pièce[:it]Pezzo[:en]Piece[:]', max_length=100, verbose_name='Mengenbezeichnung'),
+            model_name="produkt",
+            name="mengenbezeichnung",
+            field=models.CharField(
+                blank=True,
+                default="[:de]Stück[:fr]Pièce[:it]Pezzo[:en]Piece[:]",
+                max_length=100,
+                verbose_name="Mengenbezeichnung",
+            ),
         ),
     ]

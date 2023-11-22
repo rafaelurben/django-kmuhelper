@@ -6,10 +6,10 @@
 {% endblock %}
 
 {% block content %}
-<form method="POST">
-    {% csrf_token %}
-    <p>Bitte bestätige, dass du folgende Aktion ausführen möchtest:</p>
-    <p>-&gt; <i>{{ action }}</i></p>
-    <input type="submit" value="Bestätigen" />
-</form>
+    <form method="POST">
+        {% csrf_token %}
+        <p>Bitte bestätige, dass du folgende Aktion ausführen möchtest:</p>
+        <p>-&gt; <i>{{ action }}</i></p>
+        <input type="submit" value="Bestätigen"/>
+    </form>
 {% endblock %}

@@ -13,7 +13,8 @@ from kmuhelper.constants import URL_FAQ
 
 ################
 
-def render_error(request, status:int=404, message:str=""):
+
+def render_error(request, status: int = 404, message: str = ""):
     """Show the error page"""
 
     if message:
@@ -21,15 +22,22 @@ def render_error(request, status:int=404, message:str=""):
 
     return render(request, "kmuhelper/error.html", status=status)
 
+
 ################
+
 
 def python_version():
     return str(sys.version.split(" ")[0])
 
 
 def _package_versions_pypi(project, testpypi=False, allow_prereleases=False):
-    url = "https://"+("test." if testpypi else "") + \
-        "pypi.org/pypi/"+project+"/json"
+    url = (
+        "https://"
+        + ("test." if testpypi else "")
+        + "pypi.org/pypi/"
+        + project
+        + "/json"
+    )
     versions = requests.get(url).json()["releases"].keys()
     versions_safe = []
     for v in versions:
@@ -38,25 +46,27 @@ def _package_versions_pypi(project, testpypi=False, allow_prereleases=False):
             if not allow_prereleases and vs.is_prerelease:
                 continue
             versions_safe.append(vs)
-        except (InvalidVersion):
+        except InvalidVersion:
             continue
     return sorted(versions_safe)
 
+
 def _package_version_local(package) -> Version:
-    cmd = [sys.executable, '-m', 'pip', 'show', '{}'.format(package)]
+    cmd = [sys.executable, "-m", "pip", "show", "{}".format(package)]
     ver = str(subprocess.run(cmd, capture_output=True, text=True))
-    ver = ver[ver.find('Version:')+8:]
-    ver = ver[:ver.find('\\n')].replace(' ', '')
+    ver = ver[ver.find("Version:") + 8 :]
+    ver = ver[: ver.find("\\n")].replace(" ", "")
     try:
         return Version(ver)
-    except (InvalidVersion):
+    except InvalidVersion:
         return None
+
 
 def package_version(package, testpypi=False):
     all_versions = _package_versions_pypi(package, testpypi)
     latest_version = all_versions[-1] if all_versions else None
     current_version = _package_version_local(package)
-    
+
     if latest_version and current_version:
         uptodate = latest_version <= current_version
     else:
@@ -64,10 +74,11 @@ def package_version(package, testpypi=False):
 
     return {
         # "all":      all_versions,
-        "latest":    str(latest_version),
-        "current":   str(current_version),
-        "uptodate":  uptodate,
+        "latest": str(latest_version),
+        "current": str(current_version),
+        "uptodate": uptodate,
     }
+
 
 ################
 
@@ -113,10 +124,12 @@ def modulo10rekursiv(strNummer):
         uebertrag = intTabelle[uebertrag][int(num)]
     return [0, 9, 8, 7, 6, 5, 4, 3, 2, 1][uebertrag]
 
+
 ###############
+
 
 def faq(anchor="", text=_("FAQ")):
     "Get a link to the FAQ page in the manual."
 
-    href = f'{URL_FAQ}#{anchor}'
+    href = f"{URL_FAQ}#{anchor}"
     return format_html('<a target="_blank" href="{}">{}</a>', href, text)

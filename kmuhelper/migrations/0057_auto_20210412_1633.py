@@ -4,19 +4,22 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0056_auto_20210409_2340'),
+        ("kmuhelper", "0056_auto_20210409_2340"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='email',
-            options={'default_permissions': ('add', 'change', 'view', 'delete', 'send'), 'verbose_name': 'E-Mail', 'verbose_name_plural': 'E-Mails'},
+            name="email",
+            options={
+                "default_permissions": ("add", "change", "view", "delete", "send"),
+                "verbose_name": "E-Mail",
+                "verbose_name_plural": "E-Mails",
+            },
         ),
         migrations.AddField(
-            model_name='email',
-            name='sent',
-            field=models.BooleanField(default=False, verbose_name='Gesendet?'),
+            model_name="email",
+            name="sent",
+            field=models.BooleanField(default=False, verbose_name="Gesendet?"),
         ),
     ]

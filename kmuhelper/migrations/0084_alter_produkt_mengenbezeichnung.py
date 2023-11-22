@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("kmuhelper", "0083_alter_zahlungsempfaenger_webseite"),
     ]

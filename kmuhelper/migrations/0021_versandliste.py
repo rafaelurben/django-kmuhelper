@@ -4,21 +4,19 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0020_auto_20200716_1443'),
+        ("kmuhelper", "0020_auto_20200716_1443"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='versandliste',
-            fields=[
-            ],
+            name="versandliste",
+            fields=[],
             options={
-                'proxy': True,
-                'indexes': [],
-                'constraints': [],
+                "proxy": True,
+                "indexes": [],
+                "constraints": [],
             },
-            bases=('kmuhelper.bestellung',),
+            bases=("kmuhelper.bestellung",),
         ),
     ]

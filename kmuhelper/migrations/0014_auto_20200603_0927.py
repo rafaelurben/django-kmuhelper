@@ -4,44 +4,67 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0013_auto_20200603_0910'),
+        ("kmuhelper", "0013_auto_20200603_0910"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='geheime_einstellung',
-            name='inhalt',
+            model_name="geheime_einstellung",
+            name="inhalt",
         ),
         migrations.AddField(
-            model_name='geheime_einstellung',
-            name='char',
-            field=models.CharField(blank=True, default='', max_length=250, verbose_name='Inhalt (Text)              '),
+            model_name="geheime_einstellung",
+            name="char",
+            field=models.CharField(
+                blank=True,
+                default="",
+                max_length=250,
+                verbose_name="Inhalt (Text)              ",
+            ),
         ),
         migrations.AddField(
-            model_name='geheime_einstellung',
-            name='floa',
-            field=models.FloatField(blank=True, default=0.0, verbose_name='Inhalt (Fliesskommazahl)   '),
+            model_name="geheime_einstellung",
+            name="floa",
+            field=models.FloatField(
+                blank=True, default=0.0, verbose_name="Inhalt (Fliesskommazahl)   "
+            ),
         ),
         migrations.AddField(
-            model_name='geheime_einstellung',
-            name='inte',
-            field=models.IntegerField(blank=True, default=0, verbose_name='Inhalt (Zahl)              '),
+            model_name="geheime_einstellung",
+            name="inte",
+            field=models.IntegerField(
+                blank=True, default=0, verbose_name="Inhalt (Zahl)              "
+            ),
         ),
         migrations.AddField(
-            model_name='geheime_einstellung',
-            name='text',
-            field=models.TextField(blank=True, default='', verbose_name='Inhalt (Mehrzeiliger Text) '),
+            model_name="geheime_einstellung",
+            name="text",
+            field=models.TextField(
+                blank=True, default="", verbose_name="Inhalt (Mehrzeiliger Text) "
+            ),
         ),
         migrations.AddField(
-            model_name='geheime_einstellung',
-            name='typ',
-            field=models.CharField(choices=[('char', 'Text'), ('text', 'Mehrzeiliger Text'), ('int', 'Zahl'), ('floa', 'Fliesskommazahl'), ('url', 'Url')], default='char', max_length=4, verbose_name='Typ'),
+            model_name="geheime_einstellung",
+            name="typ",
+            field=models.CharField(
+                choices=[
+                    ("char", "Text"),
+                    ("text", "Mehrzeiliger Text"),
+                    ("int", "Zahl"),
+                    ("floa", "Fliesskommazahl"),
+                    ("url", "Url"),
+                ],
+                default="char",
+                max_length=4,
+                verbose_name="Typ",
+            ),
         ),
         migrations.AddField(
-            model_name='geheime_einstellung',
-            name='url',
-            field=models.URLField(blank=True, default='', verbose_name='Inhalt (Url)               '),
+            model_name="geheime_einstellung",
+            name="url",
+            field=models.URLField(
+                blank=True, default="", verbose_name="Inhalt (Url)               "
+            ),
         ),
     ]

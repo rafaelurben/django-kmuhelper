@@ -4,45 +4,47 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0094_alter_bestellung_cached_sum_alter_bestellung_is_paid_and_more'),
+        (
+            "kmuhelper",
+            "0094_alter_bestellung_cached_sum_alter_bestellung_is_paid_and_more",
+        ),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='notiz',
-            old_name='erstellt_am',
-            new_name='created_at',
+            model_name="notiz",
+            old_name="erstellt_am",
+            new_name="created_at",
         ),
         migrations.RenameField(
-            model_name='notiz',
-            old_name='kunde',
-            new_name='linked_customer',
+            model_name="notiz",
+            old_name="kunde",
+            new_name="linked_customer",
         ),
         migrations.RenameField(
-            model_name='notiz',
-            old_name='lieferung',
-            new_name='linked_delivery',
+            model_name="notiz",
+            old_name="lieferung",
+            new_name="linked_delivery",
         ),
         migrations.RenameField(
-            model_name='notiz',
-            old_name='bestellung',
-            new_name='linked_order',
+            model_name="notiz",
+            old_name="bestellung",
+            new_name="linked_order",
         ),
         migrations.RenameField(
-            model_name='notiz',
-            old_name='produkt',
-            new_name='linked_product',
+            model_name="notiz",
+            old_name="produkt",
+            new_name="linked_product",
         ),
         migrations.RenameField(
-            model_name='notiz',
-            old_name='erledigt',
-            new_name='done',
+            model_name="notiz",
+            old_name="erledigt",
+            new_name="done",
         ),
         migrations.RenameField(
-            model_name='lieferant',
-            old_name='notiz',
-            new_name='note',
+            model_name="lieferant",
+            old_name="notiz",
+            new_name="note",
         ),
     ]

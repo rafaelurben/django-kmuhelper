@@ -2,19 +2,30 @@
 
 import django.core.validators
 from django.db import migrations, models
+
 import kmuhelper.modules.main.models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0076_alter_bestellung_zahlungskonditionen'),
+        ("kmuhelper", "0076_alter_bestellung_zahlungskonditionen"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='bestellung',
-            name='zahlungskonditionen',
-            field=models.CharField(default=kmuhelper.modules.main.models.default_payment_conditions, help_text="Skonto und Zahlungsfrist nach Syntaxdefinition von Swico.\n\nBeispiel: '2:15;0:30' steht für 2% Skonto bei Zahlung innerhalb von 15 Tagen und eine Zahlungsfrist von 30 Tagen.\n\nEine Zahlungsfrist MUSS vorhanden sein und am Schluss aufgeführt werden.", max_length=16, validators=[django.core.validators.RegexValidator('^([0-9]+(\\.[0-9]+)?:[0-9]+;)*0:[0-9]+$', "Bitte benutze folgendes Format: 'p:d;p:d' - p = Skonto in %; d = Tage")], verbose_name='Zahlungskonditionen'),
+            model_name="bestellung",
+            name="zahlungskonditionen",
+            field=models.CharField(
+                default=kmuhelper.modules.main.models.default_payment_conditions,
+                help_text="Skonto und Zahlungsfrist nach Syntaxdefinition von Swico.\n\nBeispiel: '2:15;0:30' steht für 2% Skonto bei Zahlung innerhalb von 15 Tagen und eine Zahlungsfrist von 30 Tagen.\n\nEine Zahlungsfrist MUSS vorhanden sein und am Schluss aufgeführt werden.",
+                max_length=16,
+                validators=[
+                    django.core.validators.RegexValidator(
+                        "^([0-9]+(\\.[0-9]+)?:[0-9]+;)*0:[0-9]+$",
+                        "Bitte benutze folgendes Format: 'p:d;p:d' - p = Skonto in %; d = Tage",
+                    )
+                ],
+                verbose_name="Zahlungskonditionen",
+            ),
         ),
     ]

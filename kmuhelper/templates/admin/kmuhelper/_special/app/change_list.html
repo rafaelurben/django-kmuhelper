@@ -10,7 +10,7 @@
     </div>
 
     <script>
-        if (window !== window.top) { 
+        if (window !== window.top) {
             document.getElementById("breadcrumbs").style.display = "none";
             document.getElementById("app-link").href = "{% url 'kmuhelper:app-mobile' %}";
         }

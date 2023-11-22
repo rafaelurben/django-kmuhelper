@@ -5,8 +5,8 @@ from django.db import models
 from django.forms.models import model_to_dict
 from django.shortcuts import redirect
 from django.urls import reverse
-from django.utils.translation import gettext_lazy as _, gettext
 from django.utils.html import format_html
+from django.utils.translation import gettext_lazy as _, gettext
 
 from kmuhelper import widgets
 
@@ -37,7 +37,7 @@ class CustomModel(models.Model):
 
         return urlencode(self.to_dict)
 
-    @admin.display(description=_("🔗 Notiz"), ordering='linked_note')
+    @admin.display(description=_("🔗 Notiz"), ordering="linked_note")
     def linked_note_html(self):
         is_app = getattr(self.__class__, "IS_APP_MODEL", False)
         relname = getattr(self.__class__, "NOTE_RELATION", None)
@@ -59,7 +59,7 @@ class CustomModel(models.Model):
             else:
                 viewname = "admin:kmuhelper_note_add"
 
-            link = reverse(viewname) + f'?from_{relname}={self.pk}'
+            link = reverse(viewname) + f"?from_{relname}={self.pk}"
             text = gettext("Notiz erstellen")
         return format_html('<a target="_blank" href="{}">{}</a>', link, text)
 
@@ -70,31 +70,30 @@ class CustomModel(models.Model):
 class CustomModelAdmin(admin.ModelAdmin):
     """django.contrib.admin.ModelAdmin with custom overrides"""
 
-    formfield_overrides = {
-        models.JSONField: {'widget': widgets.PrettyJSONWidget}
-    }
+    formfield_overrides = {models.JSONField: {"widget": widgets.PrettyJSONWidget}}
 
     def _get_obj_does_not_exist_redirect(self, request, opts, object_id):
         """Redirect to changelist page instead of admin home if object is not found"""
 
         super()._get_obj_does_not_exist_redirect(request, opts, object_id)
         info = self.model._meta.app_label, self.model._meta.model_name
-        return redirect(reverse('admin:%s_%s_changelist' % info))
+        return redirect(reverse("admin:%s_%s_changelist" % info))
 
     def get_actions(self, request):
         """Make some action not always available"""
 
         actions = super().get_actions(request)
-        if 'wc_update' in actions:
+        if "wc_update" in actions:
             from kmuhelper.modules.integrations.woocommerce.utils import is_connected
+
             if not is_connected():
-                del actions['wc_update']
+                del actions["wc_update"]
         return actions
 
     def has_module_permission(self, request):
         """Add option to hide model in default admin"""
 
-        if getattr(self.__class__, 'hidden', False):
+        if getattr(self.__class__, "hidden", False):
             return {}
 
         return super().has_module_permission(request)
@@ -104,7 +103,9 @@ class CustomModelAdmin(admin.ModelAdmin):
     def get_readonly_fields(self, request, obj=None) -> tuple:
         if "unlock" in request.GET:
             return tuple(self.readonly_fields)
-        return tuple(self.readonly_fields) + tuple(self.get_additional_readonly_fields(request, obj))
+        return tuple(self.readonly_fields) + tuple(
+            self.get_additional_readonly_fields(request, obj)
+        )
 
     def get_additional_readonly_fields(self, request, obj=None) -> list:
         return []
@@ -140,7 +141,9 @@ class CustomTabularInline(admin.TabularInline):
     def get_readonly_fields(self, request, obj=None) -> tuple:
         if "unlock" in request.GET:
             return tuple(self.readonly_fields)
-        return tuple(self.readonly_fields) + tuple(self.get_additional_readonly_fields(request, obj))
+        return tuple(self.readonly_fields) + tuple(
+            self.get_additional_readonly_fields(request, obj)
+        )
 
     def get_additional_readonly_fields(self, request, obj=None) -> list:
         return []
@@ -176,7 +179,9 @@ class CustomStackedInline(admin.StackedInline):
     def get_readonly_fields(self, request, obj=None) -> tuple:
         if "unlock" in request.GET:
             return tuple(self.readonly_fields)
-        return tuple(self.readonly_fields) + tuple(self.get_additional_readonly_fields(request, obj))
+        return tuple(self.readonly_fields) + tuple(
+            self.get_additional_readonly_fields(request, obj)
+        )
 
     def get_additional_readonly_fields(self, request, obj=None) -> list:
         return []

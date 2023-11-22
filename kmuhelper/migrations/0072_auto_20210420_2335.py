@@ -4,19 +4,22 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0071_paymentimport_paymentimportentry'),
+        ("kmuhelper", "0071_paymentimport_paymentimportentry"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='paymentimportentry',
-            options={'default_permissions': (), 'verbose_name': 'Zahlungsimport-Eintrag', 'verbose_name_plural': 'Zahlungsimport-Einträge'},
+            name="paymentimportentry",
+            options={
+                "default_permissions": (),
+                "verbose_name": "Zahlungsimport-Eintrag",
+                "verbose_name_plural": "Zahlungsimport-Einträge",
+            },
         ),
         migrations.RenameField(
-            model_name='paymentimport',
-            old_name='is_parsed',
-            new_name='is_processed',
+            model_name="paymentimport",
+            old_name="is_parsed",
+            new_name="is_processed",
         ),
     ]

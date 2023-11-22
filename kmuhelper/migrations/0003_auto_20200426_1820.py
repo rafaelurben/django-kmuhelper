@@ -4,15 +4,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0002_auto_20200426_1746'),
+        ("kmuhelper", "0002_auto_20200426_1746"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='kosten',
-            name='name',
-            field=models.CharField(default='Zusätzliche Kosten', max_length=500, verbose_name='Name'),
+            model_name="kosten",
+            name="name",
+            field=models.CharField(
+                default="Zusätzliche Kosten", max_length=500, verbose_name="Name"
+            ),
         ),
     ]

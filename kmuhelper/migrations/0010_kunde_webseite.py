@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0009_kunde_notiz'),
+        ("kmuhelper", "0009_kunde_notiz"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='kunde',
-            name='webseite',
-            field=models.URLField(blank=True, default='', verbose_name='Webseite'),
+            model_name="kunde",
+            name="webseite",
+            field=models.URLField(blank=True, default="", verbose_name="Webseite"),
         ),
     ]

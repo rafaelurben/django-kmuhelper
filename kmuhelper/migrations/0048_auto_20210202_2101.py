@@ -4,20 +4,21 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0047_auto_20201018_1851'),
+        ("kmuhelper", "0047_auto_20201018_1851"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='email',
-            name='notes',
-            field=models.TextField(blank=True, default='', verbose_name='Notizen'),
+            model_name="email",
+            name="notes",
+            field=models.TextField(blank=True, default="", verbose_name="Notizen"),
         ),
         migrations.AlterField(
-            model_name='email',
-            name='html_template',
-            field=models.CharField(max_length=100, verbose_name='Dateiname der Vorlage'),
+            model_name="email",
+            name="html_template",
+            field=models.CharField(
+                max_length=100, verbose_name="Dateiname der Vorlage"
+            ),
         ),
     ]

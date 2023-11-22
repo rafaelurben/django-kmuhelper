@@ -5,15 +5,16 @@ import django.utils.timezone
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0031_auto_20200727_1603'),
+        ("kmuhelper", "0031_auto_20200727_1603"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='bestellung',
-            name='datum',
-            field=models.DateTimeField(default=django.utils.timezone.now, verbose_name='Datum'),
+            model_name="bestellung",
+            name="datum",
+            field=models.DateTimeField(
+                default=django.utils.timezone.now, verbose_name="Datum"
+            ),
         ),
     ]

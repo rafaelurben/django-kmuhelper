@@ -4,15 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0082_rename_kostenpreis_bestellungskosten_preis_and_more'),
+        ("kmuhelper", "0082_rename_kostenpreis_bestellungskosten_preis_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='zahlungsempfaenger',
-            name='webseite',
-            field=models.URLField(blank=True, default='', help_text='Auf der Rechnung ersichtlich, sofern vorhanden!', verbose_name='Webseite'),
+            model_name="zahlungsempfaenger",
+            name="webseite",
+            field=models.URLField(
+                blank=True,
+                default="",
+                help_text="Auf der Rechnung ersichtlich, sofern vorhanden!",
+                verbose_name="Webseite",
+            ),
         ),
     ]

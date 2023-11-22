@@ -30,15 +30,13 @@ class PaymentImport(CustomModel):
         verbose_name=_("Nachrichtenid"),
         max_length=50,
     )
-    data_creationdate = models.DateTimeField(
-        verbose_name=_("Erstellt am")
-    )
+    data_creationdate = models.DateTimeField(verbose_name=_("Erstellt am"))
 
     # Display
 
     @admin.display(description=_("Anzahl Einträge"))
     def entrycount(self):
-        if hasattr(self, 'entries'):
+        if hasattr(self, "entries"):
             return self.entries.count()
 
     @admin.display(description=_("Zahlungsimport"))
@@ -49,48 +47,55 @@ class PaymentImport(CustomModel):
 
     def get_processing_context(self):
         context = {
-            'unknown': [],
-            'notfound': [],
-            'ready': [],
-            'alreadypaid': [],
-            'unclear': [],
+            "unknown": [],
+            "notfound": [],
+            "ready": [],
+            "alreadypaid": [],
+            "unclear": [],
         }
-        for entry in self.entries.order_by('ref').all():
+        for entry in self.entries.order_by("ref").all():
             oid = entry.order_id()
             data = {
-                'payment': entry,
-                'id': oid,
+                "payment": entry,
+                "id": oid,
             }
 
             if oid is None:
-                context['unknown'].append(entry)
+                context["unknown"].append(entry)
             else:
-                relatedpayments = PaymentImportEntry.objects.filter(
-                    amount=entry.amount,
-                    currency=entry.currency,
-                    iban=entry.iban,
-                    ref=entry.ref,
-                ).order_by('valuedate').exclude(pk=entry.pk)
+                relatedpayments = (
+                    PaymentImportEntry.objects.filter(
+                        amount=entry.amount,
+                        currency=entry.currency,
+                        iban=entry.iban,
+                        ref=entry.ref,
+                    )
+                    .order_by("valuedate")
+                    .exclude(pk=entry.pk)
+                )
                 if relatedpayments.count() > 0:
-                    data['relatedpayments'] = relatedpayments.all()
+                    data["relatedpayments"] = relatedpayments.all()
 
                 try:
                     order = Order.objects.get(pk=oid)
 
-                    data['order'] = order
+                    data["order"] = order
 
-                    if entry.currency == 'CHF' and order.is_correct_payment(entry.amount, entry.valuedate):
+                    if entry.currency == "CHF" and order.is_correct_payment(
+                        entry.amount, entry.valuedate
+                    ):
                         if order.is_paid:
-                            context['alreadypaid'].append(data)
+                            context["alreadypaid"].append(data)
                         else:
-                            context['ready'].append(data)
+                            context["ready"].append(data)
                     else:
                         if order.customer:
-                            data['samecustomerorders'] = order.customer.orders.exclude(
-                                id=order.id).filter(is_paid=False)
-                        context['unclear'].append(data)
+                            data["samecustomerorders"] = order.customer.orders.exclude(
+                                id=order.id
+                            ).filter(is_paid=False)
+                        context["unclear"].append(data)
                 except ObjectDoesNotExist:
-                    context['notfound'].append(data)
+                    context["notfound"].append(data)
         return context
 
     class Meta:
@@ -102,9 +107,9 @@ class PaymentImport(CustomModel):
 
 class PaymentImportEntry(models.Model):
     parent = models.ForeignKey(
-        to='PaymentImport',
+        to="PaymentImport",
         on_delete=models.CASCADE,
-        related_name='entries',
+        related_name="entries",
     )
 
     ref = models.CharField(
@@ -141,17 +146,14 @@ class PaymentImportEntry(models.Model):
         max_length=10,
     )
 
-    @admin.display(description=_("Betrag"), ordering='amount')
+    @admin.display(description=_("Betrag"), ordering="amount")
     def betrag(self):
         return formatprice(self.amount)
 
-    @admin.display(description=_("ID"), ordering='ref')
+    @admin.display(description=_("ID"), ordering="ref")
     def order_id(self):
-        if (
-                len(self.ref) == 27 and
-                str(self.ref)[-5:-1] == '0000'
-        ):
-            return str(self.ref).lstrip('0')[:-5]
+        if len(self.ref) == 27 and str(self.ref)[-5:-1] == "0000":
+            return str(self.ref).lstrip("0")[:-5]
         return None
 
     @admin.display(description=_("Eintrag"))

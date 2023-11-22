@@ -5,15 +5,21 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0004_kunde_zusammenfuegen'),
+        ("kmuhelper", "0004_kunde_zusammenfuegen"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='kunde',
-            name='zusammenfuegen',
-            field=models.ForeignKey(blank=True, help_text='Dies kann nicht widerrufen werden! Werte im aktuellen Kunden werden bevorzugt.', null=True, on_delete=django.db.models.deletion.SET_NULL, to='kmuhelper.Kunde', verbose_name='Zusammenfügen mit'),
+            model_name="kunde",
+            name="zusammenfuegen",
+            field=models.ForeignKey(
+                blank=True,
+                help_text="Dies kann nicht widerrufen werden! Werte im aktuellen Kunden werden bevorzugt.",
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="kmuhelper.Kunde",
+                verbose_name="Zusammenfügen mit",
+            ),
         ),
     ]

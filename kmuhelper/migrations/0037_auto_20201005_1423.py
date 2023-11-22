@@ -5,15 +5,24 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0036_auto_20201005_1353'),
+        ("kmuhelper", "0036_auto_20201005_1353"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='zahlungsempfaenger',
-            name='qriban',
-            field=models.CharField(help_text='QR-IBAN mit Leerzeichen', max_length=26, validators=[django.core.validators.RegexValidator('^(CH|LI)[0-9]{2}\\s3[0-9]{3}\\s[0-9]{4}\\s[0-9]{4}\\s[0-9]{4}\\s[0-9]{1}$', 'Bite benutze folgendes Format: (CH|LI)pp 3xxx xxxx xxxx xxxx x')], verbose_name='QR-IBAN'),
+            model_name="zahlungsempfaenger",
+            name="qriban",
+            field=models.CharField(
+                help_text="QR-IBAN mit Leerzeichen",
+                max_length=26,
+                validators=[
+                    django.core.validators.RegexValidator(
+                        "^(CH|LI)[0-9]{2}\\s3[0-9]{3}\\s[0-9]{4}\\s[0-9]{4}\\s[0-9]{4}\\s[0-9]{1}$",
+                        "Bite benutze folgendes Format: (CH|LI)pp 3xxx xxxx xxxx xxxx x",
+                    )
+                ],
+                verbose_name="QR-IBAN",
+            ),
         ),
     ]

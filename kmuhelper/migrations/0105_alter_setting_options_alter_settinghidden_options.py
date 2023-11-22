@@ -4,18 +4,25 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0104_order_payment_purpose'),
+        ("kmuhelper", "0104_order_payment_purpose"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='setting',
-            options={'default_permissions': ('change',), 'verbose_name': 'Einstellung', 'verbose_name_plural': 'Einstellungen'},
+            name="setting",
+            options={
+                "default_permissions": ("change",),
+                "verbose_name": "Einstellung",
+                "verbose_name_plural": "Einstellungen",
+            },
         ),
         migrations.AlterModelOptions(
-            name='settinghidden',
-            options={'default_permissions': (), 'verbose_name': 'Versteckte Einstellung', 'verbose_name_plural': 'Versteckte Einstellungen'},
+            name="settinghidden",
+            options={
+                "default_permissions": (),
+                "verbose_name": "Versteckte Einstellung",
+                "verbose_name_plural": "Versteckte Einstellungen",
+            },
         ),
     ]

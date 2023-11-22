@@ -4,15 +4,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0064_emailtemplate'),
+        ("kmuhelper", "0064_emailtemplate"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='emailtemplate',
-            name='mail_to',
-            field=models.CharField(blank=True, default='', max_length=50, verbose_name='Empfänger'),
+            model_name="emailtemplate",
+            name="mail_to",
+            field=models.CharField(
+                blank=True, default="", max_length=50, verbose_name="Empfänger"
+            ),
         ),
     ]

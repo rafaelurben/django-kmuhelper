@@ -6,8 +6,8 @@ from kmuhelper.overrides import CustomModelAdmin
 
 @admin.register(models.Setting)
 class SettingAdmin(CustomModelAdmin):
-    list_display = ('name', 'content_display')
-    ordering = ('id',)
+    list_display = ("name", "content_display")
+    ordering = ("id",)
 
     search_fields = []
 
@@ -16,7 +16,7 @@ class SettingAdmin(CustomModelAdmin):
     hidden = True
 
     def get_fields(self, request, obj=None):
-        return ['description', f'content_{obj.typ}']
+        return ["description", f"content_{obj.typ}"]
 
     # Permissions
 

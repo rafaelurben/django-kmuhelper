@@ -4,15 +4,20 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0103_paymentreceiver_invoice_display_mode'),
+        ("kmuhelper", "0103_paymentreceiver_invoice_display_mode"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='order',
-            name='payment_purpose',
-            field=models.CharField(blank=True, default='', max_length=50, verbose_name='Zahlungszweck', help_text="Wird in QR-Rechnung verwendet."),
+            model_name="order",
+            name="payment_purpose",
+            field=models.CharField(
+                blank=True,
+                default="",
+                max_length=50,
+                verbose_name="Zahlungszweck",
+                help_text="Wird in QR-Rechnung verwendet.",
+            ),
         ),
     ]

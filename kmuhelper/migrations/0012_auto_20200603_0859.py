@@ -4,49 +4,69 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0011_kunde_firma'),
+        ("kmuhelper", "0011_kunde_firma"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='einstellung',
-            name='inhalt',
+            model_name="einstellung",
+            name="inhalt",
         ),
         migrations.AddField(
-            model_name='einstellung',
-            name='char',
-            field=models.CharField(blank=True, default='', max_length=250, verbose_name='Inhalt (Char)  '),
+            model_name="einstellung",
+            name="char",
+            field=models.CharField(
+                blank=True, default="", max_length=250, verbose_name="Inhalt (Char)  "
+            ),
         ),
         migrations.AddField(
-            model_name='einstellung',
-            name='floa',
-            field=models.FloatField(blank=True, default=0.0, verbose_name='Inhalt (Float) '),
+            model_name="einstellung",
+            name="floa",
+            field=models.FloatField(
+                blank=True, default=0.0, verbose_name="Inhalt (Float) "
+            ),
         ),
         migrations.AddField(
-            model_name='einstellung',
-            name='inte',
-            field=models.IntegerField(blank=True, default=0, verbose_name='Inhalt (Int)   '),
+            model_name="einstellung",
+            name="inte",
+            field=models.IntegerField(
+                blank=True, default=0, verbose_name="Inhalt (Int)   "
+            ),
         ),
         migrations.AddField(
-            model_name='einstellung',
-            name='text',
-            field=models.TextField(blank=True, default='', verbose_name='Inhalt (Text)  '),
+            model_name="einstellung",
+            name="text",
+            field=models.TextField(
+                blank=True, default="", verbose_name="Inhalt (Text)  "
+            ),
         ),
         migrations.AddField(
-            model_name='einstellung',
-            name='typ',
-            field=models.CharField(choices=[('char', 'Text'), ('text', 'Mehrzeiliger Text'), ('int', 'Zahl'), ('floa', 'Fliesskommazahl'), ('url', 'Url')], default='char', max_length=4, verbose_name='Typ'),
+            model_name="einstellung",
+            name="typ",
+            field=models.CharField(
+                choices=[
+                    ("char", "Text"),
+                    ("text", "Mehrzeiliger Text"),
+                    ("int", "Zahl"),
+                    ("floa", "Fliesskommazahl"),
+                    ("url", "Url"),
+                ],
+                default="char",
+                max_length=4,
+                verbose_name="Typ",
+            ),
         ),
         migrations.AddField(
-            model_name='einstellung',
-            name='url',
-            field=models.URLField(blank=True, default='', verbose_name='Inhalt (Url)   '),
+            model_name="einstellung",
+            name="url",
+            field=models.URLField(
+                blank=True, default="", verbose_name="Inhalt (Url)   "
+            ),
         ),
         migrations.AlterField(
-            model_name='einstellung',
-            name='name',
-            field=models.CharField(max_length=100, verbose_name='Name'),
+            model_name="einstellung",
+            name="name",
+            field=models.CharField(max_length=100, verbose_name="Name"),
         ),
     ]

@@ -4,14 +4,13 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0059_alter_email_html_context'),
+        ("kmuhelper", "0059_alter_email_html_context"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='email',
-            name='typ',
+            model_name="email",
+            name="typ",
         ),
     ]

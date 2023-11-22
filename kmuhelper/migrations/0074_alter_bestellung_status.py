@@ -4,15 +4,28 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0073_auto_20210422_1323'),
+        ("kmuhelper", "0073_auto_20210422_1323"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='bestellung',
-            name='status',
-            field=models.CharField(choices=[('pending', 'Zahlung ausstehend'), ('processing', 'In Bearbeitung'), ('on-hold', 'In Wartestellung'), ('completed', 'Abgeschlossen'), ('cancelled', 'Storniert/Abgebrochen'), ('refunded', 'Rückerstattet'), ('failed', 'Fehlgeschlagen'), ('trash', 'Gelöscht')], default='processing', max_length=11, verbose_name='Status'),
+            model_name="bestellung",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("pending", "Zahlung ausstehend"),
+                    ("processing", "In Bearbeitung"),
+                    ("on-hold", "In Wartestellung"),
+                    ("completed", "Abgeschlossen"),
+                    ("cancelled", "Storniert/Abgebrochen"),
+                    ("refunded", "Rückerstattet"),
+                    ("failed", "Fehlgeschlagen"),
+                    ("trash", "Gelöscht"),
+                ],
+                default="processing",
+                max_length=11,
+                verbose_name="Status",
+            ),
         ),
     ]

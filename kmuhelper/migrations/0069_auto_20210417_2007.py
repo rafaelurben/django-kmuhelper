@@ -4,23 +4,34 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0068_rename_registrierungsemail_kunde_email_registriert'),
+        ("kmuhelper", "0068_rename_registrierungsemail_kunde_email_registriert"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='emailattachment',
-            options={'verbose_name': 'E-Mail-Anhang', 'verbose_name_plural': 'E-Mail-Anhänge'},
+            name="emailattachment",
+            options={
+                "verbose_name": "E-Mail-Anhang",
+                "verbose_name_plural": "E-Mail-Anhänge",
+            },
         ),
         migrations.AlterModelOptions(
-            name='emailtemplate',
-            options={'verbose_name': 'E-Mail-Vorlage', 'verbose_name_plural': 'E-Mail-Vorlagen'},
+            name="emailtemplate",
+            options={
+                "verbose_name": "E-Mail-Vorlage",
+                "verbose_name_plural": "E-Mail-Vorlagen",
+            },
         ),
         migrations.AlterField(
-            model_name='bestellung',
-            name='rechnungsadresse_adresszeile1',
-            field=models.CharField(blank=True, default='', help_text="Strasse und Hausnummer oder 'Postfach'", max_length=50, verbose_name='Adresszeile 1'),
+            model_name="bestellung",
+            name="rechnungsadresse_adresszeile1",
+            field=models.CharField(
+                blank=True,
+                default="",
+                help_text="Strasse und Hausnummer oder 'Postfach'",
+                max_length=50,
+                verbose_name="Adresszeile 1",
+            ),
         ),
     ]

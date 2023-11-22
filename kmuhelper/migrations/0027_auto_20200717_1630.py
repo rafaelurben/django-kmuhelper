@@ -4,30 +4,49 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0026_todolagerbestand_todolieferung'),
+        ("kmuhelper", "0026_todolagerbestand_todolieferung"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='todolagerbestand',
-            options={'default_permissions': ('add', 'change', 'view'), 'verbose_name': 'Produkt', 'verbose_name_plural': 'Produkte'},
+            name="todolagerbestand",
+            options={
+                "default_permissions": ("add", "change", "view"),
+                "verbose_name": "Produkt",
+                "verbose_name_plural": "Produkte",
+            },
         ),
         migrations.AlterModelOptions(
-            name='todolieferung',
-            options={'default_permissions': ('add', 'change', 'view'), 'verbose_name': 'Lieferung', 'verbose_name_plural': 'Lieferungen'},
+            name="todolieferung",
+            options={
+                "default_permissions": ("add", "change", "view"),
+                "verbose_name": "Lieferung",
+                "verbose_name_plural": "Lieferungen",
+            },
         ),
         migrations.AlterModelOptions(
-            name='todonotiz',
-            options={'default_permissions': ('add', 'change', 'view'), 'verbose_name': 'Notiz', 'verbose_name_plural': 'Notizen'},
+            name="todonotiz",
+            options={
+                "default_permissions": ("add", "change", "view"),
+                "verbose_name": "Notiz",
+                "verbose_name_plural": "Notizen",
+            },
         ),
         migrations.AlterModelOptions(
-            name='todoversand',
-            options={'default_permissions': ('add', 'change', 'view'), 'verbose_name': 'Bestellung', 'verbose_name_plural': 'Bestellungen'},
+            name="todoversand",
+            options={
+                "default_permissions": ("add", "change", "view"),
+                "verbose_name": "Bestellung",
+                "verbose_name_plural": "Bestellungen",
+            },
         ),
         migrations.AlterModelOptions(
-            name='todozahlungseingang',
-            options={'default_permissions': ('add', 'change', 'view'), 'verbose_name': 'Bestellung', 'verbose_name_plural': 'Bestellung'},
+            name="todozahlungseingang",
+            options={
+                "default_permissions": ("add", "change", "view"),
+                "verbose_name": "Bestellung",
+                "verbose_name_plural": "Bestellung",
+            },
         ),
     ]

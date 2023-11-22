@@ -4,36 +4,33 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0025_auto_20200716_2126'),
+        ("kmuhelper", "0025_auto_20200716_2126"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ToDoLagerbestand',
-            fields=[
-            ],
+            name="ToDoLagerbestand",
+            fields=[],
             options={
-                'verbose_name': 'Produkt',
-                'verbose_name_plural': 'Produkte',
-                'proxy': True,
-                'indexes': [],
-                'constraints': [],
+                "verbose_name": "Produkt",
+                "verbose_name_plural": "Produkte",
+                "proxy": True,
+                "indexes": [],
+                "constraints": [],
             },
-            bases=('kmuhelper.produkt',),
+            bases=("kmuhelper.produkt",),
         ),
         migrations.CreateModel(
-            name='ToDoLieferung',
-            fields=[
-            ],
+            name="ToDoLieferung",
+            fields=[],
             options={
-                'verbose_name': 'Lieferung',
-                'verbose_name_plural': 'Lieferungen',
-                'proxy': True,
-                'indexes': [],
-                'constraints': [],
+                "verbose_name": "Lieferung",
+                "verbose_name_plural": "Lieferungen",
+                "proxy": True,
+                "indexes": [],
+                "constraints": [],
             },
-            bases=('kmuhelper.lieferung',),
+            bases=("kmuhelper.lieferung",),
         ),
     ]

@@ -27,47 +27,56 @@ def stats(request):
 @require_all_kmuhelper_perms(["view_product", "view_order"])
 def stats_products_price(request):
     if not Order.objects.exists():
-        return render_error(request, status=400,
-                            message=_("Keine Bestellungen vorhanden."))
+        return render_error(
+            request, status=400, message=_("Keine Bestellungen vorhanden.")
+        )
 
     try:
-        from_date = timezone.make_aware(datetime.datetime.strptime(
-            str(request.GET.get("from")), "%Y-%m-%d"))
+        from_date = timezone.make_aware(
+            datetime.datetime.strptime(str(request.GET.get("from")), "%Y-%m-%d")
+        )
     except (ValueError, IndexError):
         from_date = Order.objects.order_by("date").first().date
 
     try:
-        to_date = timezone.make_aware(datetime.datetime.strptime(
-            str(request.GET.get("to")), "%Y-%m-%d"))
+        to_date = timezone.make_aware(
+            datetime.datetime.strptime(str(request.GET.get("to")), "%Y-%m-%d")
+        )
     except (ValueError, IndexError):
         to_date = Order.objects.order_by("date").last().date
 
     products_sold = {}
 
-    for bp in OrderItem.objects.filter(order__date__gte=from_date, order__date__lte=to_date).order_by("order__date").values("order__date", "quantity"):
-        d = datetime.date(year=bp["order__date"].year,
-                          month=bp["order__date"].month, day=1).isoformat()
+    for bp in (
+        OrderItem.objects.filter(order__date__gte=from_date, order__date__lte=to_date)
+        .order_by("order__date")
+        .values("order__date", "quantity")
+    ):
+        d = datetime.date(
+            year=bp["order__date"].year, month=bp["order__date"].month, day=1
+        ).isoformat()
         if d in products_sold:
             products_sold[d] += bp["quantity"]
         else:
             products_sold[d] = bp["quantity"]
 
-    products_sold = [{"date": date, "y": products_sold[date]}
-                     for date in products_sold]
+    products_sold = [{"date": date, "y": products_sold[date]} for date in products_sold]
     products_sold_data = json.dumps(products_sold, cls=DjangoJSONEncoder)
 
     money_income = {}
 
-    for b in Order.objects.filter(date__gte=from_date, date__lte=to_date).order_by("date").values("date", "cached_sum"):
-        d = datetime.date(year=b["date"].year,
-                          month=b["date"].month, day=1).isoformat()
+    for b in (
+        Order.objects.filter(date__gte=from_date, date__lte=to_date)
+        .order_by("date")
+        .values("date", "cached_sum")
+    ):
+        d = datetime.date(year=b["date"].year, month=b["date"].month, day=1).isoformat()
         if d in money_income:
             money_income[d] += b["cached_sum"]
         else:
             money_income[d] = b["cached_sum"]
 
-    money_income = [{"date": date, "y": money_income[date]}
-                    for date in money_income]
+    money_income = [{"date": date, "y": money_income[date]} for date in money_income]
     money_income_data = json.dumps(money_income, cls=DjangoJSONEncoder)
 
     context = {
@@ -82,8 +91,9 @@ def stats_products_price(request):
 @require_all_kmuhelper_perms(["view_product", "view_order"])
 def best_products(request):
     if not Order.objects.exists():
-        return render_error(request, status=400,
-                            message=_("Keine Bestellungen vorhanden."))
+        return render_error(
+            request, status=400, message=_("Keine Bestellungen vorhanden.")
+        )
 
     try:
         if "max" in request.GET:
@@ -94,20 +104,26 @@ def best_products(request):
         max_count = 20
 
     try:
-        from_date = timezone.make_aware(datetime.datetime.strptime(
-            str(request.GET.get("from")), "%Y-%m-%d"))
+        from_date = timezone.make_aware(
+            datetime.datetime.strptime(str(request.GET.get("from")), "%Y-%m-%d")
+        )
     except (ValueError, IndexError):
         from_date = Order.objects.order_by("date").first().date
 
     try:
-        to_date=timezone.make_aware(datetime.datetime.strptime(
-            str(request.GET.get("to")), "%Y-%m-%d"))
+        to_date = timezone.make_aware(
+            datetime.datetime.strptime(str(request.GET.get("to")), "%Y-%m-%d")
+        )
     except (ValueError, IndexError):
         to_date = Order.objects.order_by("date").last().date
 
     products = {}
 
-    for bp in OrderItem.objects.filter(order__date__gte=from_date, order__date__lte=to_date).order_by("product__name").values("product__name", "quantity"):
+    for bp in (
+        OrderItem.objects.filter(order__date__gte=from_date, order__date__lte=to_date)
+        .order_by("product__name")
+        .values("product__name", "quantity")
+    ):
         if bp["product__name"] in products:
             products[langselect(bp["product__name"])] += bp["quantity"]
         else:

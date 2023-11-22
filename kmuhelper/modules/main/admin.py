@@ -10,10 +10,22 @@ from kmuhelper import constants
 from kmuhelper.modules.integrations.woocommerce import WooCommerce
 from kmuhelper.modules.main import views
 from kmuhelper.modules.main.models import (
-    ContactPerson, Order, ProductCategory, Fee, Customer,
-    Supplier, Supply, Note, Product, PaymentReceiver
+    ContactPerson,
+    Order,
+    ProductCategory,
+    Fee,
+    Customer,
+    Supplier,
+    Supply,
+    Note,
+    Product,
+    PaymentReceiver,
 )
-from kmuhelper.overrides import CustomModelAdmin, CustomTabularInline, CustomStackedInline
+from kmuhelper.overrides import (
+    CustomModelAdmin,
+    CustomTabularInline,
+    CustomStackedInline,
+)
 
 _ = gettext_lazy
 
@@ -23,14 +35,14 @@ _ = gettext_lazy
 @admin.register(ContactPerson)
 class ContactPersonAdmin(CustomModelAdmin):
     fieldsets = [
-        ("Name", {'fields': ['name']}),
-        ('Daten', {'fields': ['phone', 'email']})
+        ("Name", {"fields": ["name"]}),
+        ("Daten", {"fields": ["phone", "email"]}),
     ]
 
-    ordering = ('name',)
+    ordering = ("name",)
 
-    list_display = ('name', 'phone', 'email')
-    search_fields = ['name', 'phone', 'email']
+    list_display = ("name", "phone", "email")
+    search_fields = ["name", "phone", "email"]
 
 
 class OrderAdminOrderItemInline(CustomTabularInline):
@@ -39,9 +51,21 @@ class OrderAdminOrderItemInline(CustomTabularInline):
     verbose_name_plural = _("Bestellungsposten")
     extra = 0
 
-    fields = ('product', 'note', 'product_price', 'quantity', 'discount', 'display_subtotal', 'display_vat_rate',)
+    fields = (
+        "product",
+        "note",
+        "product_price",
+        "quantity",
+        "discount",
+        "display_subtotal",
+        "display_vat_rate",
+    )
 
-    readonly_fields = ('display_subtotal', 'display_vat_rate', 'product',)
+    readonly_fields = (
+        "display_subtotal",
+        "display_vat_rate",
+        "product",
+    )
 
     def get_additional_readonly_fields(self, request, obj=None):
         fields = ["product_price"]
@@ -56,13 +80,18 @@ class OrderAdminOrderItemInline(CustomTabularInline):
     NO_ADD = True
 
     def has_delete_permission(self, request, obj=None):
-        return False if (obj and (obj.is_shipped or obj.is_paid)) else super().has_delete_permission(request, obj)
+        return (
+            False
+            if (obj and (obj.is_shipped or obj.is_paid))
+            else super().has_delete_permission(request, obj)
+        )
 
     # Custom queryset
-    
+
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.select_related('product')
+        return qs.select_related("product")
+
 
 class OrderAdminOrderItemInlineAdd(CustomTabularInline):
     model = Order.products.through
@@ -72,9 +101,7 @@ class OrderAdminOrderItemInlineAdd(CustomTabularInline):
 
     autocomplete_fields = ("product",)
 
-    fieldsets = [
-        (None, {'fields': ['product', 'note', 'quantity', 'discount']})
-    ]
+    fieldsets = [(None, {"fields": ["product", "note", "quantity", "discount"]})]
 
     # Permissions
 
@@ -83,7 +110,11 @@ class OrderAdminOrderItemInlineAdd(CustomTabularInline):
     NO_VIEW = True
 
     def has_add_permission(self, request, obj=None):
-        return False if (obj and (obj.is_shipped or obj.is_paid)) else super().has_add_permission(request, obj)
+        return (
+            False
+            if (obj and (obj.is_shipped or obj.is_paid))
+            else super().has_add_permission(request, obj)
+        )
 
 
 class OrderAdminOrderFeeInline(CustomTabularInline):
@@ -92,28 +123,45 @@ class OrderAdminOrderFeeInline(CustomTabularInline):
     verbose_name_plural = _("Bestellungskosten")
     extra = 0
 
-    fields = ('linked_fee', 'name', 'price', 'discount', 'note', 'display_subtotal', 'vat_rate')
+    fields = (
+        "linked_fee",
+        "name",
+        "price",
+        "discount",
+        "note",
+        "display_subtotal",
+        "vat_rate",
+    )
 
-    readonly_fields = ('linked_fee', 'display_subtotal',)
+    readonly_fields = (
+        "linked_fee",
+        "display_subtotal",
+    )
 
     def get_additional_readonly_fields(self, request, obj=None):
         if obj and obj.is_paid:
-            return ['price', 'vat_rate', 'discount']
+            return ["price", "vat_rate", "discount"]
         return []
 
     # Permissions
 
     def has_add_permission(self, request, obj=None):
-        return False if (obj and obj.is_paid) else super().has_add_permission(request, obj)
+        return (
+            False if (obj and obj.is_paid) else super().has_add_permission(request, obj)
+        )
 
     def has_delete_permission(self, request, obj=None):
-        return False if (obj and obj.is_paid) else super().has_delete_permission(request, obj)
+        return (
+            False
+            if (obj and obj.is_paid)
+            else super().has_delete_permission(request, obj)
+        )
 
     # Custom queryset
-    
+
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.select_related('linked_fee')
+        return qs.select_related("linked_fee")
 
 
 class OrderAdminOrderFeeInlineImport(CustomTabularInline):
@@ -124,7 +172,11 @@ class OrderAdminOrderFeeInlineImport(CustomTabularInline):
 
     autocomplete_fields = ("linked_fee",)
 
-    fields = ('linked_fee', 'note', 'discount',)
+    fields = (
+        "linked_fee",
+        "note",
+        "discount",
+    )
 
     # Permissions
 
@@ -133,20 +185,52 @@ class OrderAdminOrderFeeInlineImport(CustomTabularInline):
     NO_VIEW = True
 
     def has_add_permission(self, request, obj=None):
-        return False if (obj and obj.is_paid) else super().has_add_permission(request, obj)
+        return (
+            False if (obj and obj.is_paid) else super().has_add_permission(request, obj)
+        )
 
 
 @admin.register(Order)
 class OrderAdmin(CustomModelAdmin):
-    list_display = ('id', 'date', 'customer', 'status', 'payment_method',
-                    'is_shipped', 'is_paid', 'display_cached_sum', 'linked_note_html')
-    list_filter = ('status', 'is_paid', 'is_shipped', 'payment_method', 'payment_receiver', 'contact_person')
-    search_fields = ['id', 'date', 'linked_note__name', 'linked_note__description', 'customer_note',
-                     'tracking_number'] + constants.ADDR_BILLING_FIELDS + constants.ADDR_SHIPPING_FIELDS
+    list_display = (
+        "id",
+        "date",
+        "customer",
+        "status",
+        "payment_method",
+        "is_shipped",
+        "is_paid",
+        "display_cached_sum",
+        "linked_note_html",
+    )
+    list_filter = (
+        "status",
+        "is_paid",
+        "is_shipped",
+        "payment_method",
+        "payment_receiver",
+        "contact_person",
+    )
+    search_fields = (
+        [
+            "id",
+            "date",
+            "linked_note__name",
+            "linked_note__description",
+            "customer_note",
+            "tracking_number",
+        ]
+        + constants.ADDR_BILLING_FIELDS
+        + constants.ADDR_SHIPPING_FIELDS
+    )
 
     ordering = ("is_shipped", "is_paid", "-date")
 
-    autocomplete_fields = ("customer", "payment_receiver", "contact_person", )
+    autocomplete_fields = (
+        "customer",
+        "payment_receiver",
+        "contact_person",
+    )
 
     save_on_top = True
 
@@ -157,63 +241,117 @@ class OrderAdmin(CustomModelAdmin):
     def get_fieldsets(self, request, obj=None):
         if obj:
             return [
-                (_('Einstellungen'), {
-                    'fields': ['payment_receiver', 'contact_person']
-                }),
-                (_('Infos'), {'fields': ['name', 'date', 'status']}),
-                (_('Kunde'), {'fields': ['customer']}),
-                (_('Lieferung'), {'fields': [('shipped_on', 'is_shipped'), 'tracking_number']}),
-                (_('Bezahlungsoptionen'), {
-                    'fields': ['payment_method', 'invoice_date', 'payment_conditions', 'payment_purpose']
-                }),
-                (_('Bezahlung'), {
-                    'fields': [('display_total_breakdown', 'display_payment_conditions'), ('paid_on', 'is_paid')]
-                }),
-                (_('Notizen & Texte'), {
-                    'fields': ['customer_note', 'linked_note_html'],
-                    'classes': ["collapse start-open"]}),
-                (_('Rechnungsadresse'), {
-                    'fields': constants.ADDR_BILLING_FIELDS if obj.is_paid else constants.ADDR_BILLING_FIELDS_CATEGORIZED,
-                    'classes': ["collapse default-open"]}),
-                (_('Lieferadresse'), {
-                    'fields': constants.ADDR_SHIPPING_FIELDS if obj.is_shipped else constants.ADDR_SHIPPING_FIELDS_CATEGORIZED,
-                    'classes': ["collapse start-open"]})
+                (
+                    _("Einstellungen"),
+                    {"fields": ["payment_receiver", "contact_person"]},
+                ),
+                (_("Infos"), {"fields": ["name", "date", "status"]}),
+                (_("Kunde"), {"fields": ["customer"]}),
+                (
+                    _("Lieferung"),
+                    {"fields": [("shipped_on", "is_shipped"), "tracking_number"]},
+                ),
+                (
+                    _("Bezahlungsoptionen"),
+                    {
+                        "fields": [
+                            "payment_method",
+                            "invoice_date",
+                            "payment_conditions",
+                            "payment_purpose",
+                        ]
+                    },
+                ),
+                (
+                    _("Bezahlung"),
+                    {
+                        "fields": [
+                            ("display_total_breakdown", "display_payment_conditions"),
+                            ("paid_on", "is_paid"),
+                        ]
+                    },
+                ),
+                (
+                    _("Notizen & Texte"),
+                    {
+                        "fields": ["customer_note", "linked_note_html"],
+                        "classes": ["collapse start-open"],
+                    },
+                ),
+                (
+                    _("Rechnungsadresse"),
+                    {
+                        "fields": constants.ADDR_BILLING_FIELDS
+                        if obj.is_paid
+                        else constants.ADDR_BILLING_FIELDS_CATEGORIZED,
+                        "classes": ["collapse default-open"],
+                    },
+                ),
+                (
+                    _("Lieferadresse"),
+                    {
+                        "fields": constants.ADDR_SHIPPING_FIELDS
+                        if obj.is_shipped
+                        else constants.ADDR_SHIPPING_FIELDS_CATEGORIZED,
+                        "classes": ["collapse start-open"],
+                    },
+                ),
             ]
 
         return [
-            (_('Einstellungen'), {'fields': [
-                'payment_receiver', 'contact_person']}),
-            (_('Infos'), {'fields': ['status']}),
-            (_('Kunde'), {'fields': ['customer']}),
-            (_('Bezahlungsoptionen'), {
-                'fields': ['payment_method', 'invoice_date', 'payment_conditions', 'payment_purpose'],
-                'classes': ["collapse start-open"]}),
-            (_('Notizen & Texte'), {
-                'fields': ['customer_note'],
-                'classes': ["collapse start-open"]}),
+            (_("Einstellungen"), {"fields": ["payment_receiver", "contact_person"]}),
+            (_("Infos"), {"fields": ["status"]}),
+            (_("Kunde"), {"fields": ["customer"]}),
+            (
+                _("Bezahlungsoptionen"),
+                {
+                    "fields": [
+                        "payment_method",
+                        "invoice_date",
+                        "payment_conditions",
+                        "payment_purpose",
+                    ],
+                    "classes": ["collapse start-open"],
+                },
+            ),
+            (
+                _("Notizen & Texte"),
+                {"fields": ["customer_note"], "classes": ["collapse start-open"]},
+            ),
         ]
 
-    readonly_fields = ('linked_note_html', 'name', 'tracking_link', 'display_total_breakdown', 'display_payment_conditions')
+    readonly_fields = (
+        "linked_note_html",
+        "name",
+        "tracking_link",
+        "display_total_breakdown",
+        "display_payment_conditions",
+    )
 
     def get_additional_readonly_fields(self, request, obj=None):
         fields = []
         if obj:
             if obj.is_shipped:
-                fields += ['is_shipped'] + \
-                    constants.ADDR_SHIPPING_FIELDS_WITHOUT_CONTACT
+                fields += [
+                    "is_shipped"
+                ] + constants.ADDR_SHIPPING_FIELDS_WITHOUT_CONTACT
             if obj.is_paid:
-                fields += ['is_paid', 'payment_method', 'invoice_date', 'payment_conditions'] + \
-                    constants.ADDR_BILLING_FIELDS_WITHOUT_CONTACT
+                fields += [
+                    "is_paid",
+                    "payment_method",
+                    "invoice_date",
+                    "payment_conditions",
+                ] + constants.ADDR_BILLING_FIELDS_WITHOUT_CONTACT
             if obj.woocommerceid:
                 fields += ["customer_note"]
         return fields
 
     def get_inlines(self, request, obj=None):
         inlines = [OrderAdminOrderItemInline]
-        if request.user.has_perm('kmuhelper.view_product'):
+        if request.user.has_perm("kmuhelper.view_product"):
             inlines += [OrderAdminOrderItemInlineAdd]
         inlines += [OrderAdminOrderFeeInline]
-        if request.user.has_perm('kmuhelper.view_fee'):
+        if request.user.has_perm("kmuhelper.view_fee"):
             inlines += [OrderAdminOrderFeeInlineImport]
         return inlines
 
@@ -232,32 +370,47 @@ class OrderAdmin(CustomModelAdmin):
                     order.status = "completed"
                 order.save()
                 successcount += 1
-        messages.success(request, ngettext(
-            '%d Bestellung wurde als bezahlt markiert.',
-            '%d Bestellungen wurden als bezahlt markiert.',
-            successcount
-        ))
+        messages.success(
+            request,
+            ngettext(
+                "%d Bestellung wurde als bezahlt markiert.",
+                "%d Bestellungen wurden als bezahlt markiert.",
+                successcount,
+            ),
+        )
         if errorcount:
-            messages.warning(request, ngettext(
-                '%d Bestellung war bereits als bezahlt markiert.',
-                '%d Bestellungen waren bereits als bezahlt markiert.',
-                errorcount
-            ))
+            messages.warning(
+                request,
+                ngettext(
+                    "%d Bestellung war bereits als bezahlt markiert.",
+                    "%d Bestellungen waren bereits als bezahlt markiert.",
+                    errorcount,
+                ),
+            )
 
-    @admin.action(description=_("Bestellungen von WooCommerce aktualisieren"), permissions=["change"])
+    @admin.action(
+        description=_("Bestellungen von WooCommerce aktualisieren"),
+        permissions=["change"],
+    )
     def wc_update(self, request, queryset):
         successcount, errorcount = WooCommerce.order_bulk_update(queryset.all())
-        messages.success(request, ngettext(
-            '%d Bestellung wurde von WooCommerce aktualisiert.',
-            '%d Bestellungen wurden von WooCommerce aktualisiert.',
-            successcount
-        ))
+        messages.success(
+            request,
+            ngettext(
+                "%d Bestellung wurde von WooCommerce aktualisiert.",
+                "%d Bestellungen wurden von WooCommerce aktualisiert.",
+                successcount,
+            ),
+        )
         if errorcount:
-            messages.error(request, ngettext(
-                '%d Bestellung konnte nicht von WooCommerce aktualisiert werden.',
-                '%d Bestellungen konnten nicht von WooCommerce aktualisiert werden.',
-                errorcount
-            ))
+            messages.error(
+                request,
+                ngettext(
+                    "%d Bestellung konnte nicht von WooCommerce aktualisiert werden.",
+                    "%d Bestellungen konnten nicht von WooCommerce aktualisiert werden.",
+                    errorcount,
+                ),
+            )
 
     actions = [mark_as_paid, wc_update]
 
@@ -284,18 +437,36 @@ class OrderAdmin(CustomModelAdmin):
         urls = super().get_urls()
 
         my_urls = [
-            path('<path:object_id>/pdf/', self.admin_site.admin_view(views.order_view_pdf),
-                 name='%s_%s_pdf' % info),
-            path('<path:object_id>/pdf/form', self.admin_site.admin_view(views.order_create_pdf_form),
-                 name='%s_%s_pdf_form' % info),
-            path('<path:object_id>/email/invoice/', self.admin_site.admin_view(views.create_order_email_invoice),
-                 name='%s_%s_email_invoice' % info),
-            path('<path:object_id>/email/shipped/', self.admin_site.admin_view(views.create_order_email_shipped),
-                 name='%s_%s_email_shipped' % info),
-            path('<path:object_id>/duplicate/', self.admin_site.admin_view(views.duplicate_order),
-                 name='%s_%s_duplicate' % info),
-            path('<path:object_id>/return/', self.admin_site.admin_view(views.copy_order_to_supply),
-                 name='%s_%s_copy_to_supply' % info),
+            path(
+                "<path:object_id>/pdf/",
+                self.admin_site.admin_view(views.order_view_pdf),
+                name="%s_%s_pdf" % info,
+            ),
+            path(
+                "<path:object_id>/pdf/form",
+                self.admin_site.admin_view(views.order_create_pdf_form),
+                name="%s_%s_pdf_form" % info,
+            ),
+            path(
+                "<path:object_id>/email/invoice/",
+                self.admin_site.admin_view(views.create_order_email_invoice),
+                name="%s_%s_email_invoice" % info,
+            ),
+            path(
+                "<path:object_id>/email/shipped/",
+                self.admin_site.admin_view(views.create_order_email_shipped),
+                name="%s_%s_email_shipped" % info,
+            ),
+            path(
+                "<path:object_id>/duplicate/",
+                self.admin_site.admin_view(views.duplicate_order),
+                name="%s_%s_duplicate" % info,
+            ),
+            path(
+                "<path:object_id>/return/",
+                self.admin_site.admin_view(views.copy_order_to_supply),
+                name="%s_%s_copy_to_supply" % info,
+            ),
         ]
         return my_urls + urls
 
@@ -304,13 +475,14 @@ class OrderAdmin(CustomModelAdmin):
 class FeeAdmin(CustomModelAdmin):
     list_display = ["clean_name", "price", "vat_rate"]
 
-    search_fields = ('name', 'price')
+    search_fields = ("name", "price")
 
-    ordering = ('price', 'vat_rate',)
+    ordering = (
+        "price",
+        "vat_rate",
+    )
 
-    fieldsets = [
-        (None, {"fields": ("name", "price", "vat_rate")})
-    ]
+    fieldsets = [(None, {"fields": ("name", "price", "vat_rate")})]
 
 
 class CustomerAdminOrderInline(CustomTabularInline):
@@ -321,16 +493,23 @@ class CustomerAdminOrderInline(CustomTabularInline):
 
     show_change_link = True
 
-    ordering = ('-date', )
+    ordering = ("-date",)
 
-    fields = ('pk', 'date', 'display_cached_sum', 'is_shipped', 'is_paid', 'display_paid_after')
-    readonly_fields = ('pk', 'display_paid_after', 'display_cached_sum')
+    fields = (
+        "pk",
+        "date",
+        "display_cached_sum",
+        "is_shipped",
+        "is_paid",
+        "display_paid_after",
+    )
+    readonly_fields = ("pk", "display_paid_after", "display_cached_sum")
 
     # Custom queryset
-    
+
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.select_related('customer')
+        return qs.select_related("customer")
 
     # Permissions
 
@@ -343,37 +522,59 @@ class CustomerAdminOrderInline(CustomTabularInline):
 class CustomerAdmin(CustomModelAdmin):
     def get_fieldsets(self, request, obj=None):
         default = [
-            (_('Infos'), {'fields': [
-                'first_name', 'last_name', 'company', 'email', 'language']}),
-            (_('Rechnungsadresse'), {
-                'fields': constants.ADDR_BILLING_FIELDS_CATEGORIZED}),
-            (_('Lieferadresse'), {
-                'fields': constants.ADDR_SHIPPING_FIELDS_CATEGORIZED,
-                'classes': ["collapse start-open"]}),
+            (
+                _("Infos"),
+                {"fields": ["first_name", "last_name", "company", "email", "language"]},
+            ),
+            (
+                _("Rechnungsadresse"),
+                {"fields": constants.ADDR_BILLING_FIELDS_CATEGORIZED},
+            ),
+            (
+                _("Lieferadresse"),
+                {
+                    "fields": constants.ADDR_SHIPPING_FIELDS_CATEGORIZED,
+                    "classes": ["collapse start-open"],
+                },
+            ),
         ]
 
         if obj:
             return default + [
-                (_('Diverses'), {
-                    'fields': [
-                        'website', 'note', 'linked_note_html'
-                    ]}),
-                (_('Erweitert'), {
-                    'fields': [
-                        'combine_with'
-                    ], 'classes': ["collapse"]})
+                (_("Diverses"), {"fields": ["website", "note", "linked_note_html"]}),
+                (_("Erweitert"), {"fields": ["combine_with"], "classes": ["collapse"]}),
             ]
 
-        return default + [
-            (_('Diverses'), {'fields': ['website', 'note']})
+        return default + [(_("Diverses"), {"fields": ["website", "note"]})]
+
+    ordering = ("addr_billing_postcode", "company", "last_name", "first_name")
+
+    list_display = (
+        "id",
+        "company",
+        "last_name",
+        "first_name",
+        "addr_billing_postcode",
+        "addr_billing_city",
+        "email",
+        "avatar",
+        "linked_note_html",
+    )
+    search_fields = (
+        [
+            "id",
+            "last_name",
+            "first_name",
+            "company",
+            "email",
+            "username",
+            "website",
+            "linked_note__name",
+            "linked_note__description",
         ]
-
-    ordering = ('addr_billing_postcode', 'company', 'last_name', 'first_name')
-
-    list_display = ('id', 'company', 'last_name', 'first_name', 'addr_billing_postcode',
-                    'addr_billing_city', 'email', 'avatar', 'linked_note_html')
-    search_fields = ['id', 'last_name', 'first_name', 'company', 'email', 'username', 'website',
-                     'linked_note__name', 'linked_note__description'] + constants.ADDR_BILLING_FIELDS + constants.ADDR_SHIPPING_FIELDS
+        + constants.ADDR_BILLING_FIELDS
+        + constants.ADDR_SHIPPING_FIELDS
+    )
 
     readonly_fields = ["linked_note_html"]
 
@@ -387,20 +588,28 @@ class CustomerAdmin(CustomModelAdmin):
 
     # Actions
 
-    @admin.action(description=_("Kunden von WooCommerce aktualisieren"), permissions=["change"])
+    @admin.action(
+        description=_("Kunden von WooCommerce aktualisieren"), permissions=["change"]
+    )
     def wc_update(self, request, queryset):
         successcount, errorcount = WooCommerce.customer_bulk_update(queryset.all())
-        messages.success(request, ngettext(
-            '%d Kunde wurde von WooCommerce aktualisiert.',
-            '%d Kunden wurden von WooCommerce aktualisiert.',
-            successcount
-        ))
+        messages.success(
+            request,
+            ngettext(
+                "%d Kunde wurde von WooCommerce aktualisiert.",
+                "%d Kunden wurden von WooCommerce aktualisiert.",
+                successcount,
+            ),
+        )
         if errorcount:
-            messages.error(request, ngettext(
-                '%d Kunde konnte nicht von WooCommerce aktualisiert werden.',
-                '%d Kunden konnten nicht von WooCommerce aktualisiert werden.',
-                errorcount
-            ))
+            messages.error(
+                request,
+                ngettext(
+                    "%d Kunde konnte nicht von WooCommerce aktualisiert werden.",
+                    "%d Kunden konnten nicht von WooCommerce aktualisiert werden.",
+                    errorcount,
+                ),
+            )
 
     actions = ["wc_update"]
 
@@ -412,8 +621,11 @@ class CustomerAdmin(CustomModelAdmin):
         urls = super().get_urls()
 
         my_urls = [
-            path('<path:object_id>/email/registered/', self.admin_site.admin_view(views.create_customer_email_registered),
-                 name='%s_%s_email_registered' % info),
+            path(
+                "<path:object_id>/email/registered/",
+                self.admin_site.admin_view(views.create_customer_email_registered),
+                name="%s_%s_email_registered" % info,
+            ),
         ]
         return my_urls + urls
 
@@ -421,22 +633,26 @@ class CustomerAdmin(CustomModelAdmin):
 @admin.register(Supplier)
 class SupplierAdmin(CustomModelAdmin):
     fieldsets = [
-        (_('Infos'), {'fields': ['abbreviation', 'name']}),
-        (_('Firma'), {'fields': ['website', 'phone', 'email', 'address']}),
-        (_('Ansprechpartner'), {
-            'fields': [
-                'contact_person_name', 'contact_person_phone', 'contact_person_email'
-            ],
-            'classes': ["collapse", "start-open"]}),
-        (_('Notiz'), {
-            'fields': ['note'],
-            'classes': ["collapse", "start-open"]}),
+        (_("Infos"), {"fields": ["abbreviation", "name"]}),
+        (_("Firma"), {"fields": ["website", "phone", "email", "address"]}),
+        (
+            _("Ansprechpartner"),
+            {
+                "fields": [
+                    "contact_person_name",
+                    "contact_person_phone",
+                    "contact_person_email",
+                ],
+                "classes": ["collapse", "start-open"],
+            },
+        ),
+        (_("Notiz"), {"fields": ["note"], "classes": ["collapse", "start-open"]}),
     ]
 
-    ordering = ('abbreviation',)
+    ordering = ("abbreviation",)
 
-    list_display = ('abbreviation', 'name', 'note')
-    search_fields = ['abbreviation', 'name', 'address', 'note']
+    list_display = ("abbreviation", "name", "note")
+    search_fields = ["abbreviation", "name", "address", "note"]
 
     # Views
 
@@ -446,8 +662,11 @@ class SupplierAdmin(CustomModelAdmin):
         urls = super().get_urls()
 
         my_urls = [
-            path('<path:object_id>/assign/', self.admin_site.admin_view(views.supplier_assign),
-                 name='%s_%s_assign' % info),
+            path(
+                "<path:object_id>/assign/",
+                self.admin_site.admin_view(views.supplier_assign),
+                name="%s_%s_assign" % info,
+            ),
         ]
         return my_urls + urls
 
@@ -460,17 +679,28 @@ class SupplyInlineSupplyItem(CustomTabularInline):
 
     readonly_fields = ("product",)
 
-    fields = ("product", "quantity",)
+    fields = (
+        "product",
+        "quantity",
+    )
 
     # Permissions
 
     NO_ADD = True
 
     def has_change_permission(self, request, obj=None):
-        return False if obj and obj.is_added_to_stock else super().has_change_permission(request, obj)
+        return (
+            False
+            if obj and obj.is_added_to_stock
+            else super().has_change_permission(request, obj)
+        )
 
     def has_delete_permission(self, request, obj=None):
-        return False if obj and obj.is_added_to_stock else super().has_delete_permission(request, obj)
+        return (
+            False
+            if obj and obj.is_added_to_stock
+            else super().has_delete_permission(request, obj)
+        )
 
 
 class SupplyInlineProductsAdd(CustomTabularInline):
@@ -481,7 +711,10 @@ class SupplyInlineProductsAdd(CustomTabularInline):
 
     autocomplete_fields = ("product",)
 
-    fields = ("product", "quantity",)
+    fields = (
+        "product",
+        "quantity",
+    )
 
     # Permissions
 
@@ -490,36 +723,61 @@ class SupplyInlineProductsAdd(CustomTabularInline):
     NO_DELETE = True
 
     def has_add_permission(self, request, obj=None):
-        if not (request.user.has_perm('kmuhelper.view_product') or request.user.has_perm('kmuhelper.change_product')):
+        if not (
+            request.user.has_perm("kmuhelper.view_product")
+            or request.user.has_perm("kmuhelper.change_product")
+        ):
             return False
-        return False if obj and obj.is_added_to_stock else super().has_add_permission(request, obj)
+        return (
+            False
+            if obj and obj.is_added_to_stock
+            else super().has_add_permission(request, obj)
+        )
 
 
 @admin.register(Supply)
 class SupplyAdmin(CustomModelAdmin):
-    list_display = ('name', 'date', 'total_quantity',
-                    'supplier', 'is_added_to_stock', 'linked_note_html')
-    list_filter = ("is_added_to_stock", "supplier", )
+    list_display = (
+        "name",
+        "date",
+        "total_quantity",
+        "supplier",
+        "is_added_to_stock",
+        "linked_note_html",
+    )
+    list_filter = (
+        "is_added_to_stock",
+        "supplier",
+    )
 
-    search_fields = ["name", "date", "supplier__name", "supplier__abbreviation",
-                     "linked_note__name", "linked_note__description"]
+    search_fields = [
+        "name",
+        "date",
+        "supplier__name",
+        "supplier__abbreviation",
+        "linked_note__name",
+        "linked_note__description",
+    ]
 
     readonly_fields = ["linked_note_html"]
 
-    autocomplete_fields = ("supplier", )
+    autocomplete_fields = ("supplier",)
 
-    ordering = ('-date',)
+    ordering = ("-date",)
 
     fieldsets = [
-        (_('Infos'), {'fields': ['name', 'linked_note_html']}),
-        (_('Lieferant'), {'fields': ['supplier']})
+        (_("Infos"), {"fields": ["name", "linked_note_html"]}),
+        (_("Lieferant"), {"fields": ["supplier"]}),
     ]
 
     inlines = [SupplyInlineSupplyItem, SupplyInlineProductsAdd]
 
     save_on_top = True
 
-    list_select_related = ("supplier", "linked_note", )
+    list_select_related = (
+        "supplier",
+        "linked_note",
+    )
 
     # Actions
 
@@ -532,17 +790,23 @@ class SupplyAdmin(CustomModelAdmin):
                 successcount += 1
             else:
                 errorcount += 1
-        messages.success(request, ngettext(
-            '%d Lieferung wurde als eingelagert markiert.',
-            '%d Lieferungen wurden als eingelagert markiert.',
-            successcount
-        ))
+        messages.success(
+            request,
+            ngettext(
+                "%d Lieferung wurde als eingelagert markiert.",
+                "%d Lieferungen wurden als eingelagert markiert.",
+                successcount,
+            ),
+        )
         if errorcount:
-            messages.error(request, ngettext(
-                '%d Lieferung konnte nicht eingelagert werden.',
-                '%d Lieferungen konnten nicht eingelagert werden.',
-                errorcount
-            ))
+            messages.error(
+                request,
+                ngettext(
+                    "%d Lieferung konnte nicht eingelagert werden.",
+                    "%d Lieferungen konnten nicht eingelagert werden.",
+                    errorcount,
+                ),
+            )
 
     actions = ["add_to_stock"]
 
@@ -554,8 +818,11 @@ class SupplyAdmin(CustomModelAdmin):
         urls = super().get_urls()
 
         my_urls = [
-            path('<path:object_id>/add_to_stock/', self.admin_site.admin_view(views.supply_add_to_stock),
-                 name='%s_%s_add_to_stock' % info),
+            path(
+                "<path:object_id>/add_to_stock/",
+                self.admin_site.admin_view(views.supply_add_to_stock),
+                name="%s_%s_add_to_stock" % info,
+            ),
         ]
         return my_urls + urls
 
@@ -587,27 +854,27 @@ class NoteAdmin(CustomModelAdmin):
     def get_form(self, request, obj=None, change=False, **kwargs):
         form = super().get_form(request, obj, change, **kwargs)
         if obj is None:
-            form.base_fields['description'].initial = ""
+            form.base_fields["description"].initial = ""
             if "from_order" in request.GET:
                 pk = request.GET.get("from_order")
-                t = _('Bestellung #%d') % pk
-                form.base_fields['name'].initial = t
-                form.base_fields['description'].initial += f'\n\n[{t}]'
+                t = _("Bestellung #%d") % pk
+                form.base_fields["name"].initial = t
+                form.base_fields["description"].initial += f"\n\n[{t}]"
             if "from_product" in request.GET:
                 pk = request.GET.get("from_product")
-                t = _('Produkt #%d') % pk
-                form.base_fields['name'].initial = t
-                form.base_fields['description'].initial += f'\n\n[{t}]'
+                t = _("Produkt #%d") % pk
+                form.base_fields["name"].initial = t
+                form.base_fields["description"].initial += f"\n\n[{t}]"
             if "from_customer" in request.GET:
                 pk = request.GET.get("from_customer")
-                t = _('Kunde #%d') % pk
-                form.base_fields['name'].initial = t
-                form.base_fields['description'].initial += f'\n\n[{t}]'
+                t = _("Kunde #%d") % pk
+                form.base_fields["name"].initial = t
+                form.base_fields["description"].initial += f"\n\n[{t}]"
             if "from_supply" in request.GET:
                 pk = request.GET.get("from_supply")
-                t = _('Lieferung #%d') % pk
-                form.base_fields['name'].initial = t
-                form.base_fields['description'].initial += f'\n\n[{t}]'
+                t = _("Lieferung #%d") % pk
+                form.base_fields["name"].initial = t
+                form.base_fields["description"].initial += f"\n\n[{t}]"
         return form
 
     # Save
@@ -622,10 +889,17 @@ class NoteAdmin(CustomModelAdmin):
                     obj.linked_order = order
                     obj.save()
                     messages.info(
-                        request, _("Bestellung #%s wurde mit dieser Notiz verknüpft.") % pk)
+                        request,
+                        _("Bestellung #%s wurde mit dieser Notiz verknüpft.") % pk,
+                    )
                 else:
                     messages.warning(
-                        request, _("Bestellung #%s konnte nicht gefunden werden. Die Notiz wurde trotzdem erstellt.") % pk)
+                        request,
+                        _(
+                            "Bestellung #%s konnte nicht gefunden werden. Die Notiz wurde trotzdem erstellt."
+                        )
+                        % pk,
+                    )
             if "from_product" in request.GET:
                 pk = request.GET["from_product"]
                 if Product.objects.filter(pk=pk).exists():
@@ -633,50 +907,71 @@ class NoteAdmin(CustomModelAdmin):
                     obj.linked_product = product
                     obj.save()
                     messages.info(
-                        request, _("Produkt #%s wurde mit dieser Notiz verknüpft.") % pk)
+                        request, _("Produkt #%s wurde mit dieser Notiz verknüpft.") % pk
+                    )
                 else:
                     messages.warning(
-                        request, _("Produkt #%s konnte nicht gefunden werden. Die Notiz wurde trotzdem erstellt.") % pk)
+                        request,
+                        _(
+                            "Produkt #%s konnte nicht gefunden werden. Die Notiz wurde trotzdem erstellt."
+                        )
+                        % pk,
+                    )
             if "from_customer" in request.GET:
                 pk = request.GET["from_customer"]
                 if Customer.objects.filter(pk=pk).exists():
                     customer = Customer.objects.get(pk=pk)
                     obj.linked_customer = customer
                     obj.save()
-                    messages.info(request, _("Kunde #%s wurde mit dieser Notiz verknüpft.") % pk)
+                    messages.info(
+                        request, _("Kunde #%s wurde mit dieser Notiz verknüpft.") % pk
+                    )
                 else:
                     messages.warning(
-                        request, _("Kunde #%s konnte nicht gefunden werden. Die Notiz wurde trotzdem erstellt.") % pk)
+                        request,
+                        _(
+                            "Kunde #%s konnte nicht gefunden werden. Die Notiz wurde trotzdem erstellt."
+                        )
+                        % pk,
+                    )
             if "from_supply" in request.GET:
                 pk = request.GET["from_supply"]
                 if Supply.objects.filter(pk=pk).exists():
                     supply = Supply.objects.get(pk=pk)
                     obj.linked_supply = supply
                     obj.save()
-                    messages.info(request, _("Lieferung #%s wurde mit dieser Notiz verknüpft.") % pk)
+                    messages.info(
+                        request,
+                        _("Lieferung #%s wurde mit dieser Notiz verknüpft.") % pk,
+                    )
                 else:
                     messages.warning(
-                        request, _("Lieferung #%s konnte nicht gefunden werden. Die Notiz wurde trotzdem erstellt.") % pk)
+                        request,
+                        _(
+                            "Lieferung #%s konnte nicht gefunden werden. Die Notiz wurde trotzdem erstellt."
+                        )
+                        % pk,
+                    )
 
 
 class ProductAdminProductCategoryInline(CustomTabularInline):
     model = Product.categories.through
     extra = 0
 
-    autocomplete_fields = ("category", )
+    autocomplete_fields = ("category",)
 
     # Custom queryset
-    
+
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.select_related('category', 'product')
+        return qs.select_related("category", "product")
 
     # Permissions
 
     NO_CHANGE = True
 
     def has_add_permission(self, request, obj=None):
-        if not request.user.has_perm('kmuhelper.view_productcategory'):
+        if not request.user.has_perm("kmuhelper.view_productcategory"):
             return False
         return super().has_add_permission(request, obj)
 
@@ -685,42 +980,89 @@ class ProductAdminProductCategoryInline(CustomTabularInline):
 class ProductAdmin(CustomModelAdmin):
     def get_fieldsets(self, request, obj=None):
         return [
-            (_('Infos'), {'fields': ['article_number', 'name']}),
-            (_('Beschrieb'), {
-                'fields': ['short_description', 'description'],
-                'classes': ["collapse start-open"]}),
-            (_('Daten'), {'fields': [
-                'quantity_description', 'selling_price', 'vat_rate', 'stock_current', 'stock_target']}),
-            (_('Lieferant'), {
-                'fields': [
-                    'supplier', 'supplier_price', 'supplier_article_number', 'supplier_url'
-                ], 'classes': ["collapse start-open"]}),
-            (_('Aktion'), {
-                'fields': [
-                    'sale_from', 'sale_to', 'sale_price'
-                ], 'classes': ["collapse start-open"]}),
-            (_('Links'), {
-                'fields': [
-                    'datasheet_url', 'image_url'
-                ], 'classes': ["collapse"]}),
-            (_('Bemerkung / Notiz'), {
-                'fields': [
-                    'note', 'linked_note_html'] if obj else ['note'],
-                'classes': ["collapse start-open"]})
+            (_("Infos"), {"fields": ["article_number", "name"]}),
+            (
+                _("Beschrieb"),
+                {
+                    "fields": ["short_description", "description"],
+                    "classes": ["collapse start-open"],
+                },
+            ),
+            (
+                _("Daten"),
+                {
+                    "fields": [
+                        "quantity_description",
+                        "selling_price",
+                        "vat_rate",
+                        "stock_current",
+                        "stock_target",
+                    ]
+                },
+            ),
+            (
+                _("Lieferant"),
+                {
+                    "fields": [
+                        "supplier",
+                        "supplier_price",
+                        "supplier_article_number",
+                        "supplier_url",
+                    ],
+                    "classes": ["collapse start-open"],
+                },
+            ),
+            (
+                _("Aktion"),
+                {
+                    "fields": ["sale_from", "sale_to", "sale_price"],
+                    "classes": ["collapse start-open"],
+                },
+            ),
+            (
+                _("Links"),
+                {"fields": ["datasheet_url", "image_url"], "classes": ["collapse"]},
+            ),
+            (
+                _("Bemerkung / Notiz"),
+                {
+                    "fields": ["note", "linked_note_html"] if obj else ["note"],
+                    "classes": ["collapse start-open"],
+                },
+            ),
         ]
 
-    ordering = ('article_number', 'name')
+    ordering = ("article_number", "name")
 
-    list_display = ('article_number', 'clean_name', 'clean_short_description',
-                    'clean_description', 'get_current_price', 'is_on_sale', 'stock_current', 'html_image', 'linked_note_html')
-    list_display_links = ('article_number', 'is_on_sale',)
-    list_filter = ('supplier', 'categories', 'stock_current')
-    search_fields = ['article_number', 'name', 'short_description',
-                     'description', 'note', 'linked_note__name', 'linked_note__description']
+    list_display = (
+        "article_number",
+        "clean_name",
+        "clean_short_description",
+        "clean_description",
+        "get_current_price",
+        "is_on_sale",
+        "stock_current",
+        "html_image",
+        "linked_note_html",
+    )
+    list_display_links = (
+        "article_number",
+        "is_on_sale",
+    )
+    list_filter = ("supplier", "categories", "stock_current")
+    search_fields = [
+        "article_number",
+        "name",
+        "short_description",
+        "description",
+        "note",
+        "linked_note__name",
+        "linked_note__description",
+    ]
 
     readonly_fields = ["linked_note_html"]
 
-    autocomplete_fields = ("supplier", )
+    autocomplete_fields = ("supplier",)
 
     inlines = (ProductAdminProductCategoryInline,)
 
@@ -730,42 +1072,56 @@ class ProductAdmin(CustomModelAdmin):
 
     # Actions
 
-    @admin.action(description=_("Produkte von WooCommerce aktualisieren"), permissions=["change"])
+    @admin.action(
+        description=_("Produkte von WooCommerce aktualisieren"), permissions=["change"]
+    )
     def wc_update(self, request, queryset):
         successcount, errorcount = WooCommerce.product_bulk_update(queryset.all())
-        messages.success(request, ngettext(
-            '%d Produkt wurde von WooCommerce aktualisiert.',
-            '%d Produkte wurden von WooCommerce aktualisiert.',
-            successcount
-        ))
+        messages.success(
+            request,
+            ngettext(
+                "%d Produkt wurde von WooCommerce aktualisiert.",
+                "%d Produkte wurden von WooCommerce aktualisiert.",
+                successcount,
+            ),
+        )
         if errorcount:
-            messages.error(request, ngettext(
-                '%d Produkt konnte nicht von WooCommerce aktualisiert werden.',
-                '%d Produkte konnten nicht von WooCommerce aktualisiert werden.',
-                errorcount
-            ))
+            messages.error(
+                request,
+                ngettext(
+                    "%d Produkt konnte nicht von WooCommerce aktualisiert werden.",
+                    "%d Produkte konnten nicht von WooCommerce aktualisiert werden.",
+                    errorcount,
+                ),
+            )
 
     @admin.action(description=_("Lagerbestand zurücksetzen"), permissions=["change"])
     def reset_stock(self, request, queryset):
         for product in queryset.all():
             product.stock_current = 0
             product.save()
-        messages.success(request, ngettext(
-            'Lagerbestand von %d Produkt zurückgesetzt.',
-            'Lagerbestand von %d Produkten zurückgesetzt.',
-            queryset.count()
-        ))
+        messages.success(
+            request,
+            ngettext(
+                "Lagerbestand von %d Produkt zurückgesetzt.",
+                "Lagerbestand von %d Produkten zurückgesetzt.",
+                queryset.count(),
+            ),
+        )
 
     @admin.action(description=_("Aktion beenden"), permissions=["change"])
     def end_sale(self, request, queryset):
         for product in queryset.all():
             product.sale_to = timezone.now()
             product.save()
-        messages.success(request, ngettext(
-            'Aktion von %d Produkt beendet.',
-            'Aktion von %d Produkten beendet.',
-            queryset.count()
-        ))
+        messages.success(
+            request,
+            ngettext(
+                "Aktion von %d Produkt beendet.",
+                "Aktion von %d Produkten beendet.",
+                queryset.count(),
+            ),
+        )
 
     actions = ["wc_update", "reset_stock", "end_sale"]
 
@@ -783,20 +1139,23 @@ class ProductCategoryAdminProductInline(CustomStackedInline):
     verbose_name_plural = _("Produkte in dieser Kategorie")
     extra = 0
 
-    autocomplete_fields = ("product", )
+    autocomplete_fields = ("product",)
 
     # Custom queryset
-    
+
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.select_related('category', 'product')
+        return qs.select_related("category", "product")
 
     # Permissions
 
     NO_CHANGE = True
 
     def has_add_permission(self, request, obj=None):
-        if not (request.user.has_perm('kmuhelper.view_product') or request.user.has_perm('kmuhelper.change_product')):
+        if not (
+            request.user.has_perm("kmuhelper.view_product")
+            or request.user.has_perm("kmuhelper.change_product")
+        ):
             return False
         return super().has_add_permission(request, obj)
 
@@ -804,13 +1163,18 @@ class ProductCategoryAdminProductInline(CustomStackedInline):
 @admin.register(ProductCategory)
 class ProductCategoryAdmin(CustomModelAdmin):
     fieldsets = [
-        (_('Infos'), {'fields': ['name', 'description', 'image_url']}),
-        (_('Übergeordnete Kategorie'), {'fields': ['parent_category']})
+        (_("Infos"), {"fields": ["name", "description", "image_url"]}),
+        (_("Übergeordnete Kategorie"), {"fields": ["parent_category"]}),
     ]
 
-    list_display = ('clean_name', 'clean_description',
-                    'parent_category', 'html_image', 'total_quantity')
-    search_fields = ['name', 'description']
+    list_display = (
+        "clean_name",
+        "clean_description",
+        "parent_category",
+        "html_image",
+        "total_quantity",
+    )
+    search_fields = ["name", "description"]
 
     ordering = ("parent_category", "name")
 
@@ -818,30 +1182,39 @@ class ProductCategoryAdmin(CustomModelAdmin):
 
     list_select_related = ("parent_category",)
 
-    autocomplete_fields = ("parent_category", )
+    autocomplete_fields = ("parent_category",)
 
     # Custom queryset
-    
+
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.annotate(total_quantity=Count('products'))
+        return qs.annotate(total_quantity=Count("products"))
 
     # Actions
 
-    @admin.action(description=_("Kategorien von WooCommerce aktualisieren"), permissions=["change"])
+    @admin.action(
+        description=_("Kategorien von WooCommerce aktualisieren"),
+        permissions=["change"],
+    )
     def wc_update(self, request, queryset):
         successcount, errorcount = WooCommerce.category_bulk_update(queryset.all())
-        messages.success(request, ngettext(
-            '%d Kategorie wurde von WooCommerce aktualisiert.',
-            '%d Kategorien wurden von WooCommerce aktualisiert.',
-            successcount
-        ))
+        messages.success(
+            request,
+            ngettext(
+                "%d Kategorie wurde von WooCommerce aktualisiert.",
+                "%d Kategorien wurden von WooCommerce aktualisiert.",
+                successcount,
+            ),
+        )
         if errorcount:
-            messages.error(request, ngettext(
-                '%d Kategorie konnte nicht von WooCommerce aktualisiert werden.',
-                '%d Kategorien konnten nicht von WooCommerce aktualisiert werden.',
-                errorcount
-            ))
+            messages.error(
+                request,
+                ngettext(
+                    "%d Kategorie konnte nicht von WooCommerce aktualisiert werden.",
+                    "%d Kategorien konnten nicht von WooCommerce aktualisiert werden.",
+                    errorcount,
+                ),
+            )
 
     actions = ["wc_update"]
 
@@ -849,31 +1222,51 @@ class ProductCategoryAdmin(CustomModelAdmin):
 @admin.register(PaymentReceiver)
 class PaymentReceiverAdmin(CustomModelAdmin):
     fieldsets = [
-        (None, {
-            "fields": ["internal_name"]
-        }),
-        (_("Anzeigeinformationen"), {
-            "fields": ["display_name", "display_address_1", "display_address_2"]
-        }),
-        (_("Zahlungsinformationen"), {
-            "fields": ["mode", "qriban", "iban"]
-        }),
-        (_("Rechnungsadresse"), {
-            "fields": ["invoice_name", "invoice_address_1", "invoice_address_2", "invoice_country"]
-        }),
-        (_("Optionen"), {
-            "fields": ["invoice_display_mode"]
-        }),
-        (_("Weitere Informationen & Darstellung"), {
-            "fields": ["swiss_uid", "website", "logourl"]
-        }),
+        (None, {"fields": ["internal_name"]}),
+        (
+            _("Anzeigeinformationen"),
+            {"fields": ["display_name", "display_address_1", "display_address_2"]},
+        ),
+        (_("Zahlungsinformationen"), {"fields": ["mode", "qriban", "iban"]}),
+        (
+            _("Rechnungsadresse"),
+            {
+                "fields": [
+                    "invoice_name",
+                    "invoice_address_1",
+                    "invoice_address_2",
+                    "invoice_country",
+                ]
+            },
+        ),
+        (_("Optionen"), {"fields": ["invoice_display_mode"]}),
+        (
+            _("Weitere Informationen & Darstellung"),
+            {"fields": ["swiss_uid", "website", "logourl"]},
+        ),
     ]
 
-    list_display = ('admin_name', 'mode', 'active_iban', 'invoice_display_mode')
-    list_filter = ('mode', 'invoice_country', 'invoice_display_mode',)
-    search_fields = ['internal_name', 'display_name', 'display_address_1', 'display_address_2', 
-                     'invoice_name', 'invoice_address_1', 'invoice_address_2', 'invoice_country',
-                     'swiss_uid', 'website', 'logourl', 'qriban', 'iban']
+    list_display = ("admin_name", "mode", "active_iban", "invoice_display_mode")
+    list_filter = (
+        "mode",
+        "invoice_country",
+        "invoice_display_mode",
+    )
+    search_fields = [
+        "internal_name",
+        "display_name",
+        "display_address_1",
+        "display_address_2",
+        "invoice_name",
+        "invoice_address_1",
+        "invoice_address_2",
+        "invoice_country",
+        "swiss_uid",
+        "website",
+        "logourl",
+        "qriban",
+        "iban",
+    ]
 
     save_on_top = True
 

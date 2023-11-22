@@ -5,19 +5,24 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0027_auto_20200717_1630'),
+        ("kmuhelper", "0027_auto_20200717_1630"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='bestellung',
-            name='notiz',
+            model_name="bestellung",
+            name="notiz",
         ),
         migrations.AddField(
-            model_name='notiz',
-            name='bestellung',
-            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='notiz', to='kmuhelper.Bestellung'),
+            model_name="notiz",
+            name="bestellung",
+            field=models.OneToOneField(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="notiz",
+                to="kmuhelper.Bestellung",
+            ),
         ),
     ]

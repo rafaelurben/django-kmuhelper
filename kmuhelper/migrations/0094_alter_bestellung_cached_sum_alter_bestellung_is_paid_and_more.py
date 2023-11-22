@@ -5,15 +5,24 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0093_rename_email_lieferung_bestellung__email_link_invoice_and_more'),
+        (
+            "kmuhelper",
+            "0093_rename_email_lieferung_bestellung__email_link_invoice_and_more",
+        ),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='bestellungsposten',
-            name='discount',
-            field=models.FloatField(default=0, validators=[django.core.validators.MinValueValidator(0), django.core.validators.MaxValueValidator(100)], verbose_name='Rabatt in %'),
+            model_name="bestellungsposten",
+            name="discount",
+            field=models.FloatField(
+                default=0,
+                validators=[
+                    django.core.validators.MinValueValidator(0),
+                    django.core.validators.MaxValueValidator(100),
+                ],
+                verbose_name="Rabatt in %",
+            ),
         ),
     ]

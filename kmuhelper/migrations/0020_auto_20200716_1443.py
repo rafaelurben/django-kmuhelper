@@ -4,24 +4,41 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0019_auto_20200715_1931'),
+        ("kmuhelper", "0019_auto_20200715_1931"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='kosten',
-            name='versteuerbar',
+            model_name="kosten",
+            name="versteuerbar",
         ),
         migrations.AddField(
-            model_name='kosten',
-            name='mwstsatz',
-            field=models.FloatField(choices=[(0.0, '0.0% (Mehrwertsteuerfrei)'), (7.7, '7.7% (Normalsatz)'), (3.7, '3.7% (Sondersatz für Beherbergungsdienstleistungen)'), (2.5, '2.5% (Reduzierter Satz)')], default=7.7, verbose_name='Mehrwertsteuersatz'),
+            model_name="kosten",
+            name="mwstsatz",
+            field=models.FloatField(
+                choices=[
+                    (0.0, "0.0% (Mehrwertsteuerfrei)"),
+                    (7.7, "7.7% (Normalsatz)"),
+                    (3.7, "3.7% (Sondersatz für Beherbergungsdienstleistungen)"),
+                    (2.5, "2.5% (Reduzierter Satz)"),
+                ],
+                default=7.7,
+                verbose_name="Mehrwertsteuersatz",
+            ),
         ),
         migrations.AlterField(
-            model_name='produkt',
-            name='mwstsatz',
-            field=models.FloatField(choices=[(0.0, '0.0% (Mehrwertsteuerfrei)'), (7.7, '7.7% (Normalsatz)'), (3.7, '3.7% (Sondersatz für Beherbergungsdienstleistungen)'), (2.5, '2.5% (Reduzierter Satz)')], default=7.7, verbose_name='Mehrwertsteuersatz'),
+            model_name="produkt",
+            name="mwstsatz",
+            field=models.FloatField(
+                choices=[
+                    (0.0, "0.0% (Mehrwertsteuerfrei)"),
+                    (7.7, "7.7% (Normalsatz)"),
+                    (3.7, "3.7% (Sondersatz für Beherbergungsdienstleistungen)"),
+                    (2.5, "2.5% (Reduzierter Satz)"),
+                ],
+                default=7.7,
+                verbose_name="Mehrwertsteuersatz",
+            ),
         ),
     ]

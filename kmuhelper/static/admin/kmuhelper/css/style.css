@@ -100,7 +100,7 @@ ul.messagelist li:not(:last-child) {
     position: absolute;
     background-color: #f9f9f9;
     min-width: 160px;
-    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
     border-radius: 10px;
     z-index: 1;
 }
@@ -110,7 +110,7 @@ ul.messagelist li:not(:last-child) {
     display: block;
 }
 
-.object-tools .dropdown div a, 
+.object-tools .dropdown div a,
 .object-tools .dropdown div b,
 .object-tools .dropdown div i {
     width: calc(100% - 24px);
@@ -148,7 +148,8 @@ ul.messagelist li:not(:last-child) {
     color: lightgray;
     background-color: lightgray;
 }
-/* 
+
+/*
 .object-tools .dropdown > a {
     padding: 3px 18px 3px 12px;
     background-image: url(../../img/selector-icons.svg);
@@ -158,8 +159,8 @@ ul.messagelist li:not(:last-child) {
 } */
 
 .dropdown > a::after, .dropdown > div > b:first-child::after {
-  content: "▼";
-  padding-left: 0.5em;
+    content: "▼";
+    padding-left: 0.5em;
 }
 
 /* Additional buttons in submit row */

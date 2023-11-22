@@ -1,59 +1,59 @@
 <table>
     <thead>
-        <tr>
-            <th colspan="2">Zahlung</th>
-            <th>Bestellung
-                <a target="_blank"
-                    href="{% url 'admin:kmuhelper_order_change' object_id=order.pk %}">
-                    #{{ order.pk}}
+    <tr>
+        <th colspan="2">Zahlung</th>
+        <th>Bestellung
+            <a target="_blank"
+               href="{% url 'admin:kmuhelper_order_change' object_id=order.pk %}">
+                #{{ order.pk }}
+            </a>
+        </th>
+        <th>
+            <abbr title="Hier klicken, um die Bestellung als bezahlt zu markieren">
+                <a class="button markpaid{% if order.is_paid %} success{% endif %}"
+                   url="{% url 'kmuhelper:api-orders-set-paid' order.pk %}">
+                    Bezahlt
                 </a>
-            </th>
-            <th>
-                <abbr title="Hier klicken, um die Bestellung als bezahlt zu markieren">
-                    <a class="button markpaid{% if order.is_paid %} success{% endif %}" 
-                        url="{% url 'kmuhelper:api-orders-set-paid' order.pk %}">
-                        Bezahlt
-                    </a>
-                </abbr>
-            </th>
-        </tr>
+            </abbr>
+        </th>
+    </tr>
     </thead>
     <tbody>
-        <tr>
-            <td>Betrag:</td>
-            <td>{{ payment.amount }} {{ payment.currency }}</td>
-            <td>Zahlungskonditionen:</td>
-            <td>{{ order.display_payment_conditions }}</td>
-        </tr>
-        <tr>
-            <td>Valuta:</td>
-            <td>{{ payment.valuedate }}</td>
-            <td>Rechnungsdatum:</td>
-            <td>{{ order.invoice_date }}</td>
-        </tr>
-        <tr>
-            <td>Name:</td>
-            <td>{{ payment.name }}</td>
-            <td>Name:</td>
-            <td>{{ order.addr_billing_first_name }} {{ order.addr_billing_last_name }}
-                {{ order.addr_billing_company }}</td>
-        </tr>
-        <tr>
-            <td>IBAN:</td>
-            <td>{{ payment.iban }}</td>
-            <td>Kunde:</td>
-            <td>
-                <a href="{% url 'admin:kmuhelper_customer_change' object_id=order.customer.pk %}" target="_blank">
-                    {{ order.customer }}
-                </a>
-            </td>
-        </tr>
-        {% if payment.additionalref %}
+    <tr>
+        <td>Betrag:</td>
+        <td>{{ payment.amount }} {{ payment.currency }}</td>
+        <td>Zahlungskonditionen:</td>
+        <td>{{ order.display_payment_conditions }}</td>
+    </tr>
+    <tr>
+        <td>Valuta:</td>
+        <td>{{ payment.valuedate }}</td>
+        <td>Rechnungsdatum:</td>
+        <td>{{ order.invoice_date }}</td>
+    </tr>
+    <tr>
+        <td>Name:</td>
+        <td>{{ payment.name }}</td>
+        <td>Name:</td>
+        <td>{{ order.addr_billing_first_name }} {{ order.addr_billing_last_name }}
+            {{ order.addr_billing_company }}</td>
+    </tr>
+    <tr>
+        <td>IBAN:</td>
+        <td>{{ payment.iban }}</td>
+        <td>Kunde:</td>
+        <td>
+            <a href="{% url 'admin:kmuhelper_customer_change' object_id=order.customer.pk %}" target="_blank">
+                {{ order.customer }}
+            </a>
+        </td>
+    </tr>
+    {% if payment.additionalref %}
         <tr>
             <td>Zusätzliche Referenz:</td>
             <td>{{ payment.additionalref }}</td>
             <td></td>
         </tr>
-        {% endif %}
+    {% endif %}
     </tbody>
 </table>

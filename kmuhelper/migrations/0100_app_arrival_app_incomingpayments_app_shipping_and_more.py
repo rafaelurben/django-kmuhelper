@@ -4,80 +4,74 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0099_order_orderfee_orderitem_product_and_more'),
+        ("kmuhelper", "0099_order_orderfee_orderitem_product_and_more"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='App_Arrival',
-            fields=[
-            ],
+            name="App_Arrival",
+            fields=[],
             options={
-                'verbose_name': 'Lieferung',
-                'verbose_name_plural': 'Lieferungen',
-                'proxy': True,
-                'default_permissions': ('add', 'change', 'view'),
-                'indexes': [],
-                'constraints': [],
+                "verbose_name": "Lieferung",
+                "verbose_name_plural": "Lieferungen",
+                "proxy": True,
+                "default_permissions": ("add", "change", "view"),
+                "indexes": [],
+                "constraints": [],
             },
-            bases=('kmuhelper.supply',),
+            bases=("kmuhelper.supply",),
         ),
         migrations.CreateModel(
-            name='App_IncomingPayments',
-            fields=[
-            ],
+            name="App_IncomingPayments",
+            fields=[],
             options={
-                'verbose_name': 'Bestellung',
-                'verbose_name_plural': 'Bestellungen',
-                'proxy': True,
-                'default_permissions': ('add', 'change', 'view'),
-                'indexes': [],
-                'constraints': [],
+                "verbose_name": "Bestellung",
+                "verbose_name_plural": "Bestellungen",
+                "proxy": True,
+                "default_permissions": ("add", "change", "view"),
+                "indexes": [],
+                "constraints": [],
             },
-            bases=('kmuhelper.order',),
+            bases=("kmuhelper.order",),
         ),
         migrations.CreateModel(
-            name='App_Shipping',
-            fields=[
-            ],
+            name="App_Shipping",
+            fields=[],
             options={
-                'verbose_name': 'Bestellung',
-                'verbose_name_plural': 'Bestellungen',
-                'proxy': True,
-                'default_permissions': ('add', 'change', 'view'),
-                'indexes': [],
-                'constraints': [],
+                "verbose_name": "Bestellung",
+                "verbose_name_plural": "Bestellungen",
+                "proxy": True,
+                "default_permissions": ("add", "change", "view"),
+                "indexes": [],
+                "constraints": [],
             },
-            bases=('kmuhelper.order',),
+            bases=("kmuhelper.order",),
         ),
         migrations.CreateModel(
-            name='App_Stock',
-            fields=[
-            ],
+            name="App_Stock",
+            fields=[],
             options={
-                'verbose_name': 'Produkt',
-                'verbose_name_plural': 'Produkte',
-                'proxy': True,
-                'default_permissions': ('add', 'change', 'view'),
-                'indexes': [],
-                'constraints': [],
+                "verbose_name": "Produkt",
+                "verbose_name_plural": "Produkte",
+                "proxy": True,
+                "default_permissions": ("add", "change", "view"),
+                "indexes": [],
+                "constraints": [],
             },
-            bases=('kmuhelper.product',),
+            bases=("kmuhelper.product",),
         ),
         migrations.CreateModel(
-            name='App_ToDo',
-            fields=[
-            ],
+            name="App_ToDo",
+            fields=[],
             options={
-                'verbose_name': 'Notiz',
-                'verbose_name_plural': 'Notizen',
-                'proxy': True,
-                'default_permissions': ('add', 'change', 'view'),
-                'indexes': [],
-                'constraints': [],
+                "verbose_name": "Notiz",
+                "verbose_name_plural": "Notizen",
+                "proxy": True,
+                "default_permissions": ("add", "change", "view"),
+                "indexes": [],
+                "constraints": [],
             },
-            bases=('kmuhelper.note',),
+            bases=("kmuhelper.note",),
         ),
     ]

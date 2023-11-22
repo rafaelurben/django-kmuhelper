@@ -2,8 +2,9 @@
 
 from django.db import migrations, models
 
+
 def copy_content_to_new_fields(apps, schema_editor):
-    PaymentReceiver = apps.get_model('kmuhelper', 'PaymentReceiver')
+    PaymentReceiver = apps.get_model("kmuhelper", "PaymentReceiver")
     for receiver in PaymentReceiver.objects.all():
         receiver.internal_name = receiver.invoice_name
         receiver.display_name = receiver.invoice_name
@@ -11,84 +12,119 @@ def copy_content_to_new_fields(apps, schema_editor):
         receiver.display_address_2 = receiver.invoice_address_2
         receiver.save()
 
-class Migration(migrations.Migration):
 
+class Migration(migrations.Migration):
     dependencies = [
-        ('kmuhelper', '0101_squashed_0100_to_0100'),
+        ("kmuhelper", "0101_squashed_0100_to_0100"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='paymentreceiver',
-            old_name='address_1',
-            new_name='invoice_address_1',
+            model_name="paymentreceiver",
+            old_name="address_1",
+            new_name="invoice_address_1",
         ),
         migrations.RenameField(
-            model_name='paymentreceiver',
-            old_name='address_2',
-            new_name='invoice_address_2',
+            model_name="paymentreceiver",
+            old_name="address_2",
+            new_name="invoice_address_2",
         ),
         migrations.RenameField(
-            model_name='paymentreceiver',
-            old_name='country',
-            new_name='invoice_country',
+            model_name="paymentreceiver",
+            old_name="country",
+            new_name="invoice_country",
         ),
         migrations.RenameField(
-            model_name='paymentreceiver',
-            old_name='name',
-            new_name='invoice_name',
+            model_name="paymentreceiver",
+            old_name="name",
+            new_name="invoice_name",
         ),
         migrations.RemoveField(
-            model_name='paymentreceiver',
-            name='email',
+            model_name="paymentreceiver",
+            name="email",
         ),
         migrations.RemoveField(
-            model_name='paymentreceiver',
-            name='phone',
+            model_name="paymentreceiver",
+            name="phone",
         ),
         migrations.AddField(
-            model_name='paymentreceiver',
-            name='display_address_1',
-            field=models.CharField(default='', help_text='Wird oben auf der Rechnung angezeigt.', max_length=70, verbose_name='Adresszeile 1'),
+            model_name="paymentreceiver",
+            name="display_address_1",
+            field=models.CharField(
+                default="",
+                help_text="Wird oben auf der Rechnung angezeigt.",
+                max_length=70,
+                verbose_name="Adresszeile 1",
+            ),
         ),
         migrations.AddField(
-            model_name='paymentreceiver',
-            name='display_address_2',
-            field=models.CharField(default='', help_text='Wird oben auf der Rechnung angezeigt.', max_length=70, verbose_name='Adresszeile 2'),
+            model_name="paymentreceiver",
+            name="display_address_2",
+            field=models.CharField(
+                default="",
+                help_text="Wird oben auf der Rechnung angezeigt.",
+                max_length=70,
+                verbose_name="Adresszeile 2",
+            ),
         ),
         migrations.AddField(
-            model_name='paymentreceiver',
-            name='display_name',
-            field=models.CharField(default='', help_text='Wird oben auf der Rechnung angezeigt.', max_length=70, verbose_name='Anzeigename'),
+            model_name="paymentreceiver",
+            name="display_name",
+            field=models.CharField(
+                default="",
+                help_text="Wird oben auf der Rechnung angezeigt.",
+                max_length=70,
+                verbose_name="Anzeigename",
+            ),
         ),
         migrations.AddField(
-            model_name='paymentreceiver',
-            name='internal_name',
-            field=models.CharField(default='', max_length=250, verbose_name='Interne Bezeichnung'),
+            model_name="paymentreceiver",
+            name="internal_name",
+            field=models.CharField(
+                default="", max_length=250, verbose_name="Interne Bezeichnung"
+            ),
         ),
         migrations.AlterField(
-            model_name='paymentreceiver',
-            name='invoice_address_1',
-            field=models.CharField(help_text="In QR-Rechnung 'Zahlbar an' - Strasse und Hausnummer oder 'Postfach'", max_length=70, verbose_name='Adresszeile 1'),
+            model_name="paymentreceiver",
+            name="invoice_address_1",
+            field=models.CharField(
+                help_text="In QR-Rechnung 'Zahlbar an' - Strasse und Hausnummer oder 'Postfach'",
+                max_length=70,
+                verbose_name="Adresszeile 1",
+            ),
         ),
         migrations.AlterField(
-            model_name='paymentreceiver',
-            name='invoice_address_2',
-            field=models.CharField(help_text="In QR-Rechnung 'Zahlbar an' - PLZ und Ort", max_length=70, verbose_name='Adresszeile 2'),
+            model_name="paymentreceiver",
+            name="invoice_address_2",
+            field=models.CharField(
+                help_text="In QR-Rechnung 'Zahlbar an' - PLZ und Ort",
+                max_length=70,
+                verbose_name="Adresszeile 2",
+            ),
         ),
         migrations.AlterField(
-            model_name='paymentreceiver',
-            name='invoice_country',
-            field=models.CharField(choices=[('CH', 'Schweiz'), ('LI', 'Liechtenstein')], default='CH', help_text="In QR-Rechnung 'Zahlbar an'", max_length=2, verbose_name='Land'),
+            model_name="paymentreceiver",
+            name="invoice_country",
+            field=models.CharField(
+                choices=[("CH", "Schweiz"), ("LI", "Liechtenstein")],
+                default="CH",
+                help_text="In QR-Rechnung 'Zahlbar an'",
+                max_length=2,
+                verbose_name="Land",
+            ),
         ),
         migrations.AlterField(
-            model_name='paymentreceiver',
-            name='invoice_name',
-            field=models.CharField(help_text="In QR-Rechnung 'Zahlbar an' - Kontoinhaber / Firma", max_length=70, verbose_name='Name'),
+            model_name="paymentreceiver",
+            name="invoice_name",
+            field=models.CharField(
+                help_text="In QR-Rechnung 'Zahlbar an' - Kontoinhaber / Firma",
+                max_length=70,
+                verbose_name="Name",
+            ),
         ),
         migrations.RunPython(
             code=copy_content_to_new_fields,
             reverse_code=migrations.RunPython.noop,
             elidable=True,
-        )
+        ),
     ]

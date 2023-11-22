@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0037_auto_20201005_1423'),
+        ("kmuhelper", "0037_auto_20201005_1423"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='produkt',
-            name='soll_lagerbestand',
-            field=models.IntegerField(default=1, verbose_name='Soll-Lagerbestand'),
+            model_name="produkt",
+            name="soll_lagerbestand",
+            field=models.IntegerField(default=1, verbose_name="Soll-Lagerbestand"),
         ),
     ]

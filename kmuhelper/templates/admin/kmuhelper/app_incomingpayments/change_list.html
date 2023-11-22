@@ -6,9 +6,10 @@
     <p id="pageinfo">
         Hier befinden sich Bestellungen, welche noch nicht als bezahlt markiert wurden.
         <br>
-        Hinweis: Es können auch <a target="_blank" href="{% url 'admin:kmuhelper_paymentimport_upload' %}">camt.053d&nbsp;XML-Dateien</a> importiert werden.
+        Hinweis: Es können auch <a target="_blank" href="{% url 'admin:kmuhelper_paymentimport_upload' %}">camt.053d&nbsp;XML-Dateien</a>
+        importiert werden.
     </p>
     <br>
 
-{{ block.super }}
+    {{ block.super }}
 {% endblock content %}

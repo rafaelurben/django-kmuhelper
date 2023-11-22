@@ -13,7 +13,7 @@ ORDERSTATUS = [
     ("cancelled", _("Storniert/Abgebrochen")),
     ("refunded", _("Rückerstattet")),
     ("failed", _("Fehlgeschlagen")),
-    ("trash", _("Gelöscht"))
+    ("trash", _("Gelöscht")),
 ]
 
 VAT_RATES = [
@@ -31,78 +31,91 @@ PAYMENTMETHODS = [
     ("bacs", _("Überweisung")),
     ("cheque", _("Scheck")),
     ("cod", _("Rechnung / Nachnahme")),
-    ("paypal", _("PayPal"))
+    ("paypal", _("PayPal")),
 ]
 
-COUNTRIES = [
-    ("CH", _("Schweiz")),
-    ("LI", _("Liechtenstein"))
-]
+COUNTRIES = [("CH", _("Schweiz")), ("LI", _("Liechtenstein"))]
 
 LANGUAGES = [
     ("de", _("Deutsch [DE]")),
     ("fr", _("Französisch [FR]")),
     ("it", _("Italienisch [IT]")),
-    ("en", _("Englisch [EN]"))
+    ("en", _("Englisch [EN]")),
 ]
 
 ADDR_BILLING_FIELDS_WITHOUT_CONTACT = [
-    'addr_billing_first_name', 'addr_billing_last_name',
-    'addr_billing_company',
-    'addr_billing_address_1', 'addr_billing_address_2',
-    'addr_billing_postcode', 'addr_billing_city',
-    'addr_billing_state', 'addr_billing_country',
+    "addr_billing_first_name",
+    "addr_billing_last_name",
+    "addr_billing_company",
+    "addr_billing_address_1",
+    "addr_billing_address_2",
+    "addr_billing_postcode",
+    "addr_billing_city",
+    "addr_billing_state",
+    "addr_billing_country",
 ]
 
 ADDR_BILLING_FIELDS = [
-    'addr_billing_first_name', 'addr_billing_last_name',
-    'addr_billing_company',
-    'addr_billing_address_1', 'addr_billing_address_2',
-    'addr_billing_postcode', 'addr_billing_city',
-    'addr_billing_state', 'addr_billing_country',
-    'addr_billing_email', 'addr_billing_phone'
+    "addr_billing_first_name",
+    "addr_billing_last_name",
+    "addr_billing_company",
+    "addr_billing_address_1",
+    "addr_billing_address_2",
+    "addr_billing_postcode",
+    "addr_billing_city",
+    "addr_billing_state",
+    "addr_billing_country",
+    "addr_billing_email",
+    "addr_billing_phone",
 ]
 
 ADDR_BILLING_FIELDS_CATEGORIZED = [
-    ('addr_billing_first_name', 'addr_billing_last_name'),
-    'addr_billing_company',
-    ('addr_billing_address_1',
-     'addr_billing_address_2'),
-    ('addr_billing_postcode', 'addr_billing_city'),
-    ('addr_billing_state', 'addr_billing_country'),
-    ('addr_billing_email', 'addr_billing_phone')
+    ("addr_billing_first_name", "addr_billing_last_name"),
+    "addr_billing_company",
+    ("addr_billing_address_1", "addr_billing_address_2"),
+    ("addr_billing_postcode", "addr_billing_city"),
+    ("addr_billing_state", "addr_billing_country"),
+    ("addr_billing_email", "addr_billing_phone"),
 ]
 
 ADDR_SHIPPING_FIELDS_WITHOUT_CONTACT = [
-    'addr_shipping_first_name', 'addr_shipping_last_name',
-    'addr_shipping_company',
-    'addr_shipping_address_1', 'addr_shipping_address_2',
-    'addr_shipping_postcode', 'addr_shipping_city',
-    'addr_shipping_state', 'addr_shipping_country',
+    "addr_shipping_first_name",
+    "addr_shipping_last_name",
+    "addr_shipping_company",
+    "addr_shipping_address_1",
+    "addr_shipping_address_2",
+    "addr_shipping_postcode",
+    "addr_shipping_city",
+    "addr_shipping_state",
+    "addr_shipping_country",
 ]
 
 ADDR_SHIPPING_FIELDS = [
-    'addr_shipping_first_name', 'addr_shipping_last_name',
-    'addr_shipping_company',
-    'addr_shipping_address_1', 'addr_shipping_address_2',
-    'addr_shipping_postcode', 'addr_shipping_city',
-    'addr_shipping_state', 'addr_shipping_country',
-    'addr_shipping_email', 'addr_shipping_phone'
+    "addr_shipping_first_name",
+    "addr_shipping_last_name",
+    "addr_shipping_company",
+    "addr_shipping_address_1",
+    "addr_shipping_address_2",
+    "addr_shipping_postcode",
+    "addr_shipping_city",
+    "addr_shipping_state",
+    "addr_shipping_country",
+    "addr_shipping_email",
+    "addr_shipping_phone",
 ]
 
 ADDR_SHIPPING_FIELDS_CATEGORIZED = [
-    ('addr_shipping_first_name', 'addr_shipping_last_name'),
-    'addr_shipping_company',
-    ('addr_shipping_address_1',
-     'addr_shipping_address_2'),
-    ('addr_shipping_postcode', 'addr_shipping_city'),
-    ('addr_shipping_state', 'addr_shipping_country'),
-    ('addr_shipping_email', 'addr_shipping_phone')
+    ("addr_shipping_first_name", "addr_shipping_last_name"),
+    "addr_shipping_company",
+    ("addr_shipping_address_1", "addr_shipping_address_2"),
+    ("addr_shipping_postcode", "addr_shipping_city"),
+    ("addr_shipping_state", "addr_shipping_country"),
+    ("addr_shipping_email", "addr_shipping_phone"),
 ]
 
 INVOICE_DISPLAY_MODES = [
-    ('business_orders', _('Geschäftlich (Bestellungen)')),
-    ('business_services', _('Geschäftlich (Dienstleistungen)')),
-    ('club', _('Verein')),
-    ('private', _('Privat'))
+    ("business_orders", _("Geschäftlich (Bestellungen)")),
+    ("business_services", _("Geschäftlich (Dienstleistungen)")),
+    ("club", _("Verein")),
+    ("private", _("Privat")),
 ]

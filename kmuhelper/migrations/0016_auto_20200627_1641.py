@@ -4,20 +4,31 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0015_bestellung_fix_summe'),
+        ("kmuhelper", "0015_bestellung_fix_summe"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='bestellung',
-            name='rechnungsadresse_adresszeile2',
-            field=models.CharField(blank=True, default='', help_text='Wird in QR-Rechnung NICHT verwendet!', max_length=50, verbose_name='Adresszeile 2'),
+            model_name="bestellung",
+            name="rechnungsadresse_adresszeile2",
+            field=models.CharField(
+                blank=True,
+                default="",
+                help_text="Wird in QR-Rechnung NICHT verwendet!",
+                max_length=50,
+                verbose_name="Adresszeile 2",
+            ),
         ),
         migrations.AlterField(
-            model_name='kunde',
-            name='rechnungsadresse_adresszeile2',
-            field=models.CharField(blank=True, default='', help_text='Wird in QR-Rechnung NICHT verwendet!', max_length=50, verbose_name='Adresszeile 2'),
+            model_name="kunde",
+            name="rechnungsadresse_adresszeile2",
+            field=models.CharField(
+                blank=True,
+                default="",
+                help_text="Wird in QR-Rechnung NICHT verwendet!",
+                max_length=50,
+                verbose_name="Adresszeile 2",
+            ),
         ),
     ]

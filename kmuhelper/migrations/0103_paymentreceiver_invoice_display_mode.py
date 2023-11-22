@@ -4,15 +4,25 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0102_paymentreceiver_improvements'),
+        ("kmuhelper", "0102_paymentreceiver_improvements"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='paymentreceiver',
-            name='invoice_display_mode',
-            field=models.CharField(choices=[('business_orders', 'Geschäftlich (Bestellungen)'), ('business_services', 'Geschäftlich (Dienstleistungen)'), ('club', 'Verein'), ('private', 'Privat')], default='business_orders', help_text='Je nach Modus werden andere Daten auf der Rechnung angezeigt.', max_length=25, verbose_name='Anzeigemodus für Rechnungen'),
+            model_name="paymentreceiver",
+            name="invoice_display_mode",
+            field=models.CharField(
+                choices=[
+                    ("business_orders", "Geschäftlich (Bestellungen)"),
+                    ("business_services", "Geschäftlich (Dienstleistungen)"),
+                    ("club", "Verein"),
+                    ("private", "Privat"),
+                ],
+                default="business_orders",
+                help_text="Je nach Modus werden andere Daten auf der Rechnung angezeigt.",
+                max_length=25,
+                verbose_name="Anzeigemodus für Rechnungen",
+            ),
         ),
     ]

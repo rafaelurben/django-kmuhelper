@@ -4,15 +4,14 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0067_auto_20210415_2007'),
+        ("kmuhelper", "0067_auto_20210415_2007"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='kunde',
-            old_name='registrierungsemail',
-            new_name='email_registriert',
+            model_name="kunde",
+            old_name="registrierungsemail",
+            new_name="email_registriert",
         ),
     ]

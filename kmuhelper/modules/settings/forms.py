@@ -4,12 +4,13 @@ from kmuhelper.modules.settings.models import Setting
 from kmuhelper.modules.settings.constants import SETTINGS_FIELDSETS
 from kmuhelper.modules.settings.utils import set_db_setting
 
+
 class SettingsForm(forms.Form):
     fieldsets = SETTINGS_FIELDSETS
-    
+
     _fieldlist = []
     for fieldset in fieldsets:
-        _fieldlist += fieldset['fields']
+        _fieldlist += fieldset["fields"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

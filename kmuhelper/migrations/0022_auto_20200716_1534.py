@@ -4,26 +4,24 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0021_versandliste'),
+        ("kmuhelper", "0021_versandliste"),
     ]
 
     operations = [
         migrations.DeleteModel(
-            name='versandliste',
+            name="versandliste",
         ),
         migrations.CreateModel(
-            name='ToDoVersand',
-            fields=[
-            ],
+            name="ToDoVersand",
+            fields=[],
             options={
-                'verbose_name': 'ToDo Versand',
-                'verbose_name_plural': 'ToDo Versand',
-                'proxy': True,
-                'indexes': [],
-                'constraints': [],
+                "verbose_name": "ToDo Versand",
+                "verbose_name_plural": "ToDo Versand",
+                "proxy": True,
+                "indexes": [],
+                "constraints": [],
             },
-            bases=('kmuhelper.bestellung',),
+            bases=("kmuhelper.bestellung",),
         ),
     ]

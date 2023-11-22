@@ -39,14 +39,18 @@ def home(request):
         [
             {
                 "title": _("App (Mobile)"),
-                "subtitle": _("Eingeschränkte Verwaltung von Daten in verschiedenen Arbeitsschritten"),
+                "subtitle": _(
+                    "Eingeschränkte Verwaltung von Daten in verschiedenen Arbeitsschritten"
+                ),
                 "url": reverse("kmuhelper:app-mobile"),
                 "icon": "fas fa-mobile-alt",
                 "hidden": not config.user_has_module_permission(request.user, "app"),
             },
             {
                 "title": _("App (Desktop)"),
-                "subtitle": _("Eingeschränkte Verwaltung von Daten in verschiedenen Arbeitsschritten"),
+                "subtitle": _(
+                    "Eingeschränkte Verwaltung von Daten in verschiedenen Arbeitsschritten"
+                ),
                 "url": reverse("kmuhelper:app-desktop"),
                 "icon": "fas fa-desktop",
                 "hidden": not config.user_has_module_permission(request.user, "app"),
@@ -65,7 +69,9 @@ def home(request):
                 "subtitle": _("Einstellungen für den KMUHelper"),
                 "url": reverse("kmuhelper:settings"),
                 "icon": "fas fa-cog",
-                "hidden": not config.user_has_module_permission(request.user, "settings"),
+                "hidden": not config.user_has_module_permission(
+                    request.user, "settings"
+                ),
             },
         ],
         [
@@ -75,14 +81,18 @@ def home(request):
                 "url": URL_MANUAL,
                 "icon": "fas fa-book",
             },
-        ]
+        ],
     ]
-    return render(request, "kmuhelper/home.html", {"has_permission": True, "grid": grid})
+    return render(
+        request, "kmuhelper/home.html", {"has_permission": True, "grid": grid}
+    )
+
 
 def login(request):
     search = request.GET.urlencode()
     url = settings.LOGIN_URL or reverse("admin:login")
-    return redirect(url+("?"+search if search else ""))
+    return redirect(url + ("?" + search if search else ""))
+
 
 @require_any_kmuhelper_perms()
 def error(request):
@@ -97,14 +107,19 @@ def _templatetest(request, templatename):
         get_template(templatename)
         return render(request, templatename, request.GET.dict())
     except TemplateDoesNotExist:
-        return render_error(request, status=404, 
-                            message=_("Vorlage %s wurde nicht gefunden.") % templatename)
+        return render_error(
+            request,
+            status=404,
+            message=_("Vorlage %s wurde nicht gefunden.") % templatename,
+        )
     except TemplateSyntaxError as error:
-        return render_error(request, status=400, 
-                            message=_("Vorlage %(name)s enthält einen Syntaxfehler: %(error)s") % {
-                                "name": templatename,
-                                "error": error
-                            })
-    except (NoReverseMatch) as error:
-        return render_error(request, status=400, 
-                            message=_("Es ist ein Fehler aufgetreten: %s") % error)
+        return render_error(
+            request,
+            status=400,
+            message=_("Vorlage %(name)s enthält einen Syntaxfehler: %(error)s")
+            % {"name": templatename, "error": error},
+        )
+    except NoReverseMatch as error:
+        return render_error(
+            request, status=400, message=_("Es ist ein Fehler aufgetreten: %s") % error
+        )

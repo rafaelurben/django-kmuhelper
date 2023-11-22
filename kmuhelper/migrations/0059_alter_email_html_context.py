@@ -4,15 +4,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0058_auto_20210413_0101'),
+        ("kmuhelper", "0058_auto_20210413_0101"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='email',
-            name='html_context',
-            field=models.JSONField(blank=True, default=dict, null=True, verbose_name='Daten'),
+            model_name="email",
+            name="html_context",
+            field=models.JSONField(
+                blank=True, default=dict, null=True, verbose_name="Daten"
+            ),
         ),
     ]

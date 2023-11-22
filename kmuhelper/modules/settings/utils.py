@@ -14,15 +14,14 @@ def setup_settings():
     """Setup the database settings"""
 
     for key, value in SETTINGS.items():
-        Setting.objects.update_or_create(
-            id=key, defaults={'typ': value['typ']})
+        Setting.objects.update_or_create(id=key, defaults={"typ": value["typ"]})
 
     for key, value in SECRET_SETTINGS.items():
-        SettingHidden.objects.update_or_create(
-            id=key, defaults={'typ': value['typ']})
+        SettingHidden.objects.update_or_create(id=key, defaults={"typ": value["typ"]})
 
 
 # File settings
+
 
 def get_file_setting(name, default=None):
     """Get a setting from the settings.py file"""
@@ -35,6 +34,7 @@ def has_file_setting(name):
 
     return hasattr(djangoconfig, name)
 
+
 # Get db
 
 
@@ -43,7 +43,7 @@ def get_db_setting(settingid, default=None):
 
     try:
         setting = Setting.objects.get(id=settingid)
-        if setting.typ in ['char', 'text'] and setting.content == "":
+        if setting.typ in ["char", "text"] and setting.content == "":
             return default
         return setting.content
     except ObjectDoesNotExist:
@@ -60,6 +60,7 @@ def get_secret_db_setting(settingid, default=None):
 
 
 # Set db
+
 
 def set_db_setting(settingid, content):
     """Update a database setting"""

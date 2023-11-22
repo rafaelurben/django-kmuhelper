@@ -4,18 +4,20 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0088_alter_bestellung_bezahlt_alter_bestellung_versendet_and_more'),
+        (
+            "kmuhelper",
+            "0088_alter_bestellung_bezahlt_alter_bestellung_versendet_and_more",
+        ),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='einstellung',
-            name='description',
+            model_name="einstellung",
+            name="description",
         ),
         migrations.RemoveField(
-            model_name='einstellung',
-            name='name',
+            model_name="einstellung",
+            name="name",
         ),
     ]

@@ -19,12 +19,21 @@ from kmuhelper.overrides import CustomModel
 from kmuhelper.utils import runden, formatprice, modulo10rekursiv, faq
 from kmuhelper.translations import langselect, I18N_HELP_TEXT, Language
 
-from django.utils.translation import gettext_lazy, gettext, ngettext, pgettext, pgettext_lazy, npgettext
+from django.utils.translation import (
+    gettext_lazy,
+    gettext,
+    ngettext,
+    pgettext,
+    pgettext_lazy,
+    npgettext,
+)
 
 _ = gettext_lazy
 
+
 def log(content, *args):
     print("[deep_pink4][KMUHelper Main][/] -", content, *args)
+
 
 ###################
 
@@ -36,7 +45,7 @@ def default_delivery_title():
 
 def default_payment_recipient():
     if Order.objects.exists():
-        newest_order = Order.objects.order_by('-date').first()
+        newest_order = Order.objects.order_by("-date").first()
         return newest_order.payment_receiver_id
     if PaymentReceiver.objects.exists():
         return PaymentReceiver.objects.first().pk
@@ -45,7 +54,7 @@ def default_payment_recipient():
 
 def default_contact_person():
     if Order.objects.exists():
-        newest_order = Order.objects.order_by('-date').first()
+        newest_order = Order.objects.order_by("-date").first()
         return newest_order.contact_person_id
     if ContactPerson.objects.exists():
         return ContactPerson.objects.first().pk
@@ -53,11 +62,12 @@ def default_contact_person():
 
 
 def default_order_key():
-    return "kh-"+str(randint(10000000, 99999999))
+    return "kh-" + str(randint(10000000, 99999999))
 
 
 def default_payment_conditions():
     return settings.get_db_setting("default-payment-conditions", "0:30")
+
 
 #############
 
@@ -98,11 +108,11 @@ class OrderFee(CustomModel):
 
     # Links to other models
     order = models.ForeignKey(
-        to='Order',
+        to="Order",
         on_delete=models.CASCADE,
     )
     linked_fee = models.ForeignKey(
-        to='Fee',
+        to="Fee",
         verbose_name=_("Verknüpfte Kosten"),
         on_delete=models.SET_NULL,
         null=True,
@@ -147,13 +157,13 @@ class OrderFee(CustomModel):
 
     # Calculated data
     def calc_subtotal(self):
-        return runden(self.price*((100-self.discount)/100))
+        return runden(self.price * ((100 - self.discount) / 100))
 
     def calc_subtotal_without_discount(self):
         return runden(self.price)
 
     def calc_discount(self):
-        return runden(self.price*(self.discount/100))*-1
+        return runden(self.price * (self.discount / 100)) * -1
 
     # Display methods
     @admin.display(description=_("Name"), ordering="name")
@@ -194,11 +204,11 @@ class OrderItem(CustomModel):
     """Model representing the connection between 'Order' and 'Product'"""
 
     order = models.ForeignKey(
-        to='Order',
+        to="Order",
         on_delete=models.CASCADE,
     )
     product = models.ForeignKey(
-        to='Product',
+        to="Product",
         verbose_name=_("Produkt"),
         on_delete=models.PROTECT,
     )
@@ -230,13 +240,15 @@ class OrderItem(CustomModel):
 
     # Calculated data
     def calc_subtotal(self):
-        return runden(self.product_price*self.quantity*((100-self.discount)/100))
+        return runden(
+            self.product_price * self.quantity * ((100 - self.discount) / 100)
+        )
 
     def calc_subtotal_without_discount(self):
-        return runden(self.product_price*self.quantity)
+        return runden(self.product_price * self.quantity)
 
     def calc_discount(self):
-        return runden(self.product_price*self.quantity*(self.discount/100))*-1
+        return runden(self.product_price * self.quantity * (self.discount / 100)) * -1
 
     # Display methods
     @admin.display(description=_("MwSt-Satz"))
@@ -249,7 +261,7 @@ class OrderItem(CustomModel):
 
     @admin.display(description=_("Bestellungsposten"))
     def __str__(self):
-        return f'({self.pk}) {self.quantity}x {self.product.clean_name()} ({self.product.pk})'
+        return f"({self.pk}) {self.quantity}x {self.product.clean_name()} ({self.product.pk})"
 
     def save(self, *args, **kwargs):
         if not self.product_price:
@@ -272,7 +284,7 @@ class OrderItem(CustomModel):
 class Order(CustomModel):
     """Model representing an order"""
 
-    NOTE_RELATION = 'order'
+    NOTE_RELATION = "order"
 
     woocommerceid = models.IntegerField(
         verbose_name=_("WooCommerce ID"),
@@ -289,7 +301,9 @@ class Order(CustomModel):
         default=None,
         blank=True,
         null=True,
-        help_text=_("Datum der Rechnung. Wird auch als Startpunkt für die Zahlungskonditionen verwendet."),
+        help_text=_(
+            "Datum der Rechnung. Wird auch als Startpunkt für die Zahlungskonditionen verwendet."
+        ),
     )
 
     payment_conditions = models.CharField(
@@ -298,23 +312,29 @@ class Order(CustomModel):
         validators=[
             RegexValidator(
                 r"^([0-9]+(\.[0-9]+)?:[0-9]+;)*0:[0-9]+$",
-                _("Bitte benutze folgendes Format: 'p:d;p:d' - p = Skonto in %; d = Tage"),
+                _(
+                    "Bitte benutze folgendes Format: 'p:d;p:d' - p = Skonto in %; d = Tage"
+                ),
             )
         ],
         max_length=16,
-        help_text=_("Skonto und Zahlungsfrist")+" -> "+faq('wie-funktionieren-zahlungskonditionen'),
+        help_text=_("Skonto und Zahlungsfrist")
+        + " -> "
+        + faq("wie-funktionieren-zahlungskonditionen"),
     )
 
     status = models.CharField(
         verbose_name=_("Status"),
         max_length=11,
-        default='processing',
+        default="processing",
         choices=constants.ORDERSTATUS,
     )
     is_shipped = models.BooleanField(
         verbose_name=_("Versendet?"),
         default=False,
-        help_text=_('Mehr Infos')+' -> '+faq('was-passiert-wenn-ich-eine-bestellung-als-bezahltversendet-markiere'),
+        help_text=_("Mehr Infos")
+        + " -> "
+        + faq("was-passiert-wenn-ich-eine-bestellung-als-bezahltversendet-markiere"),
     )
     shipped_on = models.DateField(
         verbose_name=_("Versendet am"),
@@ -329,11 +349,13 @@ class Order(CustomModel):
         max_length=25,
         validators=[
             RegexValidator(
-                r'^99\.[0-9]{2}\.[0-9]{6}\.[0-9]{8}$',
-                _('Bite benutze folgendes Format: 99.xx.xxxxxx.xxxxxxxx'),
+                r"^99\.[0-9]{2}\.[0-9]{6}\.[0-9]{8}$",
+                _("Bite benutze folgendes Format: 99.xx.xxxxxx.xxxxxxxx"),
             )
         ],
-        help_text=_("Bitte gib hier eine Trackingnummer der Schweizer Post ein. (optional)"),
+        help_text=_(
+            "Bitte gib hier eine Trackingnummer der Schweizer Post ein. (optional)"
+        ),
     )
 
     is_removed_from_stock = models.BooleanField(
@@ -350,7 +372,9 @@ class Order(CustomModel):
     is_paid = models.BooleanField(
         verbose_name=_("Bezahlt?"),
         default=False,
-        help_text=_('Mehr Infos')+' -> '+faq('was-passiert-wenn-ich-eine-bestellung-als-bezahltversendet-markiere'),
+        help_text=_("Mehr Infos")
+        + " -> "
+        + faq("was-passiert-wenn-ich-eine-bestellung-als-bezahltversendet-markiere"),
     )
     paid_on = models.DateField(
         verbose_name=_("Bezahlt am"),
@@ -382,20 +406,20 @@ class Order(CustomModel):
     )
 
     customer = models.ForeignKey(
-        to='Customer',
+        to="Customer",
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        related_name='orders',
+        related_name="orders",
     )
     payment_receiver = models.ForeignKey(
-        to='PaymentReceiver',
+        to="PaymentReceiver",
         on_delete=models.PROTECT,
         verbose_name=_("Zahlungsempfänger"),
         default=default_payment_recipient,
     )
     contact_person = models.ForeignKey(
-        to='ContactPerson',
+        to="ContactPerson",
         verbose_name=_("Ansprechpartner"),
         on_delete=models.PROTECT,
         default=default_contact_person,
@@ -406,17 +430,17 @@ class Order(CustomModel):
     @property
     def addr_billing(self):
         return {
-            'first_name': self.addr_billing_first_name,
-            'last_name': self.addr_billing_last_name,
-            'company': self.addr_billing_company,
-            'address_1': self.addr_billing_address_1,
-            'address_2': self.addr_billing_address_2,
-            'postcode': self.addr_billing_postcode,
-            'city': self.addr_billing_city,
-            'state': self.addr_billing_state,
-            'country': self.addr_billing_country,
-            'email': self.addr_billing_email,
-            'phone': self.addr_billing_phone,
+            "first_name": self.addr_billing_first_name,
+            "last_name": self.addr_billing_last_name,
+            "company": self.addr_billing_company,
+            "address_1": self.addr_billing_address_1,
+            "address_2": self.addr_billing_address_2,
+            "postcode": self.addr_billing_postcode,
+            "city": self.addr_billing_city,
+            "state": self.addr_billing_state,
+            "country": self.addr_billing_country,
+            "email": self.addr_billing_email,
+            "phone": self.addr_billing_phone,
         }
 
     addr_billing_first_name = models.CharField(
@@ -491,17 +515,17 @@ class Order(CustomModel):
     @property
     def addr_shipping(self):
         return {
-            'first_name': self.addr_shipping_first_name,
-            'last_name': self.addr_shipping_last_name,
-            'company': self.addr_shipping_company,
-            'address_1': self.addr_shipping_address_1,
-            'address_2': self.addr_shipping_address_2,
-            'postcode': self.addr_shipping_postcode,
-            'city': self.addr_shipping_city,
-            'state': self.addr_shipping_state,
-            'country': self.addr_shipping_country,
-            'email': self.addr_shipping_email,
-            'phone': self.addr_shipping_phone,
+            "first_name": self.addr_shipping_first_name,
+            "last_name": self.addr_shipping_last_name,
+            "company": self.addr_shipping_company,
+            "address_1": self.addr_shipping_address_1,
+            "address_2": self.addr_shipping_address_2,
+            "postcode": self.addr_shipping_postcode,
+            "city": self.addr_shipping_city,
+            "state": self.addr_shipping_state,
+            "country": self.addr_shipping_country,
+            "email": self.addr_shipping_email,
+            "phone": self.addr_shipping_phone,
         }
 
     addr_shipping_first_name = models.CharField(
@@ -572,30 +596,30 @@ class Order(CustomModel):
     # Connections
 
     products = models.ManyToManyField(
-        to='Product',
-        through='OrderItem',
-        through_fields=('order', 'product'),
+        to="Product",
+        through="OrderItem",
+        through_fields=("order", "product"),
     )
 
     fees = models.ManyToManyField(
-        to='Fee',
-        through='OrderFee',
-        through_fields=('order', 'linked_fee'),
+        to="Fee",
+        through="OrderFee",
+        through_fields=("order", "linked_fee"),
     )
 
     email_link_invoice = models.ForeignKey(
-        to='EMail',
+        to="EMail",
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        related_name='+',
+        related_name="+",
     )
     email_link_shipped = models.ForeignKey(
-        to='EMail',
+        to="EMail",
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        related_name='+',
+        related_name="+",
     )
 
     cached_sum = models.FloatField(
@@ -623,14 +647,14 @@ class Order(CustomModel):
     def language(self):
         if self.customer is not None:
             return self.customer.language
-        return 'de'
+        return "de"
 
     # Functions
 
     def import_customer_data(self):
         "Copy the customer data from the customer into the order"
 
-        for field in constants.ADDR_SHIPPING_FIELDS+constants.ADDR_BILLING_FIELDS:
+        for field in constants.ADDR_SHIPPING_FIELDS + constants.ADDR_BILLING_FIELDS:
             setattr(self, field, getattr(self.customer, field))
 
     def second_save(self, *args, **kwargs):
@@ -656,7 +680,11 @@ class Order(CustomModel):
 
     @admin.display(description=_("Trackinglink"), ordering="tracking_number")
     def tracking_link(self):
-        return f'https://www.post.ch/swisspost-tracking?formattedParcelCodes={self.tracking_number}' if self.tracking_number else None
+        return (
+            f"https://www.post.ch/swisspost-tracking?formattedParcelCodes={self.tracking_number}"
+            if self.tracking_number
+            else None
+        )
 
     def get_unstructured_message(self):
         "Returns the unstructured message for the QR-Invoice"
@@ -665,33 +693,43 @@ class Order(CustomModel):
             return self.payment_purpose
         if self.payment_receiver.mode == "QRR":
             return str(self.date.strftime("%d.%m.%Y"))
-        return _("Referenznummer")+": "+str(self.id)
+        return _("Referenznummer") + ": " + str(self.id)
 
     def get_qr_reference_number(self):
         "Returns the formatted reference number for the QR-Invoice"
 
-        a = self.pkfill(22)+"0000"
-        b = a+str(modulo10rekursiv(a))
-        c = b[0:2]+" "+b[2:7]+" "+b[7:12]+" " + \
-            b[12:17]+" "+b[17:22]+" "+b[22:27]
+        a = self.pkfill(22) + "0000"
+        b = a + str(modulo10rekursiv(a))
+        c = (
+            b[0:2]
+            + " "
+            + b[2:7]
+            + " "
+            + b[7:12]
+            + " "
+            + b[12:17]
+            + " "
+            + b[17:22]
+            + " "
+            + b[22:27]
+        )
         return c
 
     def get_qr_billing_information(self):
-        "Returns the billing information for the QR-Invoice "
+        "Returns the billing information for the QR-Invoice"
 
         date = (self.invoice_date or self.date).strftime("%y%m%d")
 
-        output = f'//S1/10/{self.pk}/11/{date}'
+        output = f"//S1/10/{self.pk}/11/{date}"
 
         if self.payment_receiver.swiss_uid:
             uid = self.payment_receiver.swiss_uid.split("-")[1].replace(".", "")
-            output += f'/30/{uid}'
+            output += f"/30/{uid}"
         cond = self.payment_conditions
         vat_dict = self.get_vat_dict()
-        var_str = ";".join(
-            f'{rate}:{vat_dict[rate]}' for rate in vat_dict)
+        var_str = ";".join(f"{rate}:{vat_dict[rate]}" for rate in vat_dict)
 
-        output += f'/31/{date}/32/{var_str}/40/{cond}'
+        output += f"/31/{date}/32/{var_str}/40/{cond}"
         return output
 
     def get_payment_conditions_data(self):
@@ -701,24 +739,31 @@ class Order(CustomModel):
         for pc in self.payment_conditions.split(";"):
             percent, days = pc.split(":")
             percent, days = float(percent), int(days)
-            data.append({
-                "days": days,
-                "date": (self.invoice_date or self.order_date)+timedelta(days=days),
-                "percent": percent,
-                "price": runden(self.cached_sum*(1-(percent/100))),
-            })
+            data.append(
+                {
+                    "days": days,
+                    "date": (self.invoice_date or self.order_date)
+                    + timedelta(days=days),
+                    "percent": percent,
+                    "price": runden(self.cached_sum * (1 - (percent / 100))),
+                }
+            )
         data.sort(key=lambda x: x["date"])
         return data
 
     def get_vat_dict(self):
         "Get the VAT as a dictionary"
         vat_dict = {}
-        for p in self.products.through.objects.filter(order=self).select_related('product'):
+        for p in self.products.through.objects.filter(order=self).select_related(
+            "product"
+        ):
             if str(p.product.vat_rate) in vat_dict:
                 vat_dict[str(p.product.vat_rate)] += p.calc_subtotal()
             else:
                 vat_dict[str(p.product.vat_rate)] = p.calc_subtotal()
-        for k in self.fees.through.objects.filter(order=self).select_related('linked_fee'):
+        for k in self.fees.through.objects.filter(order=self).select_related(
+            "linked_fee"
+        ):
             if str(k.vat_rate) in vat_dict:
                 vat_dict[str(k.vat_rate)] += k.calc_subtotal()
             else:
@@ -729,9 +774,13 @@ class Order(CustomModel):
 
     def calc_total_without_vat(self):
         total = 0
-        for i in self.products.through.objects.filter(order=self).select_related("product"):
+        for i in self.products.through.objects.filter(order=self).select_related(
+            "product"
+        ):
             total += i.calc_subtotal()
-        for i in self.fees.through.objects.filter(order=self).select_related("linked_fee"):
+        for i in self.fees.through.objects.filter(order=self).select_related(
+            "linked_fee"
+        ):
             total += i.calc_subtotal()
         return runden(total)
 
@@ -739,43 +788,63 @@ class Order(CustomModel):
         total_vat = 0
         vat_dict = self.get_vat_dict()
         for vat_rate in vat_dict:
-            total_vat += runden(float(vat_dict[vat_rate]
-                                       * (float(vat_rate)/100)))
+            total_vat += runden(float(vat_dict[vat_rate] * (float(vat_rate) / 100)))
         return runden(total_vat)
 
     def calc_total(self):
-        return runden(self.calc_total_without_vat()+self.calc_total_vat())
+        return runden(self.calc_total_without_vat() + self.calc_total_vat())
 
     @admin.display(description=_("Rechnungstotal"))
     def display_total_breakdown(self):
-        return f'{formatprice(self.calc_total_without_vat())} CHF + {formatprice(self.calc_total_vat())} CHF MwSt = {formatprice(self.calc_total())} CHF'
+        return f"{formatprice(self.calc_total_without_vat())} CHF + {formatprice(self.calc_total_vat())} CHF MwSt = {formatprice(self.calc_total())} CHF"
 
     @admin.display(description=_("Total"), ordering="cached_sum")
     def display_cached_sum(self):
-        return f'{formatprice(self.cached_sum)} CHF'
+        return f"{formatprice(self.cached_sum)} CHF"
 
     @admin.display(description=_("Name"))
     def name(self):
-        return (f'{self.date.year}-' if self.date and not isinstance(self.date, str) else '') + \
-               (f'{self.pkfill(6)}'+(f' (WC#{self.woocommerceid})' if self.woocommerceid else '')) + \
-               (f' - {self.customer}' if self.customer is not None else ' ' + gettext("Gast"))
+        return (
+            (
+                f"{self.date.year}-"
+                if self.date and not isinstance(self.date, str)
+                else ""
+            )
+            + (
+                f"{self.pkfill(6)}"
+                + (f" (WC#{self.woocommerceid})" if self.woocommerceid else "")
+            )
+            + (
+                f" - {self.customer}"
+                if self.customer is not None
+                else " " + gettext("Gast")
+            )
+        )
 
     @admin.display(description=_("Info"))
     def info(self):
-        return f'{self.date.strftime("%d.%m.%Y")} - '+((self.customer.company if self.customer.company else (f'{self.customer.first_name} {self.customer.last_name}')) if self.customer else "Gast")
+        return f'{self.date.strftime("%d.%m.%Y")} - ' + (
+            (
+                self.customer.company
+                if self.customer.company
+                else (f"{self.customer.first_name} {self.customer.last_name}")
+            )
+            if self.customer
+            else "Gast"
+        )
 
     @admin.display(description=_("Bezahlt nach"))
     def display_paid_after(self):
         if self.paid_on is None:
             return "-"
-        
+
         daydiff = (self.paid_on - self.invoice_date).days
-        
+
         return npgettext(
             "Paid after ...",
             _("%(count)d Tag") % {"count": daydiff},
             _("%(count)d Tagen") % {"count": daydiff},
-            daydiff
+            daydiff,
         )
 
     @admin.display(description=_("Konditionen"))
@@ -789,7 +858,7 @@ class Order(CustomModel):
             datestr = condition["date"].strftime("%d.%m.%Y")
             price = formatprice(condition["price"])
             percent = condition["percent"]
-            output += f'{price} CHF ' + gettext('bis') + f' {datestr} ({percent}%)<br>'
+            output += f"{price} CHF " + gettext("bis") + f" {datestr} ({percent}%)<br>"
 
         return mark_safe(output)
 
@@ -798,7 +867,7 @@ class Order(CustomModel):
 
         if amount == self.cached_sum:
             return True
-        
+
         for condition in self.get_payment_conditions_data():
             if amount == condition["price"] and date <= condition["date"]:
                 return True
@@ -822,14 +891,18 @@ class Order(CustomModel):
 
             if self.woocommerceid:
                 ctx = {
-                    'id': str(self.pk),
-                    'onlineid': str(self.woocommerceid),
+                    "id": str(self.pk),
+                    "onlineid": str(self.woocommerceid),
                 }
-                subject = gettext("Ihre Bestellung Nr. %(id)s (Online #%(onlineid)s)") % ctx
-                filename = gettext("Rechnung Nr. %(id)s (Online #%(onlineid)s).pdf") % ctx
+                subject = (
+                    gettext("Ihre Bestellung Nr. %(id)s (Online #%(onlineid)s)") % ctx
+                )
+                filename = (
+                    gettext("Rechnung Nr. %(id)s (Online #%(onlineid)s).pdf") % ctx
+                )
             else:
                 ctx = {
-                    'id': str(self.pk),
+                    "id": str(self.pk),
                 }
                 subject = gettext("Ihre Bestellung Nr. %(id)s") % ctx
                 filename = gettext("Rechnung Nr. %(id)s.pdf") % ctx
@@ -840,13 +913,16 @@ class Order(CustomModel):
                 language=lang,
                 html_template="order_invoice.html",
                 html_context=context,
-                notes=gettext("Diese E-Mail wurde automatisch aus Bestellung #%d generiert.") % self.pk,
+                notes=gettext(
+                    "Diese E-Mail wurde automatisch aus Bestellung #%d generiert."
+                )
+                % self.pk,
             )
 
             self.email_link_invoice.add_attachments(
                 Attachment.objects.create_from_binary(
                     filename=filename,
-                    content=PDFOrder(self, gettext("Rechnung")).get_pdf()
+                    content=PDFOrder(self, gettext("Rechnung")).get_pdf(),
                 )
             )
 
@@ -866,14 +942,18 @@ class Order(CustomModel):
 
             if self.woocommerceid:
                 ctx = {
-                    'id': str(self.pk),
-                    'onlineid': str(self.woocommerceid),
+                    "id": str(self.pk),
+                    "onlineid": str(self.woocommerceid),
                 }
-                subject = gettext("Ihre Lieferung Nr. %(id)s (Online #%(onlineid)s)") % ctx
-                filename = gettext("Lieferschein Nr. %(id)s (Online #%(onlineid)s).pdf") % ctx
+                subject = (
+                    gettext("Ihre Lieferung Nr. %(id)s (Online #%(onlineid)s)") % ctx
+                )
+                filename = (
+                    gettext("Lieferschein Nr. %(id)s (Online #%(onlineid)s).pdf") % ctx
+                )
             else:
                 ctx = {
-                    'id': str(self.pk),
+                    "id": str(self.pk),
                 }
                 subject = gettext("Ihre Lieferung Nr. %(id)s") % ctx
                 filename = gettext("Lieferschein Nr. %(id)s.pdf") % ctx
@@ -884,13 +964,18 @@ class Order(CustomModel):
                 language=lang,
                 html_template="order_supply.html",
                 html_context=context,
-                notes=gettext("Diese E-Mail wurde automatisch aus Bestellung #%d generiert.") % self.pk,
+                notes=gettext(
+                    "Diese E-Mail wurde automatisch aus Bestellung #%d generiert."
+                )
+                % self.pk,
             )
 
             self.email_link_shipped.add_attachments(
                 Attachment.objects.create_from_binary(
                     filename=filename,
-                    content=PDFOrder(self, _("Lieferschein"), is_delivery_note=True).get_pdf()
+                    content=PDFOrder(
+                        self, _("Lieferschein"), is_delivery_note=True
+                    ).get_pdf(),
                 )
             )
 
@@ -903,8 +988,7 @@ class Order(CustomModel):
         return [p.get_stock_data() for p in self.products.all()]
 
     def email_stock_warning(self):
-        email_receiver = settings.get_db_setting(
-            "email-stock-warning-receiver")
+        email_receiver = settings.get_db_setting("email-stock-warning-receiver")
 
         if email_receiver:
             warnings = []
@@ -921,13 +1005,14 @@ class Order(CustomModel):
                     html_context={
                         "warnings": warnings,
                     },
-                    notes = gettext("Diese E-Mail wurde automatisch aus Bestellung #%d generiert.") % self.pk,
+                    notes=gettext(
+                        "Diese E-Mail wurde automatisch aus Bestellung #%d generiert."
+                    )
+                    % self.pk,
                 )
 
                 success = email.send(
-                    headers={
-                        "Bestellungs-ID": str(self.pk)
-                    },
+                    headers={"Bestellungs-ID": str(self.pk)},
                 )
                 return bool(success)
         else:
@@ -943,15 +1028,17 @@ class Order(CustomModel):
             customer=self.customer,
             payment_receiver=self.payment_receiver,
             contact_person=self.contact_person,
-
             pdf_title=self.pdf_title,
             pdf_text=self.pdf_text,
             payment_conditions=self.payment_conditions,
-
-            customer_note=gettext("Kopie aus Bestellung #%d") % self.pk + "\n" + "-"*32 + "\n" + self.customer_note,
+            customer_note=gettext("Kopie aus Bestellung #%d") % self.pk
+            + "\n"
+            + "-" * 32
+            + "\n"
+            + self.customer_note,
         )
 
-        for field in constants.ADDR_SHIPPING_FIELDS+constants.ADDR_BILLING_FIELDS:
+        for field in constants.ADDR_SHIPPING_FIELDS + constants.ADDR_BILLING_FIELDS:
             setattr(new, field, getattr(self, field))
 
         for bp in self.products.through.objects.filter(order=self):
@@ -974,9 +1061,20 @@ class Order(CustomModel):
 
     admin_icon = "fas fa-clipboard-list"
 
-    DICT_EXCLUDE_FIELDS = ['products', 'fees', 'email_link_invoice', 'email_link_shipped', 'customer',
-                           'contact_person', 'payment_receiver', 'is_removed_from_stock',
-                           'is_shipped', 'is_paid', 'payment_method', 'order_key']
+    DICT_EXCLUDE_FIELDS = [
+        "products",
+        "fees",
+        "email_link_invoice",
+        "email_link_shipped",
+        "customer",
+        "contact_person",
+        "payment_receiver",
+        "is_removed_from_stock",
+        "is_shipped",
+        "is_paid",
+        "payment_method",
+        "order_key",
+    ]
 
 
 class Fee(CustomModel):
@@ -1004,9 +1102,11 @@ class Fee(CustomModel):
 
     @admin.display(description=_("Kosten"))
     def __str__(self):
-        return f'{ self.clean_name() } ({ self.price } CHF' + \
-            (f' + {self.vat_rate}% MwSt' if self.vat_rate else '') + \
-            f') ({self.pk})'
+        return (
+            f"{ self.clean_name() } ({ self.price } CHF"
+            + (f" + {self.vat_rate}% MwSt" if self.vat_rate else "")
+            + f") ({self.pk})"
+        )
 
     class Meta:
         verbose_name = _("Kosten")
@@ -1020,7 +1120,7 @@ class Fee(CustomModel):
 class Customer(CustomModel):
     """Model representing a customer"""
 
-    NOTE_RELATION = 'customer'
+    NOTE_RELATION = "customer"
 
     woocommerceid = models.IntegerField(
         verbose_name=_("WooCommerce ID"),
@@ -1200,12 +1300,14 @@ class Customer(CustomModel):
     )
 
     combine_with = models.ForeignKey(
-        to='self',
+        to="self",
         verbose_name=_("Zusammenfügen mit"),
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        help_text=_("Dies kann nicht widerrufen werden! Werte im aktuellen Kunden werden bevorzugt."),
+        help_text=_(
+            "Dies kann nicht widerrufen werden! Werte im aktuellen Kunden werden bevorzugt."
+        ),
     )
     website = models.URLField(
         verbose_name=_("Webseite"),
@@ -1219,31 +1321,31 @@ class Customer(CustomModel):
     )
 
     email_link_registered = models.ForeignKey(
-        to='EMail',
+        to="EMail",
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
     )
 
-    @admin.display(description=_("Avatar"), ordering='avatar_url')
+    @admin.display(description=_("Avatar"), ordering="avatar_url")
     def avatar(self):
         if self.avatar_url:
-            return mark_safe('<img src="'+self.avatar_url+'" width="50px">')
+            return mark_safe('<img src="' + self.avatar_url + '" width="50px">')
         return ""
 
     @admin.display(description=_("Kunde"))
     def __str__(self):
-        s = f'{self.pkfill(8)} '
+        s = f"{self.pkfill(8)} "
         if self.woocommerceid:
-            s += f'(WC#{self.woocommerceid}) '
+            s += f"(WC#{self.woocommerceid}) "
         if self.first_name:
-            s += f'{self.first_name} '
+            s += f"{self.first_name} "
         if self.last_name:
-            s += f'{self.last_name} '
+            s += f"{self.last_name} "
         if self.company:
-            s += f'{self.company} '
+            s += f"{self.company} "
         if self.addr_billing_postcode and self.addr_billing_city:
-            s += f'({self.addr_billing_postcode} {self.addr_billing_city})'
+            s += f"({self.addr_billing_postcode} {self.addr_billing_city})"
         return s
 
     class Meta:
@@ -1260,42 +1362,95 @@ class Customer(CustomModel):
             self.company = self.company or self.combine_with.company
             self.username = self.username or self.combine_with.username
             self.avatar_url = self.avatar_url or self.combine_with.avatar_url
-            self.language = self.language if self.language != "de" else self.combine_with.language
+            self.language = (
+                self.language if self.language != "de" else self.combine_with.language
+            )
 
-            self.addr_billing_first_name = self.addr_billing_first_name or self.combine_with.addr_billing_first_name
-            self.addr_billing_last_name = self.addr_billing_last_name or self.combine_with.addr_billing_last_name
-            self.addr_billing_company = self.addr_billing_company or self.combine_with.addr_billing_company
-            self.addr_billing_address_1 = self.addr_billing_address_1 or self.combine_with.addr_billing_address_1
-            self.addr_billing_address_2 = self.addr_billing_address_2 or self.combine_with.addr_billing_address_2
-            self.addr_billing_city = self.addr_billing_city or self.combine_with.addr_billing_city
-            self.addr_billing_state = self.addr_billing_state or self.combine_with.addr_billing_state
-            self.addr_billing_postcode = self.addr_billing_postcode or self.combine_with.addr_billing_postcode
-            self.addr_billing_country = self.addr_billing_country or self.combine_with.addr_billing_country
-            self.addr_billing_email = self.addr_billing_email or self.combine_with.addr_billing_email
-            self.addr_billing_phone = self.addr_billing_phone or self.combine_with.addr_billing_phone
+            self.addr_billing_first_name = (
+                self.addr_billing_first_name
+                or self.combine_with.addr_billing_first_name
+            )
+            self.addr_billing_last_name = (
+                self.addr_billing_last_name or self.combine_with.addr_billing_last_name
+            )
+            self.addr_billing_company = (
+                self.addr_billing_company or self.combine_with.addr_billing_company
+            )
+            self.addr_billing_address_1 = (
+                self.addr_billing_address_1 or self.combine_with.addr_billing_address_1
+            )
+            self.addr_billing_address_2 = (
+                self.addr_billing_address_2 or self.combine_with.addr_billing_address_2
+            )
+            self.addr_billing_city = (
+                self.addr_billing_city or self.combine_with.addr_billing_city
+            )
+            self.addr_billing_state = (
+                self.addr_billing_state or self.combine_with.addr_billing_state
+            )
+            self.addr_billing_postcode = (
+                self.addr_billing_postcode or self.combine_with.addr_billing_postcode
+            )
+            self.addr_billing_country = (
+                self.addr_billing_country or self.combine_with.addr_billing_country
+            )
+            self.addr_billing_email = (
+                self.addr_billing_email or self.combine_with.addr_billing_email
+            )
+            self.addr_billing_phone = (
+                self.addr_billing_phone or self.combine_with.addr_billing_phone
+            )
 
-            self.addr_shipping_first_name = self.addr_shipping_first_name or self.combine_with.addr_shipping_first_name
-            self.addr_shipping_last_name = self.addr_shipping_last_name or self.combine_with.addr_shipping_last_name
-            self.addr_shipping_company = self.addr_shipping_company or self.combine_with.addr_shipping_company
-            self.addr_shipping_address_1 = self.addr_shipping_address_1 or self.combine_with.addr_shipping_address_1
-            self.addr_shipping_address_2 = self.addr_shipping_address_2 or self.combine_with.addr_shipping_address_2
-            self.addr_shipping_city = self.addr_shipping_city or self.combine_with.addr_shipping_city
-            self.addr_shipping_state = self.addr_shipping_state or self.combine_with.addr_shipping_state
-            self.addr_shipping_postcode = self.addr_shipping_postcode or self.combine_with.addr_shipping_postcode
-            self.addr_shipping_country = self.addr_shipping_country or self.combine_with.addr_shipping_country
-            self.addr_shipping_email = self.addr_shipping_email or self.combine_with.addr_shipping_email
-            self.addr_shipping_phone = self.addr_shipping_phone or self.combine_with.addr_shipping_phone
+            self.addr_shipping_first_name = (
+                self.addr_shipping_first_name
+                or self.combine_with.addr_shipping_first_name
+            )
+            self.addr_shipping_last_name = (
+                self.addr_shipping_last_name
+                or self.combine_with.addr_shipping_last_name
+            )
+            self.addr_shipping_company = (
+                self.addr_shipping_company or self.combine_with.addr_shipping_company
+            )
+            self.addr_shipping_address_1 = (
+                self.addr_shipping_address_1
+                or self.combine_with.addr_shipping_address_1
+            )
+            self.addr_shipping_address_2 = (
+                self.addr_shipping_address_2
+                or self.combine_with.addr_shipping_address_2
+            )
+            self.addr_shipping_city = (
+                self.addr_shipping_city or self.combine_with.addr_shipping_city
+            )
+            self.addr_shipping_state = (
+                self.addr_shipping_state or self.combine_with.addr_shipping_state
+            )
+            self.addr_shipping_postcode = (
+                self.addr_shipping_postcode or self.combine_with.addr_shipping_postcode
+            )
+            self.addr_shipping_country = (
+                self.addr_shipping_country or self.combine_with.addr_shipping_country
+            )
+            self.addr_shipping_email = (
+                self.addr_shipping_email or self.combine_with.addr_shipping_email
+            )
+            self.addr_shipping_phone = (
+                self.addr_shipping_phone or self.combine_with.addr_shipping_phone
+            )
 
             self.website = self.website or self.combine_with.website
-            self.note = self.note+"\n"+self.combine_with.note
+            self.note = self.note + "\n" + self.combine_with.note
 
             for order in self.combine_with.orders.all():
                 order.customer = self
                 order.save()
 
-            if getattr(self.combine_with, 'linked_note', False):
+            if getattr(self.combine_with, "linked_note", False):
                 other_linked_note = self.combine_with.linked_note
-                other_linked_note.linked_customer = None if getattr(self, 'linked_note', False) else self
+                other_linked_note.linked_customer = (
+                    None if getattr(self, "linked_note", False) else self
+                )
                 other_linked_note.save()
 
             self.combine_with.delete()
@@ -1321,7 +1476,8 @@ class Customer(CustomModel):
                 language=lang,
                 html_template="customer_registered.html",
                 html_context=context,
-                notes=gettext("Diese E-Mail wurde automatisch aus Kunde #%d generiert.") % self.pk,
+                notes=gettext("Diese E-Mail wurde automatisch aus Kunde #%d generiert.")
+                % self.pk,
             )
 
             self.save()
@@ -1331,7 +1487,7 @@ class Customer(CustomModel):
 
     admin_icon = "fas fa-users"
 
-    DICT_EXCLUDE_FIELDS = ['email_link_registered', 'combine_with']
+    DICT_EXCLUDE_FIELDS = ["email_link_registered", "combine_with"]
 
 
 class Supplier(CustomModel):
@@ -1394,7 +1550,7 @@ class Supplier(CustomModel):
 
     @admin.display(description=_("Lieferant"))
     def __str__(self):
-        return f'{self.name} ({self.pk})'
+        return f"{self.name} ({self.pk})"
 
     def assign(self):
         products = Product.objects.filter(supplier=None)
@@ -1431,7 +1587,7 @@ class SupplyItem(CustomModel):
 
     @admin.display(description=_("Lieferungsposten"))
     def __str__(self):
-        return f'({self.supply.pk}) -> {self.quantity}x {self.product}'
+        return f"({self.supply.pk}) -> {self.quantity}x {self.product}"
 
     class Meta:
         verbose_name = _("Lieferungsposten")
@@ -1443,7 +1599,7 @@ class SupplyItem(CustomModel):
 class Supply(CustomModel):
     """Model representing an *incoming* delivery"""
 
-    NOTE_RELATION = 'delivery'
+    NOTE_RELATION = "delivery"
 
     name = models.CharField(
         verbose_name=_("Name"),
@@ -1475,7 +1631,9 @@ class Supply(CustomModel):
 
     @admin.display(description=_("Anzahl Produkte"))
     def total_quantity(self):
-        return self.products.through.objects.filter(supply=self).aggregate(models.Sum('quantity'))["quantity__sum"]
+        return self.products.through.objects.filter(supply=self).aggregate(
+            models.Sum("quantity")
+        )["quantity__sum"]
 
     def add_to_stock(self):
         if not self.is_added_to_stock:
@@ -1489,7 +1647,7 @@ class Supply(CustomModel):
 
     @admin.display(description=_("Lieferung"))
     def __str__(self):
-        return f'{self.name} ({self.pk})'
+        return f"{self.name} ({self.pk})"
 
     class Meta:
         verbose_name = _("Lieferung")
@@ -1559,28 +1717,36 @@ class Note(CustomModel):
 
     @admin.display(description=_("🔗 Notiz"))
     def __str__(self):
-        return f'{self.name} ({self.pk})'
+        return f"{self.name} ({self.pk})"
 
     def links(self):
         text = ""
         if self.linked_order:
-            url = reverse("admin:kmuhelper_order_change",
-                          kwargs={"object_id": self.linked_order.pk})
+            url = reverse(
+                "admin:kmuhelper_order_change",
+                kwargs={"object_id": self.linked_order.pk},
+            )
             text += _("Bestellung")
             text += f" <a href='{url}'>#{self.linked_order.pk}</a><br>"
         if self.linked_product:
-            url = reverse("admin:kmuhelper_product_change",
-                          kwargs={"object_id": self.linked_product.pk})
+            url = reverse(
+                "admin:kmuhelper_product_change",
+                kwargs={"object_id": self.linked_product.pk},
+            )
             text += _("Produkt")
             text += f" <a href='{url}'>#{self.linked_product.pk}</a><br>"
         if self.linked_customer:
-            url = reverse("admin:kmuhelper_customer_change",
-                          kwargs={"object_id": self.linked_customer.pk})
+            url = reverse(
+                "admin:kmuhelper_customer_change",
+                kwargs={"object_id": self.linked_customer.pk},
+            )
             text += _("Kunde")
             text += f" <a href='{url}'>#{self.linked_customer.pk}</a><br>"
         if self.linked_supply:
-            url = reverse("admin:kmuhelper_supply_change",
-                          kwargs={"object_id": self.linked_supply.pk})
+            url = reverse(
+                "admin:kmuhelper_supply_change",
+                kwargs={"object_id": self.linked_supply.pk},
+            )
             text += _("Lieferung")
             text += f" <a href='{url}'>#{self.linked_supply.pk}</a><br>"
         return mark_safe(text) or gettext("Diese Notiz hat keine Verknüpfungen.")
@@ -1597,7 +1763,7 @@ class Note(CustomModel):
 class Product(CustomModel):
     """Model representing a product"""
 
-    NOTE_RELATION = 'product'
+    NOTE_RELATION = "product"
 
     article_number = models.CharField(
         verbose_name=_("Artikelnummer"),
@@ -1752,10 +1918,20 @@ class Product(CustomModel):
         return ""
 
     def get_reserved_stock(self):
-        return OrderItem.objects.filter(order__is_shipped=False, product_id=self.pk).aggregate(models.Sum("quantity"))["quantity__sum"] or 0
+        return (
+            OrderItem.objects.filter(
+                order__is_shipped=False, product_id=self.pk
+            ).aggregate(models.Sum("quantity"))["quantity__sum"]
+            or 0
+        )
 
     def get_incoming_stock(self):
-        return SupplyItem.objects.filter(supply__is_added_to_stock=False, product__id=self.pk).aggregate(models.Sum("quantity"))["quantity__sum"] or 0
+        return (
+            SupplyItem.objects.filter(
+                supply__is_added_to_stock=False, product__id=self.pk
+            ).aggregate(models.Sum("quantity"))["quantity__sum"]
+            or 0
+        )
 
     def get_stock_data(self, includemessage=False):
         """Get the stock and product information as a dictionary"""
@@ -1781,8 +1957,8 @@ class Product(CustomModel):
                 "coming": n_coming,
                 "min": n_min,
             },
-            "stock_overbooked": n_current-n_going < 0,
-            "stock_in_danger": n_current-n_going < n_min,
+            "stock_overbooked": n_current - n_going < 0,
+            "stock_in_danger": n_current - n_going < n_min,
         }
 
         if includemessage:
@@ -1794,17 +1970,16 @@ class Product(CustomModel):
             if t_coming:
                 stockstring += f" | {t_coming}: { n_coming }"
 
-            adminurl = reverse(
-                f'admin:kmuhelper_product_change', args=[self.pk])
+            adminurl = reverse(f"admin:kmuhelper_product_change", args=[self.pk])
             adminlink = format_html('<a href="{}">{}</a>', adminurl, p_name)
 
             formatdata = (adminlink, p_article_number, stockstring)
 
             if data["stock_overbooked"]:
-                msg = gettext('Zu wenig Lagerbestand bei')
+                msg = gettext("Zu wenig Lagerbestand bei")
                 data["message"] = format_html('{} "{}" [{}]: {}', msg, *formatdata)
             elif data["stock_in_danger"]:
-                msg = gettext('Knapper Lagerbestand bei')
+                msg = gettext("Knapper Lagerbestand bei")
                 data["message"] = format_html('{} "{}" [{}]: {}', msg, *formatdata)
 
         return data
@@ -1819,7 +1994,7 @@ class Product(CustomModel):
 
     @admin.display(description=_("Produkt"))
     def __str__(self):
-        return f'{self.article_number} - {self.clean_name()} ({self.pk})'
+        return f"{self.article_number} - {self.clean_name()} ({self.pk})"
 
     class Meta:
         verbose_name = _("Produkt")
@@ -1854,7 +2029,7 @@ class ProductCategory(CustomModel):
     )
 
     parent_category = models.ForeignKey(
-        to='self',
+        to="self",
         verbose_name=_("Übergeordnete Kategorie"),
         on_delete=models.SET_NULL,
         blank=True,
@@ -1881,7 +2056,7 @@ class ProductCategory(CustomModel):
 
     @admin.display(description=_("Kategorie"))
     def __str__(self):
-        return f'{self.clean_name()} ({self.pk})'
+        return f"{self.clean_name()} ({self.pk})"
 
     class Meta:
         verbose_name = _("Produktkategorie")
@@ -1891,23 +2066,24 @@ class ProductCategory(CustomModel):
 
     admin_icon = "fas fa-folder-tree"
 
+
 class ProductProductCategoryConnection(CustomModel):
     """Model representing the connection between 'Product' and 'ProductCategory'"""
 
     product = models.ForeignKey(
-        to='Product',
+        to="Product",
         verbose_name=_("Produkt"),
         on_delete=models.CASCADE,
     )
     category = models.ForeignKey(
-        to='ProductCategory',
+        to="ProductCategory",
         verbose_name=_("Produktkategorie"),
         on_delete=models.CASCADE,
     )
 
     @admin.display(description=_("Produkt-Kategorie-Verknüpfung"))
     def __str__(self):
-        return f'({self.category.pk}) {self.category.clean_name()} <-> {self.product}'
+        return f"({self.category.pk}) {self.category.clean_name()} <-> {self.product}"
 
     class Meta:
         verbose_name = _("Produkt-Kategorie-Verknüpfung")
@@ -1933,19 +2109,19 @@ class PaymentReceiver(CustomModel):
         verbose_name=_("Modus"),
         max_length=15,
         choices=[
-            ('QRR', _("QR-Referenz")),
-            ('NON', _("Ohne Referenz")),
+            ("QRR", _("QR-Referenz")),
+            ("NON", _("Ohne Referenz")),
         ],
-        default='QRR'
+        default="QRR",
     )
 
     qriban = models.CharField(
         verbose_name=_("QR-IBAN"),
-        max_length=21+5,
+        max_length=21 + 5,
         validators=[
             RegexValidator(
-                r'^(CH|LI)[0-9]{2}\s3[0-9]{3}\s[0-9]{4}\s[0-9]{4}\s[0-9]{4}\s[0-9]{1}$',
-                _('Bite benutze folgendes Format: (CH|LI)pp 3xxx xxxx xxxx xxxx x'),
+                r"^(CH|LI)[0-9]{2}\s3[0-9]{3}\s[0-9]{4}\s[0-9]{4}\s[0-9]{4}\s[0-9]{1}$",
+                _("Bite benutze folgendes Format: (CH|LI)pp 3xxx xxxx xxxx xxxx x"),
             ),
         ],
         help_text=_("QR-IBAN mit Leerzeichen (Nur verwendet im Modus 'QR-Referenz')"),
@@ -1954,11 +2130,11 @@ class PaymentReceiver(CustomModel):
     )
     iban = models.CharField(
         verbose_name=_("IBAN"),
-        max_length=21+5,
+        max_length=21 + 5,
         validators=[
             RegexValidator(
-                r'^(CH|LI)[0-9]{2}\s[0-9]{4}\s[0-9]{4}\s[0-9]{4}\s[0-9]{4}\s[0-9]{1}$',
-                _('Bite benutze folgendes Format: (CH|LI)pp 3xxx xxxx xxxx xxxx x'),
+                r"^(CH|LI)[0-9]{2}\s[0-9]{4}\s[0-9]{4}\s[0-9]{4}\s[0-9]{4}\s[0-9]{1}$",
+                _("Bite benutze folgendes Format: (CH|LI)pp 3xxx xxxx xxxx xxxx x"),
             ),
         ],
         help_text=_("IBAN mit Leerzeichen (Nur verwendet im Modus 'Ohne Referenz')"),
@@ -1998,9 +2174,9 @@ class PaymentReceiver(CustomModel):
         verbose_name=_("Logo (URL)"),
         validators=[
             RegexValidator(
-                r'''^[0-9a-zA-Z\-\.\|\?\(\)\*\+&"'_:;/]+\.(png|jpg)$''',
-                _('''Nur folgende Zeichen gestattet: 0-9a-zA-Z-_.:;/|?&()"'*+ - ''') +
-                _('''Muss auf .jpg/.png enden.'''),
+                r"""^[0-9a-zA-Z\-\.\|\?\(\)\*\+&"'_:;/]+\.(png|jpg)$""",
+                _("""Nur folgende Zeichen gestattet: 0-9a-zA-Z-_.:;/|?&()"'*+ - """)
+                + _("""Muss auf .jpg/.png enden."""),
             ),
         ],
         help_text=_("URL eines Bildes (.jpg/.png) - Wird auf die Rechnung gedruckt."),
@@ -2013,8 +2189,8 @@ class PaymentReceiver(CustomModel):
         max_length=15,
         validators=[
             RegexValidator(
-                r'^CHE-[0-9]{3}\.[0-9]{3}\.[0-9]{3}$',
-                _('Bite benutze folgendes Format: CHE-123.456.789')
+                r"^CHE-[0-9]{3}\.[0-9]{3}\.[0-9]{3}$",
+                _("Bite benutze folgendes Format: CHE-123.456.789"),
             )
         ],
         help_text=_("UID der Firma - Format: CHE-123.456.789 (Mehrwertsteuernummer)"),
@@ -2040,7 +2216,9 @@ class PaymentReceiver(CustomModel):
     invoice_address_1 = models.CharField(
         verbose_name=_("Adresszeile 1"),
         max_length=70,
-        help_text=_("In QR-Rechnung 'Zahlbar an' - Strasse und Hausnummer oder 'Postfach'"),
+        help_text=_(
+            "In QR-Rechnung 'Zahlbar an' - Strasse und Hausnummer oder 'Postfach'"
+        ),
     )
     invoice_address_2 = models.CharField(
         verbose_name=_("Adresszeile 2"),
@@ -2060,16 +2238,15 @@ class PaymentReceiver(CustomModel):
     @classmethod
     def _check_iban(cls, iban: str, qr_required=False):
         try:
-            b = ''
+            b = ""
             # Translate letters to numbers
             for i in (0, 1):
                 a = str(iban)[i].upper()
                 if a not in string.ascii_uppercase:
                     return False
-                b += str(ord(a)-55)
+                b += str(ord(a) - 55)
             # Select only digits
-            num = ''.join([z for z in str(iban)
-                          [2:] if z in string.digits])
+            num = "".join([z for z in str(iban)[2:] if z in string.digits])
             # Check if QR-IBAN is required
             if qr_required and not num[2] == "3":
                 return False
@@ -2083,8 +2260,19 @@ class PaymentReceiver(CustomModel):
     def _check_uid(cls, uid: str):
         try:
             u = uid.split("-")[1].replace(".", "")
-            p = 11 - (((int(u[0])*5)+(int(u[1])*4)+(int(u[2])*3)+(int(u[3])*2) +
-                       (int(u[4])*7)+(int(u[5])*6)+(int(u[6])*5)+(int(u[7])*4)) % 11)
+            p = 11 - (
+                (
+                    (int(u[0]) * 5)
+                    + (int(u[1]) * 4)
+                    + (int(u[2]) * 3)
+                    + (int(u[3]) * 2)
+                    + (int(u[4]) * 7)
+                    + (int(u[5]) * 6)
+                    + (int(u[6]) * 5)
+                    + (int(u[7]) * 4)
+                )
+                % 11
+            )
             return int(u[8]) == p
         except Exception as e:
             log("Error while validating UID:", e)
@@ -2115,7 +2303,7 @@ class PaymentReceiver(CustomModel):
 
     @admin.display(description=_("Zahlungsempfänger"))
     def __str__(self):
-        return f'{self.admin_name} ({self.pk})'
+        return f"{self.admin_name} ({self.pk})"
 
     def clean(self):
         super().clean()
@@ -2123,12 +2311,18 @@ class PaymentReceiver(CustomModel):
         errors = {}
 
         if self.mode == "QRR" and not self.has_valid_qr_iban():
-            errors['qriban'] = ValidationError(_("Im Modus 'QR-Referenz' muss eine gültige QR-IBAN angegeben werden!"))
+            errors["qriban"] = ValidationError(
+                _("Im Modus 'QR-Referenz' muss eine gültige QR-IBAN angegeben werden!")
+            )
         if self.mode == "NON" and not self.has_valid_iban():
-            errors['iban'] = ValidationError(_("Im Modus 'Ohne Referenz' muss eine gültige IBAN angegeben werden!"))
+            errors["iban"] = ValidationError(
+                _("Im Modus 'Ohne Referenz' muss eine gültige IBAN angegeben werden!")
+            )
         if self.swiss_uid and not self.has_valid_uid():
-            errors['swiss_uid'] = ValidationError(_("Die UID ist ungültig!"), code="invalid")
-        
+            errors["swiss_uid"] = ValidationError(
+                _("Die UID ist ungültig!"), code="invalid"
+            )
+
         if errors:
             raise ValidationError(errors)
 

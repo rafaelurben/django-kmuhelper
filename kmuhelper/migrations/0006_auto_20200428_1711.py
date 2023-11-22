@@ -4,23 +4,27 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0005_auto_20200427_1857'),
+        ("kmuhelper", "0005_auto_20200427_1857"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='bestellung',
-            name='rechnungsnotiz',
+            model_name="bestellung",
+            name="rechnungsnotiz",
         ),
         migrations.RemoveField(
-            model_name='produkt',
-            name='packlistenbemerkung',
+            model_name="produkt",
+            name="packlistenbemerkung",
         ),
         migrations.AlterField(
-            model_name='produkt',
-            name='bemerkung',
-            field=models.TextField(blank=True, default='', help_text='Wird nicht gedruckt oder angezeigt; nur für eigene Zwecke.', verbose_name='Bemerkung'),
+            model_name="produkt",
+            name="bemerkung",
+            field=models.TextField(
+                blank=True,
+                default="",
+                help_text="Wird nicht gedruckt oder angezeigt; nur für eigene Zwecke.",
+                verbose_name="Bemerkung",
+            ),
         ),
     ]

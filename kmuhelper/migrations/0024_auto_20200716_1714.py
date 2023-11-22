@@ -4,28 +4,32 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0023_auto_20200716_1553'),
+        ("kmuhelper", "0023_auto_20200716_1553"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ToDoZahlungseingang',
-            fields=[
-            ],
+            name="ToDoZahlungseingang",
+            fields=[],
             options={
-                'verbose_name': 'ToDo Zahlungseingang',
-                'verbose_name_plural': 'ToDo Zahlungseingang',
-                'proxy': True,
-                'indexes': [],
-                'constraints': [],
+                "verbose_name": "ToDo Zahlungseingang",
+                "verbose_name_plural": "ToDo Zahlungseingang",
+                "proxy": True,
+                "indexes": [],
+                "constraints": [],
             },
-            bases=('kmuhelper.bestellung',),
+            bases=("kmuhelper.bestellung",),
         ),
         migrations.AlterField(
-            model_name='bestellung',
-            name='rechnungsadresse_adresszeile1',
-            field=models.CharField(blank=True, default='', help_text='Strasse und Hausnummer oder "Postfach" ohne Nummer - Wird bei QR-Rechnung als Strasse und Hausnummer bzw. Postfach verwendet!', max_length=50, verbose_name='Adresszeile 1'),
+            model_name="bestellung",
+            name="rechnungsadresse_adresszeile1",
+            field=models.CharField(
+                blank=True,
+                default="",
+                help_text='Strasse und Hausnummer oder "Postfach" ohne Nummer - Wird bei QR-Rechnung als Strasse und Hausnummer bzw. Postfach verwendet!',
+                max_length=50,
+                verbose_name="Adresszeile 1",
+            ),
         ),
     ]

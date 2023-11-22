@@ -4,25 +4,33 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0035_auto_20201003_2125'),
+        ("kmuhelper", "0035_auto_20201003_2125"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='bestellungskosten',
-            name='kostenpreis',
-            field=models.FloatField(default=0.0, verbose_name='Preis (exkl. MwSt)'),
+            model_name="bestellungskosten",
+            name="kostenpreis",
+            field=models.FloatField(default=0.0, verbose_name="Preis (exkl. MwSt)"),
         ),
         migrations.AlterField(
-            model_name='kosten',
-            name='mwstsatz',
-            field=models.FloatField(choices=[(0.0, '0.0% (Mehrwertsteuerfrei)'), (7.7, '7.7% (Normalsatz)'), (3.7, '3.7% (Sondersatz für Beherbergungsdienstleistungen)'), (2.5, '2.5% (Reduzierter Satz)')], default=7.7, verbose_name='MwSt-Satz'),
+            model_name="kosten",
+            name="mwstsatz",
+            field=models.FloatField(
+                choices=[
+                    (0.0, "0.0% (Mehrwertsteuerfrei)"),
+                    (7.7, "7.7% (Normalsatz)"),
+                    (3.7, "3.7% (Sondersatz für Beherbergungsdienstleistungen)"),
+                    (2.5, "2.5% (Reduzierter Satz)"),
+                ],
+                default=7.7,
+                verbose_name="MwSt-Satz",
+            ),
         ),
         migrations.AlterField(
-            model_name='kosten',
-            name='preis',
-            field=models.FloatField(default=0.0, verbose_name='Preis (exkl. MwSt)'),
+            model_name="kosten",
+            name="preis",
+            field=models.FloatField(default=0.0, verbose_name="Preis (exkl. MwSt)"),
         ),
     ]

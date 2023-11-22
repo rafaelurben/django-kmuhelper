@@ -4,15 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0030_auto_20200720_1936'),
+        ("kmuhelper", "0030_auto_20200720_1936"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='produkt',
-            name='kategorien',
-            field=models.ManyToManyField(related_name='produkte', through='kmuhelper.Produktkategorie', to='kmuhelper.Kategorie', verbose_name='Kategorie'),
+            model_name="produkt",
+            name="kategorien",
+            field=models.ManyToManyField(
+                related_name="produkte",
+                through="kmuhelper.Produktkategorie",
+                to="kmuhelper.Kategorie",
+                verbose_name="Kategorie",
+            ),
         ),
     ]

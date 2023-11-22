@@ -4,15 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0061_auto_20210413_2119'),
+        ("kmuhelper", "0061_auto_20210413_2119"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='email',
-            name='text',
-            field=models.TextField(blank=True, default='', help_text='Hauptinhalt - wird nicht von allen Vorlagen verwendet!', verbose_name='Text'),
+            model_name="email",
+            name="text",
+            field=models.TextField(
+                blank=True,
+                default="",
+                help_text="Hauptinhalt - wird nicht von allen Vorlagen verwendet!",
+                verbose_name="Text",
+            ),
         ),
     ]

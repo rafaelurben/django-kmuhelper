@@ -4,20 +4,24 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0001_initial'),
+        ("kmuhelper", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='produkt',
-            name='mengenbezeichnung',
-            field=models.CharField(blank=True, default='Stück', max_length=100, verbose_name='Mengenbezeichnung'),
+            model_name="produkt",
+            name="mengenbezeichnung",
+            field=models.CharField(
+                blank=True,
+                default="Stück",
+                max_length=100,
+                verbose_name="Mengenbezeichnung",
+            ),
         ),
         migrations.AlterField(
-            model_name='produkt',
-            name='name',
-            field=models.CharField(max_length=500, verbose_name='Name'),
+            model_name="produkt",
+            name="name",
+            field=models.CharField(max_length=500, verbose_name="Name"),
         ),
     ]

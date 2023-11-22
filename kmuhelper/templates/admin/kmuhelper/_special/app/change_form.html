@@ -6,14 +6,16 @@
     {% get_admin_model as model %}
 
     <div id="breadcrumbs" class="breadcrumbs" style="display: block">
-        <a href="{% url 'kmuhelper:app-desktop' %}">KMUHelper App</a> &gt; <a href="{% url opts|admin_urlname:'changelist' %}">{{ model.admin_title }}</a> &gt; {% if change %}{{ original }}{% else %}{{ opts.verbose_name }} hinzufügen{% endif %}
+        <a href="{% url 'kmuhelper:app-desktop' %}">KMUHelper App</a> &gt; <a
+            href="{% url opts|admin_urlname:'changelist' %}">{{ model.admin_title }}</a> &gt;
+        {% if change %}{{ original }}{% else %}{{ opts.verbose_name }} hinzufügen{% endif %}
     </div>
     <div id="alternate-breadcrumbs" class="breadcrumbs" style="display: none">
         <a href="{% url opts|admin_urlname:'changelist' %}">&lt; Zurück</a>
     </div>
     <script>
-        if (window !== window.top) { 
-            document.getElementById("breadcrumbs").style.display = "none"; 
+        if (window !== window.top) {
+            document.getElementById("breadcrumbs").style.display = "none";
             document.getElementById("alternate-breadcrumbs").style.display = "block";
             document.getElementById("app-link").href = "{% url 'kmuhelper:app-mobile' %}";
         }

@@ -43,13 +43,21 @@ class ApiKey(CustomModel):
 
     @admin.display(description=_("Api key"))
     def __str__(self):
-        perms = _("read") if self.read and not self.write else _("write") if self.write and not self.read else _("read/write") if self.read and self.write else _("UNUSABLE")
+        perms = (
+            _("read")
+            if self.read and not self.write
+            else _("write")
+            if self.write and not self.read
+            else _("read/write")
+            if self.read and self.write
+            else _("UNUSABLE")
+        )
         return f"{self.name} ({perms}; {self.user.username})"
 
     @admin.display(description=_("Key preview"))
     def key_preview(self):
         """Get the first and last letters of the key"""
-        return str(self.key)[:4]+"..."+str(self.key)[-4:]
+        return str(self.key)[:4] + "..." + str(self.key)[-4:]
 
     def has_perm(self, *args, **kwargs):
         """Shortcut for self.user.has_perm"""

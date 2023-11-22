@@ -20,7 +20,8 @@
     {% kmuhelper_woocommerce_connected as woocommerce_is_connected %}
     {% if woocommerce_is_connected and perms.kmuhelper.add_order %}
         <li>
-            <a onclick="laden();" href="{% url 'kmuhelper:wc-import-orders' %}" class="addlink">Bestellungen von WooCommerce importieren</a>
+            <a onclick="laden();" href="{% url 'kmuhelper:wc-import-orders' %}" class="addlink">Bestellungen von
+                WooCommerce importieren</a>
         </li>
     {% endif %}
     {{ block.super }}
@@ -30,12 +31,14 @@
 
     <table>
         <thead>
-            <tr>
-                <th colspan="2">Unbezahlte Bestellungen</th>
-            </tr>
+        <tr>
+            <th colspan="2">Unbezahlte Bestellungen</th>
+        </tr>
         </thead>
         <tbody id="unpaid">
-            <tr><td colspan="2">Wird geladen...</td></tr>
+        <tr>
+            <td colspan="2">Wird geladen...</td>
+        </tr>
         </tbody>
     </table>
 

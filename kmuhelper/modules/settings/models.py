@@ -87,14 +87,22 @@ class SettingBase(CustomModel):
     @admin.display(description=_("Inhalt"))
     def content_display(self):
         if self.typ == "bool":
-            return mark_safe('<img src="'+static(f"admin/img/icon-{'yes' if self.content_bool else 'no'}.svg")+'" />')
+            return mark_safe(
+                '<img src="'
+                + static(f"admin/img/icon-{'yes' if self.content_bool else 'no'}.svg")
+                + '" />'
+            )
         if self.typ == "url":
             return mark_safe(urlize(self.content_url))
         return self.content
 
     @property
     def content(self):
-        return getattr(self, f"content_{self.typ}", _("ERROR! Unbekannter Einstellungstyp! Bitte kontaktiere den Entwickler!"))
+        return getattr(
+            self,
+            f"content_{self.typ}",
+            _("ERROR! Unbekannter Einstellungstyp! Bitte kontaktiere den Entwickler!"),
+        )
 
     @content.setter
     def content(self, var):
@@ -131,8 +139,12 @@ class Setting(SettingBase):
     def get_field(self):
         "Get the corresponding form field for this setting"
 
-        opt = {'label': self.name, 'required': False,
-               'help_text': self.description, 'initial': self.content}
+        opt = {
+            "label": self.name,
+            "required": False,
+            "help_text": self.description,
+            "initial": self.content,
+        }
 
         if self.typ == "char":
             return forms.CharField(**opt)

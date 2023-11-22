@@ -2,8 +2,10 @@ from rich import print
 
 from kmuhelper import settings
 
+
 def log(string, *args):
     print("[deep_pink4][KMUHelper startup.py][/] -", string, *args)
+
 
 # Set up database settings
 

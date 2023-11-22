@@ -39,49 +39,52 @@
             Um die WooCommerce Schnittstelle zu nutzen, muss diese zuerst mit dem KMUHelper verbunden werden.
             Dazu muss der KMUHelper <b>Lese-Zugriff</b> auf die WooCommerce API erhalten.
             Dieser Zugriff kann jederzeit widerrufen werden.
-            Tragen Sie dazu oben die URL Ihrer WooCommerce Installation ein und klicken Sie auf "Einstellungen speichern".
-            Klicken Sie anschliessend auf folgenden Knopf und melden Sie sich mit Ihren WooCommerce/WordPress Zugangsdaten an:
+            Tragen Sie dazu oben die URL Ihrer WooCommerce Installation ein und klicken Sie auf "Einstellungen
+            speichern".
+            Klicken Sie anschliessend auf folgenden Knopf und melden Sie sich mit Ihren WooCommerce/WordPress
+            Zugangsdaten an:
         </p>
         {% if is_url_valid %}
             {% if is_connected %}
-            <a href="{% url 'kmuhelper:wc-auth-start' %}">
-                <button class="button">API erneut verbinden</button>
-            </a>
+                <a href="{% url 'kmuhelper:wc-auth-start' %}">
+                    <button class="button">API erneut verbinden</button>
+                </a>
             {% else %}
-            <a href="{% url 'kmuhelper:wc-auth-start' %}">
-                <button class="button">API verbinden</button>
-            </a>
+                <a href="{% url 'kmuhelper:wc-auth-start' %}">
+                    <button class="button">API verbinden</button>
+                </a>
             {% endif %}
         {% else %}
-        <button class="button" disabled>Die angegebene URL ist ungültig</button>
+            <button class="button" disabled>Die angegebene URL ist ungültig</button>
         {% endif %}
 
         <br><br>
 
         <h3>Schritt 2: Status überprüfen (optional)</h3>
         {% if is_connected %}
-        <p>
-            Die WooCommerce-Schnittstelle wurde erfolgreich eingerichtet.
-            Über folgenden Knopf können Sie überprüfen, ob die Verbindung funktioniert:
-        </p>
+            <p>
+                Die WooCommerce-Schnittstelle wurde erfolgreich eingerichtet.
+                Über folgenden Knopf können Sie überprüfen, ob die Verbindung funktioniert:
+            </p>
 
-        <a href="{% url 'kmuhelper:wc-system-status' %}">
-            <button class="button">Verbindung überprüfen</button>
-        </a>
+            <a href="{% url 'kmuhelper:wc-system-status' %}">
+                <button class="button">Verbindung überprüfen</button>
+            </a>
         {% else %}
-        <p>
-            Die WooCommerce-Schnittstelle wurde noch nicht eingerichtet.
-            Bitte folgen Sie den Anweisungen oben.
-        </p>
+            <p>
+                Die WooCommerce-Schnittstelle wurde noch nicht eingerichtet.
+                Bitte folgen Sie den Anweisungen oben.
+            </p>
 
-        <button class="button" disabled>Schritt 1 muss zuerst abgeschlossen werden</button>
+            <button class="button" disabled>Schritt 1 muss zuerst abgeschlossen werden</button>
         {% endif %}
 
         <br><br>
 
         <h3>Schritt 3: Webhooks einrichten (optional, aber empfohlen)</h3>
         <p>
-            Damit Daten automatisch von WooCommerce an den KMUHelper übertragen werden können, müssen Webhooks eingerichtet werden.
+            Damit Daten automatisch von WooCommerce an den KMUHelper übertragen werden können, müssen Webhooks
+            eingerichtet werden.
             Dieser Schritt muss manuell durchgeführt werden.
             Öffnen Sie die WooCommerce Einstellungen via Knopf unten und folgen Sie folgenden Anweisungen:
         </p>
@@ -93,31 +96,32 @@
             Nicht vergessen, es auch oben einzutragen und die Einstellungen zu speichern!)
             und geben Sie als URL folgende Adresse an:
             <code>https://{{ kmuhelper_url }}{% url 'kmuhelper:wc-webhooks' %}</code>
-            <ul>
-                <li>Bestellung erstellt (order.created)</li>
-                <li>Bestellung aktualisiert (order.updated)</li>
-                <li>Bestellung gelöscht (order.deleted)</li>
-                <li>Kunde erstellt (customer.created)</li>
-                <li>Kunde aktualisiert (customer.updated)</li>
-                <li>Kunde gelöscht (customer.deleted)</li>
-                <li>Produkt erstellt (product.created)</li>
-                <li>Produkt aktualisiert (product.updated)</li>
-                <li>Produkt entfernt (product.deleted)</li>
-            </ul>
+        <ul>
+            <li>Bestellung erstellt (order.created)</li>
+            <li>Bestellung aktualisiert (order.updated)</li>
+            <li>Bestellung gelöscht (order.deleted)</li>
+            <li>Kunde erstellt (customer.created)</li>
+            <li>Kunde aktualisiert (customer.updated)</li>
+            <li>Kunde gelöscht (customer.deleted)</li>
+            <li>Produkt erstellt (product.created)</li>
+            <li>Produkt aktualisiert (product.updated)</li>
+            <li>Produkt entfernt (product.deleted)</li>
+        </ul>
         </p>
         {% if is_connected %}
-        <a href="{{ wc_url }}/wp-admin/admin.php?page=wc-settings&tab=advanced&section=webhooks" target="_blank">
-            <button class="button">Webhooks einrichten</button>
-        </a>
+            <a href="{{ wc_url }}/wp-admin/admin.php?page=wc-settings&tab=advanced&section=webhooks" target="_blank">
+                <button class="button">Webhooks einrichten</button>
+            </a>
         {% else %}
-        <button class="button" disabled>Schritt 1 muss zuerst abgeschlossen werden</button>
-        {% endif %} 
+            <button class="button" disabled>Schritt 1 muss zuerst abgeschlossen werden</button>
+        {% endif %}
 
         <br><br>
 
         <h3>Schritt 4: Status der Webhooks überprüfen (optional)</h3>
         <p>
-            Der Status der Webhooks kann nur manuell überprüft werden, indem Daten in WooCommerce verändert werden (z. B. eine Bestellung erstellen).
+            Der Status der Webhooks kann nur manuell überprüft werden, indem Daten in WooCommerce verändert werden (z.
+            B. eine Bestellung erstellen).
         </p>
     </div>
 

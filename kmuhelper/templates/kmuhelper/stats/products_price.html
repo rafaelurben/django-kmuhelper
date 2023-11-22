@@ -4,9 +4,13 @@
 
     <!-- https://www.chartjs.org/docs/latest/getting-started/ -->
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css" integrity="sha512-/zs32ZEJh+/EO2N1b0PEdoA10JkdC3zJ8L5FTiQu82LR9S/rOQNfQN7U59U9BC12swNeRAz3HSzIL2vpp4fv3w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js" integrity="sha512-60KwWtZOhzgr840mc57MV8JqDZHAws3w61mhK45KsYHmhyNFJKmfg4M7/s2Jsn4PgtQ4Uhr9xItS+HCbGTIRYQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css"
+          integrity="sha512-/zs32ZEJh+/EO2N1b0PEdoA10JkdC3zJ8L5FTiQu82LR9S/rOQNfQN7U59U9BC12swNeRAz3HSzIL2vpp4fv3w=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"
+            integrity="sha512-60KwWtZOhzgr840mc57MV8JqDZHAws3w61mhK45KsYHmhyNFJKmfg4M7/s2Jsn4PgtQ4Uhr9xItS+HCbGTIRYQ=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const ctx = document.getElementById('myChart').getContext('2d');
@@ -57,25 +61,25 @@
                         ],
                         yAxes: [
                             {
-                                type: 'linear', 
+                                type: 'linear',
                                 display: true,
                                 position: 'left',
                                 id: 'y-products',
                                 ticks: {
                                     beginAtZero: true,
-                                    callback: function(value, index, values) {
+                                    callback: function (value, index, values) {
                                         return value + " P.";
                                     },
                                 },
                             },
                             {
-                                type: 'linear', 
+                                type: 'linear',
                                 display: true,
                                 position: 'right',
                                 id: 'y-umsatz',
                                 ticks: {
                                     beginAtZero: true,
-                                    callback: function(value, index, values) {
+                                    callback: function (value, index, values) {
                                         return value + " CHF";
                                     },
                                 },
@@ -86,7 +90,7 @@
             });
         });
     </script>
-        
+
     <div style="position: relative; width: 100%;">
         <canvas id="myChart"></canvas>
     </div>

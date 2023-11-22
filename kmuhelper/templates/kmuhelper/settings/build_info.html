@@ -30,25 +30,25 @@
     <div>
         <table>
             <thead>
-                <tr>
-                    <th>Modul</th>
-                    <th>Current</th>
-                    <th>Latest</th>
-                    <th>UpToDate</th>
-                </tr>
+            <tr>
+                <th>Modul</th>
+                <th>Current</th>
+                <th>Latest</th>
+                <th>UpToDate</th>
+            </tr>
             </thead>
             <tbody id="versions-body">
-                <tr id="versions-loading">
-                    <td colspan=4>Loading...</td>
-                </tr>
+            <tr id="versions-loading">
+                <td colspan=4>Loading...</td>
+            </tr>
             </tbody>
         </table>
 
-        <script>      
+        <script>
             const url_yes = "{% static 'admin/img/icon-yes.svg' %}";
             const url_no = "{% static 'admin/img/icon-no.svg' %}";
             const url_unknown = "{% static 'admin/img/icon-unknown.svg' %}";
-        
+
             const vbody = document.getElementById("versions-body");
             const vloading = document.getElementById("versions-loading");
 

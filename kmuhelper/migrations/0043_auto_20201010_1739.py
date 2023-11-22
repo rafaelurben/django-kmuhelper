@@ -4,30 +4,59 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0042_auto_20201010_1633'),
+        ("kmuhelper", "0042_auto_20201010_1633"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='einstellung',
-            name='boo',
-            field=models.BooleanField(blank=True, default=True, verbose_name='Inhalt (Wahrheitswert)'),
+            model_name="einstellung",
+            name="boo",
+            field=models.BooleanField(
+                blank=True, default=True, verbose_name="Inhalt (Wahrheitswert)"
+            ),
         ),
         migrations.AddField(
-            model_name='geheime_einstellung',
-            name='boo',
-            field=models.BooleanField(blank=True, default=True, verbose_name='Inhalt (Wahrheitswert)'),
+            model_name="geheime_einstellung",
+            name="boo",
+            field=models.BooleanField(
+                blank=True, default=True, verbose_name="Inhalt (Wahrheitswert)"
+            ),
         ),
         migrations.AlterField(
-            model_name='einstellung',
-            name='typ',
-            field=models.CharField(choices=[('char', 'Text'), ('text', 'Mehrzeiliger Text'), ('bool', 'Wahrheitswert'), ('int', 'Zahl'), ('float', 'Fliesskommazahl'), ('url', 'Url'), ('email', 'E-Mail')], default='char', max_length=5, verbose_name='Typ'),
+            model_name="einstellung",
+            name="typ",
+            field=models.CharField(
+                choices=[
+                    ("char", "Text"),
+                    ("text", "Mehrzeiliger Text"),
+                    ("bool", "Wahrheitswert"),
+                    ("int", "Zahl"),
+                    ("float", "Fliesskommazahl"),
+                    ("url", "Url"),
+                    ("email", "E-Mail"),
+                ],
+                default="char",
+                max_length=5,
+                verbose_name="Typ",
+            ),
         ),
         migrations.AlterField(
-            model_name='geheime_einstellung',
-            name='typ',
-            field=models.CharField(choices=[('char', 'Text'), ('text', 'Mehrzeiliger Text'), ('bool', 'Wahrheitswert'), ('int', 'Zahl'), ('float', 'Fliesskommazahl'), ('url', 'Url'), ('email', 'E-Mail')], default='char', max_length=5, verbose_name='Typ'),
+            model_name="geheime_einstellung",
+            name="typ",
+            field=models.CharField(
+                choices=[
+                    ("char", "Text"),
+                    ("text", "Mehrzeiliger Text"),
+                    ("bool", "Wahrheitswert"),
+                    ("int", "Zahl"),
+                    ("float", "Fliesskommazahl"),
+                    ("url", "Url"),
+                    ("email", "E-Mail"),
+                ],
+                default="char",
+                max_length=5,
+                verbose_name="Typ",
+            ),
         ),
     ]

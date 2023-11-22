@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0008_auto_20200502_1851'),
+        ("kmuhelper", "0008_auto_20200502_1851"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='kunde',
-            name='notiz',
-            field=models.TextField(blank=True, default='', verbose_name='Notiz'),
+            model_name="kunde",
+            name="notiz",
+            field=models.TextField(blank=True, default="", verbose_name="Notiz"),
         ),
     ]

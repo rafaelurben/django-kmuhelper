@@ -3,7 +3,11 @@ import uuid
 from functools import wraps
 
 from kmuhelper.modules.api.constants import (
-    NO_PERMISSION_APIKEY, APIKEY_INVALID, NO_PERMISSION_SESSION, NOT_AUTHENTICATED, OBJ_NOT_FOUND
+    NO_PERMISSION_APIKEY,
+    APIKEY_INVALID,
+    NO_PERMISSION_SESSION,
+    NOT_AUTHENTICATED,
+    OBJ_NOT_FOUND,
 )
 from kmuhelper.modules.api.models import ApiKey
 from kmuhelper.decorators import require_object as original_require_object
@@ -19,6 +23,7 @@ def _is_valid_uuid(val):
 
 def protected(read=False, write=False, perms_required=[]):
     """Decorator: Protect an api view from unauthorized access."""
+
     def decorator(function):
         @wraps(function)
         def wrap(request, *args, **kwargs):
@@ -29,13 +34,20 @@ def protected(read=False, write=False, perms_required=[]):
             else:
                 perms = perms_required
 
-            perms = [f'kmuhelper.{perm}' if not '.' in perm else perm for perm in perms]
+            perms = [f"kmuhelper.{perm}" if not "." in perm else perm for perm in perms]
 
             if apikey:
-                if _is_valid_uuid(apikey) and ApiKey.objects.filter(key=apikey).exists():
+                if (
+                    _is_valid_uuid(apikey)
+                    and ApiKey.objects.filter(key=apikey).exists()
+                ):
                     keyobject = ApiKey.objects.get(key=apikey)
 
-                    if ((not read) or keyobject.read) and ((not write) or keyobject.write) and keyobject.has_perms(perms):
+                    if (
+                        ((not read) or keyobject.read)
+                        and ((not write) or keyobject.write)
+                        and keyobject.has_perms(perms)
+                    ):
                         return function(request, *args, **kwargs)
 
                     return NO_PERMISSION_APIKEY
@@ -49,8 +61,11 @@ def protected(read=False, write=False, perms_required=[]):
                 return NO_PERMISSION_SESSION
 
             return NOT_AUTHENTICATED
+
         return wrap
+
     return decorator
+
 
 # Shortcuts
 

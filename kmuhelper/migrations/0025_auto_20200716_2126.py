@@ -4,39 +4,40 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0024_auto_20200716_1714'),
+        ("kmuhelper", "0024_auto_20200716_1714"),
     ]
 
     operations = [
         migrations.RenameModel(
-            old_name='ToDoNotiz',
-            new_name='Notiz',
+            old_name="ToDoNotiz",
+            new_name="Notiz",
         ),
         migrations.CreateModel(
-            name='ToDoNotiz',
-            fields=[
-            ],
+            name="ToDoNotiz",
+            fields=[],
             options={
-                'verbose_name': 'Notiz',
-                'verbose_name_plural': 'Notizen',
-                'proxy': True,
-                'indexes': [],
-                'constraints': [],
+                "verbose_name": "Notiz",
+                "verbose_name_plural": "Notizen",
+                "proxy": True,
+                "indexes": [],
+                "constraints": [],
             },
-            bases=('kmuhelper.notiz',),
+            bases=("kmuhelper.notiz",),
         ),
         migrations.AlterModelOptions(
-            name='notiz',
-            options={'verbose_name': 'Notiz', 'verbose_name_plural': 'Notizen'},
+            name="notiz",
+            options={"verbose_name": "Notiz", "verbose_name_plural": "Notizen"},
         ),
         migrations.AlterModelOptions(
-            name='todoversand',
-            options={'verbose_name': 'Bestellung', 'verbose_name_plural': 'Bestellungen'},
+            name="todoversand",
+            options={
+                "verbose_name": "Bestellung",
+                "verbose_name_plural": "Bestellungen",
+            },
         ),
         migrations.AlterModelOptions(
-            name='todozahlungseingang',
-            options={'verbose_name': 'Bestellung', 'verbose_name_plural': 'Bestellung'},
+            name="todozahlungseingang",
+            options={"verbose_name": "Bestellung", "verbose_name_plural": "Bestellung"},
         ),
     ]

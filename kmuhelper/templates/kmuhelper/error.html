@@ -26,11 +26,12 @@
 
 {% block content %}
     <h1>{% block maintitle %}Fehler{% endblock %}</h1>
-    
+
     <div>
         {% block maincontent %}
             <p>Die angegebene Seite wurde leider nicht gefunden oder es ist ein Fehler aufgetreten.</p>
-            <p>Möglicherweise sind Sie auf dieser Seite aufgrund eines ungültigen oder abgelaufenen Links gelandet. Bitte kontaktieren Sie diejenige Person, welche Ihnen diesen Link gesendet hat.</p>
+            <p>Möglicherweise sind Sie auf dieser Seite aufgrund eines ungültigen oder abgelaufenen Links gelandet.
+                Bitte kontaktieren Sie diejenige Person, welche Ihnen diesen Link gesendet hat.</p>
         {% endblock %}
     </div>
 
@@ -39,7 +40,8 @@
     <div style="position: absolute; bottom: 5px;">
         {% block footercontent %}
             <hr><br>
-            <p>Diese Seite wurde mit der Open Source Software <a href="https://rafaelurben.github.io/kmuhelper">KMUHelper</a> erstellt.
+            <p>Diese Seite wurde mit der Open Source Software
+            <a href="https://rafaelurben.github.io/kmuhelper">KMUHelper</a> erstellt.
         {% endblock %}
     </div>
 {% endblock %}

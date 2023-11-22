@@ -5,18 +5,20 @@
     {% if not text %}
         <p>Sehr geehrter Kunde</p>
         <p>
-            Vielen Dank für Ihre Bestellung mit der Bestellnummer {{ id }}{% if woocommercedata %} (Online #{{ woocommerceid }}){% endif %}!
+            Vielen Dank für Ihre Bestellung mit der Bestellnummer
+            {{ id }}{% if woocommercedata %} (Online #{{ woocommerceid }}){% endif %}!
             <br>
             Ihre Bestellung ist per Post auf dem Weg zu Ihnen.
             <br>
-            Im Anhang finden Sie den Lieferschein zur entsprechenden Bestellung. 
+            Im Anhang finden Sie den Lieferschein zur entsprechenden Bestellung.
         </p>
     {% else %}
         {{ text|urlize|linebreaks }}
     {% endif %}
 
     {% if trackingdata %}
-        <p>Sie können die Bestellung über <a href="{{ tracking_link }}">diesen Link</a> verfolgen, sobald sie von der Post verarbeitet wurde.</p>
+        <p>Sie können die Bestellung über <a href="{{ tracking_link }}">diesen Link</a> verfolgen, sobald sie von der
+            Post verarbeitet wurde.</p>
     {% endif %}
 
 {% endblock %}

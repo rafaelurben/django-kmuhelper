@@ -4,20 +4,30 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0060_remove_email_typ'),
+        ("kmuhelper", "0060_remove_email_typ"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='email',
-            name='html_context',
-            field=models.JSONField(blank=True, default=dict, help_text='Daten im JSON-Format, mit welchen die Vorlage befüllt wird.', null=True, verbose_name='Daten'),
+            model_name="email",
+            name="html_context",
+            field=models.JSONField(
+                blank=True,
+                default=dict,
+                help_text="Daten im JSON-Format, mit welchen die Vorlage befüllt wird.",
+                null=True,
+                verbose_name="Daten",
+            ),
         ),
         migrations.AlterField(
-            model_name='email',
-            name='html_template',
-            field=models.CharField(default='default.html', help_text="Der Dateiname der Vorlage unter 'kmuhelper/emails/'.", max_length=50, verbose_name='Dateiname der Vorlage'),
+            model_name="email",
+            name="html_template",
+            field=models.CharField(
+                default="default.html",
+                help_text="Der Dateiname der Vorlage unter 'kmuhelper/emails/'.",
+                max_length=50,
+                verbose_name="Dateiname der Vorlage",
+            ),
         ),
     ]

@@ -5,14 +5,15 @@
         {% if change %}{% if not is_popup %}
             {% block object-tools-items %}
                 {% if original.woocommerceid %}
-                    <li><a href="{% url 'kmuhelper:wc-update-customer' object_id %}">Von WooCommerce importieren und ersetzen</a></li>
+                    <li><a href="{% url 'kmuhelper:wc-update-customer' object_id %}">Von WooCommerce importieren und
+                        ersetzen</a></li>
                 {% endif %}
 
                 {% if perms.kmuhelper.view_email or perms.kmuhelper.add_email %}
                     {% load kmuhelper_tags %}
                     {% kmuhelper_email_show_buttons as show_email_buttons %}
                     {% if show_email_buttons %}
-                        
+
                         <li class="dropdown">
                             <a href="#">E-Mails</a>
                             <div>
@@ -20,15 +21,18 @@
                                 <hr>
 
                                 {% if perms.kmuhelper.view_emailtemplate and perms.kmuhelper.add_email %}
-                                    <a href="{% url 'admin:kmuhelper_emailtemplate_savevars' %}?{{ original.to_query_string }}">Zu E-Mail-Vorlage</a>
+                                    <a href="{% url 'admin:kmuhelper_emailtemplate_savevars' %}?{{ original.to_query_string }}">Zu
+                                        E-Mail-Vorlage</a>
                                 {% endif %}
                                 <hr>
                                 {% if original.email %}
                                     {% if original.email_link_registered and perms.kmuhelper.view_email %}
-                                        <a href="{% url 'admin:kmuhelper_email_change' original.email_link_registered.pk %}">Registrierungsemail ansehen</a>
+                                        <a href="{% url 'admin:kmuhelper_email_change' original.email_link_registered.pk %}">Registrierungsemail
+                                            ansehen</a>
                                     {% endif %}
                                     {% if perms.kmuhelper.add_email and perms.kmuhelper.change_customer %}
-                                        <a href="{% url 'admin:kmuhelper_customer_email_registered' object_id %}">Registrierungsemail generieren</a>
+                                        <a href="{% url 'admin:kmuhelper_customer_email_registered' object_id %}">Registrierungsemail
+                                            generieren</a>
                                     {% endif %}
                                 {% else %}
                                     <a href="" class="disabled">Registrierungsemail</a>
@@ -44,19 +48,20 @@
         {% endif %}{% endif %}
 
         {% if has_change_permission %}
-            <li><a href="#id_addr_shipping_first_name" onclick="copyform();">Rechnungsadresse -&gt; Lieferadresse</a></li>
+            <li><a href="#id_addr_shipping_first_name" onclick="copyform();">Rechnungsadresse -&gt; Lieferadresse</a>
+            </li>
             <script>
-            function copyform(){
-                document.getElementById("id_addr_shipping_first_name").value = document.getElementById("id_addr_billing_first_name").value;
-                document.getElementById("id_addr_shipping_last_name").value = document.getElementById("id_addr_billing_last_name").value;
-                document.getElementById("id_addr_shipping_company").value = document.getElementById("id_addr_billing_company").value;
-                document.getElementById("id_addr_shipping_address_1").value = document.getElementById("id_addr_billing_address_1").value;
-                document.getElementById("id_addr_shipping_address_2").value = document.getElementById("id_addr_billing_address_2").value;
-                document.getElementById("id_addr_shipping_city").value = document.getElementById("id_addr_billing_city").value;
-                document.getElementById("id_addr_shipping_state").value = document.getElementById("id_addr_billing_state").value;
-                document.getElementById("id_addr_shipping_postcode").value = document.getElementById("id_addr_billing_postcode").value;
-                document.getElementById("id_addr_shipping_country").value = document.getElementById("id_addr_billing_country").value;
-            }
+                function copyform() {
+                    document.getElementById("id_addr_shipping_first_name").value = document.getElementById("id_addr_billing_first_name").value;
+                    document.getElementById("id_addr_shipping_last_name").value = document.getElementById("id_addr_billing_last_name").value;
+                    document.getElementById("id_addr_shipping_company").value = document.getElementById("id_addr_billing_company").value;
+                    document.getElementById("id_addr_shipping_address_1").value = document.getElementById("id_addr_billing_address_1").value;
+                    document.getElementById("id_addr_shipping_address_2").value = document.getElementById("id_addr_billing_address_2").value;
+                    document.getElementById("id_addr_shipping_city").value = document.getElementById("id_addr_billing_city").value;
+                    document.getElementById("id_addr_shipping_state").value = document.getElementById("id_addr_billing_state").value;
+                    document.getElementById("id_addr_shipping_postcode").value = document.getElementById("id_addr_billing_postcode").value;
+                    document.getElementById("id_addr_shipping_country").value = document.getElementById("id_addr_billing_country").value;
+                }
             </script>
         {% endif %}
     </ul>

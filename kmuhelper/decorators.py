@@ -3,8 +3,8 @@ from functools import wraps
 from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test, PermissionDenied
 from django.http import Http404
-from django.urls import reverse
 from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.utils.translation import gettext
 
 import kmuhelper.modules.config as config
@@ -12,8 +12,9 @@ from kmuhelper.utils import render_error
 
 _ = gettext
 
+
 def confirm_action(action_message):
-    """Decorator to show a confirm page where the user has to 
+    """Decorator to show a confirm page where the user has to
     confirm an action before executing it."""
 
     def decorator(function):
@@ -21,12 +22,22 @@ def confirm_action(action_message):
         def wrap(request, *args, **kwargs):
             if request.method == "POST":
                 return function(request, *args, **kwargs)
-            return render(request, "admin/kmuhelper/_confirm.html", {"action": action_message})
+            return render(
+                request, "admin/kmuhelper/_confirm.html", {"action": action_message}
+            )
+
         return wrap
+
     return decorator
 
 
-def require_object(model, redirect_url=None, raise_404=False, show_errorpage=False, custom_response=None):
+def require_object(
+    model,
+    redirect_url=None,
+    raise_404=False,
+    show_errorpage=False,
+    custom_response=None,
+):
     """Decorator to only call the view if an object with the given id exists
     and automatically pass it instead of the id."""
 
@@ -41,7 +52,10 @@ def require_object(model, redirect_url=None, raise_404=False, show_errorpage=Fal
                 return custom_response
 
             messages.warning(
-                request, _("%(name)s with ID %(id)s was not found!") % {"name": model._meta.verbose_name, "id": object_id})
+                request,
+                _("%(name)s with ID %(id)s was not found!")
+                % {"name": model._meta.verbose_name, "id": object_id},
+            )
 
             if raise_404:
                 raise Http404
@@ -49,11 +63,21 @@ def require_object(model, redirect_url=None, raise_404=False, show_errorpage=Fal
             if show_errorpage:
                 return render_error(request)
 
-            return redirect(redirect_url or reverse(f"admin:{model._meta.app_label}_{model._meta.model_name}_changelist"))
+            return redirect(
+                redirect_url
+                or reverse(
+                    f"admin:{model._meta.app_label}_{model._meta.model_name}_changelist"
+                )
+            )
+
         return wrap
+
     return decorator
 
-def require_all_kmuhelper_perms(permissions_required=[], login_url=None, raise_exception=True):
+
+def require_all_kmuhelper_perms(
+    permissions_required=[], login_url=None, raise_exception=True
+):
     """
     Decorator for views that checks whether a user has ALL of the given kmuhelper
     permission enabled, redirecting to the log-in page if necessary.
@@ -67,7 +91,7 @@ def require_all_kmuhelper_perms(permissions_required=[], login_url=None, raise_e
         else:
             perms = permissions_required
 
-        perms = [f'kmuhelper.{perm}' if not '.' in perm else perm for perm in perms]
+        perms = [f"kmuhelper.{perm}" if not "." in perm else perm for perm in perms]
 
         # First check if the user has the permission (even anon users)
         if user.has_perms(perms):
@@ -96,14 +120,14 @@ def require_any_kmuhelper_perms(permissions=[], login_url=None, raise_exception=
             perms = permissions
 
         # First check if the user has any kmuhelper permission
-        if user.has_module_perms('kmuhelper'):
+        if user.has_module_perms("kmuhelper"):
             # If no permissions are given, the user has access
             if not perms:
                 return True
 
             # Check if the user has any of the given permissions
             for perm in perms:
-                if user.has_perm(f'kmuhelper.{perm}' if not '.' in perm else perm):
+                if user.has_perm(f"kmuhelper.{perm}" if not "." in perm else perm):
                     return True
 
         # In case the 403 handler should be called raise the exception

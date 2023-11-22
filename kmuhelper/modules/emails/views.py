@@ -6,7 +6,12 @@ from django.urls import reverse, reverse_lazy
 
 from django.utils.translation import gettext_lazy, gettext
 
-from kmuhelper.decorators import require_object, confirm_action, require_all_kmuhelper_perms, require_kmuhelper_module_perms
+from kmuhelper.decorators import (
+    require_object,
+    confirm_action,
+    require_all_kmuhelper_perms,
+    require_kmuhelper_module_perms,
+)
 from kmuhelper.modules.emails.models import EMail, Attachment, EMailTemplate
 from kmuhelper.utils import render_error
 import kmuhelper.modules.config as config
@@ -31,7 +36,10 @@ def email_send(request, obj):
             else:
                 messages.error(request, gettext("E-Mail konnte nicht gesendet werden!"))
         except FileNotFoundError:
-            messages.error(request, gettext("Eine Datei aus dem Anhang konnte nicht gefunden werden!"))
+            messages.error(
+                request,
+                gettext("Eine Datei aus dem Anhang konnte nicht gefunden werden!"),
+            )
     return redirect(reverse("admin:kmuhelper_email_change", args=[obj.pk]))
 
 
@@ -48,7 +56,10 @@ def email_resend(request, obj):
             else:
                 messages.error(request, gettext("E-Mail konnte nicht gesendet werden!"))
         except FileNotFoundError:
-            messages.error(request, gettext("Eine Datei aus dem Anhang konnte nicht gefunden werden!"))
+            messages.error(
+                request,
+                gettext("Eine Datei aus dem Anhang konnte nicht gefunden werden!"),
+            )
     return redirect(reverse("admin:kmuhelper_email_change", args=[obj.pk]))
 
 
@@ -71,12 +82,15 @@ def email_view(request, obj):
     token_received = request.GET.get("token", None)
     token_stored = str(obj.token)
 
-    if request.user.has_perm("kmuhelper.view_email") or (token_received == token_stored):
+    if request.user.has_perm("kmuhelper.view_email") or (
+        token_received == token_stored
+    ):
         if obj.is_valid():
             return HttpResponse(obj.render(online=True))
 
         messages.warning(
-            request, gettext("Diese E-Mail kann zurzeit leider nicht angezeigt werden."))
+            request, gettext("Diese E-Mail kann zurzeit leider nicht angezeigt werden.")
+        )
     else:
         messages.error(request, gettext("Du hast keinen Zugriff auf diese E-Mail!"))
 
@@ -108,14 +122,20 @@ def attachment_view(request, obj):
     token_received = request.GET.get("token", None)
     token_stored = str(obj.token)
 
-    if request.user.has_perm("kmuhelper.download_attachment") or (token_received == token_stored):
+    if request.user.has_perm("kmuhelper.download_attachment") or (
+        token_received == token_stored
+    ):
         download = "download" in request.GET
         try:
             return obj.get_file_response(download=download)
         except FileNotFoundError:
-            messages.error(request, gettext("Diese Datei ist leider nicht mehr verfügbar!"))
+            messages.error(
+                request, gettext("Diese Datei ist leider nicht mehr verfügbar!")
+            )
     else:
-        messages.error(request, gettext("Du hast keinen Zugriff auf diesen E-Mail-Anhang!"))
+        messages.error(
+            request, gettext("Du hast keinen Zugriff auf diesen E-Mail-Anhang!")
+        )
 
     return render_error(request)
 
@@ -132,7 +152,12 @@ def emailtemplate_savevars(request):
     request.session["emailtemplate-vars"] = data
 
     messages.success(
-        request, gettext("Folgende Daten wurden gespeichert, um die nächste Vorlage auszufüllen: %s") % data)
+        request,
+        gettext(
+            "Folgende Daten wurden gespeichert, um die nächste Vorlage auszufüllen: %s"
+        )
+        % data,
+    )
     return redirect(reverse("admin:kmuhelper_emailtemplate_changelist"))
 
 
@@ -144,8 +169,7 @@ def emailtemplate_resetvars(request):
     if "emailtemplate-vars" in request.session:
         del request.session["emailtemplate-vars"]
 
-    messages.success(
-        request, _("Gespeicherte Daten wurden gelöscht!"))
+    messages.success(request, _("Gespeicherte Daten wurden gelöscht!"))
     return redirect(reverse("admin:kmuhelper_emailtemplate_changelist"))
 
 
@@ -162,13 +186,19 @@ def emailtemplate_use(request, obj):
     mail = obj.create_mail(data)
 
     messages.success(
-        request, _("Vorlage wurde mit folgenden Daten ausgefüllt: %s") % data)
+        request, _("Vorlage wurde mit folgenden Daten ausgefüllt: %s") % data
+    )
     return redirect(reverse("admin:kmuhelper_email_change", args=[mail.pk]))
 
 
 # Custom fake admin
 
+
 @login_required(login_url=reverse_lazy("kmuhelper:login"))
-@require_kmuhelper_module_perms('emails')
+@require_kmuhelper_module_perms("emails")
 def email_index(request):
-    return render(request, 'admin/kmuhelper/_special/emails/app_index.html', config.get_module_home_context(request, 'emails'))
+    return render(
+        request,
+        "admin/kmuhelper/_special/emails/app_index.html",
+        config.get_module_home_context(request, "emails"),
+    )

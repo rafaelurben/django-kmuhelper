@@ -16,5 +16,12 @@ admin.site.site_url = None
 
 modeladmins = []
 
-for adminclass in [apiadmin, emailadmin, mainadmin, appadmin, settingsadmin, paymentimportadmin]:
+for adminclass in [
+    apiadmin,
+    emailadmin,
+    mainadmin,
+    appadmin,
+    settingsadmin,
+    paymentimportadmin,
+]:
     modeladmins.extend(adminclass.modeladmins)

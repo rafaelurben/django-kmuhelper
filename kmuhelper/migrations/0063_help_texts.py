@@ -5,60 +5,100 @@ import kmuhelper.external.multi_email_field.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0062_email_text'),
+        ("kmuhelper", "0062_email_text"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='email',
-            name='bcc',
-            field=kmuhelper.external.multi_email_field.fields.MultiEmailField(blank=True, default='', help_text='Blindkopie', verbose_name='BCC'),
+            model_name="email",
+            name="bcc",
+            field=kmuhelper.external.multi_email_field.fields.MultiEmailField(
+                blank=True, default="", help_text="Blindkopie", verbose_name="BCC"
+            ),
         ),
         migrations.AlterField(
-            model_name='email',
-            name='cc',
-            field=kmuhelper.external.multi_email_field.fields.MultiEmailField(blank=True, default='', help_text='Kopie', verbose_name='CC'),
+            model_name="email",
+            name="cc",
+            field=kmuhelper.external.multi_email_field.fields.MultiEmailField(
+                blank=True, default="", help_text="Kopie", verbose_name="CC"
+            ),
         ),
         migrations.AlterField(
-            model_name='email',
-            name='html_context',
-            field=models.JSONField(blank=True, default=dict, help_text='Daten im JSON-Format, mit welchen die Designvorlage befüllt wird.', null=True, verbose_name='Daten'),
+            model_name="email",
+            name="html_context",
+            field=models.JSONField(
+                blank=True,
+                default=dict,
+                help_text="Daten im JSON-Format, mit welchen die Designvorlage befüllt wird.",
+                null=True,
+                verbose_name="Daten",
+            ),
         ),
         migrations.AlterField(
-            model_name='email',
-            name='html_template',
-            field=models.CharField(default='default.html', help_text="Dateiname der Designvorlage unter 'kmuhelper/emails/'.", max_length=50, verbose_name='Designvorlage'),
+            model_name="email",
+            name="html_template",
+            field=models.CharField(
+                default="default.html",
+                help_text="Dateiname der Designvorlage unter 'kmuhelper/emails/'.",
+                max_length=50,
+                verbose_name="Designvorlage",
+            ),
         ),
         migrations.AlterField(
-            model_name='email',
-            name='notes',
-            field=models.TextField(blank=True, default='', help_text='Diese Notizen haben keine Einwirkung auf die E-Mail selbst.', verbose_name='Notizen'),
+            model_name="email",
+            name="notes",
+            field=models.TextField(
+                blank=True,
+                default="",
+                help_text="Diese Notizen haben keine Einwirkung auf die E-Mail selbst.",
+                verbose_name="Notizen",
+            ),
         ),
         migrations.AlterField(
-            model_name='email',
-            name='subject',
-            field=models.CharField(help_text='Wird Standardmässig auch als Untertitel verwendet.', max_length=50, verbose_name='Betreff'),
+            model_name="email",
+            name="subject",
+            field=models.CharField(
+                help_text="Wird Standardmässig auch als Untertitel verwendet.",
+                max_length=50,
+                verbose_name="Betreff",
+            ),
         ),
         migrations.AlterField(
-            model_name='email',
-            name='text',
-            field=models.TextField(blank=True, default='', help_text='Hauptinhalt - wird nicht von allen Designvorlagen verwendet. Links und E-Mail Adressen werden automatisch verlinkt.', verbose_name='Text'),
+            model_name="email",
+            name="text",
+            field=models.TextField(
+                blank=True,
+                default="",
+                help_text="Hauptinhalt - wird nicht von allen Designvorlagen verwendet. Links und E-Mail Adressen werden automatisch verlinkt.",
+                verbose_name="Text",
+            ),
         ),
         migrations.AlterField(
-            model_name='email',
-            name='time_created',
-            field=models.DateTimeField(auto_now_add=True, help_text='Datum und Zeit der Erstellung dieser E-Mail.', verbose_name='Erstellt am'),
+            model_name="email",
+            name="time_created",
+            field=models.DateTimeField(
+                auto_now_add=True,
+                help_text="Datum und Zeit der Erstellung dieser E-Mail.",
+                verbose_name="Erstellt am",
+            ),
         ),
         migrations.AlterField(
-            model_name='email',
-            name='time_sent',
-            field=models.DateTimeField(blank=True, default=None, help_text='Datum und Zeit des letzten erfolgreichen Sendeversuches.', null=True, verbose_name='Gesendet um'),
+            model_name="email",
+            name="time_sent",
+            field=models.DateTimeField(
+                blank=True,
+                default=None,
+                help_text="Datum und Zeit des letzten erfolgreichen Sendeversuches.",
+                null=True,
+                verbose_name="Gesendet um",
+            ),
         ),
         migrations.AlterField(
-            model_name='email',
-            name='to',
-            field=kmuhelper.external.multi_email_field.fields.MultiEmailField(default=[], help_text='Direkte Empfänger', verbose_name='Empfänger'),
+            model_name="email",
+            name="to",
+            field=kmuhelper.external.multi_email_field.fields.MultiEmailField(
+                default=[], help_text="Direkte Empfänger", verbose_name="Empfänger"
+            ),
         ),
     ]

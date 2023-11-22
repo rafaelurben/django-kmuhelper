@@ -9,10 +9,20 @@ from django.utils.translation import pgettext
 from kmuhelper.utils import formatprice
 import kmuhelper.modules.main.models as models
 
+
 class QRInvoiceFlowable(Flowable):
     "A Flowable that draws a Swiss QR-Invoice."
 
-    def __init__(self, total, address, payment_receiver, billing_information, qr_refernce_number="", unstructured_message="", add_cut_info=True):
+    def __init__(
+        self,
+        total,
+        address,
+        payment_receiver,
+        billing_information,
+        qr_refernce_number="",
+        unstructured_message="",
+        add_cut_info=True,
+    ):
         self.width = 210
         self.height = 110
         self._fixedWidth = 210
@@ -49,16 +59,16 @@ class QRInvoiceFlowable(Flowable):
     def debug(self):
         c = self.canv
         c.setStrokeColor("green")
-        c.rect(5*mm, 5*mm, 52*mm, 95*mm)  # Empfangsschein
-        c.rect(67*mm, 5*mm, 138*mm, 95*mm)  # Zahlteil
-        c.rect(67*mm, 42*mm, 46*mm, 46*mm)  # QR-Code
-        c.line(5*mm, 23*mm, 57*mm, 23*mm)
-        c.line(5*mm, 37*mm, 57*mm, 37*mm)
-        c.line(5*mm, 93*mm, 57*mm, 93*mm)
-        c.line(67*mm, 93*mm, 118*mm, 93*mm)
-        c.line(67*mm, 37*mm, 118*mm, 37*mm)
-        c.line(67*mm, 15*mm, 205*mm, 15*mm)
-        c.line(118*mm, 100*mm, 118*mm, 15*mm)
+        c.rect(5 * mm, 5 * mm, 52 * mm, 95 * mm)  # Empfangsschein
+        c.rect(67 * mm, 5 * mm, 138 * mm, 95 * mm)  # Zahlteil
+        c.rect(67 * mm, 42 * mm, 46 * mm, 46 * mm)  # QR-Code
+        c.line(5 * mm, 23 * mm, 57 * mm, 23 * mm)
+        c.line(5 * mm, 37 * mm, 57 * mm, 37 * mm)
+        c.line(5 * mm, 93 * mm, 57 * mm, 93 * mm)
+        c.line(67 * mm, 93 * mm, 118 * mm, 93 * mm)
+        c.line(67 * mm, 37 * mm, 118 * mm, 37 * mm)
+        c.line(67 * mm, 15 * mm, 205 * mm, 15 * mm)
+        c.line(118 * mm, 100 * mm, 118 * mm, 15 * mm)
         c.setStrokeColor("black")
 
     def get_swiss_qr_payload(self):
@@ -130,7 +140,7 @@ class QRInvoiceFlowable(Flowable):
         # - - StrtNmOrAdrLine1
         ln(addr["address_1"])
         # - - BldgNbOrAdrLine2
-        ln(addr["postcode"]+" "+addr["city"])
+        ln(addr["postcode"] + " " + addr["city"])
         # - - PstCd
         ln()
         # - - TwnNm
@@ -180,18 +190,21 @@ class QRInvoiceFlowable(Flowable):
         qrwidth = qrbounds[2] - qrbounds[0]
         qrheight = qrbounds[3] - qrbounds[1]
         d = Drawing(
-            52.2*mm, 52.2*mm, transform=[52.2*mm/qrwidth, 0, 0, 52.2*mm/qrheight, 0, 0])  # 46, 46
+            52.2 * mm,
+            52.2 * mm,
+            transform=[52.2 * mm / qrwidth, 0, 0, 52.2 * mm / qrheight, 0, 0],
+        )  # 46, 46
         d.add(qr_code)
-        renderPDF.draw(d, c, 63.9*mm, 38.9*mm)  # 67, 42
+        renderPDF.draw(d, c, 63.9 * mm, 38.9 * mm)  # 67, 42
 
         # Schweizerkreuz
 
         c.setFillColor("black")
         c.setStrokeColor("white")
-        c.rect(86.5*mm, 61.5*mm, 7*mm, 7*mm, fill=1, stroke=1)
+        c.rect(86.5 * mm, 61.5 * mm, 7 * mm, 7 * mm, fill=1, stroke=1)
         c.setFillColor("white")
-        c.rect(89.25*mm, 63*mm, 1.5*mm, 4*mm, fill=1, stroke=0)
-        c.rect(88*mm, 64.25*mm, 4*mm, 1.5*mm, fill=1, stroke=0)
+        c.rect(89.25 * mm, 63 * mm, 1.5 * mm, 4 * mm, fill=1, stroke=0)
+        c.rect(88 * mm, 64.25 * mm, 4 * mm, 1.5 * mm, fill=1, stroke=0)
 
         c.setFillColor("black")
         c.setStrokeColor("black")
@@ -199,11 +212,17 @@ class QRInvoiceFlowable(Flowable):
         # Begrenzungen Empfangsschein und Zahlteil und Abzutrennen-Hinweis
 
         if self.add_cut_info:
-            c.line(0*mm, 105*mm, 210*mm, 105*mm)
-            c.line(62*mm, 0*mm, 62*mm, 105*mm)
+            c.line(0 * mm, 105 * mm, 210 * mm, 105 * mm)
+            c.line(62 * mm, 0 * mm, 62 * mm, 105 * mm)
             c.setFont("Helvetica-Bold", 8)
             c.drawCentredString(
-                105*mm, 107*mm, pgettext('QR-Invoice / fixed by SIX group style guide', "Vor der Einzahlung abzutrennen"))
+                105 * mm,
+                107 * mm,
+                pgettext(
+                    "QR-Invoice / fixed by SIX group style guide",
+                    "Vor der Einzahlung abzutrennen",
+                ),
+            )
 
         # Titel
 
@@ -214,36 +233,63 @@ class QRInvoiceFlowable(Flowable):
             t.setFont("Helvetica", 8 if klein else 10)
 
         # Empfangsschein Angaben
-        t = c.beginText(5*mm, 90*mm)
-        titel(t, pgettext('QR-Invoice / fixed by SIX group style guide', "Konto / Zahlbar an"), True)
+        t = c.beginText(5 * mm, 90 * mm)
+        titel(
+            t,
+            pgettext(
+                "QR-Invoice / fixed by SIX group style guide", "Konto / Zahlbar an"
+            ),
+            True,
+        )
         t.textLine(recv.qriban if recv.mode == "QRR" else recv.iban)
         t.textLine(recv.invoice_name)
         t.textLine(recv.invoice_address_1)
         t.textLine(recv.invoice_address_2)
         t.moveCursor(0, 9)
         if recv.mode == "QRR":
-            titel(t, pgettext('QR-Invoice / fixed by SIX group style guide', "Referenz"), True)
+            titel(
+                t,
+                pgettext("QR-Invoice / fixed by SIX group style guide", "Referenz"),
+                True,
+            )
             t.textLine(ref)
             t.moveCursor(0, 9)
-        titel(t, pgettext('QR-Invoice / fixed by SIX group style guide', "Zahlbar durch"), True)
+        titel(
+            t,
+            pgettext("QR-Invoice / fixed by SIX group style guide", "Zahlbar durch"),
+            True,
+        )
         t.textLine(addr["company"] or f"{addr['first_name']} {addr['last_name']}")
         t.textLine(addr["address_1"])
         t.textLine(f"{addr['postcode']} {addr['city']}")
         c.drawText(t)
 
         # Zahlteil Angaben
-        t = c.beginText(118*mm, 97*mm)
-        titel(t, pgettext('QR-Invoice / fixed by SIX group style guide', "Konto / Zahlbar an"))
+        t = c.beginText(118 * mm, 97 * mm)
+        titel(
+            t,
+            pgettext(
+                "QR-Invoice / fixed by SIX group style guide", "Konto / Zahlbar an"
+            ),
+        )
         t.textLine(recv.qriban if recv.mode == "QRR" else recv.iban)
         t.textLine(recv.invoice_name)
         t.textLine(recv.invoice_address_1)
         t.textLine(recv.invoice_address_2)
         t.moveCursor(0, 9)
         if recv.mode == "QRR":
-            titel(t, pgettext('QR-Invoice / fixed by SIX group style guide', "Referenz"))
+            titel(
+                t, pgettext("QR-Invoice / fixed by SIX group style guide", "Referenz")
+            )
             t.textLine(ref)
             t.moveCursor(0, 9)
-        titel(t, pgettext('QR-Invoice / fixed by SIX group style guide', "Zusätzliche Informationen"))
+        titel(
+            t,
+            pgettext(
+                "QR-Invoice / fixed by SIX group style guide",
+                "Zusätzliche Informationen",
+            ),
+        )
         t.textLine(self.unstructured_message)
         # Note: The billing information was originally printed on the
         #       invoice but is now exclusively included in the QR code.
@@ -251,7 +297,9 @@ class QRInvoiceFlowable(Flowable):
         # t.textLine(billing_info[:len(billing_info)//2)
         # t.textLine(billing_info[len(billing_info)//2:])
         t.moveCursor(0, 9)
-        titel(t, pgettext('QR-Invoice / fixed by SIX group style guide', "Zahlbar durch"))
+        titel(
+            t, pgettext("QR-Invoice / fixed by SIX group style guide", "Zahlbar durch")
+        )
         t.textLine(addr["company"] or f"{addr['first_name']} {addr['last_name']}")
         t.textLine(addr["address_1"])
         t.textLine(f"{addr['postcode']} {addr['city']}")
@@ -259,25 +307,53 @@ class QRInvoiceFlowable(Flowable):
 
         # Texte
         c.setFont("Helvetica-Bold", 11)
-        c.drawString(5*mm, 97*mm, pgettext('QR-Invoice / fixed by SIX group style guide', "Empfangsschein"))
-        c.drawString(67*mm, 97*mm, pgettext('QR-Invoice / fixed by SIX group style guide', "Zahlteil"))
+        c.drawString(
+            5 * mm,
+            97 * mm,
+            pgettext("QR-Invoice / fixed by SIX group style guide", "Empfangsschein"),
+        )
+        c.drawString(
+            67 * mm,
+            97 * mm,
+            pgettext("QR-Invoice / fixed by SIX group style guide", "Zahlteil"),
+        )
 
         c.setFont("Helvetica-Bold", 6)
-        c.drawString(5*mm, 33*mm, pgettext('QR-Invoice / fixed by SIX group style guide', "Währung"))
-        c.drawString(20*mm, 33*mm, pgettext('QR-Invoice / fixed by SIX group style guide', "Betrag"))
-        c.drawString(38*mm, 20*mm, pgettext('QR-Invoice / fixed by SIX group style guide', "Annahmestelle"))
+        c.drawString(
+            5 * mm,
+            33 * mm,
+            pgettext("QR-Invoice / fixed by SIX group style guide", "Währung"),
+        )
+        c.drawString(
+            20 * mm,
+            33 * mm,
+            pgettext("QR-Invoice / fixed by SIX group style guide", "Betrag"),
+        )
+        c.drawString(
+            38 * mm,
+            20 * mm,
+            pgettext("QR-Invoice / fixed by SIX group style guide", "Annahmestelle"),
+        )
 
         c.setFont("Helvetica", 8)
-        c.drawString(5*mm, 30*mm, "CHF")
-        c.drawString(20*mm, 30*mm, total)
+        c.drawString(5 * mm, 30 * mm, "CHF")
+        c.drawString(20 * mm, 30 * mm, total)
 
         c.setFont("Helvetica-Bold", 8)
-        c.drawString(67*mm, 33*mm, pgettext('QR-Invoice / fixed by SIX group style guide', "Währung"))
-        c.drawString(87*mm, 33*mm, pgettext('QR-Invoice / fixed by SIX group style guide', "Betrag"))
+        c.drawString(
+            67 * mm,
+            33 * mm,
+            pgettext("QR-Invoice / fixed by SIX group style guide", "Währung"),
+        )
+        c.drawString(
+            87 * mm,
+            33 * mm,
+            pgettext("QR-Invoice / fixed by SIX group style guide", "Betrag"),
+        )
 
         c.setFont("Helvetica", 10)
-        c.drawString(67*mm, 29*mm, "CHF")
-        c.drawString(87*mm, 29*mm, total)
+        c.drawString(67 * mm, 29 * mm, "CHF")
+        c.drawString(87 * mm, 29 * mm, total)
 
         # c.setFont("Helvetica-Bold", 7)
         # c.drawString(67*mm, 11*mm, "Name AV1:")
@@ -293,5 +369,5 @@ class QRInvoiceFlowable(Flowable):
         c.restoreState()
 
     def draw(self):
-        self.canv.translate(-12*mm, -12*mm)
+        self.canv.translate(-12 * mm, -12 * mm)
         self.draw_qr_invoice()

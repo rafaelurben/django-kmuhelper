@@ -4,25 +4,38 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0016_auto_20200627_1641'),
+        ("kmuhelper", "0016_auto_20200627_1641"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ToDoEntry',
+            name="ToDoEntry",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=50, verbose_name='Name')),
-                ('beschrieb', models.TextField(verbose_name='Beschrieb')),
-                ('erledigt', models.BooleanField(default=False, verbose_name='Erledigt')),
-                ('priority', models.IntegerField(default=0, verbose_name='Priorität')),
-                ('erstellt_am', models.DateTimeField(auto_now_add=True, verbose_name='Erstellt am')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=50, verbose_name="Name")),
+                ("beschrieb", models.TextField(verbose_name="Beschrieb")),
+                (
+                    "erledigt",
+                    models.BooleanField(default=False, verbose_name="Erledigt"),
+                ),
+                ("priority", models.IntegerField(default=0, verbose_name="Priorität")),
+                (
+                    "erstellt_am",
+                    models.DateTimeField(auto_now_add=True, verbose_name="Erstellt am"),
+                ),
             ],
             options={
-                'verbose_name': 'ToDo-Eintrag',
-                'verbose_name_plural': 'ToDo-Einträge',
+                "verbose_name": "ToDo-Eintrag",
+                "verbose_name_plural": "ToDo-Einträge",
             },
         ),
     ]

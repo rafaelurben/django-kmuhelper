@@ -5,20 +5,36 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0066_auto_20210414_2213'),
+        ("kmuhelper", "0066_auto_20210414_2213"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='bestellung',
-            name='rechnungsadresse_adresszeile1',
-            field=models.CharField(blank=True, default='', help_text="Strasse und Hausnummer oder 'Postfach' ohne Nummer - Wird bei QR-Rechnung als Strasse und Hausnummer bzw. Postfach verwendet!", max_length=50, verbose_name='Adresszeile 1'),
+            model_name="bestellung",
+            name="rechnungsadresse_adresszeile1",
+            field=models.CharField(
+                blank=True,
+                default="",
+                help_text="Strasse und Hausnummer oder 'Postfach' ohne Nummer - Wird bei QR-Rechnung als Strasse und Hausnummer bzw. Postfach verwendet!",
+                max_length=50,
+                verbose_name="Adresszeile 1",
+            ),
         ),
         migrations.AlterField(
-            model_name='bestellung',
-            name='zahlungskonditionen',
-            field=models.CharField(default='0:30', help_text="Skonto und Zahlfrist nach Syntaxdefinition von Swico. z.B. '2:15;0:30'", max_length=16, validators=[django.core.validators.RegexValidator('^[0-9]+:[0-9]+(;[0-9]+:[0-9]+)*$', "Bitte benutze folgendes Format: 'p:d;p:d' - p = Skonto in %; d = Tage")], verbose_name='Zahlungskonditionen'),
+            model_name="bestellung",
+            name="zahlungskonditionen",
+            field=models.CharField(
+                default="0:30",
+                help_text="Skonto und Zahlfrist nach Syntaxdefinition von Swico. z.B. '2:15;0:30'",
+                max_length=16,
+                validators=[
+                    django.core.validators.RegexValidator(
+                        "^[0-9]+:[0-9]+(;[0-9]+:[0-9]+)*$",
+                        "Bitte benutze folgendes Format: 'p:d;p:d' - p = Skonto in %; d = Tage",
+                    )
+                ],
+                verbose_name="Zahlungskonditionen",
+            ),
         ),
     ]

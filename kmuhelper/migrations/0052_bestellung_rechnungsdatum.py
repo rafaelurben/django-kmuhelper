@@ -4,15 +4,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0051_apikey'),
+        ("kmuhelper", "0051_apikey"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='bestellung',
-            name='rechnungsdatum',
-            field=models.DateField(blank=True, default=None, null=True, verbose_name='Rechnungsdatum'),
+            model_name="bestellung",
+            name="rechnungsdatum",
+            field=models.DateField(
+                blank=True, default=None, null=True, verbose_name="Rechnungsdatum"
+            ),
         ),
     ]

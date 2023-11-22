@@ -1,26 +1,25 @@
 import uuid
 
-from rich import print
-
-from django.db import models
 from django.contrib import admin, messages
 from django.core import mail
 from django.core.files import storage
+from django.db import models
 from django.http import FileResponse
+from django.template import TemplateDoesNotExist, TemplateSyntaxError
+from django.template.loader import get_template
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.html import format_html
-from django.template import TemplateDoesNotExist, TemplateSyntaxError
-from django.template.loader import get_template
 from django.utils.translation import gettext_lazy, gettext
-
-from kmuhelper.external.multi_email_field.fields import MultiEmailField
+from rich import print
 
 from kmuhelper import settings, constants
+from kmuhelper.external.multi_email_field.fields import MultiEmailField
 from kmuhelper.overrides import CustomModel
 from kmuhelper.translations import Language
 
 _ = gettext_lazy
+
 
 def log(string, *args):
     print("[deep_pink4][KMUHelper E-Mails][/] -", string, *args)
@@ -30,8 +29,7 @@ def log(string, *args):
 
 
 def getfilepath(instance, filename):
-    return 'attachments/' + \
-        timezone.now().strftime('%Y-%m-%d_%H-%M-%S_') + filename
+    return "attachments/" + timezone.now().strftime("%Y-%m-%d_%H-%M-%S_") + filename
 
 
 class AttachmentManager(models.Manager):
@@ -91,20 +89,22 @@ class Attachment(CustomModel):
     def get_file_response(self, download=False):
         """Get this attachment as a file response"""
 
-        return FileResponse(storage.default_storage.open(self.file.path, 'rb'),
-                            as_attachment=download, filename=self.filename)
+        return FileResponse(
+            storage.default_storage.open(self.file.path, "rb"),
+            as_attachment=download,
+            filename=self.filename,
+        )
 
     def get_url(self):
         """Get the public view online URL"""
 
-        path = reverse("kmuhelper:attachment-view",
-                       kwargs={"object_id": self.pk})
-        return path+f"?token={self.token}"
+        path = reverse("kmuhelper:attachment-view", kwargs={"object_id": self.pk})
+        return path + f"?token={self.token}"
 
     class Meta:
         verbose_name = _("Anhang")
         verbose_name_plural = _("Anhänge")
-        default_permissions = ('add', 'change', 'view', 'delete', 'download')
+        default_permissions = ("add", "change", "view", "delete", "download")
 
     objects = AttachmentManager()
 
@@ -123,18 +123,18 @@ class EMailAttachment(CustomModel):
     """Model representing the connection between 'EMail' and 'Attachment'"""
 
     attachment = models.ForeignKey(
-        to='Attachment',
+        to="Attachment",
         on_delete=models.PROTECT,
         related_name="emails",
     )
     email = models.ForeignKey(
-        to='EMail',
+        to="EMail",
         on_delete=models.CASCADE,
     )
 
     @admin.display(description=_("E-Mail-Anhang"))
     def __str__(self):
-        return f'({self.email.pk}) -> {self.attachment}'
+        return f"({self.email.pk}) -> {self.attachment}"
 
     class Meta:
         verbose_name = _("E-Mail-Anhang")
@@ -186,14 +186,19 @@ class EMail(CustomModel):
         verbose_name=_("Text"),
         default="",
         blank=True,
-        help_text=_("Hauptinhalt - wird nicht von allen Designvorlagen verwendet. Links und E-Mail Adressen werden automatisch verlinkt."),
+        help_text=_(
+            "Hauptinhalt - wird nicht von allen Designvorlagen verwendet. Links und E-Mail Adressen werden "
+            "automatisch verlinkt."
+        ),
     )
     html_context = models.JSONField(
         verbose_name=_("Daten"),
         default=dict,
         blank=True,
         null=True,
-        help_text=_("Daten im JSON-Format, mit welchen die Designvorlage befüllt wird."),
+        help_text=_(
+            "Daten im JSON-Format, mit welchen die Designvorlage befüllt wird."
+        ),
     )
 
     token = models.UUIDField(
@@ -228,8 +233,8 @@ class EMail(CustomModel):
     )
 
     attachments = models.ManyToManyField(
-        to='Attachment',
-        through='EMailAttachment',
+        to="Attachment",
+        through="EMailAttachment",
     )
 
     @admin.display(description=_("E-Mail"))
@@ -255,12 +260,11 @@ class EMail(CustomModel):
         try:
             get_template(template)
         except TemplateDoesNotExist:
-            errors.append(
-                gettext("Vorlage '%s' wurde nicht gefunden.") % template
-            )
+            errors.append(gettext("Vorlage '%s' wurde nicht gefunden.") % template)
         except TemplateSyntaxError as error:
             errors.append(
-                gettext("Vorlage '%(template)s' enthält ungültige Syntax: %(error)s") % {
+                gettext("Vorlage '%(template)s' enthält ungültige Syntax: %(error)s")
+                % {
                     "template": template,
                     "error": error,
                 }
@@ -269,9 +273,7 @@ class EMail(CustomModel):
         # Check 2: Receiver
 
         if not self.to:
-            warnings.append(
-                gettext("Nachricht hat keine(n) Empfänger!")
-            )
+            warnings.append(gettext("Nachricht hat keine(n) Empfänger!"))
 
         # Add messages and return
 
@@ -291,9 +293,11 @@ class EMail(CustomModel):
         ctx = dict(self.html_context) if self.html_context is not None else {}
 
         defaultcontext = settings.get_file_setting(
-            "KMUHELPER_EMAILS_DEFAULT_CONTEXT", {})
-        signature = settings.get_db_setting("email-signature", "") or \
-            defaultcontext.get("postcontent", "")
+            "KMUHELPER_EMAILS_DEFAULT_CONTEXT", {}
+        )
+        signature = settings.get_db_setting(
+            "email-signature", ""
+        ) or defaultcontext.get("postcontent", "")
 
         data = {
             **defaultcontext,
@@ -316,7 +320,9 @@ class EMail(CustomModel):
                 context["attachments"] = list(self.attachments.all())
             else:
                 context["view_online_url"] = self.get_url_with_domain()
-            return get_template("kmuhelper/emails/"+str(self.html_template)).render(context)
+            return get_template("kmuhelper/emails/" + str(self.html_template)).render(
+                context
+            )
 
     def add_attachments(self, *attachments):
         """Add one or more Attachment objects to this EMail"""
@@ -334,7 +340,7 @@ class EMail(CustomModel):
             to=self.to.splitlines() if isinstance(self.to, str) else self.to,
             cc=self.cc.splitlines() if isinstance(self.cc, str) else self.cc,
             bcc=self.bcc.splitlines() if isinstance(self.bcc, str) else self.bcc,
-            **options
+            **options,
         )
 
         if settings.has_file_setting("KMUHELPER_LOG_EMAIL"):
@@ -343,8 +349,7 @@ class EMail(CustomModel):
         msg.content_subtype = "html"
 
         for attachment in self.attachments.all():
-            msg.attach(filename=attachment.filename,
-                       content=attachment.file.read())
+            msg.attach(filename=attachment.filename, content=attachment.file.read())
 
         success = msg.send()
 
@@ -359,9 +364,8 @@ class EMail(CustomModel):
     def get_url(self):
         """Get the public view online URL"""
 
-        path = reverse("kmuhelper:email-view",
-                       kwargs={"object_id": self.pk})
-        return path+f"?token={self.token}"
+        path = reverse("kmuhelper:email-view", kwargs={"object_id": self.pk})
+        return path + f"?token={self.token}"
 
     def get_url_with_domain(self):
         """Get the public view online URL with domain prefix"""
@@ -370,16 +374,18 @@ class EMail(CustomModel):
 
         if domain:
             url = self.get_url()
-            return domain+url
+            return domain + url
 
-        log("[orange_red1]Einstellung KMUHELPER_DOMAIN ist nicht gesetzt! " +
-            "E-Mails werden ohne 'online ansehen' Links versendet!")
+        log(
+            "[orange_red1]Einstellung KMUHELPER_DOMAIN ist nicht gesetzt! "
+            + "E-Mails werden ohne 'online ansehen' Links versendet!"
+        )
         return None
 
     class Meta:
         verbose_name = _("E-Mail")
         verbose_name_plural = _("E-Mails")
-        default_permissions = ('add', 'change', 'view', 'delete', 'send')
+        default_permissions = ("add", "change", "view", "delete", "send")
 
     objects = models.Manager()
 
@@ -439,7 +445,7 @@ class EMailTemplate(CustomModel):
 
         def parse_vars(text):
             for var in variables:
-                vartext = f'@{ var.upper() }@'
+                vartext = f"@{ var.upper() }@"
                 varcontent = variables[var]
                 text = text.replace(vartext, varcontent)
             return text

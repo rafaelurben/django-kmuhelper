@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kmuhelper', '0014_auto_20200603_0927'),
+        ("kmuhelper", "0014_auto_20200603_0927"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='bestellung',
-            name='fix_summe',
-            field=models.FloatField(default=0.0, verbose_name='Summe in CHF'),
+            model_name="bestellung",
+            name="fix_summe",
+            field=models.FloatField(default=0.0, verbose_name="Summe in CHF"),
         ),
     ]
