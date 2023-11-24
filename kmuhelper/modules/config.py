@@ -1,8 +1,8 @@
 # KMUHelper modules configuration
 
-from django.utils.translation import gettext_lazy
-from django.shortcuts import reverse
 from django.apps import apps
+from django.shortcuts import reverse
+from django.utils.translation import gettext_lazy
 
 _ = gettext_lazy
 
@@ -34,7 +34,7 @@ MODULES = {
     },
     "app": {
         "title": _("App"),
-        "viewname": "kmuhelper:app-desktop",
+        "viewname": "kmuhelper:app-index",
         "model_names": [
             "App_ToDo",
             "App_Stock",

@@ -1,65 +1,32 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
-from django.urls import reverse_lazy
-from django.views.decorators.clickjacking import (
-    xframe_options_sameorigin as allow_iframe,
-)
+from django.shortcuts import render, redirect
+from django.urls import reverse_lazy, reverse
 from django.utils.translation import gettext
 
+import kmuhelper.modules.config as config
 from kmuhelper.decorators import (
-    require_any_kmuhelper_perms,
     require_kmuhelper_module_perms,
 )
-import kmuhelper.modules.config as config
 
 _ = gettext
 
 #####
 
 
-@login_required(login_url=reverse_lazy("kmuhelper:login"))
-@require_kmuhelper_module_perms("app")
-def app_mobile_main(request):
-    return render(request, "kmuhelper/app/mobile/main.html", {})
+def app_redirect(request):
+    return redirect(reverse("kmuhelper:app-index"))
 
 
-@allow_iframe
-@login_required(login_url=reverse_lazy("kmuhelper:login"))
-@require_kmuhelper_module_perms("app")
-def app_mobile_home(request):
-    return render(
-        request,
-        "kmuhelper/app/mobile/home.html",
-        {
-            "has_permission": True,
-        },
-    )
-
-
-@allow_iframe
-@login_required(login_url=reverse_lazy("kmuhelper:login"))
-@require_kmuhelper_module_perms("app")
-def app_mobile_error(request):
-    return render(
-        request,
-        "kmuhelper/app/mobile/error.html",
-        {
-            "has_permission": True,
-        },
-    )
-
-
-def app_mobile_manifest(request):
-    response = render(request, "kmuhelper/app/mobile/manifest.webmanifest", {})
+def app_manifest(request):
+    response = render(request, "kmuhelper/app/manifest.webmanifest", {})
     response["Content-Type"] = "text/json"
     response["Service-Worker-Allowed"] = "/"
     return response
 
 
-@allow_iframe
 @login_required(login_url=reverse_lazy("kmuhelper:login"))
 @require_kmuhelper_module_perms("app")
-def app_desktop(request):
+def app_index(request):
     return render(
         request,
         "admin/kmuhelper/_special/app/app_index.html",
