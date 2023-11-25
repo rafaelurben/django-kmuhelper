@@ -1,16 +1,17 @@
 <div class="pagechooser {{ pagechooserclass }}">
     {% for group in griddata %}
-        <div class="split">
+        <div class="pagechooser-split">
             {% for elem in group %}
                 {% if not elem.hidden %}
-                    <a href="{{ elem.url }}" class="{{ elem.class }}" target="_top">
-                        <div class="center">
-                            <i class="fa-2x fa-fw {{ elem.icon }}"></i>
-                            <br><br>
-                            <h2>{{ elem.title }}</h2>
-                            {% if elem.subtitle %}
-                                <p>{{ elem.subtitle }}</p>
-                            {% endif %}
+                    <a href="{{ elem.url }}" class="pagechooser-elem {{ elem.class }}" target="_top">
+                        <div class="pagechooser-elem-inside">
+                            <i class="pagechooser-icon fa-2x fa-fw {{ elem.icon }}"></i>
+                            <div class="pagechooser-text-container">
+                                <h2>{{ elem.title }}</h2>
+                                {% if elem.subtitle %}
+                                    <p>{{ elem.subtitle }}</p>
+                                {% endif %}
+                            </div>
                         </div>
                     </a>
                 {% endif %}

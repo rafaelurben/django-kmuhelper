@@ -1,7 +1,27 @@
 /* Page chooser grid */
 
-.pagechooser a {
-    padding: 50px;
+.pagechooser {
+    --pagechooser-elem-gap: 0.7rem;
+    --pagechooser-elem-gap-small: 0.5rem;
+
+    display: flex;
+    flex-direction: column;
+    gap: var(--pagechooser-elem-gap);
+}
+
+.pagechooser .pagechooser-split {
+    display: grid;
+    gap: var(--pagechooser-elem-gap);
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.pagechooser.smallboxes .pagechooser-split {
+    gap: var(--pagechooser-elem-gap-small);
+    grid-template-columns: repeat(auto-fit, minmax(225px, 1fr));
+}
+
+.pagechooser .pagechooser-elem {
+    padding: 3rem;
     border-radius: 5px;
     display: block;
     color: white;
@@ -10,28 +30,40 @@
     text-decoration: none !important;
 }
 
-.pagechooser.smallboxes a {
-    padding: 20px;
+.pagechooser.smallboxes .pagechooser-elem {
+    padding: 1.4rem;
 }
 
-.pagechooser a:hover {
+.pagechooser .pagechooser-elem:hover {
     background-color: var(--kmuhelper-darkest);
 }
 
-.pagechooser .center {
+.pagechooser .pagechooser-elem-inside {
+    display: flex;
+    align-items: center;
     text-align: center;
+    flex-direction: column;
+    gap: 2rem;
 }
 
-.pagechooser .split {
-    display: grid;
-    grid-gap: 15px;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    margin-bottom: 1.25em;
+.pagechooser.smallboxes .pagechooser-elem-inside {
+    gap: 1.5rem;
 }
 
-.pagechooser.smallboxes .split {
-    grid-gap: 10px;
-    grid-template-columns: repeat(auto-fit, minmax(225px, 1fr));
+.pagechooser .pagechooser-icon {
+    flex-shrink: 0;
+}
+
+.pagechooser .pagechooser-text-container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: .5rem;
+}
+
+.pagechooser .pagechooser-text-container h2,
+.pagechooser .pagechooser-text-container p {
+    margin: 0;
 }
 
 .initialwidth {
@@ -39,7 +71,17 @@
 }
 
 @media screen and (max-width: 767px) {
-    .pagechooser.fullwidthmobile .split {
+    .pagechooser .pagechooser-split {
         grid-template-columns: 1fr;
+    }
+
+    .pagechooser .pagechooser-elem {
+        padding: 1.25rem 1.5rem;
+    }
+
+    .pagechooser .pagechooser-elem-inside {
+        flex-direction: row;
+        gap: 1.5rem;
+        text-align: left;
     }
 }
