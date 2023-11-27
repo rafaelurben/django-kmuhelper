@@ -1,4 +1,4 @@
-{% extends "admin/base.html" %}
+{% extends "admin/kmuhelper/base_site.html" %}
 
 {% load static %}
 
@@ -11,17 +11,10 @@
     <h1 id="site-name"><a href="{% url 'kmuhelper:home' %}">KMUHelper</a> | Fehler</h1>
 {% endblock %}
 
-{% block extrastyle %}
-    {{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{% static 'admin/kmuhelper/css/style.css' %}">
-{% endblock %}
-
 {% block extrahead %}
     {{ block.super }}
-    <link rel="shortcut icon" type="image/x-icon" href="{% static 'kmuhelper/favicon.ico' %}">
-    <link rel="apple-touch-icon" href="{% static 'kmuhelper/favicon.ico' %}">
 
-    <meta name="robots" value="noindex">
+    <meta name="robots" content="noindex">
 {% endblock %}
 
 {% block content %}

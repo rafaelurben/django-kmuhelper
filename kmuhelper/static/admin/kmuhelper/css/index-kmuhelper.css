@@ -6,3 +6,22 @@
     --link-fg: var(--kmuhelper-dark);
     --link-selected-fg: var(--kmuhelper-light);
 }
+
+#kmuhelperbutton {
+    padding: 0.5em 2em 1em;
+    border-radius: 5px;
+    display: block;
+    color: white;
+    background-color: var(--kmuhelper-dark);
+    transition-duration: 0.5s;
+    text-decoration: none !important;
+}
+
+#kmuhelperbutton:hover {
+    background-color: var(--kmuhelper-darkest);
+}
+
+#kmuhelperbutton h2 {
+    display: inline-block;
+    margin-left: 1em;
+}
