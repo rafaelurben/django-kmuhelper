@@ -7,6 +7,12 @@ html[data-theme="light"], html[data-theme="dark"], :root {
     --link-selected-fg: var(--kmuhelper-light);
 }
 
+/* Prevent the theme color to show behind the background color */
+
+body {
+    min-height: 100vh;
+}
+
 /* Help text preserve lines */
 
 form div.help {
