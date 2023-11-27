@@ -26,6 +26,7 @@ class App_ToDo(Note):
         default_permissions = []
 
     admin_title = _("ToDo-Liste")
+    admin_description = _("Unerledigten Notizen")
 
 
 class App_ShippingManager(models.Manager):
@@ -45,6 +46,7 @@ class App_Shipping(Order):
         default_permissions = []
 
     admin_title = _("Warenausgang")
+    admin_description = _("Nicht versendete Bestellungen")
     admin_icon = "fas fa-box-open"
 
 
@@ -65,6 +67,7 @@ class App_IncomingPayments(Order):
         default_permissions = []
 
     admin_title = _("Zahlungseingang")
+    admin_description = _("Nicht bezahlte Bestellungen")
     admin_icon = "fas fa-hand-holding-dollar"
 
 
@@ -86,6 +89,7 @@ class App_Stock(Product):
         default_permissions = []
 
     admin_title = _("Lagerbestand")
+    admin_description = _("Alle Produkte im Lager")
 
 
 class App_ArrivalManager(models.Manager):
@@ -105,3 +109,4 @@ class App_Arrival(Supply):
         default_permissions = []
 
     admin_title = _("Wareneingang")
+    admin_description = _("Nicht eingelagerte Lieferungen")
