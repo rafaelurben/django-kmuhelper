@@ -97,7 +97,7 @@
                 <summary>Unbekannte Zahlungen ({{ data.unknown|length }})</summary>
                 <div>
                     {% for entry in data.unknown %}
-                        {% include 'admin/kmuhelper/paymentimport/process_entry.html' with entry=entry closed=True %}
+                        {% include 'admin/kmuhelper/paymentimport/includes/process_entry.html' with entry=entry closed=True %}
                     {% endfor %}
                 </div>
             </details>
@@ -107,7 +107,7 @@
                 <summary>Zahlungen mit unbekannten Bestellungen ({{ data.notfound|length }})</summary>
                 <div>
                     {% for entry in data.notfound %}
-                        {% include 'admin/kmuhelper/paymentimport/process_entry.html' with entry=entry closed=True %}
+                        {% include 'admin/kmuhelper/paymentimport/includes/process_entry.html' with entry=entry closed=True %}
                     {% endfor %}
                 </div>
             </details>
@@ -117,7 +117,7 @@
                 <summary>Korrekte Zahlungen ({{ data.ready|length }})</summary>
                 <div>
                     {% for entry in data.ready %}
-                        {% include 'admin/kmuhelper/paymentimport/process_entry.html' with entry=entry closed=True %}
+                        {% include 'admin/kmuhelper/paymentimport/includes/process_entry.html' with entry=entry closed=True %}
                     {% endfor %}
                 </div>
             </details>
@@ -128,7 +128,7 @@
                 </summary>
                 <div>
                     {% for entry in data.alreadypaid %}
-                        {% include 'admin/kmuhelper/paymentimport/process_entry.html' with entry=entry %}
+                        {% include 'admin/kmuhelper/paymentimport/includes/process_entry.html' with entry=entry %}
                     {% endfor %}
                 </div>
             </details>
@@ -138,7 +138,7 @@
                 <summary>Unklare Zahlungen ({{ data.unclear|length }})</summary>
                 <div>
                     {% for entry in data.unclear %}
-                        {% include 'admin/kmuhelper/paymentimport/process_entry.html' with entry=entry %}
+                        {% include 'admin/kmuhelper/paymentimport/includes/process_entry.html' with entry=entry %}
                     {% endfor %}
                 </div>
             </details>

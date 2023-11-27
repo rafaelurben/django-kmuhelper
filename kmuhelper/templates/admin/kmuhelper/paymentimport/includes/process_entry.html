@@ -4,9 +4,9 @@
     </summary>
     <div>
         {% if entry.order %}
-            {% include 'admin/kmuhelper/paymentimport/process_table_order_payment.html' with order=entry.order payment=entry.payment %}
+            {% include 'admin/kmuhelper/paymentimport/includes/process_table_order_payment.html' with order=entry.order payment=entry.payment %}
         {% else %}
-            {% include 'admin/kmuhelper/paymentimport/process_table_payment.html' with payment=entry.payment %}
+            {% include 'admin/kmuhelper/paymentimport/includes/process_table_payment.html' with payment=entry.payment %}
         {% endif %}
 
         {% if entry.samecustomerorders %}
@@ -21,7 +21,7 @@
                 </summary>
                 <div>
                     {% for order in entry.samecustomerorders %}
-                        {% include 'admin/kmuhelper/paymentimport/process_table_order.html' with order=order %}
+                        {% include 'admin/kmuhelper/paymentimport/includes/process_table_order.html' with order=order %}
                     {% endfor %}
                 </div>
             </details>
@@ -35,7 +35,7 @@
                 </summary>
                 <div>
                     {% for payment in entry.relatedpayments %}
-                        {% include 'admin/kmuhelper/paymentimport/process_table_payment.html' with payment=payment %}
+                        {% include 'admin/kmuhelper/paymentimport/includes/process_table_payment.html' with payment=payment %}
                     {% endfor %}
                 </div>
             </details>

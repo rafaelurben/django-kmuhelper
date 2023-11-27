@@ -1,10 +1,7 @@
-from rich import print
-
-from django.contrib import admin, messages
+from django.contrib import admin
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
-from django.utils.html import format_html, mark_safe
-from django.utils.translation import gettext_lazy, gettext
+from django.utils.translation import gettext_lazy
 
 from kmuhelper.modules.main.models import Order
 from kmuhelper.overrides import CustomModel
@@ -102,7 +99,7 @@ class PaymentImport(CustomModel):
         verbose_name = _("Zahlungsimport")
         verbose_name_plural = _("Zahlungsimporte")
 
-    admin_icon = "fas fa-hand-holding-dollar"
+    admin_icon = "fas fa-file-import"
 
 
 class PaymentImportEntry(models.Model):

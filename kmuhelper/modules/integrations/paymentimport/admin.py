@@ -1,14 +1,13 @@
-from django.contrib import admin, messages
+from django.contrib import admin
 from django.urls import path
+from django.utils.translation import gettext_lazy
 
-from django.utils.translation import gettext_lazy, gettext
-
-from kmuhelper.overrides import CustomModelAdmin
+from kmuhelper.modules.integrations.paymentimport import views
 from kmuhelper.modules.integrations.paymentimport.models import (
     PaymentImport,
     PaymentImportEntry,
 )
-from kmuhelper.modules.integrations.paymentimport import views
+from kmuhelper.overrides import CustomModelAdmin
 
 _ = gettext_lazy
 
@@ -58,7 +57,6 @@ class PaymentImportAdmin(CustomModelAdmin):
     inlines = (PaymentImportAdminEntryInline,)
 
     save_on_top = True
-    hidden = True
 
     # Views
 

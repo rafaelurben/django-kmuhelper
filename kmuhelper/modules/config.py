@@ -21,6 +21,7 @@ MODULES = {
             "Product",
             "ProductCategory",
             "PaymentReceiver",
+            "PaymentImport",
         ],
     },
     "emails": {
