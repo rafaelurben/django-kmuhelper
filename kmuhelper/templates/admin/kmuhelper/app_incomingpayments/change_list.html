@@ -1,4 +1,4 @@
-{% extends 'admin/kmuhelper/change_list.html' %}
+{% extends 'admin/kmuhelper/order/change_list.html' %}
 
 {% load static %}
 
@@ -8,3 +8,5 @@
     {% comment %} Load the changelist save on top script {% endcomment %}
     <script src="{% static 'admin/kmuhelper/js/changelist_saveontop.js' %}"></script>
 {% endblock %}
+
+{% block unpaid_orders %}{% endblock %}

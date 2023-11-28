@@ -29,47 +29,50 @@
 
 {% block content %}
 
-    <table>
-        <thead>
-        <tr>
-            <th colspan="2">Unbezahlte Bestellungen</th>
-        </tr>
-        </thead>
-        <tbody id="unpaid">
-        <tr>
-            <td colspan="2">Wird geladen...</td>
-        </tr>
-        </tbody>
-    </table>
+    {% block unpaid_orders %}
+        <table>
+            <thead>
+            <tr>
+                <th colspan="2">Unbezahlte Bestellungen</th>
+            </tr>
+            </thead>
+            <tbody id="unpaid">
+            <tr>
+                <td colspan="2">Wird geladen...</td>
+            </tr>
+            </tbody>
+        </table>
 
-    <br>
-    <br>
-    <br>
+        <br>
+        <br>
+        <br>
 
-    <script>
-        const elem = document.getElementById("unpaid");
+        <script>
+            const elem = document.getElementById("unpaid");
 
-        try {
-            fetch("{% url 'kmuhelper:api-orders-unpaid' %}").then(res => {
-                res.json().then(json => {
-                    data = json.orders_unpaid_sum;
-                    elem.innerHTML = `
-                        <tr>
-                            <td>Versendet: </td><td style="text-align: right;">${data.sent} CHF</td>
-                        </tr>
-                        <tr>
-                            <td style="padding-right: 2em;">In Bearbeitung: </td><td style="text-align: right;">${data.unsent} CHF</td>
-                        </tr>
-                        <tr>
-                            <td>Gesamt: </td><td style="text-align: right;">${data.all} CHF</td>
-                        </tr>
-                    `;
+            try {
+                fetch("{% url 'kmuhelper:api-orders-unpaid' %}").then(res => {
+                    res.json().then(json => {
+                        data = json.orders_unpaid_sum;
+                        elem.innerHTML = `
+                            <tr>
+                                <td>Versendet: </td><td style="text-align: right;">${data.sent} CHF</td>
+                            </tr>
+                            <tr>
+                                <td style="padding-right: 2em;">In Bearbeitung: </td><td style="text-align: right;">${data.unsent} CHF</td>
+                            </tr>
+                            <tr>
+                                <td>Gesamt: </td><td style="text-align: right;">${data.all} CHF</td>
+                            </tr>
+                        `;
+                    });
                 });
-            });
-        } catch (e) {
-            unpaid.firstChild().innerHTML = "<tr><td colspan='2'>Konnte nicht geladen werden!</td></tr>"
-        }
-    </script>
+            } catch (e) {
+                unpaid.firstChild().innerHTML = "<tr><td colspan='2'>Konnte nicht geladen werden!</td></tr>"
+            }
+        </script>
+
+    {% endblock %}
 
     {{ block.super }}
 
