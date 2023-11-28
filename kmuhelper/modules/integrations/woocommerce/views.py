@@ -1,17 +1,15 @@
 import json
-
-from urllib.parse import urlencode
 from random import randint
-from rich import print
+from urllib.parse import urlencode
 
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
-from django.views.decorators.csrf import csrf_exempt
-
 from django.utils.translation import gettext_lazy, gettext, ngettext
+from django.views.decorators.csrf import csrf_exempt
+from rich import print
 
 from kmuhelper import settings
 from kmuhelper.decorators import (
@@ -19,15 +17,15 @@ from kmuhelper.decorators import (
     require_all_kmuhelper_perms,
     require_any_kmuhelper_perms,
 )
-from kmuhelper.modules.main.models import Product, Customer, ProductCategory, Order
 from kmuhelper.modules.integrations.woocommerce.api import WooCommerce
+from kmuhelper.modules.integrations.woocommerce.forms import WooCommerceSettingsForm
 from kmuhelper.modules.integrations.woocommerce.utils import (
     is_connected,
     base64_hmac_sha256,
     random_secret,
     test_wc_url,
 )
-from kmuhelper.modules.integrations.woocommerce.forms import WooCommerceSettingsForm
+from kmuhelper.modules.main.models import Product, Customer, ProductCategory, Order
 from kmuhelper.utils import render_error
 
 _ = gettext_lazy
@@ -133,7 +131,8 @@ def wc_import_products(request):
                 "%d new product has been imported from WooCommerce!",
                 "%d new products have been imported from WooCommerce!",
                 count,
-            ),
+            )
+            % count,
         )
     return redirect(reverse("admin:kmuhelper_product_changelist"))
 
@@ -151,7 +150,8 @@ def wc_import_customers(request):
                 "%d new customer has been imported from WooCommerce!",
                 "%d new customers have been imported from WooCommerce!",
                 count,
-            ),
+            )
+            % count,
         )
     return redirect(reverse("admin:kmuhelper_customer_changelist"))
 
@@ -169,7 +169,8 @@ def wc_import_categories(request):
                 "%d new product category has been imported from WooCommerce!",
                 "%d new product categories have been imported from WooCommerce!",
                 count,
-            ),
+            )
+            % count,
         )
     return redirect(reverse("admin:kmuhelper_productcategory_changelist"))
 
@@ -187,7 +188,8 @@ def wc_import_orders(request):
                 "%d new order has been imported from WooCommerce!",
                 "%d new orders have been imported from WooCommerce!",
                 count,
-            ),
+            )
+            % count,
         )
     return redirect(reverse("admin:kmuhelper_order_changelist"))
 
