@@ -1,10 +1,8 @@
-from datetime import datetime
-
 from django.contrib import admin, messages
 from django.db.models import Count
 from django.urls import path
 from django.utils import timezone
-from django.utils.translation import gettext_lazy, gettext, ngettext
+from django.utils.translation import gettext_lazy, ngettext
 
 from kmuhelper import constants
 from kmuhelper.modules.integrations.woocommerce import WooCommerce
@@ -857,22 +855,22 @@ class NoteAdmin(CustomModelAdmin):
             form.base_fields["description"].initial = ""
             if "from_order" in request.GET:
                 pk = request.GET.get("from_order")
-                t = _("Bestellung #%d") % pk
+                t = _("Bestellung #%s") % pk
                 form.base_fields["name"].initial = t
                 form.base_fields["description"].initial += f"\n\n[{t}]"
             if "from_product" in request.GET:
                 pk = request.GET.get("from_product")
-                t = _("Produkt #%d") % pk
+                t = _("Produkt #%s") % pk
                 form.base_fields["name"].initial = t
                 form.base_fields["description"].initial += f"\n\n[{t}]"
             if "from_customer" in request.GET:
                 pk = request.GET.get("from_customer")
-                t = _("Kunde #%d") % pk
+                t = _("Kunde #%s") % pk
                 form.base_fields["name"].initial = t
                 form.base_fields["description"].initial += f"\n\n[{t}]"
             if "from_supply" in request.GET:
                 pk = request.GET.get("from_supply")
-                t = _("Lieferung #%d") % pk
+                t = _("Lieferung #%s") % pk
                 form.base_fields["name"].initial = t
                 form.base_fields["description"].initial += f"\n\n[{t}]"
         return form
