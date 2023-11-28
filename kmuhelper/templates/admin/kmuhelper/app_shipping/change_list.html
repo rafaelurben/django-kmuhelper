@@ -9,4 +9,10 @@
     <script src="{% static 'admin/kmuhelper/js/changelist_saveontop.js' %}"></script>
 {% endblock %}
 
+{% block pageinfo %}
+    <p id="pageinfo">
+        <b>Verwandte Seiten:</b> <a href="{% url 'admin:kmuhelper_order_changelist' %}">Admin: Bestellungen</a>
+    </p>
+{% endblock %}
+
 {% block unpaid_orders %}{% endblock %}

@@ -1,33 +1,9 @@
 {% extends 'admin/kmuhelper/change_list.html' %}
 
-{% block object-tools-items %}
-    <!-- SweetAlert -->
-    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-    <script>
-        function laden() {
-            swal({
-                title: "Bitte warten...",
-                text: "Dieser Prozess kann unter Umständen etwas dauern.\n\nBitte versuche nicht, diesen Prozess abzubrechen!\n\nFalls du eine Fehlermeldung erhältst, lade bitte die Seite neu!\n\n(Dies könnte je nach Menge auch mehrmals der Fall sein.)",
-                icon: "info",
-                buttons: false,
-                closeOnClickOutside: false,
-                closeOnEsc: false
-            });
-        };
-    </script>
-
-    {% load kmuhelper_tags %}
-    {% kmuhelper_woocommerce_connected as woocommerce_is_connected %}
-    {% if woocommerce_is_connected and perms.kmuhelper.add_order %}
-        <li>
-            <a onclick="laden();" href="{% url 'kmuhelper:wc-import-orders' %}" class="addlink">Bestellungen von
-                WooCommerce importieren</a>
-        </li>
-    {% endif %}
-    {{ block.super }}
-{% endblock %}
-
-{% block content %}
+{% block pageinfo %}
+    <p id="pageinfo">
+        <b>Verwandte Seiten:</b> <a href="{% url 'admin:kmuhelper_app_shipping_changelist' %}">App: Warenausgang</a>, <a href="{% url 'admin:kmuhelper_app_incomingpayments_changelist' %}">App: Zahlungseingang</a>
+    </p>
 
     {% block unpaid_orders %}
         <table>
@@ -73,7 +49,31 @@
         </script>
 
     {% endblock %}
+{% endblock %}
 
+{% block object-tools-items %}
+    <!-- SweetAlert -->
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script>
+        function laden() {
+            swal({
+                title: "Bitte warten...",
+                text: "Dieser Prozess kann unter Umständen etwas dauern.\n\nBitte versuche nicht, diesen Prozess abzubrechen!\n\nFalls du eine Fehlermeldung erhältst, lade bitte die Seite neu!\n\n(Dies könnte je nach Menge auch mehrmals der Fall sein.)",
+                icon: "info",
+                buttons: false,
+                closeOnClickOutside: false,
+                closeOnEsc: false
+            });
+        };
+    </script>
+
+    {% load kmuhelper_tags %}
+    {% kmuhelper_woocommerce_connected as woocommerce_is_connected %}
+    {% if woocommerce_is_connected and perms.kmuhelper.add_order %}
+        <li>
+            <a onclick="laden();" href="{% url 'kmuhelper:wc-import-orders' %}" class="addlink">Bestellungen von
+                WooCommerce importieren</a>
+        </li>
+    {% endif %}
     {{ block.super }}
-
 {% endblock %}

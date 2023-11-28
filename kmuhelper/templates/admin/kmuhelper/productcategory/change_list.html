@@ -1,5 +1,11 @@
 {% extends 'admin/kmuhelper/change_list.html' %}
 
+{% block pageinfo %}
+    <p id="pageinfo">
+        <b>Verwandte Seiten:</b> <a href="{% url 'admin:kmuhelper_product_changelist' %}">Admin: Produktkategorien</a>
+    </p>
+{% endblock %}
+
 {% block object-tools-items %}
     <!-- SweetAlert -->
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>

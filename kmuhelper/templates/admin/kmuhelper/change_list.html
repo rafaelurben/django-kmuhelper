@@ -37,3 +37,10 @@
     {% comment %} Load the beforeunload script {% endcomment %}
     <script src="{% static 'admin/kmuhelper/js/beforeunload.js' %}" type="text/javascript"></script>
 {% endblock %}
+
+{% block content %}
+    {% block pageinfo %}
+    {% endblock %}
+
+    {{ block.super }}
+{% endblock %}

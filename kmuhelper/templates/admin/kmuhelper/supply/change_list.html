@@ -1,0 +1,8 @@
+{% extends 'admin/kmuhelper/change_list.html' %}
+
+{% block pageinfo %}
+    <p id="pageinfo">
+        <b>Verwandte Seiten:</b> <a href="{% url 'admin:kmuhelper_app_arrival_changelist' %}">App: Wareneingang</a>,
+        <a href="{% url 'admin:kmuhelper_supplier_changelist' %}">Admin: Lieferanten</a>
+    </p>
+{% endblock %}

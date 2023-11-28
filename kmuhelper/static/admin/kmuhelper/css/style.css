@@ -45,7 +45,7 @@ ul.messagelist li:not(:last-child) {
 /* Additional app index style */
 
 #pageinfo {
-    padding: 0 10px;
+    padding-bottom: 10px;
 }
 
 #pageinfo a {
