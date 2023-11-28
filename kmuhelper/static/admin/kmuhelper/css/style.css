@@ -44,21 +44,10 @@ ul.messagelist li:not(:last-child) {
 
 /* Additional app index style */
 
-#pagelist {
-    padding-left: 16px;
-}
-
-#pagelist li i {
-    width: 25px;
-    text-align: center;
-}
-
-#pagelist-container,
 #pageinfo {
     padding: 0 10px;
 }
 
-#pagelist a,
 #pageinfo a {
     border-radius: 5px;
     color: white !important;
@@ -68,7 +57,6 @@ ul.messagelist li:not(:last-child) {
     padding: 2px 6px;
 }
 
-#pagelist a:hover,
 #pageinfo a:hover {
     background-color: var(--kmuhelper-darkest);
 }
