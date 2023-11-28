@@ -29,6 +29,6 @@ def app_manifest(request):
 def app_index(request):
     return render(
         request,
-        "admin/kmuhelper/_special/app/app_index.html",
+        "admin/kmuhelper/_special/app-index.html",
         config.get_module_home_context(request, "app"),
     )

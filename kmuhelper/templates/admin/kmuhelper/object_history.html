@@ -1,10 +1,20 @@
 {% extends "admin/object_history.html" %}
-{% load static kmuhelper_tags %}
+{% load i18n admin_urls static kmuhelper_tags %}
 
 {% block title %}{{ title }} | KMUHelper{% endblock %}
 
 {% block breadcrumbs %}
-    {{ block.super | kmuhelper_breadcrumbs | safe }}
+    {% get_admin_module as module %}
+    {% get_admin_model as model %}
+
+    <div class="breadcrumbs">
+        <a href="{% url module.viewname %}">KMUHelper {{ module.title }}</a>
+        &rsaquo; <a href="{% url opts|admin_urlname:'changelist' %}">
+        {{ model.admin_title | default:opts.verbose_name_plural  }}</a>
+        &rsaquo; <a href="{% url opts|admin_urlname:'change' object.pk|admin_urlquote %}">
+        {{ object|truncatewords:"18" }}</a>
+        &rsaquo; {% translate 'History' %}
+    </div>
 {% endblock %}
 
 {% block branding %}

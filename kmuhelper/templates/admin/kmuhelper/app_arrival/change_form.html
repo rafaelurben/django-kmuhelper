@@ -1,6 +1,4 @@
-{% extends 'admin/kmuhelper/_special/app/change_form.html' %}
-
-{% block modulename %}Wareneingang{% endblock %}
+{% extends 'admin/kmuhelper/change_form.html' %}
 
 {% block object-tools-items %}
     {% if change and perms.kmuhelper.change_product and not original.is_added_to_stock %}

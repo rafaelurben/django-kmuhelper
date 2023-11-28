@@ -197,6 +197,6 @@ def emailtemplate_use(request, obj):
 def email_index(request):
     return render(
         request,
-        "admin/kmuhelper/_special/emails/app_index.html",
+        "admin/kmuhelper/_special/email-index.html",
         config.get_module_home_context(request, "emails"),
     )

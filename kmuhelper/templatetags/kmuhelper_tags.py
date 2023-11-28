@@ -36,6 +36,12 @@ def get_admin_model(context, model_name=None):
     return model
 
 
+@register.simple_tag(name="get_admin_module", takes_context=True)
+def get_admin_module(context, module_name=None):
+    model = config.get_module_from_context(context, module_name)
+    return model
+
+
 @register.simple_tag(name="kmuhelper_branding", takes_context=True)
 def kmuhelper_branding(context, module_name=None):
     module = config.get_module_from_context(context, module_name)
@@ -50,26 +56,6 @@ def kmuhelper_branding(context, module_name=None):
         url_module,
         module.get("title"),
     )
-
-
-@register.filter
-def kmuhelper_breadcrumbs(value, args=None):
-    url_admin_kmuhelper = reverse("admin:app_list", kwargs={"app_label": "kmuhelper"})
-
-    if args is None:
-        title = "KMUHelper Admin"
-        url = url_admin_kmuhelper
-    else:
-        title, viewname = args.split("|")
-        url = reverse(viewname)
-
-    value = "</a>".join(
-        value.split(f'<a href="{url_admin_kmuhelper}">')[1].split("</a>")[1::]
-    )
-    value = (
-        f'<div id="breadcrumbs" class="breadcrumbs"><a href="{url}">{title}</a>' + value
-    )
-    return value
 
 
 @register.inclusion_tag("kmuhelper/_includes/pagechooser.html", takes_context=False)
