@@ -1,14 +1,11 @@
 from django.utils.html import strip_tags
-
 from rich import print
 from rich.progress import Progress
-
 from woocommerce import API as WCAPI
 
 from kmuhelper import settings, constants
-from kmuhelper.modules.main.models import Product, Customer, ProductCategory, Order, Fee
+from kmuhelper.modules.main.models import Product, Customer, ProductCategory, Order
 from kmuhelper.utils import runden
-
 
 PREFIX = "[deep_pink4][KMUHelper WooCommerce][/] -"
 
@@ -178,7 +175,7 @@ class WooCommerce:
 
             excludeids = ",".join(
                 [
-                    obj.woocommerceid
+                    str(obj.woocommerceid)
                     for obj in Product.objects.all().exclude(woocommerceid=0)
                 ]
             )
@@ -340,12 +337,12 @@ class WooCommerce:
                 PREFIX + " [orange_red1]Preparing customer download...", total=1
             )
 
-            excludeids = str(
+            excludeids = ",".join(
                 [
-                    obj.woocommerceid
+                    str(obj.woocommerceid)
                     for obj in Customer.objects.all().exclude(woocommerceid=0)
                 ]
-            )[1:-1]
+            )
             customerlist = []
 
             progress.update(task_prepare, advance=1)
@@ -448,12 +445,12 @@ class WooCommerce:
                 PREFIX + " [orange_red1]Preparing category download...", total=1
             )
 
-            excludeids = str(
+            excludeids = ",".join(
                 [
-                    obj.woocommerceid
+                    str(obj.woocommerceid)
                     for obj in ProductCategory.objects.all().exclude(woocommerceid=0)
                 ]
-            )[1:-1]
+            )
             categorylist = []
 
             progress.update(task_prepare, advance=1)
@@ -672,12 +669,12 @@ class WooCommerce:
                 PREFIX + " [orange_red1]Preparing order download...", total=1
             )
 
-            excludeids = str(
+            excludeids = ",".join(
                 [
-                    obj.woocommerceid
+                    str(obj.woocommerceid)
                     for obj in Order.objects.all().exclude(woocommerceid=0)
                 ]
-            )[1:-1]
+            )
             orderlist = []
 
             progress.update(task_prepare, advance=1)
