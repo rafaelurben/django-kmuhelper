@@ -1,12 +1,13 @@
 {% extends 'admin/kmuhelper/change_list.html' %}
 
-{% load static kmuhelper_tags %}
+{% load i18n admin_urls static kmuhelper_tags %}
 
 {% block breadcrumbs %}
     {% get_admin_model as model %}
 
-    <div id="breadcrumbs" class="breadcrumbs">
-        <a href="{% url 'kmuhelper:app-index' %}">KMUHelper App</a> &gt; {{ model.admin_title }}
+    <div class="breadcrumbs">
+        <a href="{% url 'kmuhelper:app-index' %}">KMUHelper App</a>
+        &rsaquo; {{ model.admin_title }}
     </div>
 {% endblock %}
 

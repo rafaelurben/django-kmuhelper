@@ -7,6 +7,11 @@ from django.utils.translation import gettext_lazy
 _ = gettext_lazy
 
 MODULES = {
+    "home": {
+        "title": _("Home"),
+        "viewname": "kmuhelper:home",
+        "model_names": [],
+    },
     "main": {
         "title": _("Admin"),
         "viewname": "kmuhelper:main-index",

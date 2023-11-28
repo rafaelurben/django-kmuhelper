@@ -1,15 +1,17 @@
 {% extends 'admin/kmuhelper/change_form.html' %}
 
-{% load admin_urls kmuhelper_tags %}
+{% load i18n admin_urls kmuhelper_tags %}
 
 {% block breadcrumbs %}
     {% get_admin_model as model %}
 
-    <div id="breadcrumbs" class="breadcrumbs" style="display: block">
-        <a href="{% url 'kmuhelper:app-index' %}">KMUHelper App</a> &gt; <a
-            href="{% url opts|admin_urlname:'changelist' %}">{{ model.admin_title }}</a> &gt;
-        {% if change %}{{ original }}{% else %}{{ opts.verbose_name }} hinzufügen{% endif %}
+    <div class="breadcrumbs">
+        <a href="{% url 'kmuhelper:app-index' %}">KMUHelper App</a>
+        &rsaquo; {% if has_view_permission %}
+        <a href="{% url opts|admin_urlname:'changelist' %}">{{ model.admin_title }}</a>{% else %}
+        {{ opts.verbose_name_plural|capfirst }}{% endif %}
+        &rsaquo;
+        {% if add %}{% blocktranslate with name=opts.verbose_name %}Add {{ name }}{% endblocktranslate %}{% else %}
+            {{ original|truncatewords:"18" }}{% endif %}
     </div>
 {% endblock %}
-
-{% block object-tools %}{% endblock %}

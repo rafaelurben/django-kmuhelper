@@ -2,14 +2,22 @@
 
 {% block title %}Aktion bestätigen | KMUHelper{% endblock %}
 
+{% block branding %}
+    <h1 id="site-name"><a target="_top" href="{% url 'kmuhelper:home' %}">KMUHelper</a></h1>
+{% endblock %}
+
 {% block breadcrumbs %}
 {% endblock %}
 
 {% block content %}
-    <form method="POST">
-        {% csrf_token %}
+    <div class="delete-confirmation"> <!-- For admin styling purposes -->
+        <h1>Bist du sicher?</h1>
         <p>Bitte bestätige, dass du folgende Aktion ausführen möchtest:</p>
         <p>-&gt; <i>{{ action }}</i></p>
-        <input type="submit" value="Bestätigen"/>
-    </form>
+        <form method="POST">
+            {% csrf_token %}
+            <input type="submit" value="Bestätigen"/>
+            <a href="#" class="button cancel-link" onclick="window.history.back();">Nein, bitte abbrechen</a>
+        </form>
+    </div>
 {% endblock %}

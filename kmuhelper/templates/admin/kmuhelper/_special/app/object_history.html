@@ -1,0 +1,15 @@
+{% extends 'admin/kmuhelper/object_history.html' %}
+
+{% load i18n admin_urls kmuhelper_tags %}
+
+{% block breadcrumbs %}
+    {% get_admin_model as model %}
+
+    <div class="breadcrumbs">
+        <a href="{% url 'kmuhelper:app-index' %}">KMUHelper App</a>
+        &rsaquo; <a href="{% url opts|admin_urlname:'changelist' %}">{{ model.admin_title }}</a>
+        &rsaquo; <a href="{% url opts|admin_urlname:'change' object.pk|admin_urlquote %}">
+        {{ object|truncatewords:"18" }}</a>
+        &rsaquo; {% translate 'History' %}
+    </div>
+{% endblock %}

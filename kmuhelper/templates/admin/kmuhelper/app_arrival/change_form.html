@@ -1,3 +1,10 @@
 {% extends 'admin/kmuhelper/_special/app/change_form.html' %}
 
 {% block modulename %}Wareneingang{% endblock %}
+
+{% block object-tools-items %}
+    {% if change and perms.kmuhelper.change_product and not original.is_added_to_stock %}
+        <li><a href="{% url 'admin:kmuhelper_app_arrival_add_to_stock' object_id %}">Einlagern</a></li>
+    {% endif %}
+    {{ block.super }}
+{% endblock %}
