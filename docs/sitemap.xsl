@@ -13,7 +13,7 @@
                     Sitemap
                     <xsl:if test="sitemap:sitemapindex">Index</xsl:if>
                 </title>
-                <link rel="stylesheet" href="https://unpkg.com/tachyons@4.6.1/css/tachyons.min.css"/>
+                <link rel="stylesheet" href="https://unpkg.com/tachyons@4.6.1/css/tachyons.min.css" integrity="sha384-jwWgyVwDVprvvRk7Q+4QM85taoYehE+NVRTNHiHlTrOO/LwGoZuGt9bpyvXntChU" crossorigin="anonymous"/>
             </head>
             <body class="ph3 pb3 mid-gray">
                 <header class="mw8 pv4 center">
