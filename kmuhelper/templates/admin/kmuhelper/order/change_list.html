@@ -52,26 +52,11 @@
 {% endblock %}
 
 {% block object-tools-items %}
-    <!-- SweetAlert -->
-    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-    <script>
-        function laden() {
-            swal({
-                title: "Bitte warten...",
-                text: "Dieser Prozess kann unter Umständen etwas dauern.\n\nBitte versuche nicht, diesen Prozess abzubrechen!\n\nFalls du eine Fehlermeldung erhältst, lade bitte die Seite neu!\n\n(Dies könnte je nach Menge auch mehrmals der Fall sein.)",
-                icon: "info",
-                buttons: false,
-                closeOnClickOutside: false,
-                closeOnEsc: false
-            });
-        };
-    </script>
-
     {% load kmuhelper_tags %}
     {% kmuhelper_woocommerce_connected as woocommerce_is_connected %}
     {% if woocommerce_is_connected and perms.kmuhelper.add_order %}
         <li>
-            <a onclick="laden();" href="{% url 'kmuhelper:wc-import-orders' %}" class="addlink">Bestellungen von
+            <a onclick="woocommerce_loading_swal();" href="{% url 'kmuhelper:wc-import-orders' %}" class="addlink">Bestellungen von
                 WooCommerce importieren</a>
         </li>
     {% endif %}
