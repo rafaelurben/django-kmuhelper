@@ -1,6 +1,7 @@
 {
     "{% load static %}name": "KMUHelper",
     "short_name": "KMUHelper",
+    "id": "{{ request.build_absolute_uri }}",
     "start_url": "{% url 'kmuhelper:home' %}",
     "scope": "/",
     "display": "standalone",
@@ -9,6 +10,8 @@
     "description": "Eine App zum KMUHelper",
     "dir": "ltr",
     "lang": "de",
+    "prefer_related_applications": false,
+    "related_applications": [],
     "icons": [{
             "src": "{% static 'kmuhelper/favicon.ico' %}",
             "sizes": "16x16 32x32 64x64 128x128 256x256"
