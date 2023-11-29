@@ -8,6 +8,7 @@ from kmuhelper import views
 app_name = "kmuhelper"
 urlpatterns = [
     path("", views.home, name="home"),
+    path("manifest.json", views.manifest, name="manifest"),
     path("login", views.login, name="login"),
     # Developing tools
     path(

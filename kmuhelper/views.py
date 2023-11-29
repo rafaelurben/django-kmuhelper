@@ -77,6 +77,13 @@ def home(request):
     )
 
 
+def manifest(request):
+    response = render(request, "kmuhelper/manifest.json", {})
+    response["Content-Type"] = "text/json"
+    response["Service-Worker-Allowed"] = "/"
+    return response
+
+
 def login(request):
     search = request.GET.urlencode()
     url = settings.LOGIN_URL or reverse("admin:login")

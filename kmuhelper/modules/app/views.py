@@ -17,11 +17,8 @@ def app_redirect(request):
     return redirect(reverse("kmuhelper:app-index"))
 
 
-def app_manifest(request):
-    response = render(request, "kmuhelper/app/manifest.webmanifest", {})
-    response["Content-Type"] = "text/json"
-    response["Service-Worker-Allowed"] = "/"
-    return response
+def manifest_redirect(request):
+    return redirect(reverse("kmuhelper:manifest"))
 
 
 @login_required(login_url=reverse_lazy("kmuhelper:login"))
