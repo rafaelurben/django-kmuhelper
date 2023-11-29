@@ -4,6 +4,21 @@
 
 {% block title %}KMUHelper Statistiken{% endblock %}
 
+{% block extrahead %}
+    {% block chartjs %}
+    <!-- ChartJS https://www.chartjs.org/docs/latest/getting-started/ -->
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css"
+          integrity="sha512-/zs32ZEJh+/EO2N1b0PEdoA10JkdC3zJ8L5FTiQu82LR9S/rOQNfQN7U59U9BC12swNeRAz3HSzIL2vpp4fv3w=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"
+            integrity="sha512-60KwWtZOhzgr840mc57MV8JqDZHAws3w61mhK45KsYHmhyNFJKmfg4M7/s2Jsn4PgtQ4Uhr9xItS+HCbGTIRYQ=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    {% endblock %}
+
+    {{ block.super }}
+{% endlock %}
+
 {% block branding %}
     {% kmuhelper_branding module_name='stats' %}
 {% endblock %}
