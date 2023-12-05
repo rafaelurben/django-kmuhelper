@@ -4,7 +4,8 @@
     --primary: var(--kmuhelper-default);
     --secondary: var(--kmuhelper-darkest);
     --link-fg: var(--kmuhelper-dark);
-    --link-selected-fg: var(--kmuhelper-light);
+    --link-hover-color: var(--kmuhelper-darkest);
+    --header-bg: var(--secondary);
 }
 
 #kmuhelperbutton {

@@ -1,10 +1,34 @@
 @import "colors-kmuhelper.css";
 
+/* Colors
+- https://docs.djangoproject.com/en/dev/ref/contrib/admin/#admin-theming
+- https://github.com/django/django/blob/main/django/contrib/admin/static/admin/css/base.css
+*/
+
 html[data-theme="light"], html[data-theme="dark"], :root {
     --primary: var(--kmuhelper-default);
+    --primary-fg: #f7f7f7;
     --secondary: var(--kmuhelper-darkest);
+    --accent: var(--kmuhelper-lightest);
+
+    --header-color: #ffc;
+    --header-branding-color: var(--accent);
+    --header-bg: var(--secondary);
+    --header-link-color: var(--primary-fg);
+
+    --breadcrumbs-fg: #c4dce8;
+    --breadcrumbs-link-fg: #f7f7f7;
+    --breadcrumbs-bg: var(--kmuhelper-default);
+
     --link-fg: var(--kmuhelper-dark);
-    --link-selected-fg: var(--kmuhelper-light);
+    --link-hover-color: var(--kmuhelper-darkest);
+    --link-selected-fg: var(--secondary);
+
+    --button-fg: #fff;
+    --button-bg: var(--kmuhelper-default);
+    --button-hover-bg: var(--kmuhelper-dark);
+    --default-button-bg: var(--kmuhelper-darkest);
+    --default-button-hover-bg: var(--kmuhelper-dark);
 }
 
 /* Prevent the theme color to show behind the background color */
@@ -163,6 +187,8 @@ ul.messagelist li:not(:last-child) {
     text-decoration: none;
     padding: 10px 15px;
     width: auto;
+    box-sizing: border-box;
+    line-height: 15px;
 
     -webkit-appearance: none;
     appearance: none;
