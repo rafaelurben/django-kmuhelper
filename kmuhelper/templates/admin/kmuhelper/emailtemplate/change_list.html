@@ -18,7 +18,7 @@
     <h3>Verwendung von Platzhaltern</h3>
     <blockquote>
         Erklärung der Platzhaltervariablen:
-        <a href="{% url 'admin:kmuhelper_emailtemplate_add' %}#platzhalter-info">hier</a>
+        <a class="link" href="{% url 'admin:kmuhelper_emailtemplate_add' %}#platzhalter-info">hier</a>
     </blockquote>
     {% if 'kmuhelper_emailtemplate_vars' in request.session %}
         <h3>Aktuell gespeicherte Variablen</h3>
@@ -36,7 +36,7 @@
                 {% endfor %}
                 </tbody>
             </table>
-            <p><a href="{% url 'admin:kmuhelper_emailtemplate_resetvars' %}">Gespeicherte Variablen löschen</a></p>
+            <p><a class="link" href="{% url 'admin:kmuhelper_emailtemplate_resetvars' %}">Gespeicherte Variablen löschen</a></p>
         </blockquote>
     {% endif %}
 {% endblock %}

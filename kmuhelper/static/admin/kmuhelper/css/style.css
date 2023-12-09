@@ -12,8 +12,8 @@ html[data-theme="light"], html[data-theme="dark"], :root {
     --accent: var(--kmuhelper-lightest);
 
     --header-color: #ffc;
-    --header-branding-color: var(--accent);
-    --header-bg: var(--secondary);
+    --header-branding-color: var(--kmuhelper-lightest);
+    --header-bg: var(--kmuhelper-darkest);
     --header-link-color: var(--primary-fg);
 
     --breadcrumbs-fg: #c4dce8;
@@ -22,13 +22,25 @@ html[data-theme="light"], html[data-theme="dark"], :root {
 
     --link-fg: var(--kmuhelper-dark);
     --link-hover-color: var(--kmuhelper-darkest);
-    --link-selected-fg: var(--secondary);
+    --link-selected-fg: var(--kmuhelper-darkest);
 
     --button-fg: #fff;
     --button-bg: var(--kmuhelper-default);
     --button-hover-bg: var(--kmuhelper-dark);
     --default-button-bg: var(--kmuhelper-darkest);
     --default-button-hover-bg: var(--kmuhelper-dark);
+}
+
+/* Django 5.0 Color "fixes" */
+
+#result_list tbody a,
+fieldset.module a,
+a.link {
+    color: var(--link-fg);
+
+    &:hover, &:focus {
+        color: var(--link-hover-color);
+    }
 }
 
 /* Prevent the theme color to show behind the background color */
