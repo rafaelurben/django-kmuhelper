@@ -18,14 +18,14 @@ ORDERSTATUS = [
 
 VAT_RATES = [
     (0.0, _("0.0% (Mehrwertsteuerfrei)")),
+    (2.6, _("2.6% (Reduzierter Satz)")),
+    (3.8, _("3.8% (Sondersatz für Beherbergung)")),
+    (8.1, _("8.1% (Normalsatz)")),
     (2.5, _("2.5% (Bis 2023: Reduzierter Satz)")),
-    (2.6, _("2.6% (Ab 2024: Reduzierter Satz)")),
     (3.7, _("3.7% (Bis 2023: Sondersatz für Beherbergung)")),
-    (3.8, _("3.8% (Ab 2024: Sondersatz für Beherbergung)")),
     (7.7, _("7.7% (Bis 2023: Normalsatz)")),
-    (8.1, _("8.1% (Ab 2024: Normalsatz)")),
 ]
-VAT_RATE_DEFAULT = 7.7
+VAT_RATE_DEFAULT = 8.1
 
 PAYMENTMETHODS = [
     ("bacs", _("Überweisung")),
