@@ -1,32 +1,28 @@
+import string
 from datetime import datetime, timedelta
 from random import randint
-from rich import print
-import string
 
-
-from django.db import models
 from django.contrib import admin, messages
 from django.core.validators import RegexValidator, MinValueValidator, MaxValueValidator
+from django.db import models
 from django.forms import ValidationError
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.html import mark_safe, format_html
-from django.urls import reverse
+from django.utils.translation import (
+    gettext_lazy,
+    gettext,
+    pgettext_lazy,
+    npgettext,
+)
+from rich import print
 
 from kmuhelper import settings, constants
 from kmuhelper.modules.emails.models import EMail, Attachment
 from kmuhelper.modules.pdfgeneration import PDFOrder
 from kmuhelper.overrides import CustomModel
-from kmuhelper.utils import runden, formatprice, modulo10rekursiv, faq
 from kmuhelper.translations import langselect, I18N_HELP_TEXT, Language
-
-from django.utils.translation import (
-    gettext_lazy,
-    gettext,
-    ngettext,
-    pgettext,
-    pgettext_lazy,
-    npgettext,
-)
+from kmuhelper.utils import runden, formatprice, modulo10rekursiv, faq
 
 _ = gettext_lazy
 
@@ -138,7 +134,7 @@ class OrderFee(CustomModel):
         ],
     )
 
-    # Data from Kosten
+    # Data copied from linked Fee
     name = models.CharField(
         verbose_name=_("Name"),
         max_length=500,
