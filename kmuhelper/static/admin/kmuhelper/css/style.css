@@ -34,7 +34,8 @@ html[data-theme="light"], html[data-theme="dark"], :root {
 /* Django 5.0 Color "fixes" */
 
 #result_list tbody a,
-fieldset.module a,
+fieldset.module .form-row a,
+fieldset.module table a,
 a.link {
     color: var(--link-fg);
 
