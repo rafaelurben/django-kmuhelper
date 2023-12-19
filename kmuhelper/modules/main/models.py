@@ -1369,108 +1369,51 @@ class Customer(CustomModel):
 
     def save(self, *args, **kwargs):
         if self.combine_with:
-            self.woocommerceid = self.woocommerceid or self.combine_with.woocommerceid
-
-            self.email = self.email or self.combine_with.email
-            self.first_name = self.first_name or self.combine_with.first_name
-            self.last_name = self.last_name or self.combine_with.last_name
-            self.company = self.company or self.combine_with.company
-            self.username = self.username or self.combine_with.username
-            self.avatar_url = self.avatar_url or self.combine_with.avatar_url
-            self.language = (
-                self.language if self.language != "de" else self.combine_with.language
-            )
-
-            self.addr_billing_first_name = (
-                self.addr_billing_first_name
-                or self.combine_with.addr_billing_first_name
-            )
-            self.addr_billing_last_name = (
-                self.addr_billing_last_name or self.combine_with.addr_billing_last_name
-            )
-            self.addr_billing_company = (
-                self.addr_billing_company or self.combine_with.addr_billing_company
-            )
-            self.addr_billing_address_1 = (
-                self.addr_billing_address_1 or self.combine_with.addr_billing_address_1
-            )
-            self.addr_billing_address_2 = (
-                self.addr_billing_address_2 or self.combine_with.addr_billing_address_2
-            )
-            self.addr_billing_city = (
-                self.addr_billing_city or self.combine_with.addr_billing_city
-            )
-            self.addr_billing_state = (
-                self.addr_billing_state or self.combine_with.addr_billing_state
-            )
-            self.addr_billing_postcode = (
-                self.addr_billing_postcode or self.combine_with.addr_billing_postcode
-            )
-            self.addr_billing_country = (
-                self.addr_billing_country or self.combine_with.addr_billing_country
-            )
-            self.addr_billing_email = (
-                self.addr_billing_email or self.combine_with.addr_billing_email
-            )
-            self.addr_billing_phone = (
-                self.addr_billing_phone or self.combine_with.addr_billing_phone
-            )
-
-            self.addr_shipping_first_name = (
-                self.addr_shipping_first_name
-                or self.combine_with.addr_shipping_first_name
-            )
-            self.addr_shipping_last_name = (
-                self.addr_shipping_last_name
-                or self.combine_with.addr_shipping_last_name
-            )
-            self.addr_shipping_company = (
-                self.addr_shipping_company or self.combine_with.addr_shipping_company
-            )
-            self.addr_shipping_address_1 = (
-                self.addr_shipping_address_1
-                or self.combine_with.addr_shipping_address_1
-            )
-            self.addr_shipping_address_2 = (
-                self.addr_shipping_address_2
-                or self.combine_with.addr_shipping_address_2
-            )
-            self.addr_shipping_city = (
-                self.addr_shipping_city or self.combine_with.addr_shipping_city
-            )
-            self.addr_shipping_state = (
-                self.addr_shipping_state or self.combine_with.addr_shipping_state
-            )
-            self.addr_shipping_postcode = (
-                self.addr_shipping_postcode or self.combine_with.addr_shipping_postcode
-            )
-            self.addr_shipping_country = (
-                self.addr_shipping_country or self.combine_with.addr_shipping_country
-            )
-            self.addr_shipping_email = (
-                self.addr_shipping_email or self.combine_with.addr_shipping_email
-            )
-            self.addr_shipping_phone = (
-                self.addr_shipping_phone or self.combine_with.addr_shipping_phone
-            )
-
-            self.website = self.website or self.combine_with.website
-            self.note = self.note + "\n" + self.combine_with.note
-
-            for order in self.combine_with.orders.all():
-                order.customer = self
-                order.save()
-
-            if getattr(self.combine_with, "linked_note", False):
-                other_linked_note = self.combine_with.linked_note
-                other_linked_note.linked_customer = (
-                    None if getattr(self, "linked_note", False) else self
-                )
-                other_linked_note.save()
-
-            self.combine_with.delete()
+            self.combine_with_customer(self.combine_with)
             self.combine_with = None
         super().save(*args, **kwargs)
+
+    def combine_with_customer(self, other: "Customer"):
+        """Combine this customer with another customer.
+
+        Values in the current customer are preferred. The other customer gets deleted.
+        """
+
+        for FIELD_NAME in (
+            constants.ADDR_BILLING_FIELDS
+            + constants.ADDR_SHIPPING_FIELDS
+            + [
+                "woocommerceid",
+                "email",
+                "first_name",
+                "last_name",
+                "company",
+                "username",
+                "avatar_url",
+                "language",
+                "website",
+            ]
+        ):
+            setattr(
+                self,
+                FIELD_NAME,
+                getattr(self, FIELD_NAME) or getattr(other, FIELD_NAME),
+            )
+
+        self.note = self.note + "\n" + other.note
+
+        for order in other.orders.all():
+            order.customer = self
+            order.save()
+
+        if getattr(other, "linked_note", False):
+            other_linked_note = other.linked_note
+            other_linked_note.linked_customer = (
+                None if getattr(self, "linked_note", False) else self
+            )
+            other_linked_note.save()
+
+        other.delete()
 
     def create_email_registered(self, lang=None):
         lang = lang or self.language
