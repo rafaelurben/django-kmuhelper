@@ -39,7 +39,11 @@ def default_delivery_title():
     return gettext("Lieferung vom %(date)s") % {"date": datestr}
 
 
+# noinspection DuplicatedCode
 def default_payment_recipient():
+    if PaymentReceiver.objects.filter(is_default=True).exists():
+        return PaymentReceiver.objects.filter(is_default=True).first().pk
+    # Fallback if there isn't a default payment receiver: Use the most recently used one
     if Order.objects.exists():
         newest_order = Order.objects.order_by("-date").first()
         return newest_order.payment_receiver_id
@@ -48,7 +52,11 @@ def default_payment_recipient():
     return None
 
 
+# noinspection DuplicatedCode
 def default_contact_person():
+    if ContactPerson.objects.filter(is_default=True).exists():
+        return ContactPerson.objects.filter(is_default=True).first().pk
+    # Fallback if there isn't a default contact person: Use the most recently used one
     if Order.objects.exists():
         newest_order = Order.objects.order_by("-date").first()
         return newest_order.contact_person_id
@@ -84,6 +92,17 @@ class ContactPerson(CustomModel):
     email = models.EmailField(
         verbose_name=_("E-Mail"),
         help_text=_("Auf Rechnung ersichtlich!"),
+    )
+
+    # Default
+
+    is_default = models.BooleanField(
+        verbose_name=_("Standard?"),
+        default=False,
+        help_text=_(
+            "Aktivieren, um diese Kontaktperson als Standard zu setzen. Die Standard-Kontaktperson wird bei "
+            "der Erstellung einer neuen Bestellung sowie beim Import einer Bestellung von WooCommerce verwendet."
+        ),
     )
 
     @admin.display(description=_("Ansprechpartner"), ordering="name")
@@ -2227,6 +2246,17 @@ class PaymentReceiver(CustomModel):
         choices=constants.COUNTRIES,
         default="CH",
         help_text=_("In QR-Rechnung 'Zahlbar an'"),
+    )
+
+    # Default
+
+    is_default = models.BooleanField(
+        verbose_name=_("Standard?"),
+        default=False,
+        help_text=_(
+            "Aktivieren, um diesen Zahlungsempfänger als Standard zu setzen. Der Standard-Zahlungsempfänger wird bei "
+            "der Erstellung einer neuen Bestellung sowie beim Import einer Bestellung von WooCommerce verwendet."
+        ),
     )
 
     # Validation

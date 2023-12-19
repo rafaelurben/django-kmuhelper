@@ -33,14 +33,22 @@ _ = gettext_lazy
 @admin.register(ContactPerson)
 class ContactPersonAdmin(CustomModelAdmin):
     fieldsets = [
-        ("Name", {"fields": ["name"]}),
-        ("Daten", {"fields": ["phone", "email"]}),
+        (_("Name"), {"fields": ["name"]}),
+        (_("Kontaktinformationen"), {"fields": ["phone", "email"]}),
+        (_("Optionen"), {"fields": ["is_default"]}),
     ]
 
     ordering = ("name",)
 
-    list_display = ("name", "phone", "email")
+    list_display = ("name", "phone", "email", "is_default")
     search_fields = ["name", "phone", "email"]
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        if obj.is_default:
+            ContactPerson.objects.filter(is_default=True).exclude(pk=obj.pk).update(
+                is_default=False
+            )
 
 
 class OrderAdminOrderItemInline(CustomTabularInline):
@@ -1237,14 +1245,20 @@ class PaymentReceiverAdmin(CustomModelAdmin):
                 ]
             },
         ),
-        (_("Optionen"), {"fields": ["invoice_display_mode"]}),
+        (_("Optionen"), {"fields": ["invoice_display_mode", "is_default"]}),
         (
             _("Weitere Informationen & Darstellung"),
             {"fields": ["swiss_uid", "website", "logourl"]},
         ),
     ]
 
-    list_display = ("admin_name", "mode", "active_iban", "invoice_display_mode")
+    list_display = (
+        "admin_name",
+        "mode",
+        "active_iban",
+        "invoice_display_mode",
+        "is_default",
+    )
     list_filter = (
         "mode",
         "invoice_country",
@@ -1267,6 +1281,13 @@ class PaymentReceiverAdmin(CustomModelAdmin):
     ]
 
     save_on_top = True
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        if obj.is_default:
+            PaymentReceiver.objects.filter(is_default=True).exclude(pk=obj.pk).update(
+                is_default=False
+            )
 
 
 modeladmins = [
