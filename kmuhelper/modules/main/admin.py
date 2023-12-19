@@ -290,7 +290,7 @@ class OrderAdmin(CustomModelAdmin):
                         "fields": constants.ADDR_BILLING_FIELDS
                         if obj.is_paid
                         else constants.ADDR_BILLING_FIELDS_CATEGORIZED,
-                        "classes": ["collapse default-open"],
+                        "classes": ["collapse start-open addr-billing-fieldset"],
                     },
                 ),
                 (
@@ -299,7 +299,7 @@ class OrderAdmin(CustomModelAdmin):
                         "fields": constants.ADDR_SHIPPING_FIELDS
                         if obj.is_shipped
                         else constants.ADDR_SHIPPING_FIELDS_CATEGORIZED,
-                        "classes": ["collapse start-open"],
+                        "classes": ["collapse start-open addr-shipping-fieldset"],
                     },
                 ),
             ]
@@ -534,13 +534,16 @@ class CustomerAdmin(CustomModelAdmin):
             ),
             (
                 _("Rechnungsadresse"),
-                {"fields": constants.ADDR_BILLING_FIELDS_CATEGORIZED},
+                {
+                    "fields": constants.ADDR_BILLING_FIELDS_CATEGORIZED,
+                    "classes": ["addr-billing-fieldset"],
+                },
             ),
             (
                 _("Lieferadresse"),
                 {
                     "fields": constants.ADDR_SHIPPING_FIELDS_CATEGORIZED,
-                    "classes": ["collapse start-open"],
+                    "classes": ["addr-shipping-fieldset"],
                 },
             ),
         ]

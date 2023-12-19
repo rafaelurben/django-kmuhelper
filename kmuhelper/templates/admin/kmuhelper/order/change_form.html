@@ -127,26 +127,52 @@
         {% if original.tracking_number %}
             <li><a target="_blank" href="{{ original.tracking_link }}" rel="noopener">Tracking</a></li>
         {% endif %}
-
-        {% if has_change_permission and not original.is_shipped %}
-            <li><a href="#id_addr_shipping_first_name" onclick="copyform();">Rechnungsadresse -&gt; Lieferadresse</a>
-            </li>
-            <script>
-                function copyform() {
-                    document.getElementById("id_addr_shipping_first_name").value = document.getElementById("id_addr_billing_first_name").value;
-                    document.getElementById("id_addr_shipping_last_name").value = document.getElementById("id_addr_billing_last_name").value;
-                    document.getElementById("id_addr_shipping_company").value = document.getElementById("id_addr_billing_company").value;
-                    document.getElementById("id_addr_shipping_address_1").value = document.getElementById("id_addr_billing_address_1").value;
-                    document.getElementById("id_addr_shipping_address_2").value = document.getElementById("id_addr_billing_address_2").value;
-                    document.getElementById("id_addr_shipping_city").value = document.getElementById("id_addr_billing_city").value;
-                    document.getElementById("id_addr_shipping_state").value = document.getElementById("id_addr_billing_state").value;
-                    document.getElementById("id_addr_shipping_postcode").value = document.getElementById("id_addr_billing_postcode").value;
-                    document.getElementById("id_addr_shipping_country").value = document.getElementById("id_addr_billing_country").value;
-                    document.getElementById("id_addr_shipping_email").value = document.getElementById("id_addr_billing_email").value;
-                    document.getElementById("id_addr_shipping_phone").value = document.getElementById("id_addr_billing_phone").value;
-                }
-            </script>
-        {% endif %}
     {% endif %}
     {{ block.super }}
+{% endblock %}
+
+{% block after_field_sets %}
+    {% if change and has_change_permission and not original.is_shipped %}
+        <div id="auto-copy-form-row" class="form-row">
+            <div>
+                <div class="flex-container checkbox-row">
+                    <input type="checkbox" id="auto-copy"><label class="vCheckboxLabel" for="auto-copy">Von
+                    Rechnungsadresse übernehmen?</label>
+                </div>
+            </div>
+        </div>
+        <script>
+            ADDR_FIELDS = ['first_name', 'last_name', 'company', 'address_1', 'address_2', 'postcode', 'city', 'state', 'country', 'email', 'phone'];
+
+            $ = django.jQuery;
+
+            function copyFormIfCheck() {
+                if ($("#auto-copy").prop("checked")) {
+                    for (let field of ADDR_FIELDS) {
+                        $("#id_addr_shipping_" + field).val(
+                            $("#id_addr_billing_" + field).val()
+                        )
+                    }
+                }
+            }
+
+            function updateShippingFormVisibility() {
+                if ($("#auto-copy").prop("checked")) {
+                    $(".addr-shipping-fieldset .form-row:not(#auto-copy-form-row)").hide();
+                    copyFormIfCheck();
+                } else {
+                    $(".addr-shipping-fieldset .form-row:not(#auto-copy-form-row)").show();
+                }
+            }
+
+            document.addEventListener("DOMContentLoaded", () => {
+                $(".addr-shipping-fieldset h2").after(
+                    document.getElementById("auto-copy-form-row")
+                )
+
+                $(".addr-billing-fieldset").on("input", copyFormIfCheck);
+                $("#auto-copy").on("input", updateShippingFormVisibility);
+            });
+        </script>
+    {% endif %}
 {% endblock %}
