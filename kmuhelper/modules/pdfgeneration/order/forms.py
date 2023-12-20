@@ -52,7 +52,7 @@ class PDFOrderForm(forms.Form):
     do_download = forms.BooleanField(
         label="Herunterladen?",
         required=False,
-        help_text="Datei automatisch heruntergeladen (dieses Verhalten kann je nach Browser variieren)",
+        help_text="Datei automatisch herunterladen (dieses Verhalten kann je nach Browser variieren)",
     )
 
     def get_url_params(self):

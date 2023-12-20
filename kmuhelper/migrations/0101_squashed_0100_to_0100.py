@@ -932,6 +932,7 @@ class Migration(migrations.Migration):
                         on_delete=django.db.models.deletion.SET_NULL,
                         related_name="orders",
                         to="kmuhelper.customer",
+                        verbose_name="Kunde",
                     ),
                 ),
                 (

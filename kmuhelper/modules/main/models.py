@@ -423,6 +423,7 @@ class Order(CustomModel):
     customer = models.ForeignKey(
         to="Customer",
         on_delete=models.SET_NULL,
+        verbose_name=_("Kunde"),
         blank=True,
         null=True,
         related_name="orders",
