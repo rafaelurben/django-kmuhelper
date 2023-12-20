@@ -9,6 +9,10 @@
                         ersetzen</a></li>
                 {% endif %}
 
+                {% if perms.kmuhelper.add_order %}
+                    <li><a href="{% url 'admin:kmuhelper_customer_create_order' object_id %}">Bestellung erstellen</a></li>
+                {% endif %}
+
                 {% if perms.kmuhelper.view_email or perms.kmuhelper.add_email %}
                     {% load kmuhelper_tags %}
                     {% kmuhelper_email_show_buttons as show_email_buttons %}

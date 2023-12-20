@@ -19,6 +19,7 @@ from kmuhelper.modules.main.models import (
     Product,
     PaymentReceiver,
 )
+from kmuhelper.modules.pdfgeneration.order import views as pdf_order_views
 from kmuhelper.overrides import (
     CustomModelAdmin,
     CustomTabularInline,
@@ -445,12 +446,12 @@ class OrderAdmin(CustomModelAdmin):
         my_urls = [
             path(
                 "<path:object_id>/pdf/",
-                self.admin_site.admin_view(views.order_view_pdf),
+                self.admin_site.admin_view(pdf_order_views.order_view_pdf),
                 name="%s_%s_pdf" % info,
             ),
             path(
                 "<path:object_id>/pdf/form",
-                self.admin_site.admin_view(views.order_create_pdf_form),
+                self.admin_site.admin_view(pdf_order_views.order_create_pdf_form),
                 name="%s_%s_pdf_form" % info,
             ),
             path(
@@ -634,6 +635,11 @@ class CustomerAdmin(CustomModelAdmin):
                 "<path:object_id>/email/registered/",
                 self.admin_site.admin_view(views.create_customer_email_registered),
                 name="%s_%s_email_registered" % info,
+            ),
+            path(
+                "<path:object_id>/create-order",
+                self.admin_site.admin_view(views.create_customer_order),
+                name="%s_%s_create_order" % info,
             ),
         ]
         return my_urls + urls

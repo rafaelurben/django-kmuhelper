@@ -2,26 +2,16 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
-from django.utils.translation import gettext_lazy, gettext
+from django.utils.translation import gettext_lazy
 
-from kmuhelper.modules.main.models import Customer, Supplier, Supply, Order
 from kmuhelper.decorators import (
     confirm_action,
     require_object,
     require_all_kmuhelper_perms,
 )
-from kmuhelper.utils import render_error
+from kmuhelper.modules.main.models import Customer, Supplier, Supply, Order
 
 _ = gettext_lazy
-
-# Other views
-
-from kmuhelper.modules.pdfgeneration.order.views import (
-    order_view_pdf,
-    order_create_pdf_form,
-)
-
-###############
 
 # Create your views here.
 
@@ -64,6 +54,15 @@ def create_customer_email_registered(request, obj):
     mail = obj.create_email_registered()
     messages.success(request, _("E-Mail wurde generiert!"))
     return redirect(reverse("admin:kmuhelper_email_change", args=[mail.pk]))
+
+
+@login_required(login_url=reverse_lazy("admin:login"))
+@require_all_kmuhelper_perms(["view_customer", "add_order"])
+@require_object(Customer)
+def create_customer_order(request, obj):
+    order = Order.objects.create(customer=obj)
+    messages.success(request, _("Bestellung wurde erstellt!"))
+    return redirect(reverse("admin:kmuhelper_order_change", args=[order.pk]))
 
 
 @login_required(login_url=reverse_lazy("admin:login"))
