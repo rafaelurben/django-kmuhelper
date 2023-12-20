@@ -4,30 +4,25 @@ permalink: /manual/app
 
 # App
 
-Der KMUHelper kommt mit seiner eigenen kleinen (Web-)App.
-Diese ist via Startseite erreichbar.
+_Der KMUHelper kann auf diversen Geräten als App installiert werden. Manche Browser fordern direkt dazu auf, bei anderen
+muss auf "Zum Home-Bildschirm hinzufügen", "Zum Dock hinzufügen" o.ä. geklickt werden._
 
-## Versionen
+Unter KMUHelper "App" wird jedoch etwas anderes verstanden: Dies sind Admin-Seiten, welche auf einen bestimmten
+Arbeitsschritt zugeschnitten und optimiert wurden.
 
-### App-Style (v1)
+## App
 
-Wenn Sie diese Seite auf dem Handy öffnen, können Sie, je nach Ihrem Betriebssystem, die Webseite zum Home-Bildschirm hinzufügen. (Googeln Sie dazu nach Ihrem Betriebssystem + `PWA installieren`, falls Sie noch nicht wissen, wie und ob das geht. -> z.B. ["iOs PWA installieren"](https://www.google.com/search?q=iOs+PWA+installieren) oder ["Android PWA installieren"](https://www.google.com/search?q=Android+PWA+installieren))
-
-Die App sollte nach dem Login so aussehen:
-
-<img src="../assets/images/screenshots/app_home.png" alt="KMUHelper App - Home" style="max-width: min(375px, 90vw);">
-
-## Admin-Style (v2)
-
-Die Admin-Version dieser App, welche für grössere Bildschirme optimiert ist, sieht etwa so aus:
+Die App kann über die KMUHelper-Startseite aufgerufen werden.
 
 ![KMUHelper App - Index](../assets/images/screenshots/app_index.png)
 
+<img src="../assets/images/screenshots/app_index_mobile.png" alt="KMUHelper App - Home" style="max-width: min(350px, 90vw);">
+
 ## Funktionen
 
-Diese App beinhaltet versteckte Seiten des Django-Adminbereichs, welche die einfachere Massenverwaltung von Bestellungen, Lagerbestand, Notizen und Lieferungen ermöglichen, jedoch sind manche Funktionen eingeschränkt, um die App nicht zu überladen. Dies beinhaltet zum Beispiel das Löschen von Objekten.
-
-Die einzelnen Seiten sind auf der Startseite der App kurz beschrieben.
+Diese App beinhaltet Seiten, welche die einfachere Massenverwaltung von Bestellungen, Lagerbestand, Notizen und
+Lieferungen ermöglichen. Manche Funktionen sind gegenüber der normalen Admin-Seiten jedoch eingeschränkt, um die App
+nicht zu überladen. Daher befindet sich auf jeder Seite einen Link, welcher auf die entsprechende Admin-Seite verweist.
 
 ## Zurück
 

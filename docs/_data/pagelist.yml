@@ -2,18 +2,9 @@ home:
     title: Home
     url: /
     pages:
-        functions:
-            title: Funktionen
-            url: /functions
-        history:
-            title: Geschichte
-            url: /history
         installation:
             title: Installation
             url: /installation
-        support:
-            title: Unterstützung
-            url: /support
         manual:
             title: Handbuch
             url: /manual/
@@ -40,7 +31,7 @@ home:
                     title: Bestellung & Rechnung
                     url: /manual/order-and-invoice
                 setup:
-                    title: Setup
+                    title: Einrichtung
                     url: /manual/setup
                 storage:
                     title: Lagerverwaltung
@@ -48,3 +39,6 @@ home:
                 faq:
                     title: Häufig gestellte Fragen
                     url: /manual/faq
+                languages:
+                    title: Sprachen
+                    url: /manual/languages

@@ -133,3 +133,6 @@ dmypy.json
 
 .idea/
 .vscode/
+docs/Gemfile.lock
+docs/_site
+docs/.jekyll-cache

@@ -4,9 +4,12 @@ permalink: /manual/languages
 
 # Sprachen
 
-Der KMUHelper selbst ist aktuell nur in Deutsch verfügbar und eine Übersetzung ist vorerst nicht geplant, jedoch können die Rechnungen in Deutsch, Französisch, Italienisch und Englisch gedruckt werden. Dabei wird immer die beim verlinkten Kunden eingestellte Sprache verwendet.
+Der KMUHelper selbst ist aktuell nur in Deutsch verfügbar und eine Übersetzung ist vorerst nicht geplant, jedoch können
+die Rechnungen in Deutsch, Französisch, Italienisch und Englisch gedruckt werden. Dabei wird immer die beim verlinkten
+Kunden eingestellte Sprache verwendet.
 
-Um auch Produkte und Mengenbezeichnungen zu übersetzen, wird der gleiche Syntax wie beim Wordpress Plugin `qTranslate-X` verwendet.
+Um auch Produkte und Mengenbezeichnungen zu übersetzen, wird der gleiche Syntax wie beim Wordpress Plugin `qTranslate-X`
+verwendet.
 
 Beispiel: `[:de]Stück[:fr]Pièce[:it]Pezzo[:en]Piece[:]`
 
@@ -21,9 +24,17 @@ Auf Übersichtsseiten im Admin-Bereich wird ausschliesslich die Deutsche Bezeich
 
 ## Automatische Übersetzung
 
-Folgende Mengenbezeichnungen werden bei exaktem Wortlaut automatisch übersetzt: Stück, Stunden, Einheiten, Flasche & Tube
+Folgende Mengenbezeichnungen werden bei exaktem Wortlaut automatisch übersetzt:
 
-Folgende Kostenbezeichnungen werden bei exaktem Wortlaut automatisch übersetzt: Versandkosten
+- Stück
+- Stunden
+- Einheiten
+- Flasche
+- Tube
+
+Folgende Kostenbezeichnungen werden bei exaktem Wortlaut automatisch übersetzt:
+
+- Versandkosten
 
 ## Zurück
 
