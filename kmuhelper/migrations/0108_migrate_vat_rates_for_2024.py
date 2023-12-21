@@ -13,14 +13,12 @@ MIGRATED_VAT_RATES = ((2.5, 2.6), (3.7, 3.8), (7.7, 8.1))
 def migrate_vat_rates(apps, schema_editor, reverse=False):
     db_alias = schema_editor.connection.alias
     Fee = apps.get_model("kmuhelper", "Fee")
-    OrderFee = apps.get_model("kmuhelper", "OrderFee")
     Product = apps.get_model("kmuhelper", "Product")
 
     for before, after in MIGRATED_VAT_RATES:
         if reverse:
             before, after = after, before
         Fee.objects.using(db_alias).filter(vat_rate=before).update(vat_rate=after)
-        OrderFee.objects.using(db_alias).filter(vat_rate=before).update(vat_rate=after)
         Product.objects.using(db_alias).filter(vat_rate=before).update(vat_rate=after)
 
 
