@@ -6,7 +6,7 @@ permalink: /manual/
 
 Willkommen beim KMUHelper!
 
-Diese Bedienungsanleitung sollte Ihnen dazu helfen, den KMUHelper zu verstehen und ihn zu benutzen.
+Diese Bedienungsanleitung sollte Ihnen dabei helfen, den KMUHelper zu verstehen und ihn zu benutzen.
 
 PS: Diese Anleitung setzt die [Installation](../installation.md) des KMUHelper voraus.
 
