@@ -37,7 +37,6 @@ def versions(request):
     packages = [
         "Django",
         "django-kmuhelper",
-        "gunicorn",
         "requests",
         "WooCommerce",
         "reportlab",
