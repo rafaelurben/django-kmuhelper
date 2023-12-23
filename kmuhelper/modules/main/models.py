@@ -12,13 +12,13 @@ from django.utils.html import mark_safe, format_html
 from django.utils.translation import (
     gettext_lazy,
     gettext,
-    pgettext_lazy,
     npgettext,
 )
 from rich import print
 
 from kmuhelper import settings, constants
 from kmuhelper.modules.emails.models import EMail, Attachment
+from kmuhelper.modules.main.mixins import AddressModelMixin
 from kmuhelper.modules.pdfgeneration import PDFOrder
 from kmuhelper.overrides import CustomModel
 from kmuhelper.translations import langselect, I18N_HELP_TEXT, Language
@@ -296,7 +296,7 @@ class OrderItem(CustomModel):
         self.save()
 
 
-class Order(CustomModel):
+class Order(CustomModel, AddressModelMixin):
     """Model representing an order"""
 
     NOTE_RELATION = "order"
@@ -439,174 +439,6 @@ class Order(CustomModel):
         verbose_name=_("Ansprechpartner"),
         on_delete=models.PROTECT,
         default=default_contact_person,
-    )
-
-    # Billing address
-
-    @property
-    def addr_billing(self):
-        return {
-            "first_name": self.addr_billing_first_name,
-            "last_name": self.addr_billing_last_name,
-            "company": self.addr_billing_company,
-            "address_1": self.addr_billing_address_1,
-            "address_2": self.addr_billing_address_2,
-            "postcode": self.addr_billing_postcode,
-            "city": self.addr_billing_city,
-            "state": self.addr_billing_state,
-            "country": self.addr_billing_country,
-            "email": self.addr_billing_email,
-            "phone": self.addr_billing_phone,
-        }
-
-    addr_billing_first_name = models.CharField(
-        verbose_name=pgettext_lazy("address", "Vorname"),
-        max_length=250,
-        default="",
-        blank=True,
-    )
-    addr_billing_last_name = models.CharField(
-        verbose_name=pgettext_lazy("address", "Nachname"),
-        max_length=250,
-        default="",
-        blank=True,
-    )
-    addr_billing_company = models.CharField(
-        verbose_name=pgettext_lazy("address", "Firma"),
-        max_length=250,
-        default="",
-        blank=True,
-    )
-    addr_billing_address_1 = models.CharField(
-        verbose_name=pgettext_lazy("address", "Adresszeile 1"),
-        max_length=250,
-        default="",
-        blank=True,
-        help_text="Strasse und Hausnummer oder 'Postfach'",
-    )
-    addr_billing_address_2 = models.CharField(
-        verbose_name=pgettext_lazy("address", "Adresszeile 2"),
-        max_length=250,
-        default="",
-        blank=True,
-        help_text="Wird in QR-Rechnung NICHT verwendet!",
-    )
-    addr_billing_city = models.CharField(
-        verbose_name=pgettext_lazy("address", "Ort"),
-        max_length=250,
-        default="",
-        blank=True,
-    )
-    addr_billing_state = models.CharField(
-        verbose_name=pgettext_lazy("address", "Kanton"),
-        max_length=50,
-        default="",
-        blank=True,
-    )
-    addr_billing_postcode = models.CharField(
-        verbose_name=pgettext_lazy("address", "Postleitzahl"),
-        max_length=50,
-        default="",
-        blank=True,
-    )
-    addr_billing_country = models.CharField(
-        verbose_name=pgettext_lazy("address", "Land"),
-        max_length=2,
-        default="CH",
-        choices=constants.COUNTRIES,
-    )
-    addr_billing_email = models.EmailField(
-        verbose_name=pgettext_lazy("address", "E-Mail Adresse"),
-        blank=True,
-    )
-    addr_billing_phone = models.CharField(
-        verbose_name=pgettext_lazy("address", "Telefon"),
-        max_length=50,
-        default="",
-        blank=True,
-    )
-
-    # Shipping address
-
-    @property
-    def addr_shipping(self):
-        return {
-            "first_name": self.addr_shipping_first_name,
-            "last_name": self.addr_shipping_last_name,
-            "company": self.addr_shipping_company,
-            "address_1": self.addr_shipping_address_1,
-            "address_2": self.addr_shipping_address_2,
-            "postcode": self.addr_shipping_postcode,
-            "city": self.addr_shipping_city,
-            "state": self.addr_shipping_state,
-            "country": self.addr_shipping_country,
-            "email": self.addr_shipping_email,
-            "phone": self.addr_shipping_phone,
-        }
-
-    addr_shipping_first_name = models.CharField(
-        verbose_name=pgettext_lazy("address", "Vorname"),
-        max_length=250,
-        default="",
-        blank=True,
-    )
-    addr_shipping_last_name = models.CharField(
-        verbose_name=pgettext_lazy("address", "Nachname"),
-        max_length=250,
-        default="",
-        blank=True,
-    )
-    addr_shipping_company = models.CharField(
-        verbose_name=pgettext_lazy("address", "Firma"),
-        max_length=250,
-        default="",
-        blank=True,
-    )
-    addr_shipping_address_1 = models.CharField(
-        verbose_name=pgettext_lazy("address", "Adresszeile 1"),
-        max_length=250,
-        default="",
-        blank=True,
-    )
-    addr_shipping_address_2 = models.CharField(
-        verbose_name=pgettext_lazy("address", "Adresszeile 2"),
-        max_length=250,
-        default="",
-        blank=True,
-    )
-    addr_shipping_city = models.CharField(
-        verbose_name=pgettext_lazy("address", "Ort"),
-        max_length=250,
-        default="",
-        blank=True,
-    )
-    addr_shipping_state = models.CharField(
-        verbose_name=pgettext_lazy("address", "Kanton"),
-        max_length=50,
-        default="",
-        blank=True,
-    )
-    addr_shipping_postcode = models.CharField(
-        verbose_name=pgettext_lazy("address", "Postleitzahl"),
-        max_length=50,
-        default="",
-        blank=True,
-    )
-    addr_shipping_country = models.CharField(
-        verbose_name=pgettext_lazy("address", "Land"),
-        max_length=2,
-        default="CH",
-        choices=constants.COUNTRIES,
-    )
-    addr_shipping_email = models.EmailField(
-        verbose_name=pgettext_lazy("address", "E-Mail Adresse"),
-        blank=True,
-    )
-    addr_shipping_phone = models.CharField(
-        verbose_name=pgettext_lazy("address", "Telefon"),
-        max_length=50,
-        default="",
-        blank=True,
     )
 
     # Connections
@@ -1133,7 +965,7 @@ class Fee(CustomModel):
     admin_icon = "fas fa-coins"
 
 
-class Customer(CustomModel):
+class Customer(CustomModel, AddressModelMixin):
     """Model representing a customer"""
 
     NOTE_RELATION = "customer"
@@ -1181,138 +1013,6 @@ class Customer(CustomModel):
         default="de",
         choices=constants.LANGUAGES,
         max_length=2,
-    )
-
-    addr_billing_first_name = models.CharField(
-        verbose_name=pgettext_lazy("address", "Vorname"),
-        max_length=250,
-        default="",
-        blank=True,
-    )
-    addr_billing_last_name = models.CharField(
-        verbose_name=pgettext_lazy("address", "Nachname"),
-        max_length=250,
-        default="",
-        blank=True,
-    )
-    addr_billing_company = models.CharField(
-        verbose_name=pgettext_lazy("address", "Firma"),
-        max_length=250,
-        default="",
-        blank=True,
-    )
-    addr_billing_address_1 = models.CharField(
-        verbose_name=pgettext_lazy("address", "Adresszeile 1"),
-        max_length=250,
-        default="",
-        blank=True,
-        help_text=_('Strasse und Hausnummer oder "Postfach"'),
-    )
-    addr_billing_address_2 = models.CharField(
-        verbose_name=pgettext_lazy("address", "Adresszeile 2"),
-        max_length=250,
-        default="",
-        blank=True,
-        help_text=_("Wird in QR-Rechnung NICHT verwendet!"),
-    )
-    addr_billing_city = models.CharField(
-        verbose_name=pgettext_lazy("address", "Ort"),
-        max_length=250,
-        default="",
-        blank=True,
-    )
-    addr_billing_state = models.CharField(
-        verbose_name=pgettext_lazy("address", "Kanton"),
-        max_length=50,
-        default="",
-        blank=True,
-    )
-    addr_billing_postcode = models.CharField(
-        verbose_name=pgettext_lazy("address", "Postleitzahl"),
-        max_length=50,
-        default="",
-        blank=True,
-    )
-    addr_billing_country = models.CharField(
-        verbose_name=pgettext_lazy("address", "Land"),
-        max_length=2,
-        default="CH",
-        choices=constants.COUNTRIES,
-    )
-    addr_billing_email = models.EmailField(
-        verbose_name=pgettext_lazy("address", "E-Mail Adresse"),
-        blank=True,
-    )
-    addr_billing_phone = models.CharField(
-        verbose_name=pgettext_lazy("address", "Telefon"),
-        max_length=50,
-        default="",
-        blank=True,
-    )
-
-    addr_shipping_first_name = models.CharField(
-        verbose_name=pgettext_lazy("address", "Vorname"),
-        max_length=250,
-        default="",
-        blank=True,
-    )
-    addr_shipping_last_name = models.CharField(
-        verbose_name=pgettext_lazy("address", "Nachname"),
-        max_length=250,
-        default="",
-        blank=True,
-    )
-    addr_shipping_company = models.CharField(
-        verbose_name=pgettext_lazy("address", "Firma"),
-        max_length=250,
-        default="",
-        blank=True,
-    )
-    addr_shipping_address_1 = models.CharField(
-        verbose_name=pgettext_lazy("address", "Adresszeile 1"),
-        max_length=250,
-        default="",
-        blank=True,
-    )
-    addr_shipping_address_2 = models.CharField(
-        verbose_name=pgettext_lazy("address", "Adresszeile 2"),
-        max_length=250,
-        default="",
-        blank=True,
-    )
-    addr_shipping_city = models.CharField(
-        verbose_name=pgettext_lazy("address", "Ort"),
-        max_length=250,
-        default="",
-        blank=True,
-    )
-    addr_shipping_state = models.CharField(
-        verbose_name=pgettext_lazy("address", "Kanton"),
-        max_length=50,
-        default="",
-        blank=True,
-    )
-    addr_shipping_postcode = models.CharField(
-        verbose_name=pgettext_lazy("address", "Postleitzahl"),
-        max_length=50,
-        default="",
-        blank=True,
-    )
-    addr_shipping_country = models.CharField(
-        verbose_name=pgettext_lazy("address", "Land"),
-        max_length=2,
-        default="CH",
-        choices=constants.COUNTRIES,
-    )
-    addr_shipping_email = models.EmailField(
-        verbose_name=pgettext_lazy("address", "E-Mail Adresse"),
-        blank=True,
-    )
-    addr_shipping_phone = models.CharField(
-        verbose_name=pgettext_lazy("address", "Telefon"),
-        max_length=50,
-        default="",
-        blank=True,
     )
 
     combine_with = models.ForeignKey(

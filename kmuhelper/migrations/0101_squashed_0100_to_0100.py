@@ -266,7 +266,7 @@ class Migration(migrations.Migration):
                 (
                     "addr_billing_email",
                     models.EmailField(
-                        blank=True, max_length=254, verbose_name="E-Mail Adresse"
+                        blank=True, max_length=254, verbose_name="E-Mail-Adresse"
                     ),
                 ),
                 (
@@ -344,7 +344,7 @@ class Migration(migrations.Migration):
                 (
                     "addr_shipping_email",
                     models.EmailField(
-                        blank=True, max_length=254, verbose_name="E-Mail Adresse"
+                        blank=True, max_length=254, verbose_name="E-Mail-Adresse"
                     ),
                 ),
                 (
@@ -769,7 +769,7 @@ class Migration(migrations.Migration):
                     models.CharField(
                         blank=True,
                         default="",
-                        help_text="Strasse und Hausnummer oder 'Postfach'",
+                        help_text='Strasse und Hausnummer oder "Postfach"',
                         max_length=250,
                         verbose_name="Adresszeile 1",
                     ),
@@ -817,7 +817,7 @@ class Migration(migrations.Migration):
                 (
                     "addr_billing_email",
                     models.EmailField(
-                        blank=True, max_length=254, verbose_name="E-Mail Adresse"
+                        blank=True, max_length=254, verbose_name="E-Mail-Adresse"
                     ),
                 ),
                 (
@@ -895,7 +895,7 @@ class Migration(migrations.Migration):
                 (
                     "addr_shipping_email",
                     models.EmailField(
-                        blank=True, max_length=254, verbose_name="E-Mail Adresse"
+                        blank=True, max_length=254, verbose_name="E-Mail-Adresse"
                     ),
                 ),
                 (
