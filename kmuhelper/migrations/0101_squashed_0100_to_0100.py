@@ -628,7 +628,7 @@ class Migration(migrations.Migration):
                     models.DateField(
                         blank=True,
                         default=None,
-                        help_text="Datum der Rechnung. Wird auch als Startpunkt für die Zahlungskonditionen verwendet.",
+                        help_text="Wird auch als Startpunkt für die Zahlungskonditionen verwendet. Wird beim Erstellen eines PDF automatisch mit dem aktuellen Datum befüllt.",
                         null=True,
                         verbose_name="Rechnungsdatum",
                     ),

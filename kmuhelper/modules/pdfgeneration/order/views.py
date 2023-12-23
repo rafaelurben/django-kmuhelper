@@ -2,22 +2,20 @@ from datetime import datetime
 
 from django.contrib.admin.models import LogEntry, CHANGE
 from django.contrib.admin.options import get_content_type_for_model
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy, reverse
-
-from django.utils import translation
-
-_ = translation.gettext
+from django.utils import translation, timezone
 
 from kmuhelper import constants
-from kmuhelper.modules.main.models import Order
 from kmuhelper.decorators import require_object, require_all_kmuhelper_perms
-from kmuhelper.utils import render_error
-from kmuhelper.translations import Language
-
+from kmuhelper.modules.main.models import Order
 from kmuhelper.modules.pdfgeneration.order.forms import PDFOrderForm
 from kmuhelper.modules.pdfgeneration.order.generator import PDFOrder
+from kmuhelper.translations import Language
+from kmuhelper.utils import render_error
+
+_ = translation.gettext
 
 # Views
 
@@ -44,6 +42,11 @@ def order_view_pdf(request, obj):
     if lang not in dict(constants.LANGUAGES):
         lang = defaultlang
 
+    # Set invoice date if not present
+    if order.invoice_date is None:
+        order.invoice_date = timezone.now()
+        order.save()
+
     with Language(lang):
         match preset:
             case "invoice":
@@ -64,7 +67,10 @@ def order_view_pdf(request, obj):
                 days_to_pay = 14
                 title = title or _("Zahlungserinnerung")
                 text = text or _(
-                    "Geschätzter Kunde\n\nVermutlich ist Ihnen entgangen, diese Rechnung vom %(original_date)s innert der gewährten Frist zu begleichen.\nWir bitten Sie, dies innert %(days)d Tagen nachzuholen.\n\nSollte sich Ihre Zahlung mit diesem Schreiben überkreuzen, so betrachten Sie dieses bitte als gegenstandslos."
+                    "Geschätzter Kunde\n\nVermutlich ist Ihnen entgangen, diese Rechnung vom %(original_date)s innert "
+                    "der gewährten Frist zu begleichen.\nWir bitten Sie, dies innert %(days)d Tagen "
+                    "nachzuholen.\n\nSollte sich Ihre Zahlung mit diesem Schreiben überkreuzen, so betrachten Sie "
+                    "dieses bitte als gegenstandslos."
                 ) % {
                     "original_date": order.invoice_date.strftime("%d.%m.%Y"),
                     "days": days_to_pay,

@@ -317,7 +317,8 @@ class Order(CustomModel, AddressModelMixin):
         blank=True,
         null=True,
         help_text=_(
-            "Datum der Rechnung. Wird auch als Startpunkt für die Zahlungskonditionen verwendet."
+            "Wird auch als Startpunkt für die Zahlungskonditionen verwendet. Wird beim Erstellen "
+            "eines PDF automatisch mit dem aktuellen Datum befüllt."
         ),
     )
 
@@ -521,9 +522,6 @@ class Order(CustomModel, AddressModelMixin):
         if not self.pk and not self.woocommerceid and self.customer:
             self.import_customer_data()
 
-        if self.invoice_date is None:
-            self.invoice_date = timezone.now()
-
         super().save(*args, **kwargs)
 
     @admin.display(description=_("Trackinglink"), ordering="tracking_number")
@@ -590,8 +588,7 @@ class Order(CustomModel, AddressModelMixin):
             data.append(
                 {
                     "days": days,
-                    "date": (self.invoice_date or self.order_date)
-                    + timedelta(days=days),
+                    "date": (self.invoice_date or self.date) + timedelta(days=days),
                     "percent": percent,
                     "price": runden(self.cached_sum * (1 - (percent / 100))),
                 }
