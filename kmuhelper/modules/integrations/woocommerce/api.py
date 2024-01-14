@@ -534,7 +534,10 @@ class WooCommerce:
 
     @classmethod
     def order_create(cls, order, api=None, sendstockwarning=True):
-        """Create a new order from WooCommerce data"""
+        """Create a new order from WooCommerce data
+
+        Notes: TAX imports and discounts might NOT be imported correctly.
+        """
         wcapi = api or cls.get_api()
 
         neworder = Order.objects.create(
@@ -586,12 +589,11 @@ class WooCommerce:
             if created:
                 product = cls.product_update(product, api=wcapi)
 
-            neworder.products.add(
-                product,
-                through_defaults={
-                    "quantity": int(item["quantity"]),
-                    "product_price": runden(float(item["price"])),
-                },
+            neworder.products.through.objects.create(
+                order=neworder,
+                linked_product=product,
+                quantity=int(item["quantity"]),
+                product_price=runden(float(item["price"])),
             )
         for item in order["shipping_lines"]:
             neworder.fees.through.objects.create(

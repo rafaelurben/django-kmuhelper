@@ -59,32 +59,39 @@ class OrderAdminOrderItemInline(CustomTabularInline):
     extra = 0
 
     fields = (
-        "product",
-        "note",
+        "linked_product",
+        "article_number",
+        "name",
         "product_price",
         "quantity",
+        "quantity_description",
         "discount",
+        "note",
         "display_subtotal",
-        "display_vat_rate",
+        "vat_rate",
     )
 
     readonly_fields = (
+        "linked_product",
         "display_subtotal",
-        "display_vat_rate",
-        "product",
     )
 
     def get_additional_readonly_fields(self, request, obj=None):
-        fields = ["product_price"]
+        fields = []
         if obj and (obj.is_shipped or obj.is_paid):
             fields += ["quantity"]
         if obj and obj.is_paid:
-            fields += ["discount"]
+            fields += ["product_price", "vat_rate", "discount"]
         return fields
 
     # Permissions
 
-    NO_ADD = True
+    def has_add_permission(self, request, obj=None):
+        return (
+            False
+            if (obj and (obj.is_paid or obj.is_shipped))
+            else super().has_add_permission(request, obj)
+        )
 
     def has_delete_permission(self, request, obj=None):
         return (
@@ -97,18 +104,23 @@ class OrderAdminOrderItemInline(CustomTabularInline):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.select_related("product")
+        return qs.select_related("linked_product")
 
 
-class OrderAdminOrderItemInlineAdd(CustomTabularInline):
+class OrderAdminOrderItemInlineImport(CustomTabularInline):
     model = Order.products.through
     verbose_name = _("Bestellungsposten")
-    verbose_name_plural = _("Bestellungsposten hinzufügen")
+    verbose_name_plural = _("Bestellungsposten importieren")
     extra = 0
 
-    autocomplete_fields = ("product",)
+    autocomplete_fields = ("linked_product",)
 
-    fieldsets = [(None, {"fields": ["product", "note", "quantity", "discount"]})]
+    fields = (
+        "linked_product",
+        "note",
+        "quantity",
+        "discount",
+    )
 
     # Permissions
 
@@ -356,7 +368,7 @@ class OrderAdmin(CustomModelAdmin):
     def get_inlines(self, request, obj=None):
         inlines = [OrderAdminOrderItemInline]
         if request.user.has_perm("kmuhelper.view_product"):
-            inlines += [OrderAdminOrderItemInlineAdd]
+            inlines += [OrderAdminOrderItemInlineImport]
         inlines += [OrderAdminOrderFeeInline]
         if request.user.has_perm("kmuhelper.view_fee"):
             inlines += [OrderAdminOrderFeeInlineImport]

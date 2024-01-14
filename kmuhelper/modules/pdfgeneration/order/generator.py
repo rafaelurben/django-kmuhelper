@@ -2,23 +2,22 @@
 
 from datetime import datetime
 
+from django.utils.translation import pgettext
+from reportlab.lib.colors import black
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.lib.units import mm
+from reportlab.lib.utils import ImageReader
+from reportlab.platypus import Table, TableStyle, Paragraph, Spacer, TopPadder, Flowable
+
 from kmuhelper import settings
+from kmuhelper.modules.pdfgeneration.base import PDFGenerator
+from kmuhelper.modules.pdfgeneration.swiss_qr_invoice import QRInvoiceFlowable
 from kmuhelper.translations import (
     autotranslate_quantity_description,
     autotranslate_fee_name,
     langselect,
 )
 from kmuhelper.utils import formatprice
-from kmuhelper.modules.pdfgeneration.base import PDFGenerator
-from kmuhelper.modules.pdfgeneration.swiss_qr_invoice import QRInvoiceFlowable
-
-from reportlab.platypus import Table, TableStyle, Paragraph, Spacer, TopPadder, Flowable
-from reportlab.lib.utils import ImageReader
-from reportlab.lib.units import mm
-from reportlab.lib.styles import ParagraphStyle
-from reportlab.lib.colors import black
-
-from django.utils.translation import pgettext
 
 style_default = ParagraphStyle("Normal", fontname="Helvetica")
 style_bold = ParagraphStyle("Bold", fontname="Helvetica-Bold")
@@ -46,70 +45,70 @@ class _PDFOrderPriceTable(Table):
 
         h_products = 0
 
-        for bp in order.products.through.objects.filter(order=order):
-            subtotal_without_discount = bp.calc_subtotal_without_discount()
+        for item in order.products.through.objects.filter(order=order):
+            subtotal_without_discount = item.calc_subtotal_without_discount()
             data.append(
                 (
-                    bp.product.article_number,
-                    Paragraph(langselect(bp.product.name, lang)),
-                    str(bp.quantity),
+                    item.article_number,
+                    Paragraph(langselect(item.name, lang)),
+                    str(item.quantity),
                     langselect(
                         autotranslate_quantity_description(
-                            bp.product.quantity_description, bp.quantity
+                            item.quantity_description, item.quantity
                         ),
                         lang,
                     ),
-                    formatprice(bp.product_price),
+                    formatprice(item.product_price),
                     formatprice(subtotal_without_discount),
                 )
             )
             h_products += 1
-            if bp.discount:
+            if item.discount:
                 data.append(
                     (
                         "",
                         "- " + pgettext("Text on generated order PDF", "Rabatt"),
-                        str(bp.discount),
+                        str(item.discount),
                         "%",
                         formatprice(subtotal_without_discount),
-                        formatprice(bp.calc_discount()),
+                        formatprice(item.calc_discount()),
                     )
                 )
                 h_products += 1
-            if bp.note:
-                data.append(("", Paragraph(f"- <b>{bp.note}</b>"), "", "", "", ""))
+            if item.note:
+                data.append(("", Paragraph(f"- <b>{item.note}</b>"), "", "", "", ""))
                 h_products += 1
 
         # Costs
 
         h_costs = 0
 
-        for bk in order.fees.through.objects.filter(order=order):
+        for item in order.fees.through.objects.filter(order=order):
             data.append(
                 (
                     "",
-                    Paragraph(langselect(autotranslate_fee_name(bk.name), lang)),
+                    Paragraph(langselect(autotranslate_fee_name(item.name), lang)),
                     "",
                     "",
                     "",
-                    formatprice(bk.price),
+                    formatprice(item.price),
                 )
             )
             h_costs += 1
-            if bk.discount:
+            if item.discount:
                 data.append(
                     (
                         "",
                         "- " + pgettext("Text on generated order PDF", "Rabatt"),
-                        str(bk.discount),
+                        str(item.discount),
                         "%",
-                        formatprice(bk.calc_subtotal_without_discount()),
-                        formatprice(bk.calc_discount()),
+                        formatprice(item.calc_subtotal_without_discount()),
+                        formatprice(item.calc_discount()),
                     )
                 )
                 h_costs += 1
-            if bk.note:
-                data.append(("", Paragraph(f"- <b>{bk.note}</b>"), "", "", "", ""))
+            if item.note:
+                data.append(("", Paragraph(f"- <b>{item.note}</b>"), "", "", "", ""))
                 h_costs += 1
 
         # VAT
@@ -247,24 +246,24 @@ class _PDFOrderProductTable(Table):
 
         # Products
 
-        for bp in order.products.through.objects.filter(order=order):
+        for item in order.products.through.objects.filter(order=order):
             data.append(
                 (
-                    bp.product.article_number,
-                    Paragraph(langselect(bp.product.name, lang)),
-                    str(bp.quantity),
+                    item.article_number,
+                    Paragraph(langselect(item.name, lang)),
+                    str(item.quantity),
                     langselect(
                         autotranslate_quantity_description(
-                            bp.product.quantity_description, bp.quantity
+                            item.quantity_description, item.quantity
                         ),
                         lang,
                     ),
                 )
             )
-            if bp.note:
-                data.append(("", Paragraph(f"- <b>{bp.note}</b>"), "", ""))
+            if item.note:
+                data.append(("", Paragraph(f"- <b>{item.note}</b>"), "", ""))
 
-            productcount += bp.quantity
+            productcount += item.quantity
 
         # Total
 

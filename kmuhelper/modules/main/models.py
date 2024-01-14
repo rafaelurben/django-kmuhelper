@@ -182,8 +182,8 @@ class OrderFee(CustomModel):
 
     # Display methods
     @admin.display(description=_("Name"), ordering="name")
-    def clean_name(self):
-        return langselect(self.name)
+    def clean_name(self, lang="de"):
+        return langselect(self.name, lang)
 
     @admin.display(description=_("Zwischensumme (exkl. MwSt)"))
     def display_subtotal(self):
@@ -218,15 +218,21 @@ class OrderFee(CustomModel):
 class OrderItem(CustomModel):
     """Model representing the connection between 'Order' and 'Product'"""
 
+    # Links to other models
     order = models.ForeignKey(
         to="Order",
         on_delete=models.CASCADE,
     )
-    product = models.ForeignKey(
+    linked_product = models.ForeignKey(
         to="Product",
-        verbose_name=_("Produkt"),
-        on_delete=models.PROTECT,
+        verbose_name=_("Verknüpftes Produkt"),
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        default=None,
     )
+
+    # Custom data printed on the invoice
     note = models.CharField(
         verbose_name=_("Bemerkung"),
         default="",
@@ -248,9 +254,32 @@ class OrderItem(CustomModel):
         ],
     )
 
+    # Data copied from linked product
+    article_number = models.CharField(
+        verbose_name=_("Artikelnummer"),
+        max_length=25,
+    )
+    quantity_description = models.CharField(
+        verbose_name=_("Mengenbezeichnung"),
+        max_length=100,
+        default="Stück",
+        blank=True,
+        help_text=I18N_HELP_TEXT,
+    )
+    name = models.CharField(
+        verbose_name=_("Name"),
+        max_length=500,
+        default="",
+        help_text=I18N_HELP_TEXT,
+    )
     product_price = models.FloatField(
         verbose_name=_("Produktpreis (exkl. MwSt)"),
         default=0.0,
+    )
+    vat_rate = models.FloatField(
+        verbose_name=_("MwSt-Satz"),
+        choices=constants.VAT_RATES,
+        default=constants.VAT_RATE_DEFAULT,
     )
 
     # Calculated data
@@ -266,9 +295,13 @@ class OrderItem(CustomModel):
         return runden(self.product_price * self.quantity * (self.discount / 100)) * -1
 
     # Display methods
+    @admin.display(description=_("Bezeichnung"), ordering="name")
+    def clean_name(self, lang="de"):
+        return langselect(self.name, lang)
+
     @admin.display(description=_("MwSt-Satz"))
     def display_vat_rate(self):
-        return formatprice(self.product.vat_rate)
+        return formatprice(self.vat_rate)
 
     @admin.display(description=_("Zwischensumme (exkl. MwSt)"))
     def display_subtotal(self):
@@ -276,11 +309,17 @@ class OrderItem(CustomModel):
 
     @admin.display(description=_("Bestellungsposten"))
     def __str__(self):
-        return f"({self.pk}) {self.quantity}x {self.product.clean_name()} ({self.product.pk})"
+        if self.linked_product_id:
+            return f"({self.pk}) {self.quantity}x {self.clean_name()} ({self.linked_product_id})"
+        return f"({self.pk}) {self.quantity}x {self.clean_name()}"
 
     def save(self, *args, **kwargs):
-        if not self.product_price:
-            self.product_price = runden(self.product.get_current_price())
+        if self.pk is None and self.linked_product is not None:
+            self.article_number = self.linked_product.article_number
+            self.quantity_description = self.linked_product.quantity_description
+            self.name = self.linked_product.name
+            self.product_price = runden(self.linked_product.get_current_price())
+            self.vat_rate = self.linked_product.vat_rate
         super().save(*args, **kwargs)
 
     class Meta:
@@ -447,7 +486,7 @@ class Order(CustomModel, AddressModelMixin):
     products = models.ManyToManyField(
         to="Product",
         through="OrderItem",
-        through_fields=("order", "product"),
+        through_fields=("order", "linked_product"),
     )
 
     fees = models.ManyToManyField(
@@ -512,8 +551,9 @@ class Order(CustomModel, AddressModelMixin):
         self.cached_sum = self.calc_total()
         if self.is_shipped and (not self.is_removed_from_stock):
             for i in self.products.through.objects.filter(order=self):
-                i.product.stock_current -= i.quantity
-                i.product.save()
+                if i.linked_product is not None:
+                    i.linked_product.stock_current -= i.quantity
+                    i.linked_product.save()
             self.is_removed_from_stock = True
 
         super().save(*args, **kwargs)
@@ -597,18 +637,16 @@ class Order(CustomModel, AddressModelMixin):
         return data
 
     def get_vat_dict(self):
-        "Get the VAT as a dictionary"
+        """Get the VAT as a dictionary
+
+        Format: { rate: total, rate2: total2 }"""
         vat_dict = {}
-        for p in self.products.through.objects.filter(order=self).select_related(
-            "product"
-        ):
-            if str(p.product.vat_rate) in vat_dict:
-                vat_dict[str(p.product.vat_rate)] += p.calc_subtotal()
+        for p in self.products.through.objects.filter(order=self):
+            if str(p.vat_rate) in vat_dict:
+                vat_dict[str(p.vat_rate)] += p.calc_subtotal()
             else:
-                vat_dict[str(p.product.vat_rate)] = p.calc_subtotal()
-        for k in self.fees.through.objects.filter(order=self).select_related(
-            "linked_fee"
-        ):
+                vat_dict[str(p.vat_rate)] = p.calc_subtotal()
+        for k in self.fees.through.objects.filter(order=self):
             if str(k.vat_rate) in vat_dict:
                 vat_dict[str(k.vat_rate)] += k.calc_subtotal()
             else:
@@ -619,13 +657,9 @@ class Order(CustomModel, AddressModelMixin):
 
     def calc_total_without_vat(self):
         total = 0
-        for i in self.products.through.objects.filter(order=self).select_related(
-            "product"
-        ):
+        for i in self.products.through.objects.filter(order=self):
             total += i.calc_subtotal()
-        for i in self.fees.through.objects.filter(order=self).select_related(
-            "linked_fee"
-        ):
+        for i in self.fees.through.objects.filter(order=self):
             total += i.calc_subtotal()
         return runden(total)
 
@@ -898,7 +932,10 @@ class Order(CustomModel, AddressModelMixin):
             name=gettext("Rücksendung von Bestellung #%d") % self.pk,
         )
         for lp in self.products.through.objects.filter(order=self):
-            new.products.add(lp.product, through_defaults={"quantity": lp.quantity})
+            if lp.linked_product is not None:
+                new.products.add(
+                    lp.linked_product, through_defaults={"quantity": lp.quantity}
+                )
         new.save()
         return new
 
@@ -1576,7 +1613,7 @@ class Product(CustomModel):
     def get_reserved_stock(self):
         return (
             OrderItem.objects.filter(
-                order__is_shipped=False, product_id=self.pk
+                order__is_shipped=False, linked_product_id=self.pk
             ).aggregate(models.Sum("quantity"))["quantity__sum"]
             or 0
         )
