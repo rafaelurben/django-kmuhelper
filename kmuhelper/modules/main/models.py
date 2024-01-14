@@ -14,8 +14,6 @@ from django.utils.translation import (
     gettext,
     npgettext,
 )
-from rich import print
-
 from kmuhelper import settings, constants
 from kmuhelper.modules.emails.models import EMail, Attachment
 from kmuhelper.modules.main.mixins import AddressModelMixin
@@ -23,6 +21,7 @@ from kmuhelper.modules.pdfgeneration import PDFOrder
 from kmuhelper.overrides import CustomModel
 from kmuhelper.translations import langselect, I18N_HELP_TEXT, Language
 from kmuhelper.utils import runden, formatprice, modulo10rekursiv, faq
+from rich import print
 
 _ = gettext_lazy
 
@@ -185,11 +184,6 @@ class OrderFee(CustomModel):
     def clean_name(self, lang="de"):
         return langselect(self.name, lang)
 
-    @admin.display(description=_("Zwischensumme (exkl. MwSt)"))
-    def display_subtotal(self):
-        return formatprice(self.calc_subtotal()) + " CHF"
-
-    @admin.display(description=_("Bestellungskosten"))
     def __str__(self):
         if self.linked_fee:
             return f"({self.pk}) {self.clean_name()} ({self.linked_fee.pk})"
@@ -303,15 +297,10 @@ class OrderItem(CustomModel):
     def display_vat_rate(self):
         return formatprice(self.vat_rate)
 
-    @admin.display(description=_("Zwischensumme (exkl. MwSt)"))
-    def display_subtotal(self):
-        return formatprice(self.calc_subtotal()) + " CHF"
-
-    @admin.display(description=_("Bestellungsposten"))
     def __str__(self):
         if self.linked_product_id:
-            return f"({self.pk}) {self.quantity}x {self.clean_name()} ({self.linked_product_id})"
-        return f"({self.pk}) {self.quantity}x {self.clean_name()}"
+            return f"({self.pk}) {self.quantity}x {self.clean_name()} (Art. {self.article_number}, #{self.linked_product_id})"
+        return f"({self.pk}) {self.quantity}x {self.clean_name()} (Art. {self.article_number})"
 
     def save(self, *args, **kwargs):
         if self.pk is None and self.linked_product is not None:

@@ -132,6 +132,54 @@
 {% endblock %}
 
 {% block after_field_sets %}
+
+    {# Order item inline column collapser #}
+    <span id="orderitem-column-collapser">
+        (<a onclick="toggleProductInlineExtend()">Mehr/weniger Spalten anzeigen</a>)
+    </span>
+    <style>
+        #orderitem_set-group:not(.showmore) {
+            .column-article_number,
+            .column-quantity_description,
+            .field-article_number,
+            .field-quantity_description {
+                display: none;
+            }
+        }
+
+        #orderitem-column-collapser a {
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        #orderitem_set-group, #orderfee_set-group {
+            .field-vat_rate select {
+                max-width: 6em;
+            }
+
+            .field-discount input {
+                max-width: 6em;
+            }
+            
+            .field-article_number input {
+                max-width: 6rem;
+            }
+        }
+
+    </style>
+    <script>
+        function toggleProductInlineExtend() {
+            document.getElementById("orderitem_set-group").classList.toggle("showmore");
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            $("#orderitem_set-group h2").append(
+                document.getElementById("orderitem-column-collapser")
+            )
+        })
+    </script>
+
+    {# Address copy helper #}
     {% if change and has_change_permission and not original.is_shipped %}
         <div id="auto-copy-form-row" class="form-row">
             <div>

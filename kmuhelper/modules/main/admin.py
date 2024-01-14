@@ -1,7 +1,8 @@
 from django.contrib import admin, messages
 from django.db.models import Count
-from django.urls import path
+from django.urls import path, reverse
 from django.utils import timezone
+from django.utils.html import format_html
 from django.utils.translation import gettext_lazy, ngettext
 
 from kmuhelper import constants
@@ -25,6 +26,7 @@ from kmuhelper.overrides import (
     CustomTabularInline,
     CustomStackedInline,
 )
+from kmuhelper.utils import formatprice
 
 _ = gettext_lazy
 
@@ -59,20 +61,20 @@ class OrderAdminOrderItemInline(CustomTabularInline):
     extra = 0
 
     fields = (
-        "linked_product",
-        "article_number",
+        "display_product_link",
+        "article_number",  # hidden by default
         "name",
+        "note",
         "product_price",
         "quantity",
-        "quantity_description",
+        "quantity_description",  # hidden by default
         "discount",
-        "note",
         "display_subtotal",
         "vat_rate",
     )
 
     readonly_fields = (
-        "linked_product",
+        "display_product_link",
         "display_subtotal",
     )
 
@@ -83,6 +85,23 @@ class OrderAdminOrderItemInline(CustomTabularInline):
         if obj and obj.is_paid:
             fields += ["product_price", "vat_rate", "discount"]
         return fields
+
+    # Display items
+
+    @admin.display(description=_("Produkt"), ordering="linked_product")
+    def display_product_link(self, obj):
+        if obj.linked_product_id is None:
+            return "-"
+
+        link = reverse("admin:kmuhelper_product_change", args=(obj.linked_product_id,))
+
+        return format_html(
+            '<a href="{}">{}</a>', link, str(obj.linked_product_id).zfill(6)
+        )
+
+    @admin.display(description=_("Summe (exkl. MwSt)"))
+    def display_subtotal(self, obj):
+        return formatprice(obj.calc_subtotal()) + " CHF"
 
     # Permissions
 
@@ -143,17 +162,17 @@ class OrderAdminOrderFeeInline(CustomTabularInline):
     extra = 0
 
     fields = (
-        "linked_fee",
+        "display_fee_link",
         "name",
+        "note",
         "price",
         "discount",
-        "note",
         "display_subtotal",
         "vat_rate",
     )
 
     readonly_fields = (
-        "linked_fee",
+        "display_fee_link",
         "display_subtotal",
     )
 
@@ -161,6 +180,21 @@ class OrderAdminOrderFeeInline(CustomTabularInline):
         if obj and obj.is_paid:
             return ["price", "vat_rate", "discount"]
         return []
+
+    # Display items
+
+    @admin.display(description=_("Kosten"), ordering="linked_fee")
+    def display_fee_link(self, obj):
+        if obj.linked_fee_id is None:
+            return "-"
+
+        link = reverse("admin:kmuhelper_fee_change", args=(obj.linked_fee_id,))
+
+        return format_html('<a href="{}">{}</a>', link, str(obj.linked_fee_id).zfill(4))
+
+    @admin.display(description=_("Summe (exkl. MwSt)"))
+    def display_subtotal(self, obj):
+        return formatprice(obj.calc_subtotal()) + " CHF"
 
     # Permissions
 
