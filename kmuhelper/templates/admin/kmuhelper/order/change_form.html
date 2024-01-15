@@ -160,7 +160,7 @@
             .field-discount input {
                 max-width: 6em;
             }
-            
+
             .field-article_number input {
                 max-width: 6rem;
             }
@@ -173,7 +173,7 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-            $("#orderitem_set-group h2").append(
+            document.querySelector("#orderitem_set-group h2").append(
                 document.getElementById("orderitem-column-collapser")
             )
         })
