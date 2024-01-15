@@ -5,7 +5,7 @@ from django.utils import timezone
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy, ngettext
 
-from kmuhelper import constants
+from kmuhelper import constants, settings
 from kmuhelper.modules.integrations.woocommerce import WooCommerce
 from kmuhelper.modules.main import views
 from kmuhelper.modules.main.models import (
@@ -293,7 +293,7 @@ class OrderAdmin(CustomModelAdmin):
 
     def get_fieldsets(self, request, obj=None):
         if obj:
-            return [
+            fieldsets = [
                 (
                     _("Einstellungen"),
                     {"fields": ["payment_receiver", "contact_person"]},
@@ -351,6 +351,13 @@ class OrderAdmin(CustomModelAdmin):
                 ),
             ]
 
+            if obj.woocommerceid:
+                fieldsets.insert(
+                    1, (_("Verknüpfungen"), {"fields": ["display_woocommerce"]})
+                )
+
+            return fieldsets
+
         return [
             (_("Einstellungen"), {"fields": ["payment_receiver", "contact_person"]}),
             (_("Infos"), {"fields": ["status"]}),
@@ -379,6 +386,7 @@ class OrderAdmin(CustomModelAdmin):
         "tracking_link",
         "display_total_breakdown",
         "display_payment_conditions",
+        "display_woocommerce",
     )
 
     def get_additional_readonly_fields(self, request, obj=None):
@@ -407,6 +415,23 @@ class OrderAdmin(CustomModelAdmin):
         if request.user.has_perm("kmuhelper.view_fee"):
             inlines += [OrderAdminOrderFeeInlineImport]
         return inlines
+
+    # Display
+
+    @admin.display(description="WooCommerce", ordering="woocommerceid")
+    def display_woocommerce(self, obj):
+        if not obj.woocommerceid:
+            return None
+
+        link = "{}/wp-admin/post.php?action=edit&post={}".format(
+            settings.get_secret_db_setting("wc-url"), obj.woocommerceid
+        )
+
+        return format_html(
+            '<a target="_blank" href="{}">#{}</a>',
+            link,
+            str(obj.woocommerceid),
+        )
 
     # Actions
 
@@ -574,7 +599,7 @@ class CustomerAdminOrderInline(CustomTabularInline):
 @admin.register(Customer)
 class CustomerAdmin(CustomModelAdmin):
     def get_fieldsets(self, request, obj=None):
-        default = [
+        fieldsets = [
             (
                 _("Infos"),
                 {"fields": ["first_name", "last_name", "company", "email", "language"]},
@@ -596,12 +621,16 @@ class CustomerAdmin(CustomModelAdmin):
         ]
 
         if obj:
-            return default + [
+            if obj.woocommerceid:
+                fieldsets.insert(
+                    0, (_("Verknüpfungen"), {"fields": ["display_woocommerce"]})
+                )
+            return fieldsets + [
                 (_("Diverses"), {"fields": ["website", "note", "linked_note_html"]}),
                 (_("Erweitert"), {"fields": ["combine_with"], "classes": ["collapse"]}),
             ]
 
-        return default + [(_("Diverses"), {"fields": ["website", "note"]})]
+        return fieldsets + [(_("Diverses"), {"fields": ["website", "note"]})]
 
     ordering = ("addr_billing_postcode", "company", "last_name", "first_name")
 
@@ -632,7 +661,7 @@ class CustomerAdmin(CustomModelAdmin):
         + constants.ADDR_SHIPPING_FIELDS
     )
 
-    readonly_fields = ["linked_note_html"]
+    readonly_fields = ["linked_note_html", "display_woocommerce"]
 
     list_select_related = ["linked_note"]
 
@@ -668,6 +697,23 @@ class CustomerAdmin(CustomModelAdmin):
             )
 
     actions = ["wc_update"]
+
+    # Display
+
+    @admin.display(description="WooCommerce", ordering="woocommerceid")
+    def display_woocommerce(self, obj):
+        if not obj.woocommerceid:
+            return None
+
+        link = "{}/wp-admin/user-edit.php?user_id={}".format(
+            settings.get_secret_db_setting("wc-url"), obj.woocommerceid
+        )
+
+        return format_html(
+            '<a target="_blank" href="{}">#{}</a>',
+            link,
+            str(obj.woocommerceid),
+        )
 
     # Views
 
@@ -1040,7 +1086,7 @@ class ProductAdminProductCategoryInline(CustomTabularInline):
 @admin.register(Product)
 class ProductAdmin(CustomModelAdmin):
     def get_fieldsets(self, request, obj=None):
-        return [
+        fieldsets = [
             (_("Infos"), {"fields": ["article_number", "name"]}),
             (
                 _("Beschrieb"),
@@ -1093,6 +1139,13 @@ class ProductAdmin(CustomModelAdmin):
             ),
         ]
 
+        if obj and obj.woocommerceid:
+            fieldsets.insert(
+                0, (_("Verknüpfungen"), {"fields": ["display_woocommerce"]})
+            )
+
+        return fieldsets
+
     ordering = ("article_number", "name")
 
     list_display = (
@@ -1121,7 +1174,7 @@ class ProductAdmin(CustomModelAdmin):
         "linked_note__description",
     ]
 
-    readonly_fields = ["linked_note_html"]
+    readonly_fields = ["linked_note_html", "display_woocommerce"]
 
     autocomplete_fields = ("supplier",)
 
@@ -1186,6 +1239,23 @@ class ProductAdmin(CustomModelAdmin):
 
     actions = ["wc_update", "reset_stock", "end_sale"]
 
+    # Display
+
+    @admin.display(description="WooCommerce", ordering="woocommerceid")
+    def display_woocommerce(self, obj):
+        if not obj.woocommerceid:
+            return None
+
+        link = "{}/wp-admin/post.php?action=edit&post={}".format(
+            settings.get_secret_db_setting("wc-url"), obj.woocommerceid
+        )
+
+        return format_html(
+            '<a target="_blank" href="{}">#{}</a>',
+            link,
+            str(obj.woocommerceid),
+        )
+
     # Save
 
     def save_model(self, request, obj, form, change):
@@ -1223,10 +1293,18 @@ class ProductCategoryAdminProductInline(CustomStackedInline):
 
 @admin.register(ProductCategory)
 class ProductCategoryAdmin(CustomModelAdmin):
-    fieldsets = [
-        (_("Infos"), {"fields": ["name", "description", "image_url"]}),
-        (_("Übergeordnete Kategorie"), {"fields": ["parent_category"]}),
-    ]
+    def get_fieldsets(self, request, obj=None):
+        fieldsets = [
+            (_("Infos"), {"fields": ["name", "description", "image_url"]}),
+            (_("Übergeordnete Kategorie"), {"fields": ["parent_category"]}),
+        ]
+
+        if obj and obj.woocommerceid:
+            fieldsets.insert(
+                0, (_("Verknüpfungen"), {"fields": ["display_woocommerce"]})
+            )
+
+        return fieldsets
 
     list_display = (
         "clean_name",
@@ -1238,6 +1316,8 @@ class ProductCategoryAdmin(CustomModelAdmin):
     search_fields = ["name", "description"]
 
     ordering = ("parent_category", "name")
+
+    readonly_fields = ("display_woocommerce",)
 
     inlines = [ProductCategoryAdminProductInline]
 
@@ -1278,6 +1358,23 @@ class ProductCategoryAdmin(CustomModelAdmin):
             )
 
     actions = ["wc_update"]
+
+    # Display
+
+    @admin.display(description="WooCommerce", ordering="woocommerceid")
+    def display_woocommerce(self, obj):
+        if not obj.woocommerceid:
+            return None
+
+        link = "{}/wp-admin/post.php?action=edit&post={}".format(
+            settings.get_secret_db_setting("wc-url"), obj.woocommerceid
+        )
+
+        return format_html(
+            '<a target="_blank" href="{}">#{}</a>',
+            link,
+            str(obj.woocommerceid),
+        )
 
 
 @admin.register(PaymentReceiver)
