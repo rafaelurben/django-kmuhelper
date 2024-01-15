@@ -7,7 +7,6 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _, gettext
-
 from kmuhelper import widgets
 
 
@@ -52,7 +51,7 @@ class CustomModel(models.Model):
                 viewname = "admin:kmuhelper_note_change"
 
             link = reverse(viewname, kwargs={"object_id": self.linked_note.pk})
-            text = gettext("Notiz ansehen")
+            text = gettext("Notiz #%d") % self.linked_note.pk
         else:
             if is_app:
                 viewname = "admin:kmuhelper_app_todo_add"
