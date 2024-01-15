@@ -180,15 +180,6 @@ ul.messagelist li:not(:last-child) {
     background-color: lightgray;
 }
 
-/*
-.object-tools .dropdown > a {
-    padding: 3px 18px 3px 12px;
-    background-image: url(../../img/selector-icons.svg);
-    background-repeat: no-repeat;
-    background-position-x: right;
-    background-position-y: -160px;
-} */
-
 .dropdown > a::after, .dropdown > div > b:first-child::after {
     content: "▼";
     padding-left: 0.5em;
