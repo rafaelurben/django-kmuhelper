@@ -14,6 +14,8 @@ from django.utils.translation import (
     gettext,
     npgettext,
 )
+from rich import print
+
 from kmuhelper import settings, constants
 from kmuhelper.modules.emails.models import EMail, Attachment
 from kmuhelper.modules.main.mixins import AddressModelMixin
@@ -21,7 +23,6 @@ from kmuhelper.modules.pdfgeneration import PDFOrder
 from kmuhelper.overrides import CustomModel
 from kmuhelper.translations import langselect, I18N_HELP_TEXT, Language
 from kmuhelper.utils import runden, formatprice, modulo10rekursiv, faq
-from rich import print
 
 _ = gettext_lazy
 
@@ -390,16 +391,16 @@ class Order(CustomModel, AddressModelMixin):
         verbose_name=_("Trackingnummer"),
         default="",
         blank=True,
-        max_length=25,
+        max_length=35,
         validators=[
             RegexValidator(
-                r"^99\.[0-9]{2}\.[0-9]{6}\.[0-9]{8}$",
-                _("Bite benutze folgendes Format: 99.xx.xxxxxx.xxxxxxxx"),
+                r"^[A-Z0-9\.]{8,}$",
+                _(
+                    "Erlaubte Zeichen: Grossbuchstaben, Zahlen und Punkte. Länge: 8-35 Zeichen"
+                ),
             )
         ],
-        help_text=_(
-            "Bitte gib hier eine Trackingnummer der Schweizer Post ein. (optional)"
-        ),
+        help_text=_("Trackingnummer ohne Leerzeichen. (optional)"),
     )
 
     is_removed_from_stock = models.BooleanField(
