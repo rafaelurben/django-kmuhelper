@@ -2,6 +2,6 @@ Django==5.0.2
 requests==2.31.0
 WooCommerce==3.0.0
 reportlab==4.1.0
-rich==13.7.0
+rich==13.7.1
 packaging==23.2
 defusedxml==0.7.1
