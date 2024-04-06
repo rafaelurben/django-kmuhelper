@@ -9,8 +9,6 @@ from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext_lazy, gettext, ngettext
 from django.views.decorators.csrf import csrf_exempt
-from rich import print
-
 from kmuhelper import settings
 from kmuhelper.decorators import (
     require_object,
@@ -27,6 +25,7 @@ from kmuhelper.modules.integrations.woocommerce.utils import (
 )
 from kmuhelper.modules.main.models import Product, Customer, ProductCategory, Order
 from kmuhelper.utils import render_error
+from rich import print
 
 _ = gettext_lazy
 
@@ -308,19 +307,19 @@ def wc_webhooks(request):
 
     # 3. Check request signature
 
-    if not ("x-wc-webhook-signature" in request.headers):
-        log("[orange_red1]WooCommerce Webhook rejected (no signature)![/]")
-        return JsonResponse(
-            {
-                "accepted": False,
-                "reason": "Invalid signature!",
-            },
-            status=403,
-        )
-
     secret = settings.get_db_setting("wc-webhook-secret")
 
     if secret:
+        if not ("x-wc-webhook-signature" in request.headers):
+            log("[orange_red1]WooCommerce Webhook rejected (no signature)![/]")
+            return JsonResponse(
+                {
+                    "accepted": False,
+                    "reason": "Invalid signature!",
+                },
+                status=403,
+            )
+
         received_signature = bytes(
             request.headers["x-wc-webhook-signature"], encoding="utf-8"
         )
@@ -390,7 +389,10 @@ def wc_webhooks(request):
             order.woocommerceid = 0
             order.save()
     else:
-        log(f"[orange_red1]Unbekanntes Thema: '{topic}'")
+        log(f"[orange_red1]Unknown topic: '{topic}'")
+        return JsonResponse(
+            {"accepted": False, "message": "Topic not supported!"}, status=400
+        )
 
     return JsonResponse({"accepted": True})
 
