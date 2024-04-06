@@ -1,11 +1,10 @@
 from django.utils.html import strip_tags
-from rich import print
-from rich.progress import Progress
-from woocommerce import API as WCAPI
-
 from kmuhelper import settings, constants
 from kmuhelper.modules.main.models import Product, Customer, ProductCategory, Order
 from kmuhelper.utils import runden
+from rich import print
+from rich.progress import Progress
+from woocommerce import API as WCAPI
 
 PREFIX = "[deep_pink4][KMUHelper WooCommerce][/] -"
 
@@ -98,6 +97,17 @@ class WooCommerce:
         )
         if product["manage_stock"]:
             newproduct.stock_current = product["stock_quantity"]
+
+        # If product is a variation of a parent product
+        if newproduct["type"] == "variation":
+            parent, created = Product.objects.get_or_create(
+                woocommerceid=newproduct["parent_id"]
+            )
+            if created:
+                cls.product_update(parent, api=wcapi)
+            newproduct.parent = parent
+
+        # Categories
         for category in product["categories"]:
             obj, created = ProductCategory.objects.get_or_create(
                 woocommerceid=category["id"]
@@ -148,6 +158,16 @@ class WooCommerce:
         if newproduct["sale_price"]:
             product.sale_price = newproduct["sale_price"]
 
+        # If product is a variation of a parent product
+        if newproduct["type"] == "variation":
+            parent, created = Product.objects.get_or_create(
+                woocommerceid=newproduct["parent_id"]
+            )
+            if created:
+                cls.product_update(parent, api=wcapi)
+            product.parent = parent
+
+        # Categories
         product.categories.clear()
         newcategories = []
         for category in newproduct["categories"]:
@@ -583,8 +603,14 @@ class WooCommerce:
             neworder.addr_shipping_phone = customer.addr_shipping_phone
 
         for item in order["line_items"]:
+            # Use variation id if available
+            if "variation_id" in item and item["variation_id"]:
+                product_id = item["variation_id"]
+            else:
+                product_id = item["product_id"]
+
             product, created = Product.objects.get_or_create(
-                woocommerceid=int(item["product_id"])
+                woocommerceid=int(product_id)
             )
             if created:
                 product = cls.product_update(product, api=wcapi)
