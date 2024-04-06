@@ -99,9 +99,9 @@ class WooCommerce:
             newproduct.stock_current = product["stock_quantity"]
 
         # If product is a variation of a parent product
-        if newproduct["type"] == "variation":
+        if product["type"] == "variation":
             parent, created = Product.objects.get_or_create(
-                woocommerceid=newproduct["parent_id"]
+                woocommerceid=product["parent_id"]
             )
             if created:
                 cls.product_update(parent, api=wcapi)
