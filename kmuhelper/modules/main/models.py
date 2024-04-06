@@ -14,8 +14,6 @@ from django.utils.translation import (
     gettext,
     npgettext,
 )
-from rich import print
-
 from kmuhelper import settings, constants
 from kmuhelper.modules.emails.models import EMail, Attachment
 from kmuhelper.modules.main.mixins import AddressModelMixin
@@ -23,6 +21,7 @@ from kmuhelper.modules.pdfgeneration import PDFOrder
 from kmuhelper.overrides import CustomModel
 from kmuhelper.translations import langselect, I18N_HELP_TEXT, Language
 from kmuhelper.utils import runden, formatprice, modulo10rekursiv, faq
+from rich import print
 
 _ = gettext_lazy
 
@@ -1560,6 +1559,14 @@ class Product(CustomModel):
         verbose_name=_("Lieferantenurl (Für Nachbestellungen)"),
         default="",
         blank=True,
+    )
+
+    parent = models.ForeignKey(
+        to="self",
+        verbose_name=_("Übergeordnetes Produkt"),
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
     )
 
     categories = models.ManyToManyField(

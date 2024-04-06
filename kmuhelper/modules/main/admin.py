@@ -1065,6 +1065,9 @@ class ProductAdminProductCategoryInline(CustomTabularInline):
     model = Product.categories.through
     extra = 0
 
+    verbose_name = _("Verknüpfte Kategorie")
+    verbose_name_plural = _("Verknüpfte Kategorien")
+
     autocomplete_fields = ("category",)
 
     # Custom queryset
@@ -1083,10 +1086,35 @@ class ProductAdminProductCategoryInline(CustomTabularInline):
         return super().has_add_permission(request, obj)
 
 
+class ProductAdminChildrenInline(CustomTabularInline):
+    model = Product
+    extra = 0
+    show_change_link = True
+
+    fk_name = "parent"
+    verbose_name = _("Untergeordnetes Produkt")
+    verbose_name_plural = _("Untergeordnete Produkte")
+
+    fields = ("id", "article_number", "name", "selling_price")
+
+    # Permissions
+
+    NO_ADD = True
+    NO_CHANGE = True
+
+
 @admin.register(Product)
 class ProductAdmin(CustomModelAdmin):
     def get_fieldsets(self, request, obj=None):
         fieldsets = [
+            (
+                _("Verknüpfungen"),
+                {
+                    "fields": ["display_woocommerce", "parent"]
+                    if obj and obj.woocommerceid
+                    else ["parent"]
+                },
+            ),
             (_("Infos"), {"fields": ["article_number", "name"]}),
             (
                 _("Beschrieb"),
@@ -1139,11 +1167,6 @@ class ProductAdmin(CustomModelAdmin):
             ),
         ]
 
-        if obj and obj.woocommerceid:
-            fieldsets.insert(
-                0, (_("Verknüpfungen"), {"fields": ["display_woocommerce"]})
-            )
-
         return fieldsets
 
     ordering = ("article_number", "name")
@@ -1178,7 +1201,7 @@ class ProductAdmin(CustomModelAdmin):
 
     autocomplete_fields = ("supplier",)
 
-    inlines = (ProductAdminProductCategoryInline,)
+    inlines = (ProductAdminProductCategoryInline, ProductAdminChildrenInline)
 
     save_on_top = True
 
