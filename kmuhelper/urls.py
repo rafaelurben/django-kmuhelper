@@ -15,18 +15,18 @@ urlpatterns = [
         "_templatetest/<path:templatename>", views._templatetest, name="_templatetest"
     ),
     # Main modules
-    path("main/", include("kmuhelper.modules.main")),
-    path("api/", include("kmuhelper.modules.api")),
-    path("app/", include("kmuhelper.modules.app")),
-    path("emails/", include("kmuhelper.modules.emails")),
-    path("stats/", include("kmuhelper.modules.stats")),
-    path("settings/", include("kmuhelper.modules.settings")),
+    path("main/", include("kmuhelper.modules.main.urls")),
+    path("api/", include("kmuhelper.modules.api.urls")),
+    path("app/", include("kmuhelper.modules.app.urls")),
+    path("emails/", include("kmuhelper.modules.emails.urls")),
+    path("stats/", include("kmuhelper.modules.stats.urls")),
+    path("settings/", include("kmuhelper.modules.settings.urls")),
     # Deprecated urls
     path("wc/", include("kmuhelper.modules.integrations.woocommerce")),
     # Integrations
     path(
         "integrations/woocommerce/",
-        include("kmuhelper.modules.integrations.woocommerce"),
+        include("kmuhelper.modules.integrations.woocommerce.urls"),
     ),
     # 404 Not found
     re_path("^.*$", views.error),
