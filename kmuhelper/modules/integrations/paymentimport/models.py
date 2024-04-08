@@ -14,6 +14,8 @@ _ = gettext_lazy
 
 
 class PaymentImport(CustomModel):
+    PKFILL_WIDTH = 5
+
     time_imported = models.DateTimeField(
         verbose_name=_("Importiert am"),
         auto_now_add=True,

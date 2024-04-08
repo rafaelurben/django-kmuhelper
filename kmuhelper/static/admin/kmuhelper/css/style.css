@@ -63,9 +63,28 @@ form .wide textarea + div.help {
     margin-left: 200px;
 }
 
+/* More styling */
+
+.field-display_customer {
+    white-space: nowrap;
+}
+
+/* ID styling */
+
+.field-pkfill {
+    font-family: "Courier New", monospace;
+    text-align: right;
+}
+
+.column-pkfill {
+    width: 1px;
+}
+
 /* Price styling */
 
 .text-align-right,
+.field-display_current_price,
+.column-display_current_price,
 .field-display_cached_sum,
 .column-display_cached_sum,
 .field-display_subtotal,

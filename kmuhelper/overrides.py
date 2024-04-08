@@ -13,10 +13,13 @@ from kmuhelper import widgets
 class CustomModel(models.Model):
     """django.db.models.Model with custom overrides"""
 
-    def pkfill(self, width=6):
+    PKFILL_WIDTH = 6
+
+    @admin.display(description="ID", ordering="pk")
+    def pkfill(self, width=None):
         """Get the primary key of this object padded with zeros"""
 
-        return str(self.pk).zfill(width)
+        return str(self.pk).zfill(width or self.PKFILL_WIDTH)
 
     @property
     def to_dict(self):
@@ -70,6 +73,7 @@ class CustomModelAdmin(admin.ModelAdmin):
     """django.contrib.admin.ModelAdmin with custom overrides"""
 
     formfield_overrides = {models.JSONField: {"widget": widgets.PrettyJSONWidget}}
+    list_max_show_all = 1000
 
     def _get_obj_does_not_exist_redirect(self, request, opts, object_id):
         """Redirect to changelist page instead of admin home if object is not found"""

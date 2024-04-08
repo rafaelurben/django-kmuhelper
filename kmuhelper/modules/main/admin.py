@@ -43,7 +43,7 @@ class ContactPersonAdmin(CustomModelAdmin):
 
     ordering = ("name",)
 
-    list_display = ("name", "phone", "email", "is_default")
+    list_display = ("pkfill", "name", "phone", "email", "is_default")
     search_fields = ["name", "phone", "email"]
 
     def save_model(self, request, obj, form, change):
@@ -246,9 +246,9 @@ class OrderAdminOrderFeeInlineImport(CustomTabularInline):
 @admin.register(Order)
 class OrderAdmin(CustomModelAdmin):
     list_display = (
-        "id",
+        "pkfill",
         "date",
-        "customer",
+        "display_customer",
         "status",
         "payment_method",
         "is_shipped",
@@ -551,7 +551,7 @@ class OrderAdmin(CustomModelAdmin):
 
 @admin.register(Fee)
 class FeeAdmin(CustomModelAdmin):
-    list_display = ["clean_name", "price", "vat_rate"]
+    list_display = ["pkfill", "clean_name", "price", "vat_rate"]
 
     search_fields = ("name", "price")
 
@@ -635,7 +635,7 @@ class CustomerAdmin(CustomModelAdmin):
     ordering = ("addr_billing_postcode", "company", "last_name", "first_name")
 
     list_display = (
-        "id",
+        "pkfill",
         "company",
         "last_name",
         "first_name",
@@ -758,7 +758,7 @@ class SupplierAdmin(CustomModelAdmin):
 
     ordering = ("abbreviation",)
 
-    list_display = ("abbreviation", "name", "note")
+    list_display = ("pkfill", "abbreviation", "name", "note")
     search_fields = ["abbreviation", "name", "address", "note"]
 
     # Views
@@ -845,6 +845,7 @@ class SupplyInlineProductsAdd(CustomTabularInline):
 @admin.register(Supply)
 class SupplyAdmin(CustomModelAdmin):
     list_display = (
+        "pkfill",
         "name",
         "date",
         "total_quantity",
@@ -936,7 +937,7 @@ class SupplyAdmin(CustomModelAdmin):
 
 @admin.register(Note)
 class NoteAdmin(CustomModelAdmin):
-    list_display = ["name", "description", "priority", "done", "created_at"]
+    list_display = ["pkfill", "name", "description", "priority", "done", "created_at"]
     list_filter = ["done", "priority"]
 
     readonly_fields = ["links"]
@@ -1172,22 +1173,19 @@ class ProductAdmin(CustomModelAdmin):
     ordering = ("article_number", "name")
 
     list_display = (
-        "article_number",
+        "pkfill",
+        "display_article_number",
         "clean_name",
         "clean_short_description",
         "clean_description",
-        "get_current_price",
-        "is_on_sale",
-        "stock_current",
         "html_image",
-        "linked_note_html",
-    )
-    list_display_links = (
-        "article_number",
+        "display_current_price",
         "is_on_sale",
+        "linked_note_html",
     )
     list_filter = ("supplier", "categories", "stock_current")
     search_fields = [
+        "pk",
         "article_number",
         "name",
         "short_description",
@@ -1197,7 +1195,7 @@ class ProductAdmin(CustomModelAdmin):
         "linked_note__description",
     ]
 
-    readonly_fields = ["linked_note_html", "display_woocommerce"]
+    readonly_fields = ["pkfill", "linked_note_html", "display_woocommerce"]
 
     autocomplete_fields = ("supplier",)
 
@@ -1330,6 +1328,7 @@ class ProductCategoryAdmin(CustomModelAdmin):
         return fieldsets
 
     list_display = (
+        "pkfill",
         "clean_name",
         "clean_description",
         "parent_category",
@@ -1428,6 +1427,7 @@ class PaymentReceiverAdmin(CustomModelAdmin):
     ]
 
     list_display = (
+        "pkfill",
         "admin_name",
         "mode",
         "active_iban",

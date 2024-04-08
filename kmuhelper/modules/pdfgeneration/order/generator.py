@@ -3,12 +3,6 @@
 from datetime import datetime
 
 from django.utils.translation import pgettext
-from reportlab.lib.colors import black
-from reportlab.lib.styles import ParagraphStyle
-from reportlab.lib.units import mm
-from reportlab.lib.utils import ImageReader
-from reportlab.platypus import Table, TableStyle, Paragraph, Spacer, TopPadder, Flowable
-
 from kmuhelper import settings
 from kmuhelper.modules.pdfgeneration.base import PDFGenerator
 from kmuhelper.modules.pdfgeneration.swiss_qr_invoice import QRInvoiceFlowable
@@ -18,6 +12,11 @@ from kmuhelper.translations import (
     langselect,
 )
 from kmuhelper.utils import formatprice
+from reportlab.lib.colors import black
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.lib.units import mm
+from reportlab.lib.utils import ImageReader
+from reportlab.platypus import Table, TableStyle, Paragraph, Spacer, TopPadder, Flowable
 
 style_default = ParagraphStyle("Normal", fontname="Helvetica")
 style_bold = ParagraphStyle("Bold", fontname="Helvetica-Bold")
@@ -510,14 +509,14 @@ class _PDFOrderHeader(Flowable):
             c.drawString(
                 64 * mm,
                 0 * mm,
-                f"{order.date.year}-{order.pkfill(6)}"
+                f"{order.date.year}-{order.pkfill()}"
                 + (f" (Online #{order.woocommerceid})" if order.woocommerceid else ""),
             )
         else:
             c.drawString(
                 120 * mm,
                 0 * mm,
-                f"{order.date.year}-{order.pkfill(6)}"
+                f"{order.date.year}-{order.pkfill()}"
                 + (f" (Online #{order.woocommerceid})" if order.woocommerceid else ""),
             )
 

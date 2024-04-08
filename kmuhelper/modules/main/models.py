@@ -78,6 +78,8 @@ def default_payment_conditions():
 class ContactPerson(CustomModel):
     """Model representing a contact person"""
 
+    PKFILL_WIDTH = 3
+
     name = models.CharField(
         verbose_name=_("Name"),
         max_length=50,
@@ -679,7 +681,7 @@ class Order(CustomModel, AddressModelMixin):
                 else ""
             )
             + (
-                f"{self.pkfill(6)}"
+                f"{self.pkfill()}"
                 + (f" (WC#{self.woocommerceid})" if self.woocommerceid else "")
             )
             + (
@@ -691,15 +693,7 @@ class Order(CustomModel, AddressModelMixin):
 
     @admin.display(description=_("Info"))
     def info(self):
-        return f'{self.date.strftime("%d.%m.%Y")} - ' + (
-            (
-                self.customer.company
-                if self.customer.company
-                else (f"{self.customer.first_name} {self.customer.last_name}")
-            )
-            if self.customer
-            else "Gast"
-        )
+        return f'{self.date.strftime("%d.%m.%Y")} - ' + self.display_customer()
 
     @admin.display(description=_("Bezahlt nach"))
     def display_paid_after(self):
@@ -729,6 +723,23 @@ class Order(CustomModel, AddressModelMixin):
             output += f"{price} CHF " + gettext("bis") + f" {datestr} ({percent}%)<br>"
 
         return mark_safe(output)
+
+    @admin.display(description=_("Kunde"), ordering="customer")
+    def display_customer(self):
+        if self.customer:
+            return str(self.customer)
+
+        text = f"{_('Gast')} - "
+        if self.addr_billing_first_name:
+            text += self.addr_billing_first_name + " "
+        if self.addr_billing_last_name:
+            text += self.addr_billing_last_name + " "
+        if self.addr_billing_company:
+            text += self.addr_billing_company + " "
+        if self.addr_billing_postcode and self.addr_billing_city:
+            text += f"({self.addr_billing_postcode} {self.addr_billing_city})"
+
+        return text
 
     def is_correct_payment(self, amount: float, date: datetime):
         "Check if a payment made on a certain date has the correct amount for this order"
@@ -951,6 +962,8 @@ class Order(CustomModel, AddressModelMixin):
 class Fee(CustomModel):
     """Model representing additional costs"""
 
+    PKFILL_WIDTH = 3
+
     name = models.CharField(
         verbose_name=_("Bezeichnung"),
         max_length=500,
@@ -991,6 +1004,7 @@ class Fee(CustomModel):
 class Customer(CustomModel, AddressModelMixin):
     """Model representing a customer"""
 
+    PKFILL_WIDTH = 8
     NOTE_RELATION = "customer"
 
     woocommerceid = models.IntegerField(
@@ -1074,15 +1088,15 @@ class Customer(CustomModel, AddressModelMixin):
 
     @admin.display(description=_("Kunde"))
     def __str__(self):
-        s = f"{self.pkfill(8)} "
+        s = f"{self.pkfill()} "
         if self.woocommerceid:
             s += f"(WC#{self.woocommerceid}) "
-        if self.first_name:
-            s += f"{self.first_name} "
-        if self.last_name:
-            s += f"{self.last_name} "
-        if self.company:
-            s += f"{self.company} "
+        if self.first_name or self.addr_billing_first_name:
+            s += f"{self.first_name or self.addr_billing_first_name} "
+        if self.last_name or self.addr_billing_last_name:
+            s += f"{self.last_name or self.addr_billing_last_name} "
+        if self.company or self.addr_billing_company:
+            s += f"{self.company or self.addr_billing_company} "
         if self.addr_billing_postcode and self.addr_billing_city:
             s += f"({self.addr_billing_postcode} {self.addr_billing_city})"
         return s
@@ -1174,6 +1188,8 @@ class Customer(CustomModel, AddressModelMixin):
 
 class Supplier(CustomModel):
     """Model representing a supplier (used only for categorizing)"""
+
+    PKFILL_WIDTH = 4
 
     abbreviation = models.CharField(
         verbose_name=_("Kürzel"),
@@ -1589,23 +1605,32 @@ class Product(CustomModel):
     def clean_description(self, lang="de"):
         return langselect(self.description, lang)
 
-    @admin.display(description=_("In Aktion?"), boolean=True)
+    @admin.display(description=_("Aktion?"), boolean=True)
     def is_on_sale(self, zeitpunkt: datetime = None):
         zp = zeitpunkt or timezone.now()
         if self.sale_from and self.sale_to and self.sale_price:
             return bool((self.sale_from < zp) and (zp < self.sale_to))
         return False
 
-    @admin.display(description=_("Aktueller Preis in CHF (exkl. MwSt)"))
     def get_current_price(self, zeitpunkt: datetime = None):
         zp = zeitpunkt or timezone.now()
         return self.sale_price if self.is_on_sale(zp) else self.selling_price
 
-    @admin.display(description=_("Bild"), ordering="image_url")
+    @admin.display(description=_("Aktueller Preis"))
+    def display_current_price(self):
+        return formatprice(self.get_current_price()) + " CHF"
+
+    @admin.display(description=_("Nr."), ordering="article_number")
+    def display_article_number(self):
+        return self.article_number
+
+    @admin.display(description=_("Produktbild"), ordering="image_url")
     def html_image(self):
         if self.image_url:
             return format_html('<img src="{}" width="100px">', self.image_url)
         return ""
+
+    # Stock
 
     def get_reserved_stock(self):
         return (
@@ -1698,6 +1723,8 @@ class Product(CustomModel):
 class ProductCategory(CustomModel):
     """Model representing a category for products"""
 
+    PKFILL_WIDTH = 4
+
     woocommerceid = models.IntegerField(
         verbose_name=_("WooCommerce ID"),
         default=0,
@@ -1784,6 +1811,8 @@ class ProductProductCategoryConnection(CustomModel):
 
 class PaymentReceiver(CustomModel):
     """Model representing a payment receiver for the qr bill"""
+
+    PKFILL_WIDTH = 3
 
     # Internal
 

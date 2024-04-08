@@ -1,4 +1,3 @@
-from django.contrib import admin
 from django.db import models
 from django.utils.translation import gettext_lazy
 
@@ -74,13 +73,8 @@ class App_IncomingPayments(Order):
 class App_Stock(Product):
     IS_APP_MODEL = True
 
-    @admin.display(description=_("Preis"))
-    def get_current_price(self, *args, **kwargs):
-        return super().get_current_price(*args, **kwargs)
-
-    @admin.display(description=_("Nr."), ordering="article_number")
-    def nr(self):
-        return self.article_number
+    display_current_price = Product.display_current_price
+    display_article_number = Product.display_article_number
 
     class Meta:
         proxy = True

@@ -18,8 +18,14 @@ _ = gettext_lazy
 
 @admin.register(Attachment)
 class AttachmentAdmin(CustomModelAdmin):
-    list_display = ["filename", "description", "time_created", "autocreated", "id"]
-    list_display_links = ["filename"]
+    list_display = [
+        "pkfill",
+        "filename",
+        "description",
+        "time_created",
+        "autocreated",
+        "id",
+    ]
 
     search_fields = (
         "filename",
@@ -107,6 +113,7 @@ class EMailAdmin(CustomModelAdmin):
     ordering = ("sent", "-time_sent", "-time_created")
 
     list_display = (
+        "pkfill",
         "subject",
         "to",
         "html_template",
@@ -160,7 +167,7 @@ class EMailAdmin(CustomModelAdmin):
 
 @admin.register(EMailTemplate)
 class EMailTemplateAdmin(CustomModelAdmin):
-    list_display = ["title", "description", "get_use_link"]
+    list_display = ["pkfill", "title", "description", "get_use_link"]
 
     search_fields = (
         "title",

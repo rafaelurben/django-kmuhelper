@@ -47,6 +47,7 @@ class PaymentImportAdmin(CustomModelAdmin):
     ordering = ("is_processed",)
 
     list_display = (
+        "pkfill",
         "time_imported",
         "entrycount",
         "is_processed",
