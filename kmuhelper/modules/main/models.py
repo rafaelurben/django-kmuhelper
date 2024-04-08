@@ -697,7 +697,7 @@ class Order(CustomModel, AddressModelMixin):
 
     @admin.display(description=_("Bezahlt nach"))
     def display_paid_after(self):
-        if self.paid_on is None:
+        if self.paid_on is None or self.invoice_date is None:
             return "-"
 
         daydiff = (self.paid_on - self.invoice_date).days
