@@ -21,8 +21,6 @@ urlpatterns = [
     path("emails/", include("kmuhelper.modules.emails.urls")),
     path("stats/", include("kmuhelper.modules.stats.urls")),
     path("settings/", include("kmuhelper.modules.settings.urls")),
-    # Deprecated urls
-    path("wc/", include("kmuhelper.modules.integrations.woocommerce")),
     # Integrations
     path(
         "integrations/woocommerce/",
