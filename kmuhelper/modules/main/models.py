@@ -16,6 +16,7 @@ from django.utils.translation import (
 )
 from kmuhelper import settings, constants
 from kmuhelper.modules.emails.models import EMail, Attachment
+from kmuhelper.modules.integrations.woocommerce.mixins import WooCommerceModelMixin
 from kmuhelper.modules.main.mixins import AddressModelMixin
 from kmuhelper.modules.pdfgeneration import PDFOrder
 from kmuhelper.overrides import CustomModel
@@ -326,15 +327,10 @@ class OrderItem(CustomModel):
         self.save()
 
 
-class Order(CustomModel, AddressModelMixin):
+class Order(CustomModel, AddressModelMixin, WooCommerceModelMixin):
     """Model representing an order"""
 
     NOTE_RELATION = "order"
-
-    woocommerceid = models.IntegerField(
-        verbose_name=_("WooCommerce ID"),
-        default=0,
-    )
 
     date = models.DateTimeField(
         verbose_name=_("Datum"),
@@ -1001,16 +997,12 @@ class Fee(CustomModel):
     admin_icon = "fas fa-coins"
 
 
-class Customer(CustomModel, AddressModelMixin):
+class Customer(CustomModel, AddressModelMixin, WooCommerceModelMixin):
     """Model representing a customer"""
 
     PKFILL_WIDTH = 8
+    WOOCOMMERCE_URL_FORMAT = "{}/wp-admin/user-edit.php?user_id={}"
     NOTE_RELATION = "customer"
-
-    woocommerceid = models.IntegerField(
-        verbose_name=_("WooCommerce ID"),
-        default=0,
-    )
 
     email = models.EmailField(
         verbose_name=_("E-Mail Adresse"),
@@ -1458,7 +1450,7 @@ class Note(CustomModel):
     admin_icon = "fas fa-note-sticky"
 
 
-class Product(CustomModel):
+class Product(CustomModel, WooCommerceModelMixin):
     """Model representing a product"""
 
     NOTE_RELATION = "product"
@@ -1466,11 +1458,6 @@ class Product(CustomModel):
     article_number = models.CharField(
         verbose_name=_("Artikelnummer"),
         max_length=25,
-    )
-
-    woocommerceid = models.IntegerField(
-        verbose_name=_("WooCommerce ID"),
-        default=0,
     )
 
     name = models.CharField(
@@ -1720,15 +1707,13 @@ class Product(CustomModel):
     admin_icon = "fas fa-cubes"
 
 
-class ProductCategory(CustomModel):
+class ProductCategory(CustomModel, WooCommerceModelMixin):
     """Model representing a category for products"""
 
-    PKFILL_WIDTH = 4
-
-    woocommerceid = models.IntegerField(
-        verbose_name=_("WooCommerce ID"),
-        default=0,
+    WOOCOMMERCE_URL_FORMAT = (
+        "{}/wp-admin/term.php?taxonomy=product_cat&tag_ID={}&post_type=product"
     )
+    PKFILL_WIDTH = 4
 
     name = models.CharField(
         verbose_name=_("Bezeichnung"),
