@@ -76,7 +76,12 @@ form .wide textarea + div.help {
     text-align: right;
 }
 
-.column-pkfill {
+/* Icon columns width fix for boolean columns */
+
+.column-pkfill,
+.column-display_woocommerce_id_present,
+.column-display_is_paid,
+.column-display_is_shipped {
     width: 1px;
 }
 

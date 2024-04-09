@@ -5,7 +5,8 @@ from django.utils.translation import gettext_lazy as _
 from kmuhelper import settings
 
 WC_ID_PRESENT_DESCRIPTION = format_html(
-    '<abbr title="{}">{}</abbr>', _("Mit WooCommerce-Objekt verknüpft?"), "🔗"
+    '<abbr title="{}"><i class="fa-solid fa-link"></i></abbr>',
+    _("Mit WooCommerce-Objekt verknüpft?"),
 )
 
 

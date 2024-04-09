@@ -737,6 +737,28 @@ class Order(CustomModel, AddressModelMixin, WooCommerceModelMixin):
 
         return text
 
+    @admin.display(
+        description=format_html(
+            '<abbr title="{}"><i class="fa-solid fa-truck-fast"></i></abbr>',
+            _("Als versendet markiert?"),
+        ),
+        ordering="is_shipped",
+        boolean=True,
+    )
+    def display_is_shipped(self):
+        return self.is_shipped
+
+    @admin.display(
+        description=format_html(
+            '<abbr title="{}"><i class="fa-solid fa-hand-holding-dollar"></i></abbr>',
+            _("Als bezahlt markiert?"),
+        ),
+        ordering="is_paid",
+        boolean=True,
+    )
+    def display_is_paid(self):
+        return self.is_paid
+
     def is_correct_payment(self, amount: float, date: datetime):
         "Check if a payment made on a certain date has the correct amount for this order"
 

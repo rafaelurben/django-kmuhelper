@@ -251,8 +251,8 @@ class OrderAdmin(CustomModelAdmin):
         "display_customer",
         "status",
         "payment_method",
-        "is_shipped",
-        "is_paid",
+        "display_is_shipped",
+        "display_is_paid",
         "display_cached_sum",
         "linked_note_html",
     ]
