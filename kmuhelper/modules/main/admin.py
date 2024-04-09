@@ -1315,6 +1315,25 @@ class ProductAdmin(CustomModelAdmin):
             obj.show_stock_warning(request)
 
 
+class ProductCategoryAdminChildrenInline(CustomTabularInline):
+    model = ProductCategory
+    verbose_name = _("Unterkategorie")
+    verbose_name_plural = _("Unterkategorien")
+    extra = 0
+
+    fields = ("pkfill", "clean_name", "clean_description", "html_image")
+    readonly_fields = ("pkfill", "clean_name", "clean_description", "html_image")
+
+    show_change_link = True
+    show_full_result_count = True
+
+    # Permissions
+
+    NO_CHANGE = True
+    NO_DELETE = True
+    NO_ADD = True
+
+
 class ProductCategoryAdminProductInline(CustomStackedInline):
     model = Product.categories.through
     verbose_name = _("Produkt in dieser Kategorie")
@@ -1359,7 +1378,7 @@ class ProductCategoryAdmin(CustomModelAdmin):
 
     readonly_fields = ("display_woocommerce_id",)
 
-    inlines = [ProductCategoryAdminProductInline]
+    inlines = [ProductCategoryAdminChildrenInline, ProductCategoryAdminProductInline]
 
     list_select_related = ("parent_category",)
 
