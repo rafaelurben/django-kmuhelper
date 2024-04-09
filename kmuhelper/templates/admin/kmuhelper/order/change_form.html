@@ -184,23 +184,31 @@
         <div id="auto-copy-form-row" class="form-row">
             <div>
                 <div class="flex-container checkbox-row">
-                    <input type="checkbox" id="auto-copy"><label class="vCheckboxLabel" for="auto-copy">Von
-                    Rechnungsadresse übernehmen?</label>
+                    <input type="checkbox" id="auto-copy"
+                           {% if original.addresses_are_equal %}checked="checked"{% endif %}>
+                    <label class="vCheckboxLabel" for="auto-copy">Von Rechnungsadresse übernehmen?</label>
                 </div>
             </div>
         </div>
         <script>
-            ADDR_FIELDS = ['first_name', 'last_name', 'company', 'address_1', 'address_2', 'postcode', 'city', 'state', 'country', 'email', 'phone'];
-
+            ADDR_FIELDS = ['first_name', 'last_name', 'company', 'address_1', 'address_2', 'postcode', 'city', 'state', 'email', 'phone'];
+            COUNTRY_MAP = {"Schweiz": "CH", "Liechtenstein": "LI"}
+            
             $ = django.jQuery;
 
             function copyFormIfCheck() {
                 if ($("#auto-copy").prop("checked")) {
                     for (let field of ADDR_FIELDS) {
-                        $("#id_addr_shipping_" + field).val(
-                            $("#id_addr_billing_" + field).val()
+                        $(`#id_addr_shipping_${field}`).val(
+                            $(`#id_addr_billing_${field}`).val() || $(`.field-addr_billing_${field} .readonly`).text()
                         )
                     }
+                    {# Country is a special case because it's a select (val doesn't match what's displayed in readonly#}
+                    $(`#id_addr_shipping_country`).val(
+                        $(`#id_addr_billing_country`).val() || (
+                            COUNTRY_MAP[$(`.field-addr_billing_country .readonly`).text()]
+                        )
+                    )
                 }
             }
 
@@ -214,6 +222,7 @@
             }
 
             document.addEventListener("DOMContentLoaded", () => {
+                updateShippingFormVisibility();
                 $(".addr-shipping-fieldset h2").after(
                     document.getElementById("auto-copy-form-row")
                 )

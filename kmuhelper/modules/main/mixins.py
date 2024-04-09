@@ -162,6 +162,16 @@ class AddressModelMixin(models.Model):
         blank=True,
     )
 
+    # Check function
+
+    def addresses_are_equal(self):
+        for field in constants.ADDR_FIELDS:
+            if getattr(self, f"addr_billing_{field}") != getattr(
+                self, f"addr_shipping_{field}"
+            ):
+                return False
+        return True
+
     # Meta
 
     class Meta:

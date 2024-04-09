@@ -58,8 +58,9 @@
         <div id="auto-copy-form-row" class="form-row">
             <div>
                 <div class="flex-container checkbox-row">
-                    <input type="checkbox" id="auto-copy"><label class="vCheckboxLabel" for="auto-copy">Von
-                    Rechnungsadresse übernehmen?</label>
+                    <input type="checkbox" id="auto-copy"
+                           {% if original.addresses_are_equal %}checked="checked"{% endif %}>
+                    <label class="vCheckboxLabel" for="auto-copy">Von Rechnungsadresse übernehmen?</label>
                 </div>
             </div>
         </div>
@@ -71,8 +72,8 @@
             function copyFormIfCheck() {
                 if ($("#auto-copy").prop("checked")) {
                     for (let field of ADDR_FIELDS) {
-                        $("#id_addr_shipping_" + field).val(
-                            $("#id_addr_billing_" + field).val()
+                        $(`#id_addr_shipping_${field}`).val(
+                            $(`#id_addr_billing_${field}`).val()
                         )
                     }
                 }
@@ -88,6 +89,7 @@
             }
 
             document.addEventListener("DOMContentLoaded", () => {
+                updateShippingFormVisibility();
                 $(".addr-shipping-fieldset h2").after(
                     document.getElementById("auto-copy-form-row")
                 )
