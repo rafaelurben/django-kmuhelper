@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
-from django.utils.translation import gettext_lazy, gettext, ngettext
+from django.utils.translation import gettext_lazy, gettext
 from django.views.decorators.csrf import csrf_exempt
 from kmuhelper import settings
 from kmuhelper.decorators import (
@@ -15,7 +15,13 @@ from kmuhelper.decorators import (
     require_all_kmuhelper_perms,
     require_any_kmuhelper_perms,
 )
-from kmuhelper.modules.integrations.woocommerce.api import WooCommerce
+from kmuhelper.modules.integrations.woocommerce.api import (
+    WCGeneralAPI,
+    WCCustomersAPI,
+    WCOrdersAPI,
+    WCProductsAPI,
+    WCProductCategoriesAPI,
+)
 from kmuhelper.modules.integrations.woocommerce.forms import WooCommerceSettingsForm
 from kmuhelper.modules.integrations.woocommerce.utils import (
     is_connected,
@@ -108,7 +114,7 @@ def wc_system_status(request):
     if not is_connected():
         messages.error(request, NOT_CONNECTED_ERRMSG)
     else:
-        status = WooCommerce.get_system_status()
+        status = WCGeneralAPI().get_system_status()
 
         if status:
             messages.success(request, _("WooCommerce is connected and works!"))
@@ -123,16 +129,7 @@ def wc_import_products(request):
     if not is_connected():
         messages.error(request, NOT_CONNECTED_ERRMSG)
     else:
-        count = WooCommerce.product_import()
-        messages.success(
-            request,
-            ngettext(
-                "%d new product has been imported from WooCommerce!",
-                "%d new products have been imported from WooCommerce!",
-                count,
-            )
-            % count,
-        )
+        WCProductsAPI().import_all_objects_from_api(request=request)
     return redirect(reverse("admin:kmuhelper_product_changelist"))
 
 
@@ -142,16 +139,7 @@ def wc_import_customers(request):
     if not is_connected():
         messages.error(request, NOT_CONNECTED_ERRMSG)
     else:
-        count = WooCommerce.customer_import()
-        messages.success(
-            request,
-            ngettext(
-                "%d new customer has been imported from WooCommerce!",
-                "%d new customers have been imported from WooCommerce!",
-                count,
-            )
-            % count,
-        )
+        WCCustomersAPI().import_all_objects_from_api(request=request)
     return redirect(reverse("admin:kmuhelper_customer_changelist"))
 
 
@@ -161,16 +149,7 @@ def wc_import_categories(request):
     if not is_connected():
         messages.error(request, NOT_CONNECTED_ERRMSG)
     else:
-        count = WooCommerce.category_import()
-        messages.success(
-            request,
-            ngettext(
-                "%d new product category has been imported from WooCommerce!",
-                "%d new product categories have been imported from WooCommerce!",
-                count,
-            )
-            % count,
-        )
+        WCProductCategoriesAPI().import_all_objects_from_api(request=request)
     return redirect(reverse("admin:kmuhelper_productcategory_changelist"))
 
 
@@ -180,16 +159,7 @@ def wc_import_orders(request):
     if not is_connected():
         messages.error(request, NOT_CONNECTED_ERRMSG)
     else:
-        count = WooCommerce.order_import()
-        messages.success(
-            request,
-            ngettext(
-                "%d new order has been imported from WooCommerce!",
-                "%d new orders have been imported from WooCommerce!",
-                count,
-            )
-            % count,
-        )
+        WCOrdersAPI().import_all_objects_from_api(request=request)
     return redirect(reverse("admin:kmuhelper_order_changelist"))
 
 
@@ -200,10 +170,15 @@ def wc_update_product(request, obj):
     if not is_connected():
         messages.error(request, NOT_CONNECTED_ERRMSG)
     else:
-        if WooCommerce.product_update(obj):
+        try:
+            WCProductsAPI().update_object_from_api(obj)
             messages.success(request, gettext("Product '%s' updated!") % str(obj))
-        else:
-            messages.error(request, gettext("Product '%s' update failed!") % str(obj))
+        except Exception as e:
+            messages.error(
+                request,
+                gettext("Product '%(name)s' update failed! %(error_msg)s")
+                % {"name": str(obj), "error_msg": str(e)},
+            )
     return redirect(reverse("admin:kmuhelper_product_change", args=[obj.pk]))
 
 
@@ -214,10 +189,15 @@ def wc_update_customer(request, obj):
     if not is_connected():
         messages.error(request, NOT_CONNECTED_ERRMSG)
     else:
-        if WooCommerce.customer_update(obj):
+        try:
+            WCCustomersAPI().update_object_from_api(obj)
             messages.success(request, gettext("Customer '%s' updated!") % str(obj))
-        else:
-            messages.error(request, gettext("Customer '%s' update failed!") % str(obj))
+        except Exception as e:
+            messages.error(
+                request,
+                gettext("Customer '%(name)s' update failed! %(error_msg)s")
+                % {"name": str(obj), "error_msg": str(e)},
+            )
     return redirect(reverse("admin:kmuhelper_customer_change", args=[obj.pk]))
 
 
@@ -228,13 +208,16 @@ def wc_update_category(request, obj):
     if not is_connected():
         messages.error(request, NOT_CONNECTED_ERRMSG)
     else:
-        if WooCommerce.category_update(obj):
+        try:
+            WCProductCategoriesAPI().update_object_from_api(obj)
             messages.success(
                 request, gettext("Product category '%s' updated!") % str(obj)
             )
-        else:
+        except Exception as e:
             messages.error(
-                request, gettext("Product category '%s' update failed!") % str(obj)
+                request,
+                gettext("Product category '%(name)s' update failed! %(error_msg)s")
+                % {"name": str(obj), "error_msg": str(e)},
             )
     return redirect(reverse("admin:kmuhelper_productcategory_change", args=[obj.pk]))
 
@@ -246,10 +229,15 @@ def wc_update_order(request, obj):
     if not is_connected():
         messages.error(request, NOT_CONNECTED_ERRMSG)
     else:
-        if WooCommerce.order_update(obj):
+        try:
+            WCOrdersAPI().update_object_from_api(obj)
             messages.success(request, gettext("Order '%s' updated!") % str(obj))
-        else:
-            messages.error(request, gettext("Order '%s' update failed!") % str(obj))
+        except Exception as e:
+            messages.error(
+                request,
+                gettext("Order '%(name)s' update failed! %(error_msg)s")
+                % {"name": str(obj), "error_msg": str(e)},
+            )
     return redirect(reverse("admin:kmuhelper_order_change", args=[obj.pk]))
 
 
@@ -363,39 +351,45 @@ def wc_webhooks(request):
     log("WooCommerce Webhook is being processed...")
 
     topic = request.headers["x-wc-webhook-topic"]
-    obj = json.loads(request.body)
+    wc_obj = json.loads(request.body)
+
+    log("Topic: ", topic)
+    log("ID: ", wc_obj.get("id"))
+
     if topic in ("product.updated", "product.created"):
-        if Product.objects.filter(woocommerceid=obj["id"]).exists():
-            WooCommerce.product_update(
-                Product.objects.get(woocommerceid=obj["id"]), obj
+        if Product.objects.filter(woocommerceid=wc_obj["id"]).exists():
+            WCProductsAPI().update_object_from_data(
+                Product.objects.get(woocommerceid=wc_obj["id"]), wc_obj
             )
         else:
-            WooCommerce.product_create(obj)
+            WCProductsAPI().create_object_from_data(wc_obj)
     elif topic == "product.deleted":
-        if Product.objects.filter(woocommerceid=obj["id"]).exists():
-            product = Product.objects.get(woocommerceid=obj["id"])
+        if Product.objects.filter(woocommerceid=wc_obj["id"]).exists():
+            product = Product.objects.get(woocommerceid=wc_obj["id"])
             product.woocommerceid = 0
             product.save()
     elif topic in ("customer.updated", "customer.created"):
-        if Customer.objects.filter(woocommerceid=obj["id"]).exists():
-            WooCommerce.customer_update(
-                Customer.objects.get(woocommerceid=obj["id"]), obj
+        if Customer.objects.filter(woocommerceid=wc_obj["id"]).exists():
+            WCCustomersAPI().update_object_from_data(
+                Customer.objects.get(woocommerceid=wc_obj["id"]), wc_obj
             )
         else:
-            WooCommerce.customer_create(obj)
+            WCCustomersAPI().create_object_from_data(wc_obj)
     elif topic == "customer.deleted":
-        if Customer.objects.filter(woocommerceid=obj["id"]).exists():
-            customer = Customer.objects.get(woocommerceid=obj["id"])
+        if Customer.objects.filter(woocommerceid=wc_obj["id"]).exists():
+            customer = Customer.objects.get(woocommerceid=wc_obj["id"])
             customer.woocommerceid = 0
             customer.save()
     elif topic in ("order.updated", "order.created"):
-        if Order.objects.filter(woocommerceid=obj["id"]).exists():
-            WooCommerce.order_update(Order.objects.get(woocommerceid=obj["id"]), obj)
+        if Order.objects.filter(woocommerceid=wc_obj["id"]).exists():
+            WCOrdersAPI().update_object_from_data(
+                Order.objects.get(woocommerceid=wc_obj["id"]), wc_obj
+            )
         else:
-            WooCommerce.order_create(obj)
+            WCOrdersAPI().create_object_from_data(wc_obj)
     elif topic == "order.deleted":
-        if Order.objects.filter(woocommerceid=obj["id"]).exists():
-            order = Order.objects.get(woocommerceid=obj["id"])
+        if Order.objects.filter(woocommerceid=wc_obj["id"]).exists():
+            order = Order.objects.get(woocommerceid=wc_obj["id"])
             order.woocommerceid = 0
             order.save()
     else:
