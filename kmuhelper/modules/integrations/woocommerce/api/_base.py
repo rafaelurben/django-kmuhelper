@@ -72,6 +72,7 @@ class WC_BaseObjectAPI(WC_BaseAPI, abc.ABC):
                     str(db_object),
                 )
                 db_object.woocommerceid = 0
+                db_object.woocommerce_deleted = True
                 db_object.save()
             else:
                 self.log(wc_obj)

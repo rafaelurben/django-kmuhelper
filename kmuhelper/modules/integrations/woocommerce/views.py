@@ -350,53 +350,56 @@ def wc_webhooks(request):
 
     log("WooCommerce Webhook is being processed...")
 
+    delivery_id = request.headers["x-wc-webhook-delivery-id"]
     topic = request.headers["x-wc-webhook-topic"]
     wc_obj = json.loads(request.body)
 
+    log("Delivery ID: ", delivery_id)
     log("Topic: ", topic)
-    log("ID: ", wc_obj.get("id"))
+    log("Object ID: ", wc_obj.get("id"))
 
-    if topic in ("product.updated", "product.created"):
-        if Product.objects.filter(woocommerceid=wc_obj["id"]).exists():
-            WCProductsAPI().update_object_from_data(
-                Product.objects.get(woocommerceid=wc_obj["id"]), wc_obj
+    match topic:
+        case "product.updated" | "product.created" | "product.restored":
+            if Product.objects.filter(woocommerceid=wc_obj["id"]).exists():
+                product = Product.objects.get(woocommerceid=wc_obj["id"])
+                product.woocommerce_deleted = False
+                WCProductsAPI().update_object_from_data(product, wc_obj)
+            else:
+                WCProductsAPI().create_object_from_data(wc_obj)
+        case "product.deleted":
+            if Product.objects.filter(woocommerceid=wc_obj["id"]).exists():
+                product = Product.objects.get(woocommerceid=wc_obj["id"])
+                product.woocommerce_deleted = True
+                product.save()
+        case "customer.updated" | "customer.created" | "customer.restored":
+            if Customer.objects.filter(woocommerceid=wc_obj["id"]).exists():
+                customer = Customer.objects.get(woocommerceid=wc_obj["id"])
+                customer.woocommerce_deleted = False
+                WCCustomersAPI().update_object_from_data(customer, wc_obj)
+            else:
+                WCCustomersAPI().create_object_from_data(wc_obj)
+        case "customer.deleted":
+            if Customer.objects.filter(woocommerceid=wc_obj["id"]).exists():
+                customer = Customer.objects.get(woocommerceid=wc_obj["id"])
+                customer.woocommerce_deleted = True
+                customer.save()
+        case "order.updated" | "order.created" | "order.restored":
+            if Order.objects.filter(woocommerceid=wc_obj["id"]).exists():
+                order = Order.objects.get(woocommerceid=wc_obj["id"])
+                order.woocommerce_deleted = False
+                WCOrdersAPI().update_object_from_data(order, wc_obj)
+            else:
+                WCOrdersAPI().create_object_from_data(wc_obj)
+        case "order.deleted":
+            if Order.objects.filter(woocommerceid=wc_obj["id"]).exists():
+                order = Order.objects.get(woocommerceid=wc_obj["id"])
+                order.woocommerce_deleted = True
+                order.save()
+        case _:
+            log(f"[orange_red1]Unknown topic: '{topic}'")
+            return JsonResponse(
+                {"accepted": False, "message": "Topic not supported!"}, status=400
             )
-        else:
-            WCProductsAPI().create_object_from_data(wc_obj)
-    elif topic == "product.deleted":
-        if Product.objects.filter(woocommerceid=wc_obj["id"]).exists():
-            product = Product.objects.get(woocommerceid=wc_obj["id"])
-            product.woocommerceid = 0
-            product.save()
-    elif topic in ("customer.updated", "customer.created"):
-        if Customer.objects.filter(woocommerceid=wc_obj["id"]).exists():
-            WCCustomersAPI().update_object_from_data(
-                Customer.objects.get(woocommerceid=wc_obj["id"]), wc_obj
-            )
-        else:
-            WCCustomersAPI().create_object_from_data(wc_obj)
-    elif topic == "customer.deleted":
-        if Customer.objects.filter(woocommerceid=wc_obj["id"]).exists():
-            customer = Customer.objects.get(woocommerceid=wc_obj["id"])
-            customer.woocommerceid = 0
-            customer.save()
-    elif topic in ("order.updated", "order.created"):
-        if Order.objects.filter(woocommerceid=wc_obj["id"]).exists():
-            WCOrdersAPI().update_object_from_data(
-                Order.objects.get(woocommerceid=wc_obj["id"]), wc_obj
-            )
-        else:
-            WCOrdersAPI().create_object_from_data(wc_obj)
-    elif topic == "order.deleted":
-        if Order.objects.filter(woocommerceid=wc_obj["id"]).exists():
-            order = Order.objects.get(woocommerceid=wc_obj["id"])
-            order.woocommerceid = 0
-            order.save()
-    else:
-        log(f"[orange_red1]Unknown topic: '{topic}'")
-        return JsonResponse(
-            {"accepted": False, "message": "Topic not supported!"}, status=400
-        )
 
     return JsonResponse({"accepted": True})
 

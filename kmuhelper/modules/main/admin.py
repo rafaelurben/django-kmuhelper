@@ -11,6 +11,7 @@ from kmuhelper.modules.integrations.woocommerce.api import (
     WCProductsAPI,
     WCProductCategoriesAPI,
 )
+from kmuhelper.modules.integrations.woocommerce.filters import WooCommerceStateFilter
 from kmuhelper.modules.integrations.woocommerce.utils import is_connected
 from kmuhelper.modules.main import views
 from kmuhelper.modules.main.models import (
@@ -266,6 +267,7 @@ class OrderAdmin(CustomModelAdmin):
         "status",
         "is_paid",
         "is_shipped",
+        WooCommerceStateFilter,
         "payment_method",
         "payment_receiver",
         "contact_person",
@@ -300,7 +302,7 @@ class OrderAdmin(CustomModelAdmin):
     def get_list_display(self, request):
         if is_connected():
             ls = self.list_display.copy()
-            ls.insert(1, "display_woocommerce_id_present")
+            ls.insert(1, "display_woocommerce_state")
             return ls
         return self.list_display
 
@@ -613,6 +615,8 @@ class CustomerAdmin(CustomModelAdmin):
 
     readonly_fields = ["linked_note_html", "display_woocommerce_id"]
 
+    list_filter = [WooCommerceStateFilter]
+
     list_select_related = ["linked_note"]
 
     autocomplete_fields = ["combine_with"]
@@ -624,7 +628,7 @@ class CustomerAdmin(CustomModelAdmin):
     def get_list_display(self, request):
         if is_connected():
             ls = self.list_display.copy()
-            ls.insert(1, "display_woocommerce_id_present")
+            ls.insert(1, "display_woocommerce_state")
             return ls
         return self.list_display
 
@@ -1081,7 +1085,7 @@ class ProductAdmin(CustomModelAdmin):
 
     ordering = ("article_number", "name")
 
-    list_filter = ("supplier", "categories", "stock_current")
+    list_filter = ("supplier", WooCommerceStateFilter, "categories")
     search_fields = [
         "pk",
         "article_number",
@@ -1106,7 +1110,7 @@ class ProductAdmin(CustomModelAdmin):
     def get_list_display(self, request):
         if is_connected():
             ls = self.list_display.copy()
-            ls.insert(1, "display_woocommerce_id_present")
+            ls.insert(1, "display_woocommerce_state")
             return ls
         return self.list_display
 
@@ -1296,7 +1300,7 @@ class ProductCategoryAdmin(CustomModelAdmin):
     def get_list_display(self, request):
         if is_connected():
             ls = self.list_display.copy()
-            ls.insert(1, "display_woocommerce_id_present")
+            ls.insert(1, "display_woocommerce_state")
             return ls
         return self.list_display
 
