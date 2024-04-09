@@ -34,14 +34,23 @@
     <h2>Einrichtung</h2>
 
     <div style="margin-top: 2em;">
+        <h3>Schritt 0: Einstellungen festlegen</h3>
+        <p>
+            Als erstes müssen Sie ein paar Einstellungen vornehmen. Tragen Sie dazu oben die URL Ihrer WooCommerce
+            Installation ein (z. B. https://shop.example.com).
+            Geben sie ausserdem eine zufällig generierte Zeichenkette als Secret an, z. B.
+            <code>{{ random_secret }}</code> (Dieses Secret wird bei jedem Laden der Seite zufällig generiert.)
+            Klicken Sie anschliessend auf "Einstellungen speichern".
+        </p>
+
+        <hr>
+
         <h3>Schritt 1: WooCommerce verbinden</h3>
         <p>
             Um die WooCommerce Schnittstelle zu nutzen, muss diese zuerst mit dem KMUHelper verbunden werden.
             Dazu muss der KMUHelper <b>Lese-Zugriff</b> auf die WooCommerce API erhalten.
             Dieser Zugriff kann jederzeit widerrufen werden.
-            Tragen Sie dazu oben die URL Ihrer WooCommerce Installation ein und klicken Sie auf "Einstellungen
-            speichern".
-            Klicken Sie anschliessend auf folgenden Knopf und melden Sie sich mit Ihren WooCommerce/WordPress
+            Klicken Sie auf folgenden Knopf und melden Sie sich mit Ihren WooCommerce/WordPress
             Zugangsdaten an:
         </p>
         {% if is_url_valid %}
@@ -90,24 +99,24 @@
         </p>
         <p>
             Erstellen Sie für die nachfolgende Themen je einen Webhook.
-            Wählen Sie jeweils den Status "Aktiviert" und die API-Version "v3".
-            Verwenden Sie überall dasselbe Secret wie oben, z. B. <code>{{ random_secret }}</code>
-            (Dieses Secret ist zufällig generiert und kann problemlos verwendet werden.
-            Nicht vergessen, es auch oben einzutragen und die Einstellungen zu speichern!)
-            und geben Sie als URL folgende Adresse an:
+            Wählen Sie jeweils den Status "Aktiviert" und die API-Version "WP REST-API Integration v3".
+            Verwenden Sie überall das Secret, welches sie oben gespeichert haben und verwenden Sie als
+            URL folgende Adresse:
             <code>https://{{ kmuhelper_url }}{% url 'kmuhelper:wc-webhooks' %}</code>
+        </p>
         <ul>
             <li>Bestellung erstellt (order.created)</li>
             <li>Bestellung aktualisiert (order.updated)</li>
             <li>Bestellung gelöscht (order.deleted)</li>
+            <li>Bestellung wiederhergestellt (order.restored)</li>
             <li>Kunde erstellt (customer.created)</li>
             <li>Kunde aktualisiert (customer.updated)</li>
             <li>Kunde gelöscht (customer.deleted)</li>
             <li>Produkt erstellt (product.created)</li>
             <li>Produkt aktualisiert (product.updated)</li>
             <li>Produkt entfernt (product.deleted)</li>
+            <li>Produkt wiederhergestellt (product.restored)</li>
         </ul>
-        </p>
         {% if is_connected %}
             <a href="{{ wc_url }}/wp-admin/admin.php?page=wc-settings&tab=advanced&section=webhooks" target="_blank"
                rel="noopener noreferrer">

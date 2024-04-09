@@ -19,15 +19,15 @@ sollten Sie Änderungen an Produkten und Kunden vorzugsweise in WooCommerce vorn
 zu vermeiden.)
 
 Damit die Daten im KMUHelper auch automatisch importiert und aktualisiert werden, können sogenannte "Webhooks"
-eingerichtet werden, welche bei jeder Änderung in WooCommerce den KMUHelper darüber informieren. Dies ist jedoch nicht
-zwingend notwendig, da die Daten auch manuell importiert werden können.
+eingerichtet werden, welche bei jeder Änderung in WooCommerce den KMUHelper darüber informieren. Dies ist nicht
+zwingend notwendig, aber stark empfohlen.
 
 **Hinweis**: Beim Löschen eines Objektes in WooCommerce wird dieses im KMUHelper nicht automatisch gelöscht! Es wird
-lediglich die Verknüpfung entfernt.
+lediglich als gelöscht markiert und in der Standardansicht verborgen.
 
 ## Verwendung
 
-Im KMUHelper-Admin finden Sie nun bei Produkten, Produktkategorien, Bestellungen und Kunden einen `Importieren` Knopf,
+Im KMUHelper-Admin finden Sie bei Produkten, Produktkategorien, Bestellungen und Kunden einen `Importieren` Knopf,
 mit welchem die Daten der gewünschten Kategorie manuell aus WooCommerce geladen werden können.
 
 ### Probleme
