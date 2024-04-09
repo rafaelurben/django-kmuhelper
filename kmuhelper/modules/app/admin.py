@@ -25,7 +25,7 @@ class App_AdminBase(CustomModelAdmin):
 
 @admin.register(App_ToDo)
 class App_ToDoAdmin(App_AdminBase, NoteAdmin):
-    list_display = ("pkfill", "name", "description", "priority", "done", "created_at")
+    list_display = ["pkfill", "name", "description", "priority", "done", "created_at"]
     list_editable = ["priority", "done"]
     list_filter = ["priority"]
 
@@ -34,7 +34,7 @@ class App_ToDoAdmin(App_AdminBase, NoteAdmin):
 
 @admin.register(App_Shipping)
 class App_ShippingAdmin(App_AdminBase, OrderAdmin):
-    list_display = (
+    list_display = [
         "pkfill",
         "info",
         "status",
@@ -42,18 +42,18 @@ class App_ShippingAdmin(App_AdminBase, OrderAdmin):
         "is_shipped",
         "tracking_number",
         "linked_note_html",
-    )
-    list_editable = ("shipped_on", "is_shipped", "status", "tracking_number")
-    list_filter = ("status", "is_paid")
+    ]
+    list_editable = ["shipped_on", "is_shipped", "status", "tracking_number"]
+    list_filter = ["status", "is_paid"]
 
-    ordering = ("is_paid", "-date")
+    ordering = ["is_paid", "-date"]
 
-    actions = ()
+    actions = []
 
 
 @admin.register(App_IncomingPayments)
 class App_IncomingPaymentsAdmin(App_AdminBase, OrderAdmin):
-    list_display = (
+    list_display = [
         "pkfill",
         "info",
         "status",
@@ -62,21 +62,21 @@ class App_IncomingPaymentsAdmin(App_AdminBase, OrderAdmin):
         "display_cached_sum",
         "display_payment_conditions",
         "linked_note_html",
-    )
-    list_editable = ("paid_on", "is_paid", "status")
-    list_filter = ("status", "is_shipped", "payment_method")
+    ]
+    list_editable = ["paid_on", "is_paid", "status"]
+    list_filter = ["status", "is_shipped", "payment_method"]
 
-    ordering = (
+    ordering = [
         "status",
         "invoice_date",
-    )
+    ]
 
-    actions = ()
+    actions = []
 
 
 @admin.register(App_Stock)
 class App_StockAdmin(App_AdminBase, ProductAdmin):
-    list_display = (
+    list_display = [
         "pkfill",
         "display_article_number",
         "clean_name",
@@ -84,7 +84,7 @@ class App_StockAdmin(App_AdminBase, ProductAdmin):
         "display_current_price",
         "note",
         "linked_note_html",
-    )
+    ]
     list_editable = ["stock_current"]
 
     actions = ["reset_stock"]
@@ -92,8 +92,8 @@ class App_StockAdmin(App_AdminBase, ProductAdmin):
 
 @admin.register(App_Arrival)
 class App_ArrivalAdmin(App_AdminBase, SupplyAdmin):
-    list_display = ("pkfill", "name", "date", "total_quantity", "linked_note_html")
-    list_filter = ()
+    list_display = ["pkfill", "name", "date", "total_quantity", "linked_note_html"]
+    list_filter = []
 
 
 #
