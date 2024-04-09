@@ -439,14 +439,17 @@ class OrderAdmin(CustomModelAdmin):
                     order.status = "completed"
                 order.save()
                 successcount += 1
-        messages.success(
-            request,
-            ngettext(
-                "%d Bestellung wurde als bezahlt markiert.",
-                "%d Bestellungen wurden als bezahlt markiert.",
-                successcount,
-            ),
-        )
+
+        if successcount:
+            messages.success(
+                request,
+                ngettext(
+                    "%d Bestellung wurde als bezahlt markiert.",
+                    "%d Bestellungen wurden als bezahlt markiert.",
+                    successcount,
+                )
+                % successcount,
+            )
         if errorcount:
             messages.warning(
                 request,
@@ -454,7 +457,8 @@ class OrderAdmin(CustomModelAdmin):
                     "%d Bestellung war bereits als bezahlt markiert.",
                     "%d Bestellungen waren bereits als bezahlt markiert.",
                     errorcount,
-                ),
+                )
+                % errorcount,
             )
 
     @admin.action(
@@ -462,15 +466,29 @@ class OrderAdmin(CustomModelAdmin):
         permissions=["change"],
     )
     def wc_update(self, request, queryset):
-        successcount, errorcount = WooCommerce.order_bulk_update(queryset.all())
-        messages.success(
-            request,
-            ngettext(
-                "%d Bestellung wurde von WooCommerce aktualisiert.",
-                "%d Bestellungen wurden von WooCommerce aktualisiert.",
-                successcount,
-            ),
+        successcount, warncount, errorcount = WooCommerce.order_bulk_update(
+            queryset.all()
         )
+        if successcount:
+            messages.success(
+                request,
+                ngettext(
+                    "%d Bestellung wurde von WooCommerce aktualisiert.",
+                    "%d Bestellungen wurden von WooCommerce aktualisiert.",
+                    successcount,
+                )
+                % successcount,
+            )
+        if warncount:
+            messages.warning(
+                request,
+                ngettext(
+                    "%d Bestellung hat keine WooCommerce-Verknüpfung.",
+                    "%d Bestellungen haben keine WooCommerce-Verknüpfung.",
+                    warncount,
+                )
+                % warncount,
+            )
         if errorcount:
             messages.error(
                 request,
@@ -478,7 +496,8 @@ class OrderAdmin(CustomModelAdmin):
                     "%d Bestellung konnte nicht von WooCommerce aktualisiert werden.",
                     "%d Bestellungen konnten nicht von WooCommerce aktualisiert werden.",
                     errorcount,
-                ),
+                )
+                % errorcount,
             )
 
     actions = [mark_as_paid, wc_update]
@@ -676,15 +695,29 @@ class CustomerAdmin(CustomModelAdmin):
         description=_("Kunden von WooCommerce aktualisieren"), permissions=["change"]
     )
     def wc_update(self, request, queryset):
-        successcount, errorcount = WooCommerce.customer_bulk_update(queryset.all())
-        messages.success(
-            request,
-            ngettext(
-                "%d Kunde wurde von WooCommerce aktualisiert.",
-                "%d Kunden wurden von WooCommerce aktualisiert.",
-                successcount,
-            ),
+        successcount, warncount, errorcount = WooCommerce.customer_bulk_update(
+            queryset.all()
         )
+        if successcount:
+            messages.success(
+                request,
+                ngettext(
+                    "%d Kunde wurde von WooCommerce aktualisiert.",
+                    "%d Kunden wurden von WooCommerce aktualisiert.",
+                    successcount,
+                )
+                % successcount,
+            )
+        if warncount:
+            messages.warning(
+                request,
+                ngettext(
+                    "%d Kunde hat keine WooCommerce-Verknüpfung.",
+                    "%d Kunden haben keine WooCommerce-Verknüpfung.",
+                    warncount,
+                )
+                % warncount,
+            )
         if errorcount:
             messages.error(
                 request,
@@ -692,7 +725,8 @@ class CustomerAdmin(CustomModelAdmin):
                     "%d Kunde konnte nicht von WooCommerce aktualisiert werden.",
                     "%d Kunden konnten nicht von WooCommerce aktualisiert werden.",
                     errorcount,
-                ),
+                )
+                % errorcount,
             )
 
     actions = ["wc_update"]
@@ -880,14 +914,17 @@ class SupplyAdmin(CustomModelAdmin):
                 successcount += 1
             else:
                 errorcount += 1
-        messages.success(
-            request,
-            ngettext(
-                "%d Lieferung wurde als eingelagert markiert.",
-                "%d Lieferungen wurden als eingelagert markiert.",
-                successcount,
-            ),
-        )
+
+        if successcount:
+            messages.success(
+                request,
+                ngettext(
+                    "%d Lieferung wurde als eingelagert markiert.",
+                    "%d Lieferungen wurden als eingelagert markiert.",
+                    successcount,
+                )
+                % successcount,
+            )
         if errorcount:
             messages.error(
                 request,
@@ -895,7 +932,8 @@ class SupplyAdmin(CustomModelAdmin):
                     "%d Lieferung konnte nicht eingelagert werden.",
                     "%d Lieferungen konnten nicht eingelagert werden.",
                     errorcount,
-                ),
+                )
+                % errorcount,
             )
 
     actions = ["add_to_stock"]
@@ -1201,15 +1239,29 @@ class ProductAdmin(CustomModelAdmin):
         description=_("Produkte von WooCommerce aktualisieren"), permissions=["change"]
     )
     def wc_update(self, request, queryset):
-        successcount, errorcount = WooCommerce.product_bulk_update(queryset.all())
-        messages.success(
-            request,
-            ngettext(
-                "%d Produkt wurde von WooCommerce aktualisiert.",
-                "%d Produkte wurden von WooCommerce aktualisiert.",
-                successcount,
-            ),
+        successcount, warncount, errorcount = WooCommerce.product_bulk_update(
+            queryset.all()
         )
+        if successcount:
+            messages.success(
+                request,
+                ngettext(
+                    "%d Produkt wurde von WooCommerce aktualisiert.",
+                    "%d Produkte wurden von WooCommerce aktualisiert.",
+                    successcount,
+                )
+                % successcount,
+            )
+        if warncount:
+            messages.warning(
+                request,
+                ngettext(
+                    "%d Produkt hat keine WooCommerce-Verknüpfung.",
+                    "%d Produkte haben keine WooCommerce-Verknüpfung.",
+                    warncount,
+                )
+                % warncount,
+            )
         if errorcount:
             messages.error(
                 request,
@@ -1217,7 +1269,8 @@ class ProductAdmin(CustomModelAdmin):
                     "%d Produkt konnte nicht von WooCommerce aktualisiert werden.",
                     "%d Produkte konnten nicht von WooCommerce aktualisiert werden.",
                     errorcount,
-                ),
+                )
+                % errorcount,
             )
 
     @admin.action(description=_("Lagerbestand zurücksetzen"), permissions=["change"])
@@ -1225,13 +1278,15 @@ class ProductAdmin(CustomModelAdmin):
         for product in queryset.all():
             product.stock_current = 0
             product.save()
+        count = queryset.count()
         messages.success(
             request,
             ngettext(
                 "Lagerbestand von %d Produkt zurückgesetzt.",
                 "Lagerbestand von %d Produkten zurückgesetzt.",
-                queryset.count(),
-            ),
+                count,
+            )
+            % count,
         )
 
     @admin.action(description=_("Aktion beenden"), permissions=["change"])
@@ -1239,13 +1294,15 @@ class ProductAdmin(CustomModelAdmin):
         for product in queryset.all():
             product.sale_to = timezone.now()
             product.save()
+        count = queryset.count()
         messages.success(
             request,
             ngettext(
                 "Aktion von %d Produkt beendet.",
                 "Aktion von %d Produkten beendet.",
-                queryset.count(),
-            ),
+                count,
+            )
+            % count,
         )
 
     actions = ["wc_update", "reset_stock", "end_sale"]
@@ -1341,15 +1398,29 @@ class ProductCategoryAdmin(CustomModelAdmin):
         permissions=["change"],
     )
     def wc_update(self, request, queryset):
-        successcount, errorcount = WooCommerce.category_bulk_update(queryset.all())
-        messages.success(
-            request,
-            ngettext(
-                "%d Kategorie wurde von WooCommerce aktualisiert.",
-                "%d Kategorien wurden von WooCommerce aktualisiert.",
-                successcount,
-            ),
+        successcount, warncount, errorcount = WooCommerce.category_bulk_update(
+            queryset.all()
         )
+        if successcount:
+            messages.success(
+                request,
+                ngettext(
+                    "%d Kategorie wurde von WooCommerce aktualisiert.",
+                    "%d Kategorien wurden von WooCommerce aktualisiert.",
+                    successcount,
+                )
+                % successcount,
+            )
+        if warncount:
+            messages.warning(
+                request,
+                ngettext(
+                    "%d Kategorie hat keine WooCommerce-Verknüpfung.",
+                    "%d Kategorien haben keine WooCommerce-Verknüpfung.",
+                    warncount,
+                )
+                % warncount,
+            )
         if errorcount:
             messages.error(
                 request,
@@ -1357,7 +1428,8 @@ class ProductCategoryAdmin(CustomModelAdmin):
                     "%d Kategorie konnte nicht von WooCommerce aktualisiert werden.",
                     "%d Kategorien konnten nicht von WooCommerce aktualisiert werden.",
                     errorcount,
-                ),
+                )
+                % errorcount,
             )
 
     actions = ["wc_update"]

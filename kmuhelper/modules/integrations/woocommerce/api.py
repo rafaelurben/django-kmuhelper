@@ -125,24 +125,35 @@ class WooCommerce:
         wcapi = api or cls.get_api()
 
         if not newproduct:
-            newproduct = wcapi.get(f"products/{product.woocommerceid}").json()
+            response = wcapi.get(f"products/{product.woocommerceid}")
+            newproduct = response.json()
+
+            if response.status_code != 200:
+                log(
+                    "[red]Product update failed with status code {}".format(
+                        response.status_code
+                    )
+                )
+                if (
+                    "code" in newproduct
+                    and newproduct["code"] == "woocommerce_rest_product_invalid_id"
+                ):
+                    log(
+                        "[red]Product does not exist in WooCommerce![/] Link removed.",
+                        str(product),
+                    )
+                    product.woocommerceid = 0
+                    product.save()
+                else:
+                    log(newproduct)
+                return False
+
+        # Associate fields
 
         try:
             product.selling_price = float(newproduct["price"])
         except ValueError:
             pass
-        except KeyError:
-            if (
-                "code" in newproduct
-                and newproduct["code"] == "woocommerce_rest_product_invalid_id"
-            ):
-                log(
-                    "[red]Product does not exist in WooCommerce![/] Link removed!",
-                    str(product),
-                )
-                product.woocommerceid = 0
-                product.save()
-                return product
 
         product.article_number = newproduct["sku"]
         product.name = preparestring(newproduct["name"])
@@ -243,16 +254,19 @@ class WooCommerce:
                 PREFIX + " [orange_red1]Updating products...", total=products.count()
             )
             successcount = 0
+            warncount = 0
             errorcount = 0
             for product in products:
                 if product.woocommerceid:
-                    cls.product_update(product, api=wcapi)
-                    successcount += 1
+                    if cls.product_update(product, api=wcapi):
+                        successcount += 1
+                    else:
+                        errorcount += 1
                 else:
-                    errorcount += 1
+                    warncount += 1
                 progress.update(task, advance=1)
             progress.stop_task(task)
-        return (successcount, errorcount)
+        return (successcount, warncount, errorcount)
 
     @classmethod
     def customer_create(cls, customer):
@@ -297,19 +311,28 @@ class WooCommerce:
         wcapi = api or cls.get_api()
 
         if not newcustomer:
-            newcustomer = wcapi.get(f"customers/{customer.woocommerceid}").json()
+            response = wcapi.get(f"customers/{customer.woocommerceid}")
+            newcustomer = response.json()
 
-        if (
-            "code" in newcustomer
-            and newcustomer["code"] == "woocommerce_rest_customer_invalid_id"
-        ):
-            log(
-                "[red]Customer does not exist in WooCommerce![/] Link removed.",
-                str(customer),
-            )
-            customer.woocommerceid = 0
-            customer.save()
-            return customer
+            if response.status_code != 200:
+                log(
+                    "[red]Customer update failed with status code {}: ".format(
+                        response.status_code
+                    ),
+                    str(customer),
+                )
+                if (
+                    "code" in newcustomer
+                    and newcustomer["code"] == "woocommerce_rest_invalid_id"
+                ):
+                    log("[red]Customer does not exist in WooCommerce![/] Link removed.")
+                    customer.woocommerceid = 0
+                    customer.save()
+                else:
+                    log(newcustomer)
+                return False
+
+        # Associate fields
 
         customer.email = newcustomer["email"]
         customer.first_name = newcustomer["first_name"]
@@ -406,16 +429,19 @@ class WooCommerce:
                 PREFIX + " [orange_red1]Updating customers...", total=customers.count()
             )
             successcount = 0
+            warncount = 0
             errorcount = 0
             for customer in customers:
                 if customer.woocommerceid:
-                    cls.customer_update(customer, api=wcapi)
-                    successcount += 1
+                    if cls.customer_update(customer, api=wcapi):
+                        successcount += 1
+                    else:
+                        errorcount += 1
                 else:
-                    errorcount += 1
+                    warncount += 1
                 progress.update(task, advance=1)
             progress.stop_task(task)
-        return (successcount, errorcount)
+        return (successcount, warncount, errorcount)
 
     @classmethod
     def category_update(cls, category, newcategory=None, api=None):
@@ -423,21 +449,28 @@ class WooCommerce:
         wcapi = api or cls.get_api()
 
         if not newcategory:
-            newcategory = wcapi.get(
-                f"products/categories/{category.woocommerceid}"
-            ).json()
+            response = wcapi.get(f"products/categories/{category.woocommerceid}")
+            newcategory = response.json()
 
-        if (
-            "code" in newcategory
-            and newcategory["code"] == "woocommerce_rest_category_invalid_id"
-        ):
-            log(
-                "[red]Category does not exist in WooCommerce![/] Link removed.",
-                str(category),
-            )
-            category.woocommerceid = 0
-            category.save()
-            return category
+            if response.status_code != 200:
+                log(
+                    "[red]Category update failed with status code {}: ".format(
+                        response.status_code
+                    ),
+                    str(category),
+                )
+                if (
+                    "code" in newcategory
+                    and newcategory["code"] == "woocommerce_rest_term_invalid"
+                ):
+                    log("[red]Category does not exist in WooCommerce![/] Link removed.")
+                    category.woocommerceid = 0
+                    category.save()
+                else:
+                    log(newcategory)
+                return False
+
+        # Associate fields
 
         category.name = preparestring(newcategory["name"])
         category.description = preparestring(newcategory["description"])
@@ -541,16 +574,19 @@ class WooCommerce:
                 total=categories.count(),
             )
             successcount = 0
+            warncount = 0
             errorcount = 0
             for category in categories:
                 if category.woocommerceid:
-                    cls.category_update(category, api=wcapi)
-                    successcount += 1
+                    if cls.category_update(category, api=wcapi):
+                        successcount += 1
+                    else:
+                        errorcount += 1
                 else:
-                    errorcount += 1
+                    warncount += 1
                 progress.update(task, advance=1)
             progress.stop_task(task)
-        return (successcount, errorcount)
+        return (successcount, warncount, errorcount)
 
     @classmethod
     def order_create(cls, order, api=None, sendstockwarning=True):
@@ -644,18 +680,28 @@ class WooCommerce:
         wcapi = api or cls.get_api()
 
         if not neworder:
-            neworder = wcapi.get(f"orders/{order.woocommerceid}").json()
+            response = wcapi.get(f"orders/{order.woocommerceid}")
+            neworder = response.json()
 
-        if (
-            "code" in neworder
-            and neworder["code"] == "woocommerce_rest_order_invalid_id"
-        ):
-            log(
-                "[red]Order does not exist in WooCommerce![/] Link removed.", str(order)
-            )
-            order.woocommerceid = 0
-            order.save()
-            return order
+            if response.status_code != 200:
+                log(
+                    "[red]Order update failed with status code {}: ".format(
+                        response.status_code
+                    ),
+                    str(order),
+                )
+                if (
+                    "code" in neworder
+                    and neworder["code"] == "woocommerce_rest_shop_order_invalid_id"
+                ):
+                    log("[red]Order does not exist in WooCommerce![/] Link removed.")
+                    order.woocommerceid = 0
+                    order.save()
+                else:
+                    log(neworder)
+                return False
+
+        # Associate fields
 
         if neworder["date_paid"]:
             order.is_paid = True
@@ -744,13 +790,16 @@ class WooCommerce:
                 PREFIX + " [orange_red1]Updating orders...", total=orders.count()
             )
             successcount = 0
+            warncount = 0
             errorcount = 0
             for order in orders:
                 if order.woocommerceid:
-                    cls.order_update(order, api=wcapi)
-                    successcount += 1
+                    if cls.order_update(order, api=wcapi):
+                        successcount += 1
+                    else:
+                        errorcount += 1
                 else:
-                    errorcount += 1
+                    warncount += 1
                 progress.update(task, advance=1)
             progress.stop_task(task)
-        return (successcount, errorcount)
+        return (successcount, warncount, errorcount)

@@ -200,8 +200,10 @@ def wc_update_product(request, obj):
     if not is_connected():
         messages.error(request, NOT_CONNECTED_ERRMSG)
     else:
-        product = WooCommerce.product_update(obj)
-        messages.success(request, gettext("Product '%s' updated!") % str(product))
+        if WooCommerce.product_update(obj):
+            messages.success(request, gettext("Product '%s' updated!") % str(obj))
+        else:
+            messages.error(request, gettext("Product '%s' update failed!") % str(obj))
     return redirect(reverse("admin:kmuhelper_product_change", args=[obj.pk]))
 
 
@@ -212,8 +214,10 @@ def wc_update_customer(request, obj):
     if not is_connected():
         messages.error(request, NOT_CONNECTED_ERRMSG)
     else:
-        customer = WooCommerce.customer_update(obj)
-        messages.success(request, gettext("Customer '%s' updated!") % str(customer))
+        if WooCommerce.customer_update(obj):
+            messages.success(request, gettext("Customer '%s' updated!") % str(obj))
+        else:
+            messages.error(request, gettext("Customer '%s' update failed!") % str(obj))
     return redirect(reverse("admin:kmuhelper_customer_change", args=[obj.pk]))
 
 
@@ -224,10 +228,14 @@ def wc_update_category(request, obj):
     if not is_connected():
         messages.error(request, NOT_CONNECTED_ERRMSG)
     else:
-        category = WooCommerce.category_update(obj)
-        messages.success(
-            request, gettext("Product category '%s' updated!") % str(category)
-        )
+        if WooCommerce.category_update(obj):
+            messages.success(
+                request, gettext("Product category '%s' updated!") % str(obj)
+            )
+        else:
+            messages.error(
+                request, gettext("Product category '%s' update failed!") % str(obj)
+            )
     return redirect(reverse("admin:kmuhelper_productcategory_change", args=[obj.pk]))
 
 
@@ -238,8 +246,10 @@ def wc_update_order(request, obj):
     if not is_connected():
         messages.error(request, NOT_CONNECTED_ERRMSG)
     else:
-        order = WooCommerce.order_update(obj)
-        messages.success(request, gettext("Order '%s' updated!") % str(order))
+        if WooCommerce.order_update(obj):
+            messages.success(request, gettext("Order '%s' updated!") % str(obj))
+        else:
+            messages.error(request, gettext("Order '%s' update failed!") % str(obj))
     return redirect(reverse("admin:kmuhelper_order_change", args=[obj.pk]))
 
 
