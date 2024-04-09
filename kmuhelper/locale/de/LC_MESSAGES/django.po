@@ -1,14 +1,14 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# German translation for django-kmuhelper
+# Copyright (C) 2024 Rafael Urben
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Rafael Urben <github@rafaelurben.ch>, 2024.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-05 14:13+0100\n"
+"POT-Creation-Date: 2024-04-09 18:08+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,190 +18,2106 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: .\kmuhelper\constants.py:9
+msgid "Zahlung ausstehend"
+msgstr ""
+
+#: .\kmuhelper\constants.py:10
+msgid "In Bearbeitung"
+msgstr ""
+
+#: .\kmuhelper\constants.py:11
+msgid "In Wartestellung"
+msgstr ""
+
+#: .\kmuhelper\constants.py:12
+msgid "Abgeschlossen"
+msgstr ""
+
+#: .\kmuhelper\constants.py:13
+msgid "Storniert/Abgebrochen"
+msgstr ""
+
+#: .\kmuhelper\constants.py:14
+msgid "Rückerstattet"
+msgstr ""
+
+#: .\kmuhelper\constants.py:15
+msgid "Fehlgeschlagen"
+msgstr ""
+
+#: .\kmuhelper\constants.py:16
+msgid "Gelöscht"
+msgstr ""
+
+#: .\kmuhelper\constants.py:20
+msgid "0.0% (Mehrwertsteuerfrei)"
+msgstr ""
+
+#: .\kmuhelper\constants.py:21
+msgid "2.6% (Reduzierter Satz)"
+msgstr ""
+
+#: .\kmuhelper\constants.py:22
+msgid "3.8% (Sondersatz für Beherbergung)"
+msgstr ""
+
+#: .\kmuhelper\constants.py:23
+msgid "8.1% (Normalsatz)"
+msgstr ""
+
+#: .\kmuhelper\constants.py:24
+msgid "2.5% (Bis 2023: Reduzierter Satz)"
+msgstr ""
+
+#: .\kmuhelper\constants.py:25
+msgid "3.7% (Bis 2023: Sondersatz für Beherbergung)"
+msgstr ""
+
+#: .\kmuhelper\constants.py:26
+msgid "7.7% (Bis 2023: Normalsatz)"
+msgstr ""
+
+#: .\kmuhelper\constants.py:31
+msgid "Überweisung"
+msgstr ""
+
+#: .\kmuhelper\constants.py:32
+msgid "Scheck"
+msgstr ""
+
+#: .\kmuhelper\constants.py:33
+msgid "Rechnung / Nachnahme"
+msgstr ""
+
+#: .\kmuhelper\constants.py:34
+msgid "PayPal"
+msgstr ""
+
+#: .\kmuhelper\constants.py:37
+msgid "Schweiz"
+msgstr ""
+
+#: .\kmuhelper\constants.py:37
+msgid "Liechtenstein"
+msgstr ""
+
+#: .\kmuhelper\constants.py:40
+msgid "Deutsch [DE]"
+msgstr ""
+
+#: .\kmuhelper\constants.py:41
+msgid "Französisch [FR]"
+msgstr ""
+
+#: .\kmuhelper\constants.py:42
+msgid "Italienisch [IT]"
+msgstr ""
+
+#: .\kmuhelper\constants.py:43
+msgid "Englisch [EN]"
+msgstr ""
+
+#: .\kmuhelper\constants.py:47
+msgid "Geschäftlich (Bestellungen)"
+msgstr ""
+
+#: .\kmuhelper\constants.py:48
+msgid "Geschäftlich (Dienstleistungen)"
+msgstr ""
+
+#: .\kmuhelper\constants.py:49
+msgid "Verein"
+msgstr ""
+
+#: .\kmuhelper\constants.py:50
+msgid "Privat"
+msgstr ""
+
+#: .\kmuhelper\decorators.py:56
+#, python-format
+msgid "%(name)s with ID %(id)s was not found!"
+msgstr ""
+
 #: .\kmuhelper\external\multi_email_field\forms.py:10
 msgid "Enter valid email addresses."
 msgstr "Geben Sie bitte gültige E-Mail-Adressen ein."
 
-#: .\kmuhelper\modules\main\models.py:654
-msgid "Referenznummer"
-msgstr "Referenznummer"
+#: .\kmuhelper\modules\api\models.py:18
+msgid "Key"
+msgstr ""
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:32
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:204
+#: .\kmuhelper\modules\api\models.py:23
+#: .\kmuhelper\modules\integrations\paymentimport\models.py:130
+#: .\kmuhelper\modules\main\admin.py:45 .\kmuhelper\modules\main\models.py:85
+#: .\kmuhelper\modules\main\models.py:160
+#: .\kmuhelper\modules\main\models.py:186
+#: .\kmuhelper\modules\main\models.py:267
+#: .\kmuhelper\modules\main\models.py:671
+#: .\kmuhelper\modules\main\models.py:1213
+#: .\kmuhelper\modules\main\models.py:1245
+#: .\kmuhelper\modules\main\models.py:1317
+#: .\kmuhelper\modules\main\models.py:1377
+#: .\kmuhelper\modules\main\models.py:1486
+#: .\kmuhelper\modules\main\models.py:1938
+msgid "Name"
+msgstr ""
+
+#: .\kmuhelper\modules\api\models.py:34
+msgid "Read permission?"
+msgstr "Leseberechtigung?"
+
+#: .\kmuhelper\modules\api\models.py:38
+msgid "Write permission?"
+msgstr "Schreibberechtigung?"
+
+#: .\kmuhelper\modules\api\models.py:44 .\kmuhelper\modules\api\models.py:71
+msgid "Api key"
+msgstr "API-Schlüssel"
+
+#: .\kmuhelper\modules\api\models.py:47
+msgid "read"
+msgstr "lesen"
+
+#: .\kmuhelper\modules\api\models.py:49
+msgid "write"
+msgstr "schreiben"
+
+#: .\kmuhelper\modules\api\models.py:51
+msgid "read/write"
+msgstr "lesen/schreiben"
+
+#: .\kmuhelper\modules\api\models.py:53
+msgid "UNUSABLE"
+msgstr "UNBRAUCHBAR"
+
+#: .\kmuhelper\modules\api\models.py:57
+msgid "Key preview"
+msgstr "Schlüssel-Vorschau"
+
+#: .\kmuhelper\modules\api\models.py:72
+msgid "Api keys"
+msgstr "API-Schlüssel"
+
+#: .\kmuhelper\modules\app\models.py:23 .\kmuhelper\modules\main\admin.py:717
+#: .\kmuhelper\modules\main\models.py:1239
+#: .\kmuhelper\modules\main\models.py:1467
+msgid "Notiz"
+msgstr ""
+
+#: .\kmuhelper\modules\app\models.py:24 .\kmuhelper\modules\main\models.py:1468
+msgid "Notizen"
+msgstr ""
+
+#: .\kmuhelper\modules\app\models.py:27
+msgid "ToDo-Liste"
+msgstr ""
+
+#: .\kmuhelper\modules\app\models.py:28
+msgid "Unerledigten Notizen"
+msgstr ""
+
+#: .\kmuhelper\modules\app\models.py:43 .\kmuhelper\modules\app\models.py:64
+#: .\kmuhelper\modules\main\admin.py:553 .\kmuhelper\modules\main\models.py:774
+#: .\kmuhelper\modules\main\models.py:920
+#: .\kmuhelper\modules\main\models.py:1441
+msgid "Bestellung"
+msgstr ""
+
+#: .\kmuhelper\modules\app\models.py:44 .\kmuhelper\modules\app\models.py:65
+#: .\kmuhelper\modules\main\admin.py:554 .\kmuhelper\modules\main\models.py:921
+msgid "Bestellungen"
+msgstr ""
+
+#: .\kmuhelper\modules\app\models.py:47
+msgid "Warenausgang"
+msgstr ""
+
+#: .\kmuhelper\modules\app\models.py:48
+msgid "Nicht versendete Bestellungen"
+msgstr ""
+
+#: .\kmuhelper\modules\app\models.py:68
+msgid "Zahlungseingang"
+msgstr ""
+
+#: .\kmuhelper\modules\app\models.py:69
+msgid "Nicht bezahlte Bestellungen"
+msgstr ""
+
+#: .\kmuhelper\modules\app\models.py:81 .\kmuhelper\modules\main\admin.py:97
+#: .\kmuhelper\modules\main\admin.py:744 .\kmuhelper\modules\main\admin.py:776
+#: .\kmuhelper\modules\main\models.py:1292
+#: .\kmuhelper\modules\main\models.py:1448
+#: .\kmuhelper\modules\main\models.py:1719
+#: .\kmuhelper\modules\main\models.py:1724
+#: .\kmuhelper\modules\main\models.py:1799
+msgid "Produkt"
+msgstr ""
+
+#: .\kmuhelper\modules\app\models.py:82 .\kmuhelper\modules\main\admin.py:745
+#: .\kmuhelper\modules\main\models.py:1725
+msgid "Produkte"
+msgstr ""
+
+#: .\kmuhelper\modules\app\models.py:85 .\kmuhelper\modules\main\models.py:1521
+msgid "Lagerbestand"
+msgstr ""
+
+#: .\kmuhelper\modules\app\models.py:86
+msgid "Alle Produkte im Lager"
+msgstr ""
+
+#: .\kmuhelper\modules\app\models.py:101 .\kmuhelper\modules\main\admin.py:319
+#: .\kmuhelper\modules\main\models.py:1360
+#: .\kmuhelper\modules\main\models.py:1365
+#: .\kmuhelper\modules\main\models.py:1462
+msgid "Lieferung"
+msgstr ""
+
+#: .\kmuhelper\modules\app\models.py:102
+#: .\kmuhelper\modules\main\models.py:1366
+msgid "Lieferungen"
+msgstr ""
+
+#: .\kmuhelper\modules\app\models.py:105
+msgid "Wareneingang"
+msgstr ""
+
+#: .\kmuhelper\modules\app\models.py:106
+msgid "Nicht eingelagerte Lieferungen"
+msgstr ""
+
+#: .\kmuhelper\modules\config.py:11
+msgid "Home"
+msgstr ""
+
+#: .\kmuhelper\modules\config.py:16 .\kmuhelper\views.py:25
+msgid "Admin"
+msgstr ""
+
+#: .\kmuhelper\modules\config.py:33 .\kmuhelper\modules\emails\models.py:387
+#: .\kmuhelper\modules\settings\constants.py:86 .\kmuhelper\views.py:43
+msgid "E-Mails"
+msgstr ""
+
+#: .\kmuhelper\modules\config.py:42 .\kmuhelper\views.py:32
+msgid "App"
+msgstr ""
+
+#: .\kmuhelper\modules\config.py:53 .\kmuhelper\modules\main\admin.py:313
+#: .\kmuhelper\modules\main\admin.py:377
+#: .\kmuhelper\modules\settings\models.py:173 .\kmuhelper\views.py:59
+msgid "Einstellungen"
+msgstr ""
+
+#: .\kmuhelper\modules\config.py:60 .\kmuhelper\views.py:50
+msgid "Statistiken"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\admin.py:49
+#: .\kmuhelper\modules\emails\models.py:59
+msgid "Datei"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\admin.py:50
+#: .\kmuhelper\modules\emails\admin.py:96
+#: .\kmuhelper\modules\emails\admin.py:180
+#: .\kmuhelper\modules\main\admin.py:316 .\kmuhelper\modules\main\admin.py:378
+#: .\kmuhelper\modules\main\admin.py:638 .\kmuhelper\modules\main\admin.py:704
+#: .\kmuhelper\modules\main\admin.py:838 .\kmuhelper\modules\main\admin.py:917
+#: .\kmuhelper\modules\main\admin.py:923 .\kmuhelper\modules\main\admin.py:1127
+#: .\kmuhelper\modules\main\admin.py:1309
+msgid "Infos"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\admin.py:55
+#: .\kmuhelper\modules\emails\models.py:195
+#: .\kmuhelper\modules\emails\models.py:432
+#: .\kmuhelper\modules\main\admin.py:918 .\kmuhelper\modules\main\admin.py:924
+#: .\kmuhelper\modules\main\admin.py:1136
+msgid "Daten"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\admin.py:79
+#: .\kmuhelper\modules\emails\models.py:85
+#: .\kmuhelper\modules\emails\models.py:105
+msgid "Anhang"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\admin.py:80
+#: .\kmuhelper\modules\emails\models.py:106
+msgid "Anhänge"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\admin.py:98
+msgid "Zusätzliche Empfänger"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\admin.py:101
+#: .\kmuhelper\modules\emails\admin.py:181
+#: .\kmuhelper\modules\settings\models.py:87
+msgid "Inhalt"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\admin.py:106
+msgid "Zeiten"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\admin.py:182 .\kmuhelper\modules\main\admin.py:47
+#: .\kmuhelper\modules\main\admin.py:1358
+msgid "Optionen"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\models.py:55
+msgid "Dateiname"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\models.py:65
+#: .\kmuhelper\modules\emails\models.py:405
+#: .\kmuhelper\modules\settings\models.py:133
+msgid "Beschreibung"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\models.py:70
+msgid "Automatisch generiert"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\models.py:75
+#: .\kmuhelper\modules\emails\models.py:205
+msgid "Token"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\models.py:81
+msgid "Erstellt um"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\models.py:135
+#: .\kmuhelper\modules\emails\models.py:140
+msgid "E-Mail-Anhang"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\models.py:141
+msgid "E-Mail-Anhänge"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\models.py:150
+#: .\kmuhelper\modules\emails\models.py:418
+msgid "Betreff"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\models.py:156
+#: .\kmuhelper\modules\emails\models.py:411
+msgid "Empfänger"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\models.py:160
+msgid "CC"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\models.py:163
+msgid "Kopie"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\models.py:166
+msgid "BCC"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\models.py:169
+msgid "Blindkopie"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\models.py:173
+#: .\kmuhelper\modules\main\models.py:1063
+msgid "Sprache"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\models.py:180
+#: .\kmuhelper\modules\emails\models.py:427
+msgid "Designvorlage"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\models.py:183
+msgid "Dateiname der Designvorlage unter 'kmuhelper/emails/'."
+msgstr ""
+
+#: .\kmuhelper\modules\emails\models.py:186
+#: .\kmuhelper\modules\emails\models.py:423
+#: .\kmuhelper\modules\settings\models.py:16
+msgid "Text"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\models.py:190
+msgid ""
+"Hauptinhalt - wird nicht von allen Designvorlagen verwendet. Links und E-"
+"Mail Adressen werden automatisch verlinkt."
+msgstr ""
+
+#: .\kmuhelper\modules\emails\models.py:200
+msgid "Daten im JSON-Format, mit welchen die Designvorlage befüllt wird."
+msgstr ""
+
+#: .\kmuhelper\modules\emails\models.py:211
+#: .\kmuhelper\modules\integrations\paymentimport\models.py:32
+#: .\kmuhelper\modules\main\models.py:1397
+msgid "Erstellt am"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\models.py:213
+msgid "Datum und Zeit der Erstellung dieser E-Mail."
+msgstr ""
+
+#: .\kmuhelper\modules\emails\models.py:216
+msgid "Gesendet um"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\models.py:220
+msgid "Datum und Zeit des letzten erfolgreichen Sendeversuches."
+msgstr ""
+
+#: .\kmuhelper\modules\emails\models.py:232
+msgid "Diese Notizen haben keine Einwirkung auf die E-Mail selbst."
+msgstr ""
+
+#: .\kmuhelper\modules\emails\models.py:240
+#: .\kmuhelper\modules\emails\models.py:386
+#: .\kmuhelper\modules\main\models.py:95
+#: .\kmuhelper\modules\main\models.py:1228
+#: .\kmuhelper\modules\main\models.py:1257
+#: .\kmuhelper\modules\settings\models.py:22
+msgid "E-Mail"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\models.py:263
+#, python-format
+msgid "Vorlage '%s' wurde nicht gefunden."
+msgstr ""
+
+#: .\kmuhelper\modules\emails\models.py:266
+#, python-format
+msgid "Vorlage '%(template)s' enthält ungültige Syntax: %(error)s"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\models.py:276
+msgid "Nachricht hat keine(n) Empfänger!"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\models.py:401
+msgid "Titel"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\models.py:415
+#: .\kmuhelper\modules\emails\models.py:420
+#: .\kmuhelper\modules\emails\models.py:424
+msgid "Unterstützt Platzhalter. Siehe unten für mehr Informationen."
+msgstr ""
+
+#: .\kmuhelper\modules\emails\models.py:438
+#: .\kmuhelper\modules\emails\models.py:488
+msgid "E-Mail-Vorlage"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\models.py:452
+#, python-format
+msgid "Vorlage enthält ungültige Syntax: %(error)s"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\models.py:460
+#: .\kmuhelper\modules\emails\models.py:463
+msgid "Vorlage benutzen"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\models.py:489
+msgid "E-Mail-Vorlagen"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\views.py:28
+msgid "E-Mail-Nachricht senden"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\views.py:34
+msgid "E-Mail wurde versendet!"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\views.py:36
+#: .\kmuhelper\modules\emails\views.py:56
+msgid "E-Mail konnte nicht gesendet werden!"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\views.py:40
+#: .\kmuhelper\modules\emails\views.py:60
+msgid "Eine Datei aus dem Anhang konnte nicht gefunden werden!"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\views.py:48
+msgid "E-Mail Nachricht ERNEUT senden"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\views.py:54
+msgid "E-Mail wurde erneut versendet!"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\views.py:91
+msgid "Diese E-Mail kann zurzeit leider nicht angezeigt werden."
+msgstr ""
+
+#: .\kmuhelper\modules\emails\views.py:94
+msgid "Du hast keinen Zugriff auf diese E-Mail!"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\views.py:110
+msgid "Datei wurde nicht gefunden!"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\views.py:132
+msgid "Diese Datei ist leider nicht mehr verfügbar!"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\views.py:136
+msgid "Du hast keinen Zugriff auf diesen E-Mail-Anhang!"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\views.py:156
+msgid ""
+"Daten wurden erfolgreich zwischengespeichert, um die nächste Vorlage "
+"auszufüllen."
+msgstr ""
+
+#: .\kmuhelper\modules\emails\views.py:170
+msgid "Gespeicherte Daten wurden gelöscht!"
+msgstr ""
+
+#: .\kmuhelper\modules\emails\views.py:187
+#, python-format
+msgid "Vorlage wurde mit folgenden Daten ausgefüllt: %s"
+msgstr ""
+
+#: .\kmuhelper\modules\integrations\paymentimport\admin.py:17
+#: .\kmuhelper\modules\integrations\paymentimport\models.py:158
+msgid "Eintrag"
+msgstr ""
+
+#: .\kmuhelper\modules\integrations\paymentimport\admin.py:18
+msgid "Einträge"
+msgstr ""
+
+#: .\kmuhelper\modules\integrations\paymentimport\forms.py:32
+msgid "Dateiupload"
+msgstr ""
+
+#: .\kmuhelper\modules\integrations\paymentimport\forms.py:37
+msgid "XML-Datei"
+msgstr ""
+
+#: .\kmuhelper\modules\integrations\paymentimport\forms.py:39
+msgid ""
+"Die Datei muss nach dem camt.053.001.04 Standard aufgebaut sein und "
+"Detailinformationen enthalten."
+msgstr ""
+
+#: .\kmuhelper\modules\integrations\paymentimport\forms.py:55
+msgid "Die Datei liegt nicht im korrekten Format vor!"
+msgstr ""
+
+#: .\kmuhelper\modules\integrations\paymentimport\forms.py:61
+#, python-format
+msgid "Die Datei kann nicht verarbeitet werden! Fehler: %s"
+msgstr ""
+
+#: .\kmuhelper\modules\integrations\paymentimport\forms.py:78
+#, python-format
+msgid ""
+"Eine Datei mit der Nachrichtenid '%s' wurde bereits zu einem früheren "
+"Zeitpunkt importiert! Der Import wurde abgebrochen!"
+msgstr ""
+
+#: .\kmuhelper\modules\integrations\paymentimport\forms.py:141
+msgid "Zahlungsimport wurde erfolgreich importiert!"
+msgstr ""
+
+#: .\kmuhelper\modules\integrations\paymentimport\forms.py:149
+#, python-format
+msgid "Bei der Verarbeitung ist ein Fehler aufgetreten: %s"
+msgstr ""
+
+#: .\kmuhelper\modules\integrations\paymentimport\models.py:20
+msgid "Importiert am"
+msgstr ""
+
+#: .\kmuhelper\modules\integrations\paymentimport\models.py:24
+msgid "Verarbeitet?"
+msgstr ""
+
+#: .\kmuhelper\modules\integrations\paymentimport\models.py:29
+msgid "Nachrichtenid"
+msgstr ""
+
+#: .\kmuhelper\modules\integrations\paymentimport\models.py:36
+msgid "Anzahl Einträge"
+msgstr ""
+
+#: .\kmuhelper\modules\integrations\paymentimport\models.py:41
+#: .\kmuhelper\modules\integrations\paymentimport\models.py:101
+msgid "Zahlungsimport"
+msgstr ""
+
+#: .\kmuhelper\modules\integrations\paymentimport\models.py:102
+msgid "Zahlungsimporte"
+msgstr ""
+
+#: .\kmuhelper\modules\integrations\paymentimport\models.py:115
+#: .\kmuhelper\modules\main\models.py:569
+msgid "Referenznummer"
+msgstr ""
+
+#: .\kmuhelper\modules\integrations\paymentimport\models.py:120
+msgid "Zusätzliche Referenz"
+msgstr ""
+
+#: .\kmuhelper\modules\integrations\paymentimport\models.py:125
+#: .\kmuhelper\modules\main\models.py:1858
+#: .\kmuhelper\modules\main\models.py:2035
+msgid "IBAN"
+msgstr ""
+
+#: .\kmuhelper\modules\integrations\paymentimport\models.py:136
+msgid "Valuta"
+msgstr ""
+
+#: .\kmuhelper\modules\integrations\paymentimport\models.py:141
+#: .\kmuhelper\modules\integrations\paymentimport\models.py:148
+msgid "Betrag"
+msgstr ""
+
+#: .\kmuhelper\modules\integrations\paymentimport\models.py:144
+msgid "Währung"
+msgstr ""
+
+#: .\kmuhelper\modules\integrations\paymentimport\models.py:152
+#: .\kmuhelper\modules\settings\models.py:31
+msgid "ID"
+msgstr ""
+
+#: .\kmuhelper\modules\integrations\paymentimport\models.py:163
+msgid "Zahlungsimport-Eintrag"
+msgstr ""
+
+#: .\kmuhelper\modules\integrations\paymentimport\models.py:164
+msgid "Zahlungsimport-Einträge"
+msgstr ""
+
+#: .\kmuhelper\modules\integrations\paymentimport\views.py:39
+msgid "Zahlungsimport wurde als verarbeitet markiert!"
+msgstr ""
+
+#: .\kmuhelper\modules\integrations\paymentimport\views.py:47
+msgid "Achtung! Dieser Zahlungsimport wurde bereits als verarbeitet markiert!"
+msgstr ""
+
+#: .\kmuhelper\modules\integrations\woocommerce\api\_base.py:201
+#, python-format
+msgid "%(count)d %(name)s object was updated from WooCommerce."
+msgid_plural "%(count)d %(name)s objects were updated from WooCommerce"
+msgstr[0] "%(count)d Objekt des Typs %(name)s wurde von WooCommerce aktualisiert"
+msgstr[1] "%(count)d Objekte des Typs %(name)s wurden von WooCommerce aktualisiert"
+
+#: .\kmuhelper\modules\integrations\woocommerce\api\_base.py:214
+#, python-format
+msgid "%(count)d %(name)s object is not linked to a WooCommerce object."
+msgid_plural ""
+"%(count)d %(name)s objects are not linked to a WooCommerce object."
+msgstr[0] "%(count)d Objekt des Typs %(name)s ist nicht mit einem WooCommerce-Objekt verlinkt."
+msgstr[1] "%(count)d Objekte des Typs %(name)s sind nicht mit einem WooCommerce-Objekt verlinkt."
+
+#: .\kmuhelper\modules\integrations\woocommerce\api\_base.py:227
+#, python-format
+msgid ""
+"%(count)d %(name)s object couldn't be updated from WooCommerce. Was it "
+"deleted?"
+msgid_plural ""
+"%(count)d %(name)s objects couldn't be updated from WooCommerce. Were they "
+"deleted?"
+msgstr[0] "%(count)d Objekt des Typs %(name)s konnte nicht von WooCommerce aktualisiert werden. Wurde es gelöscht?"
+msgstr[1] "%(count)d Objekte des Typs %(name)s konnten nicht von WooCommerce aktualisiert werden. Wurden sie gelöscht?"
+
+#: .\kmuhelper\modules\integrations\woocommerce\api\_base.py:241
+#, python-format
+msgid "%(count)d new %(name)s object has been imported from WooCommerce!"
+msgid_plural ""
+"%(count)d new %(name)s objects have been imported from WooCommerce!"
+msgstr[0] "%(count)d Objekt des Typs %(name)s wurde von WooCommerce importiert."
+msgstr[1] "%(count)d Objekte des Typs %(name)s wurden von WooCommerce importiert."
+
+#: .\kmuhelper\modules\integrations\woocommerce\filters.py:12
+msgid "WooCommerce State"
+msgstr "WooCommerce-Status"
+
+#: .\kmuhelper\modules\integrations\woocommerce\filters.py:24
+msgid "All"
+msgstr "Alle"
+
+#: .\kmuhelper\modules\integrations\woocommerce\filters.py:25
+msgid "Linked"
+msgstr "Verlinkt"
+
+#: .\kmuhelper\modules\integrations\woocommerce\filters.py:26
+msgid "Not linked"
+msgstr "Nicht verlinkt"
+
+#: .\kmuhelper\modules\integrations\woocommerce\filters.py:27
+msgid "Deleted"
+msgstr "Gelöscht"
+
+#: .\kmuhelper\modules\integrations\woocommerce\filters.py:28
+msgid "Not deleted"
+msgstr "Nicht gelöscht"
+
+#: .\kmuhelper\modules\integrations\woocommerce\forms.py:13
+msgid "WooCommerce-Einstellungen"
+msgstr ""
+
+#: .\kmuhelper\modules\integrations\woocommerce\mixins.py:10
+msgid ""
+"WooCommerce-Status (grün = verknüpft, rot = verknüpft, aber auf WooCommerce "
+"gelöscht, grau = nicht verknüpft)"
+msgstr ""
+
+#: .\kmuhelper\modules\integrations\woocommerce\mixins.py:19
+msgid "WooCommerce ID"
+msgstr ""
+
+#: .\kmuhelper\modules\integrations\woocommerce\mixins.py:24
+msgid "Deleted in WooCommerce?"
+msgstr "In WooCommerce gelöscht?"
+
+#: .\kmuhelper\modules\integrations\woocommerce\mixins.py:48
+msgid "(Deleted)"
+msgstr "(Gelöscht)"
+
+#: .\kmuhelper\modules\integrations\woocommerce\views.py:43
+msgid "WooCommerce wurde scheinbar nicht richtig verbunden!"
+msgstr ""
+
+#: .\kmuhelper\modules\integrations\woocommerce\views.py:78
+msgid "WooCommerce erfolgreich verbunden!"
+msgstr ""
+
+#: .\kmuhelper\modules\integrations\woocommerce\views.py:80
+msgid "WooCommerce konnte nicht verbunden werden!"
+msgstr ""
+
+#: .\kmuhelper\modules\integrations\woocommerce\views.py:92
+msgid "Please enter a valid WooCommerce URL, beginning with 'https://'!"
+msgstr "Bitte gib eine gültige WooCommerce-URL an, beginnend mit 'https://'!"
+
+#: .\kmuhelper\modules\integrations\woocommerce\views.py:120
+msgid "WooCommerce is connected and works!"
+msgstr "WooCommerce ist verbunden und funktioniert!"
+
+#: .\kmuhelper\modules\integrations\woocommerce\views.py:122
+msgid "WooCommerce doesn't seem to work!"
+msgstr "WooCommerce scheint nicht zu funktionieren!"
+
+#: .\kmuhelper\modules\integrations\woocommerce\views.py:175
+#, python-format
+msgid "Product '%s' updated!"
+msgstr "Produkt '%s' aktualisiert!"
+
+#: .\kmuhelper\modules\integrations\woocommerce\views.py:179
+#, python-format
+msgid "Product '%(name)s' update failed! %(error_msg)s"
+msgstr "Aktualisierung des Produkts '%(name)s' fehlgeschlagen! %(error_msg)s"
+
+#: .\kmuhelper\modules\integrations\woocommerce\views.py:194
+#, python-format
+msgid "Customer '%s' updated!"
+msgstr "Kunde '%s' aktualisiert!"
+
+#: .\kmuhelper\modules\integrations\woocommerce\views.py:198
+#, python-format
+msgid "Customer '%(name)s' update failed! %(error_msg)s"
+msgstr "Aktualisierung des Kunden '%(name)s' fehlgeschlagen! %(error_msg)s"
+
+#: .\kmuhelper\modules\integrations\woocommerce\views.py:214
+#, python-format
+msgid "Product category '%s' updated!"
+msgstr "Produktkategorie '%s' aktualisiert!"
+
+#: .\kmuhelper\modules\integrations\woocommerce\views.py:219
+#, python-format
+msgid "Product category '%(name)s' update failed! %(error_msg)s"
+msgstr "Aktualisierung der Produktkategorie '%(name)s' fehlgeschlagen! %(error_msg)s"
+
+#: .\kmuhelper\modules\integrations\woocommerce\views.py:234
+#, python-format
+msgid "Order '%s' updated!"
+msgstr "Bestellung '%s' aktualisiert!"
+
+#: .\kmuhelper\modules\integrations\woocommerce\views.py:238
+#, python-format
+msgid "Order '%(name)s' update failed! %(error_msg)s"
+msgstr "Aktualisierung der Bestellung '%(name)s' fehlgeschlagen! %(error_msg)s"
+
+#: .\kmuhelper\modules\integrations\woocommerce\views.py:254
+msgid ""
+"This endpoint is only available via POST and not meant to be used by humans!"
+msgstr "Dieser Endpunkt ist nur via POST verfügbar und nicht für Menschen gemacht!"
+
+#: .\kmuhelper\modules\integrations\woocommerce\views.py:417
+#: .\kmuhelper\modules\settings\views.py:23
+msgid "Einstellungen gespeichert!"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:46
+msgid "Kontaktinformationen"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:65 .\kmuhelper\modules\main\admin.py:66
+#: .\kmuhelper\modules\main\admin.py:137 .\kmuhelper\modules\main\models.py:318
+#: .\kmuhelper\modules\main\models.py:319
+msgid "Bestellungsposten"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:108 .\kmuhelper\modules\main\admin.py:201
+msgid "Summe (exkl. MwSt)"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:138
+msgid "Bestellungsposten importieren"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:166 .\kmuhelper\modules\main\admin.py:167
+#: .\kmuhelper\modules\main\admin.py:228 .\kmuhelper\modules\main\models.py:203
+#: .\kmuhelper\modules\main\models.py:204
+msgid "Bestellungskosten"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:192
+#: .\kmuhelper\modules\main\models.py:1005
+#: .\kmuhelper\modules\main\models.py:1014
+#: .\kmuhelper\modules\main\models.py:1015
+msgid "Kosten"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:229
+msgid "Bestellungskosten importieren"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:317 .\kmuhelper\modules\main\admin.py:379
+#: .\kmuhelper\modules\main\models.py:453
+#: .\kmuhelper\modules\main\models.py:723
+#: .\kmuhelper\modules\main\models.py:1103
+#: .\kmuhelper\modules\main\models.py:1119
+#: .\kmuhelper\modules\main\models.py:1455
+msgid "Kunde"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:323 .\kmuhelper\modules\main\admin.py:381
+msgid "Bezahlungsoptionen"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:334
+msgid "Bezahlung"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:343 .\kmuhelper\modules\main\admin.py:393
+msgid "Notizen & Texte"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:350 .\kmuhelper\modules\main\admin.py:642
+#: .\kmuhelper\modules\main\admin.py:1348
+msgid "Rechnungsadresse"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:359 .\kmuhelper\modules\main\admin.py:649
+msgid "Lieferadresse"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:371 .\kmuhelper\modules\main\admin.py:660
+#: .\kmuhelper\modules\main\admin.py:919 .\kmuhelper\modules\main\admin.py:1120
+#: .\kmuhelper\modules\main\admin.py:1315
+msgid "Verknüpfungen"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:436
+msgid "Als bezahlt markieren"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:454
+#, python-format
+msgid "%d Bestellung wurde als bezahlt markiert."
+msgid_plural "%d Bestellungen wurden als bezahlt markiert."
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\kmuhelper\modules\main\admin.py:464
+#, python-format
+msgid "%d Bestellung war bereits als bezahlt markiert."
+msgid_plural "%d Bestellungen waren bereits als bezahlt markiert."
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\kmuhelper\modules\main\admin.py:472
+msgid "Bestellungen von WooCommerce aktualisieren"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:663 .\kmuhelper\modules\main\admin.py:667
+msgid "Diverses"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:664
+msgid "Erweitert"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:672
+msgid "Kunden von WooCommerce aktualisieren"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:705
+#: .\kmuhelper\modules\main\models.py:1046
+msgid "Firma"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:707 .\kmuhelper\modules\main\models.py:110
+#: .\kmuhelper\modules\main\models.py:115
+#: .\kmuhelper\modules\main\models.py:116
+#: .\kmuhelper\modules\main\models.py:466
+msgid "Ansprechpartner"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:777
+msgid "Produkte hinzufügen"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:839 .\kmuhelper\modules\main\admin.py:1148
+#: .\kmuhelper\modules\main\models.py:1263
+#: .\kmuhelper\modules\main\models.py:1275
+#: .\kmuhelper\modules\main\models.py:1328
+#: .\kmuhelper\modules\main\models.py:1566
+msgid "Lieferant"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:853
+msgid "Lieferungen einlagern"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:867
+#, python-format
+msgid "%d Lieferung wurde als eingelagert markiert."
+msgid_plural "%d Lieferungen wurden als eingelagert markiert."
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\kmuhelper\modules\main\admin.py:877
+#, python-format
+msgid "%d Lieferung konnte nicht eingelagert werden."
+msgid_plural "%d Lieferungen konnten nicht eingelagert werden."
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\kmuhelper\modules\main\admin.py:933
+#, python-format
+msgid "Bestellung #%s"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:938
+#, python-format
+msgid "Produkt #%s"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:943
+#, python-format
+msgid "Kunde #%s"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:948
+#, python-format
+msgid "Lieferung #%s"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:966
+#, python-format
+msgid "Bestellung #%s wurde mit dieser Notiz verknüpft."
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:972
+#, python-format
+msgid ""
+"Bestellung #%s konnte nicht gefunden werden. Die Notiz wurde trotzdem "
+"erstellt."
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:983
+#, python-format
+msgid "Produkt #%s wurde mit dieser Notiz verknüpft."
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:989
+#, python-format
+msgid ""
+"Produkt #%s konnte nicht gefunden werden. Die Notiz wurde trotzdem erstellt."
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:1000
+#, python-format
+msgid "Kunde #%s wurde mit dieser Notiz verknüpft."
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:1006
+#, python-format
+msgid ""
+"Kunde #%s konnte nicht gefunden werden. Die Notiz wurde trotzdem erstellt."
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:1018
+#, python-format
+msgid "Lieferung #%s wurde mit dieser Notiz verknüpft."
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:1024
+#, python-format
+msgid ""
+"Lieferung #%s konnte nicht gefunden werden. Die Notiz wurde trotzdem "
+"erstellt."
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:1034
+msgid "Verknüpfte Kategorie"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:1035
+msgid "Verknüpfte Kategorien"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:1061
+msgid "Untergeordnetes Produkt"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:1062
+msgid "Untergeordnete Produkte"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:1129
+#: .\kmuhelper\modules\main\models.py:1381
+#: .\kmuhelper\modules\main\models.py:1497
+#: .\kmuhelper\modules\main\models.py:1613
+#: .\kmuhelper\modules\main\models.py:1746
+#: .\kmuhelper\modules\main\models.py:1777
+msgid "Beschrieb"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:1160
+msgid "Aktion"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:1167
+msgid "Links"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:1171
+msgid "Bemerkung / Notiz"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:1184
+msgid "Produkte von WooCommerce aktualisieren"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:1189
+msgid "Lagerbestand zurücksetzen"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:1198
+#, python-format
+msgid "Lagerbestand von %d Produkt zurückgesetzt."
+msgid_plural "Lagerbestand von %d Produkten zurückgesetzt."
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\kmuhelper\modules\main\admin.py:1205
+msgid "Aktion beenden"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:1214
+#, python-format
+msgid "Aktion von %d Produkt beendet."
+msgid_plural "Aktion von %d Produkten beendet."
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\kmuhelper\modules\main\admin.py:1233
+msgid "Unterkategorie"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:1234
+msgid "Unterkategorien"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:1252
+msgid "Produkt in dieser Kategorie"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:1253
+msgid "Produkte in dieser Kategorie"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:1310
+#: .\kmuhelper\modules\main\models.py:1757
+msgid "Übergeordnete Kategorie"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:1329
+msgid "Kategorien von WooCommerce aktualisieren"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:1343
+msgid "Anzeigeinformationen"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:1346
+msgid "Zahlungsinformationen"
+msgstr ""
+
+#: .\kmuhelper\modules\main\admin.py:1360
+msgid "Weitere Informationen & Darstellung"
+msgstr ""
+
+#: .\kmuhelper\modules\main\mixins.py:25 .\kmuhelper\modules\main\mixins.py:101
+msgctxt "address"
+msgid "Vorname"
+msgstr ""
+
+#: .\kmuhelper\modules\main\mixins.py:31 .\kmuhelper\modules\main\mixins.py:107
+msgctxt "address"
+msgid "Nachname"
+msgstr ""
+
+#: .\kmuhelper\modules\main\mixins.py:37 .\kmuhelper\modules\main\mixins.py:113
+msgctxt "address"
+msgid "Firma"
+msgstr ""
+
+#: .\kmuhelper\modules\main\mixins.py:43 .\kmuhelper\modules\main\mixins.py:119
+msgctxt "address"
+msgid "Adresszeile 1"
+msgstr ""
+
+#: .\kmuhelper\modules\main\mixins.py:47
+msgid "Strasse und Hausnummer oder \"Postfach\""
+msgstr ""
+
+#: .\kmuhelper\modules\main\mixins.py:50 .\kmuhelper\modules\main\mixins.py:125
+msgctxt "address"
+msgid "Adresszeile 2"
+msgstr ""
+
+#: .\kmuhelper\modules\main\mixins.py:54
+msgid "Wird in QR-Rechnung NICHT verwendet!"
+msgstr ""
+
+#: .\kmuhelper\modules\main\mixins.py:57 .\kmuhelper\modules\main\mixins.py:131
+msgctxt "address"
+msgid "Ort"
+msgstr ""
+
+#: .\kmuhelper\modules\main\mixins.py:63 .\kmuhelper\modules\main\mixins.py:137
+msgctxt "address"
+msgid "Kanton"
+msgstr ""
+
+#: .\kmuhelper\modules\main\mixins.py:69 .\kmuhelper\modules\main\mixins.py:143
+msgctxt "address"
+msgid "Postleitzahl"
+msgstr ""
+
+#: .\kmuhelper\modules\main\mixins.py:75 .\kmuhelper\modules\main\mixins.py:149
+msgctxt "address"
+msgid "Land"
+msgstr ""
+
+#: .\kmuhelper\modules\main\mixins.py:81 .\kmuhelper\modules\main\mixins.py:155
+msgctxt "address"
+msgid "E-Mail-Adresse"
+msgstr ""
+
+#: .\kmuhelper\modules\main\mixins.py:85 .\kmuhelper\modules\main\mixins.py:159
+msgctxt "address"
+msgid "Telefon"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:39
+#, python-format
+msgid "Lieferung vom %(date)s"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:87 .\kmuhelper\modules\main\models.py:92
+#: .\kmuhelper\modules\main\models.py:96
+msgid "Auf Rechnung ersichtlich!"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:90
+#: .\kmuhelper\modules\main\models.py:1222
+#: .\kmuhelper\modules\main\models.py:1251
+msgid "Telefon"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:102
+#: .\kmuhelper\modules\main\models.py:1965
+msgid "Standard?"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:105
+msgid ""
+"Aktivieren, um diese Kontaktperson als Standard zu setzen. Die Standard-"
+"Kontaktperson wird bei der Erstellung einer neuen Bestellung sowie beim "
+"Import einer Bestellung von WooCommerce verwendet."
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:133
+msgid "Verknüpfte Kosten"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:142
+#: .\kmuhelper\modules\main\models.py:234
+#: .\kmuhelper\modules\main\models.py:1085
+#: .\kmuhelper\modules\main\models.py:1530
+msgid "Bemerkung"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:146
+#: .\kmuhelper\modules\main\models.py:238
+msgid "Wird auf die Rechnung gedruckt."
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:150
+#: .\kmuhelper\modules\main\models.py:246
+msgid "Rabatt in %"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:162
+#: .\kmuhelper\modules\main\models.py:988
+msgid "Zusätzliche Kosten"
+msgstr "Zusätzliche Informationen"
+
+#: .\kmuhelper\modules\main\models.py:166
+#: .\kmuhelper\modules\main\models.py:992
+msgid "Preis (exkl. MwSt)"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:170
+#: .\kmuhelper\modules\main\models.py:277
+#: .\kmuhelper\modules\main\models.py:299
+#: .\kmuhelper\modules\main\models.py:996
+#: .\kmuhelper\modules\main\models.py:1515
+msgid "MwSt-Satz"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:225
+msgid "Verknüpftes Produkt"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:242
+#: .\kmuhelper\modules\main\models.py:1296
+msgid "Menge"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:256
+#: .\kmuhelper\modules\main\models.py:1481
+msgid "Artikelnummer"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:260
+#: .\kmuhelper\modules\main\models.py:1504
+msgid "Mengenbezeichnung"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:273
+msgid "Produktpreis (exkl. MwSt)"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:295
+#: .\kmuhelper\modules\main\models.py:986
+#: .\kmuhelper\modules\main\models.py:1001
+#: .\kmuhelper\modules\main\models.py:1605
+#: .\kmuhelper\modules\main\models.py:1741
+#: .\kmuhelper\modules\main\models.py:1773
+msgid "Bezeichnung"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:336
+msgid "Datum"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:341
+msgid "Rechnungsdatum"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:346
+msgid ""
+"Wird auch als Startpunkt für die Zahlungskonditionen verwendet. Wird beim "
+"Erstellen eines PDF automatisch mit dem aktuellen Datum befüllt."
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:352
+#: .\kmuhelper\modules\settings\constants.py:81
+msgid "Zahlungskonditionen"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:358
+msgid "Bitte benutze folgendes Format: 'p:d;p:d' - p = Skonto in %; d = Tage"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:363
+msgid "Skonto und Zahlungsfrist"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:369
+msgid "Status"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:375
+msgid "Versendet?"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:377
+#: .\kmuhelper\modules\main\models.py:417
+msgid "Mehr Infos"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:382
+msgid "Versendet am"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:388
+msgid "Trackingnummer"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:396
+msgid ""
+"Erlaubte Zeichen: Grossbuchstaben, Zahlen und Punkte. Länge: 8-35 Zeichen"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:400
+msgid "Trackingnummer ohne Leerzeichen. (optional)"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:404
+msgid "Ausgelagert?"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:409
+msgid "Zahlungsmethode"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:415
+msgid "Bezahlt?"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:422
+msgid "Bezahlt am"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:429
+msgid "Zahlungszweck"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:433
+msgid "Wird in QR-Rechnung verwendet."
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:437
+msgid "Kundennotiz"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:440
+msgid "Vom Kunden erfasste Notiz."
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:444
+msgid "Bestellungs-Schlüssel"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:461
+#: .\kmuhelper\modules\main\models.py:2041
+#: .\kmuhelper\modules\main\models.py:2067
+#: .\kmuhelper\modules\main\models.py:2068
+msgid "Zahlungsempfänger"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:501
+msgid "Total in CHF"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:554
+msgid "Trackinglink"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:663
+msgid "Rechnungstotal"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:667
+msgid "Total"
+msgstr "Total"
+
+#: .\kmuhelper\modules\main\models.py:686
+msgid "Gast"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:690
+msgid "Info"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:694
+msgid "Bezahlt nach"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:703
+#, python-format
+msgid "%(count)d Tag"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:704
+#, python-format
+msgid "%(count)d Tagen"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:703
+msgctxt "Paid after ..."
+msgid "count"
+msgid_plural "count"
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\kmuhelper\modules\main\models.py:708
+msgid "Konditionen"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:719
+msgid "bis"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:743
+msgid "Als versendet markiert?"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:754
+msgid "Als bezahlt markiert?"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:795
+#, python-format
+msgid "Ihre Bestellung Nr. %(id)s (Online #%(onlineid)s)"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:798
+#, python-format
+msgid "Rechnung Nr. %(id)s (Online #%(onlineid)s).pdf"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:804
+msgid "Ihre Bestellung Nr. %(id)s"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:805
+#, python-format
+msgid "Rechnung Nr. %(id)s.pdf"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:814
+#: .\kmuhelper\modules\main\models.py:865
+#: .\kmuhelper\modules\main\models.py:906
+#, python-format
+msgid "Diese E-Mail wurde automatisch aus Bestellung #%d generiert."
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:822
+#: .\kmuhelper\modules\pdfgeneration\order\views.py:53
+msgid "Rechnung"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:846
+#, python-format
+msgid "Ihre Lieferung Nr. %(id)s (Online #%(onlineid)s)"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:849
+#, python-format
+msgid "Lieferschein Nr. %(id)s (Online #%(onlineid)s).pdf"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:855
+#, python-format
+msgid "Ihre Lieferung Nr. %(id)s"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:856
+msgid "Lieferschein Nr. %(id)s.pdf"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:874
+#: .\kmuhelper\modules\pdfgeneration\order\views.py:62
+msgid "Lieferschein"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:899
+msgid "[KMUHelper] - Lagerbestand knapp!"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:931
+msgid "Kopie aus Bestellung #%d"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:950
+#, python-format
+msgid "Rücksendung von Bestellung #%d"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1030
+msgid "E-Mail Adresse"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1034
+msgid "Vorname"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1040
+msgid "Nachname"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1052
+msgid "Benutzername"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1058
+msgid "Avatar URL"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1071
+msgid "Zusammenfügen mit"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1076
+msgid ""
+"Dies kann nicht widerrufen werden! Werte im aktuellen Kunden werden "
+"bevorzugt."
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1080
+#: .\kmuhelper\modules\main\models.py:1218
+#: .\kmuhelper\modules\main\models.py:1893
+msgid "Webseite"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1097
+msgid "Avatar"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1120
+msgid "Kunden"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1184
+msgid "Registrierung erfolgreich!"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1189
+#, python-format
+msgid "Diese E-Mail wurde automatisch aus Kunde #%d generiert."
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1209
+msgid "Kürzel"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1234
+msgid "Adresse"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1276
+msgid "Lieferanten"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1300
+#: .\kmuhelper\modules\main\models.py:1305
+#: .\kmuhelper\modules\main\models.py:1306
+msgid "Lieferungsposten"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1322
+msgid "Erfasst am"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1340
+msgid "Eingelagert?"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1344
+#: .\kmuhelper\modules\main\models.py:1769
+msgid "Anzahl Produkte"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1387
+msgid "Erledigt?"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1392
+msgid "Priorität"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1430 .\kmuhelper\overrides.py:42
+msgid "🔗 Notiz"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1464
+msgid "Diese Notiz hat keine Verknüpfungen."
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1491
+#: .\kmuhelper\modules\main\models.py:1609
+msgid "Kurzbeschrieb"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1511
+msgid "Normalpreis in CHF (exkl. MwSt)"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1525
+msgid "Soll-Lagerbestand"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1533
+msgid "Wird nicht gedruckt oder angezeigt; nur für eigene Zwecke."
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1537
+msgid "In Aktion von"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1542
+msgid "In Aktion bis"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1547
+msgid "Aktionspreis in CHF (exkl. MwSt)"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1553
+msgid "Datenblattlink"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1559
+#: .\kmuhelper\modules\main\models.py:1751
+msgid "Bildlink"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1572
+msgid "Einkaufspreis"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1578
+msgid "Lieferantenartikelnummer"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1584
+msgid "Lieferantenurl (Für Nachbestellungen)"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1591
+msgid "Übergeordnetes Produkt"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1601
+msgid "Kategorien"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1617
+msgid "Aktion?"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1628
+msgid "Aktueller Preis"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1632
+msgid "Nr."
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1636
+msgid "Produktbild"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1689
+msgid "Aktuell"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1690
+msgid "Ausgehend"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1691
+msgid "Eingehend"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1703
+msgid "Zu wenig Lagerbestand bei"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1706
+msgid "Knapper Lagerbestand bei"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1763
+msgid "Bild"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1781
+msgid "Kategorie"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1786
+#: .\kmuhelper\modules\main\models.py:1804
+msgid "Produktkategorie"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1787
+msgid "Produktkategorien"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1808
+#: .\kmuhelper\modules\main\models.py:1813
+msgid "Produkt-Kategorie-Verknüpfung"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1814
+msgid "Produkt-Kategorie-Verknüpfungen"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1827
+#: .\kmuhelper\modules\main\models.py:2030
+msgid "Interne Bezeichnung"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1835
+msgid "Modus"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1838
+msgid "QR-Referenz"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1839
+msgid "Ohne Referenz"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1845
+msgid "QR-IBAN"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1850
+#: .\kmuhelper\modules\main\models.py:1863
+msgid "Bite benutze folgendes Format: (CH|LI)pp 3xxx xxxx xxxx xxxx x"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1853
+msgid "QR-IBAN mit Leerzeichen (Nur verwendet im Modus 'QR-Referenz')"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1866
+msgid "IBAN mit Leerzeichen (Nur verwendet im Modus 'Ohne Referenz')"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1874
+msgid "Anzeigename"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1877
+#: .\kmuhelper\modules\main\models.py:1883
+#: .\kmuhelper\modules\main\models.py:1889
+msgid "Wird oben auf der Rechnung angezeigt."
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1880
+#: .\kmuhelper\modules\main\models.py:1943
+msgid "Adresszeile 1"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1886
+#: .\kmuhelper\modules\main\models.py:1950
+msgid "Adresszeile 2"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1896
+msgid "Auf der Rechnung ersichtlich, sofern vorhanden!"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1900
+msgid "Logo (URL)"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1904
+msgid "Nur folgende Zeichen gestattet: 0-9a-zA-Z-_.:;/|?&()\"'*+ - "
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1905
+msgid "Muss auf .jpg/.png enden."
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1908
+msgid "URL eines Bildes (.jpg/.png) - Wird auf die Rechnung gedruckt."
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1914
+msgid "Firmen-UID"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1919
+msgid "Bite benutze folgendes Format: CHE-123.456.789"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1922
+msgid "UID der Firma - Format: CHE-123.456.789 (Mehrwertsteuernummer)"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1928
+msgid "Anzeigemodus für Rechnungen"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1932
+msgid "Je nach Modus werden andere Daten auf der Rechnung angezeigt."
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1940
+msgid "In QR-Rechnung 'Zahlbar an' - Kontoinhaber / Firma"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1946
+msgid "In QR-Rechnung 'Zahlbar an' - Strasse und Hausnummer oder 'Postfach'"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1952
+msgid "In QR-Rechnung 'Zahlbar an' - PLZ und Ort"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1955
+msgid "Land"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1959
+msgid "In QR-Rechnung 'Zahlbar an'"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:1968
+msgid ""
+"Aktivieren, um diesen Zahlungsempfänger als Standard zu setzen. Der Standard-"
+"Zahlungsempfänger wird bei der Erstellung einer neuen Bestellung sowie beim "
+"Import einer Bestellung von WooCommerce verwendet."
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:2052
+msgid "Im Modus 'QR-Referenz' muss eine gültige QR-IBAN angegeben werden!"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:2056
+msgid "Im Modus 'Ohne Referenz' muss eine gültige IBAN angegeben werden!"
+msgstr ""
+
+#: .\kmuhelper\modules\main\models.py:2060
+msgid "Die UID ist ungültig!"
+msgstr ""
+
+#: .\kmuhelper\modules\main\views.py:22
+msgid "Lieferant allen Produkten ohne Lieferant zuordnen"
+msgstr ""
+
+#: .\kmuhelper\modules\main\views.py:26
+msgid "Lieferant wurde einem neuen Produkt zugeordnet!"
+msgstr ""
+
+#: .\kmuhelper\modules\main\views.py:28
+msgid "Lieferant wurde keinem neuen Produkt zugeordnet!"
+msgstr ""
+
+#: .\kmuhelper\modules\main\views.py:32
+#, python-format
+msgid "Lieferant wurde %d neuen Produkten einem neuen Produkt zugeordnet!"
+msgstr ""
+
+#: .\kmuhelper\modules\main\views.py:41
+msgid "Lieferung einlagern"
+msgstr ""
+
+#: .\kmuhelper\modules\main\views.py:44
+msgid "Lieferung eingelagert!"
+msgstr ""
+
+#: .\kmuhelper\modules\main\views.py:46
+msgid "Lieferung konnte nicht eingelagert werden!"
+msgstr ""
+
+#: .\kmuhelper\modules\main\views.py:55 .\kmuhelper\modules\main\views.py:73
+#: .\kmuhelper\modules\main\views.py:82
+msgid "E-Mail wurde generiert!"
+msgstr ""
+
+#: .\kmuhelper\modules\main\views.py:64
+msgid "Bestellung wurde erstellt!"
+msgstr ""
+
+#: .\kmuhelper\modules\main\views.py:89
+msgid "Bestellung duplizieren"
+msgstr ""
+
+#: .\kmuhelper\modules\main\views.py:95
+msgid ""
+"Bestellung wurde dupliziert! HINWEIS: Dies ist die neu erstellte Bestellung!"
+msgstr ""
+
+#: .\kmuhelper\modules\main\views.py:104
+msgid "Bestellung zu Lieferung kopieren"
+msgstr ""
+
+#: .\kmuhelper\modules\main\views.py:107
+msgid "Bestellung wurde zu einer Lieferung kopiert!"
+msgstr ""
+
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:34
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:237
 msgctxt "Text on generated order PDF"
 msgid "Art-Nr."
 msgstr "Art-Nr."
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:33
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:205
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:35
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:238
 msgctxt "Text on generated order PDF"
 msgid "Bezeichnung"
 msgstr "Bezeichnung"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:34
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:206
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:36
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:239
 msgctxt "Text on generated order PDF"
 msgid "Anzahl"
 msgstr "Anzahl"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:35
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:207
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:37
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:240
 msgctxt "Text on generated order PDF"
 msgid "Einheit"
 msgstr "Einheit"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:36
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:38
 msgctxt "Text on generated order PDF"
 msgid "Preis"
 msgstr "Preis"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:37
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:39
 msgctxt "Text on generated order PDF"
 msgid "Total"
 msgstr "Total"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:58
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:93
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:69
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:101
 msgctxt "Text on generated order PDF"
 msgid "Rabatt"
 msgstr "Rabatt"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:119
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:572
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:128
 msgctxt "Text on generated order PDF"
 msgid "MwSt"
 msgstr "MwSt"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:136
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:149
 #, python-format
 msgctxt "Text on generated order PDF"
 msgid "Rechnungsbetrag, zahlbar netto innert %s Tagen"
 msgstr "Rechnungsbetrag, zahlbar netto innert %s Tagen"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:138
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:154
 msgctxt "Text on generated order PDF"
 msgid "Rechnungsbetrag"
 msgstr "Rechnungsbetrag"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:154
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:175
 #, python-format
 msgctxt "Text on generated order PDF"
 msgid "%(days)s Tage %(percent)s%% Skonto"
 msgstr "%(days)s Tage %(percent)s%% Skonto"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:234
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:271
 msgctxt "Text on generated order PDF"
 msgid "Anzahl Produkte"
 msgstr "Anzahl Produkte"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:433
-msgctxt "QR-Invoice / fixed by SIX group style guide"
-msgid "Vor der Einzahlung abzutrennen"
-msgstr "Vor der Einzahlung abzutrennen"
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:334
+msgctxt "Text on generated order PDF"
+msgid "Kontakt"
+msgstr ""
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:445
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:463
-msgctxt "QR-Invoice / fixed by SIX group style guide"
-msgid "Konto / Zahlbar an"
-msgstr "Konto / Zahlbar an"
-
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:452
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:470
-msgctxt "QR-Invoice / fixed by SIX group style guide"
-msgid "Referenz"
-msgstr "Referenz"
-
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:455
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:478
-msgctxt "QR-Invoice / fixed by SIX group style guide"
-msgid "Zahlbar durch"
-msgstr "Zahlbar durch"
-
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:473
-msgctxt "QR-Invoice / fixed by SIX group style guide"
-msgid "Zusätzliche Informationen"
-msgstr "Zusätzliche Informationen"
-
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:486
-msgctxt "QR-Invoice / fixed by SIX group style guide"
-msgid "Empfangsschein"
-msgstr "Empfangsschein"
-
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:487
-msgctxt "QR-Invoice / fixed by SIX group style guide"
-msgid "Zahlteil"
-msgstr "Zahlteil"
-
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:490
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:499
-msgctxt "QR-Invoice / fixed by SIX group style guide"
-msgid "Währung"
-msgstr "Währung"
-
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:491
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:500
-msgctxt "QR-Invoice / fixed by SIX group style guide"
-msgid "Betrag"
-msgstr "Betrag"
-
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:492
-msgctxt "QR-Invoice / fixed by SIX group style guide"
-msgid "Annahmestelle"
-msgstr "Annahmestelle"
-
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:567
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:335
 msgctxt "Text on generated order PDF"
 msgid "Tel."
 msgstr "Tel"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:568
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:336
 msgctxt "Text on generated order PDF"
 msgid "E-Mail"
 msgstr "E-Mail"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:570
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:340
 msgctxt "Text on generated order PDF"
 msgid "Web"
 msgstr "Web"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:589
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:343
+msgctxt "Text on generated order PDF"
+msgid "MwSt."
+msgstr "MwSt"
+
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:361
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:393
 msgctxt "Text on generated order PDF"
 msgid "Ihre Kundennummer"
 msgstr "Ihre Kundennummer"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:590
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:365
 msgctxt "Text on generated order PDF"
 msgid "Bestellnummer"
 msgstr "Bestellnummer"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:591
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:369
 msgctxt "Text on generated order PDF"
 msgid "Bestelldatum"
 msgstr "Bestelldatum"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:593
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:377
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:405
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:426
 msgctxt "Text on generated order PDF"
-msgid "Datum"
-msgstr "Datum"
+msgid "Generiert am"
+msgstr "Generiert am"
 
-#: .\kmuhelper\modules\pdfgeneration\order\generator.py:595
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:384
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:401
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:422
 msgctxt "Text on generated order PDF"
 msgid "Rechnungsdatum"
 msgstr "Rechnungsdatum"
 
-#: .\kmuhelper\modules\pdfgeneration\order\views.py:48
-msgid "Rechnung"
-msgstr "Rechnung"
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:397
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:418
+msgctxt "Text on generated order PDF"
+msgid "Rechnungsnummer"
+msgstr "Rechnungsnummer"
 
-#: .\kmuhelper\modules\pdfgeneration\order\views.py:52
-msgid "Lieferschein"
-msgstr "Lieferschein"
+#: .\kmuhelper\modules\pdfgeneration\order\generator.py:414
+msgctxt "Text on generated order PDF"
+msgid "Identifikation"
+msgstr "Identifikation"
 
-#: .\kmuhelper\modules\pdfgeneration\order\views.py:57
+#: .\kmuhelper\modules\pdfgeneration\order\views.py:68
 msgid "Zahlungserinnerung"
 msgstr "Zahlungserinnerung"
 
-#: .\kmuhelper\modules\pdfgeneration\order\views.py:58
+#: .\kmuhelper\modules\pdfgeneration\order\views.py:70
 #, python-format
 msgid ""
 "Geschätzter Kunde\n"
@@ -222,7 +2138,266 @@ msgstr ""
 "Sollte sich Ihre Zahlung mit diesem Schreiben überkreuzen, so betrachten Sie "
 "dieses bitte als gegenstandslos."
 
-#: .\kmuhelper\translations.py:23
+#: .\kmuhelper\modules\pdfgeneration\swiss_qr_invoice.py:223
+msgctxt "QR-Invoice / fixed by SIX group style guide"
+msgid "Vor der Einzahlung abzutrennen"
+msgstr "Vor der Einzahlung abzutrennen"
+
+#: .\kmuhelper\modules\pdfgeneration\swiss_qr_invoice.py:240
+#: .\kmuhelper\modules\pdfgeneration\swiss_qr_invoice.py:272
+msgctxt "QR-Invoice / fixed by SIX group style guide"
+msgid "Konto / Zahlbar an"
+msgstr "Konto / Zahlbar an"
+
+#: .\kmuhelper\modules\pdfgeneration\swiss_qr_invoice.py:252
+#: .\kmuhelper\modules\pdfgeneration\swiss_qr_invoice.py:282
+msgctxt "QR-Invoice / fixed by SIX group style guide"
+msgid "Referenz"
+msgstr "Referenz"
+
+#: .\kmuhelper\modules\pdfgeneration\swiss_qr_invoice.py:259
+#: .\kmuhelper\modules\pdfgeneration\swiss_qr_invoice.py:301
+msgctxt "QR-Invoice / fixed by SIX group style guide"
+msgid "Zahlbar durch"
+msgstr "Zahlbar durch"
+
+#: .\kmuhelper\modules\pdfgeneration\swiss_qr_invoice.py:290
+msgctxt "QR-Invoice / fixed by SIX group style guide"
+msgid "Zusätzliche Informationen"
+msgstr "Zusätzliche Informationen"
+
+#: .\kmuhelper\modules\pdfgeneration\swiss_qr_invoice.py:313
+msgctxt "QR-Invoice / fixed by SIX group style guide"
+msgid "Empfangsschein"
+msgstr "Empfangsschein"
+
+#: .\kmuhelper\modules\pdfgeneration\swiss_qr_invoice.py:318
+msgctxt "QR-Invoice / fixed by SIX group style guide"
+msgid "Zahlteil"
+msgstr "Zahlteil"
+
+#: .\kmuhelper\modules\pdfgeneration\swiss_qr_invoice.py:325
+#: .\kmuhelper\modules\pdfgeneration\swiss_qr_invoice.py:346
+msgctxt "QR-Invoice / fixed by SIX group style guide"
+msgid "Währung"
+msgstr "Währung"
+
+#: .\kmuhelper\modules\pdfgeneration\swiss_qr_invoice.py:330
+#: .\kmuhelper\modules\pdfgeneration\swiss_qr_invoice.py:351
+msgctxt "QR-Invoice / fixed by SIX group style guide"
+msgid "Betrag"
+msgstr "Betrag"
+
+#: .\kmuhelper\modules\pdfgeneration\swiss_qr_invoice.py:335
+msgctxt "QR-Invoice / fixed by SIX group style guide"
+msgid "Annahmestelle"
+msgstr "Annahmestelle"
+
+#: .\kmuhelper\modules\settings\constants.py:15
+msgid "Shop-URL"
+msgstr ""
+
+#: .\kmuhelper\modules\settings\constants.py:17
+msgid "URL des WooCommerce-/Wordpress-Shops, z.B. https://shop.example.com"
+msgstr ""
+
+#: .\kmuhelper\modules\settings\constants.py:22
+msgid "Webhook-Secret"
+msgstr ""
+
+#: .\kmuhelper\modules\settings\constants.py:23
+msgid "Secret-Key für WooCommerce-Webhooks"
+msgstr ""
+
+#: .\kmuhelper\modules\settings\constants.py:27
+msgid "E-Mail-Adresse für Warnungen zum Lagerbestand"
+msgstr ""
+
+#: .\kmuhelper\modules\settings\constants.py:31
+msgid ""
+"Wenn durch den Import von Bestellungen der Lagerbestand-Soll-Wert "
+"unterschritten wird, wird eine Warnung an diese E-Mail-Adresse gesendet."
+msgstr ""
+
+#: .\kmuhelper\modules\settings\constants.py:33
+msgid "Leer lassen, um diese E-Mails zu deaktivieren."
+msgstr ""
+
+#: .\kmuhelper\modules\settings\constants.py:35
+msgid ""
+"Bemerkung: Entsteht die Unterschreitung durch eine manuelle Aktion, wird "
+"eine Warnung direkt angezeigt."
+msgstr ""
+
+#: .\kmuhelper\modules\settings\constants.py:41
+msgid "E-Mail-Knöpfe anzeigen"
+msgstr ""
+
+#: .\kmuhelper\modules\settings\constants.py:43
+msgid ""
+"Aktivieren oder Deaktivieren der E-Mail-Knöpfe bei Bestellungen und Kunden."
+msgstr ""
+
+#: .\kmuhelper\modules\settings\constants.py:48
+msgid "E-Mail-Signatur"
+msgstr ""
+
+#: .\kmuhelper\modules\settings\constants.py:49
+msgid "Standardsignatur für E-Mails"
+msgstr ""
+
+#: .\kmuhelper\modules\settings\constants.py:53
+msgid "Standardzahlungskonditionen"
+msgstr ""
+
+#: .\kmuhelper\modules\settings\constants.py:56
+msgid "Standardwert der Zahlungskonditionen für neue Bestellungen."
+msgstr ""
+
+#: .\kmuhelper\modules\settings\constants.py:57
+msgid "Wenn leer gelassen, wird '0:30' als Standard verwendet."
+msgstr ""
+
+#: .\kmuhelper\modules\settings\constants.py:58
+#: .\kmuhelper\modules\settings\constants.py:73
+msgid "Mehr über Zahlungskonditionen erfahren"
+msgstr ""
+
+#: .\kmuhelper\modules\settings\constants.py:64
+msgid "Zahlungskonditionen drucken"
+msgstr ""
+
+#: .\kmuhelper\modules\settings\constants.py:68
+msgid ""
+"Wenn aktiviert, werden die Zahlungskonditionen bei Rechnungen in "
+"menschenlesbarer Form unter dem Rechnungstotal gedruckt."
+msgstr ""
+
+#: .\kmuhelper\modules\settings\constants.py:71
+msgid ""
+"Die Zahlungskonditionen werden unabhängig von dieser Einstellung immer auch "
+"in manschinenlesbarer Form im QR-Code integriert."
+msgstr ""
+
+#: .\kmuhelper\modules\settings\models.py:17
+msgid "Mehrzeiliger Text"
+msgstr ""
+
+#: .\kmuhelper\modules\settings\models.py:18
+msgid "Wahrheitswert"
+msgstr ""
+
+#: .\kmuhelper\modules\settings\models.py:19
+msgid "Zahl"
+msgstr ""
+
+#: .\kmuhelper\modules\settings\models.py:20
+msgid "Fliesskommazahl"
+msgstr ""
+
+#: .\kmuhelper\modules\settings\models.py:21
+msgid "Url"
+msgstr ""
+
+#: .\kmuhelper\modules\settings\models.py:23
+msgid "JSON Daten"
+msgstr ""
+
+#: .\kmuhelper\modules\settings\models.py:36
+msgid "Typ"
+msgstr ""
+
+#: .\kmuhelper\modules\settings\models.py:43
+msgid "Inhalt (Text)"
+msgstr ""
+
+#: .\kmuhelper\modules\settings\models.py:49
+msgid "Inhalt (Mehrzeiliger Text)"
+msgstr ""
+
+#: .\kmuhelper\modules\settings\models.py:54
+msgid "Inhalt (Wahrheitswert)"
+msgstr ""
+
+#: .\kmuhelper\modules\settings\models.py:59
+msgid "Inhalt (Zahl)"
+msgstr ""
+
+#: .\kmuhelper\modules\settings\models.py:64
+msgid "Inhalt (Fliesskommazahl)"
+msgstr ""
+
+#: .\kmuhelper\modules\settings\models.py:69
+msgid "Inhalt (Url)"
+msgstr ""
+
+#: .\kmuhelper\modules\settings\models.py:74
+msgid "Inhalt (E-Mail)"
+msgstr ""
+
+#: .\kmuhelper\modules\settings\models.py:80
+msgid "Inhalt (JSON)"
+msgstr ""
+
+#: .\kmuhelper\modules\settings\models.py:104
+msgid "ERROR! Unbekannter Einstellungstyp! Bitte kontaktiere den Entwickler!"
+msgstr ""
+
+#: .\kmuhelper\modules\settings\models.py:127
+#: .\kmuhelper\modules\settings\models.py:167
+#: .\kmuhelper\modules\settings\models.py:172
+msgid "Einstellung"
+msgstr ""
+
+#: .\kmuhelper\modules\settings\models.py:129
+#: .\kmuhelper\modules\settings\models.py:135
+msgid "(unbekannte Einstellung)"
+msgstr ""
+
+#: .\kmuhelper\modules\settings\models.py:190
+msgid "Versteckte Einstellung"
+msgstr ""
+
+#: .\kmuhelper\modules\settings\models.py:191
+msgid "Versteckte Einstellungen"
+msgstr ""
+
+#: .\kmuhelper\modules\stats\views.py:31 .\kmuhelper\modules\stats\views.py:95
+msgid "Keine Bestellungen vorhanden."
+msgstr ""
+
+#: .\kmuhelper\overrides.py:57
+#, python-format
+msgid "Notiz #%d"
+msgstr ""
+
+#: .\kmuhelper\overrides.py:65
+msgid "Notiz erstellen"
+msgstr ""
+
+#: .\kmuhelper\templates\admin\kmuhelper\change_form.html:17
+#, python-format
+msgid "Add %(name)s"
+msgstr "%(name)s hinzufügen"
+
+#: .\kmuhelper\templates\admin\kmuhelper\delete_confirmation.html:16
+msgid "Delete"
+msgstr "Löschen"
+
+#: .\kmuhelper\templates\admin\kmuhelper\delete_selected_confirmation.html:14
+msgid "Delete multiple objects"
+msgstr "Mehrere Objekte löschen"
+
+#: .\kmuhelper\templates\admin\kmuhelper\object_history.html:16
+msgid "History"
+msgstr "Geschichte"
+
+#: .\kmuhelper\translations.py:6
+msgid ""
+"Unterstützt i18n: '[:de]Deutsch[:fr]Français[:it]Italiano[:en]English[:]'"
+msgstr ""
+
+#: .\kmuhelper\translations.py:27
 msgctxt "quantity description"
 msgid "Stück"
 msgid_plural "Stück"
@@ -236,29 +2411,70 @@ msgid_plural "Stunden"
 msgstr[0] "Stunde"
 msgstr[1] "Stunden"
 
-#: .\kmuhelper\translations.py:39
+#: .\kmuhelper\translations.py:35
 msgctxt "quantity description"
 msgid "Einheit"
 msgid_plural "Einheiten"
 msgstr[0] "Einheit"
 msgstr[1] "Einheiten"
 
-#: .\kmuhelper\translations.py:47
+#: .\kmuhelper\translations.py:39
 msgctxt "quantity description"
 msgid "Flasche"
 msgid_plural "Flaschen"
-msgstr[0] "Flsche"
+msgstr[0] "Flasche"
 msgstr[1] "Flaschen"
 
-#: .\kmuhelper\translations.py:55
+#: .\kmuhelper\translations.py:43
 msgctxt "quantity description"
 msgid "Tube"
 msgid_plural "Tuben"
 msgstr[0] "Tube"
 msgstr[1] "Tuben"
 
-#~ msgid "Ihr/e Ansprechpartner/in"
-#~ msgstr "Ihr/e Ansprechpartner/in"
+#: .\kmuhelper\utils.py:131
+msgid "FAQ"
+msgstr ""
 
-#~ msgid "Ihre Bestellung vom"
-#~ msgstr "Ihre Bestellung vom"
+#: .\kmuhelper\views.py:26
+msgid "Volle Kontrolle über die Hauptfunktionen"
+msgstr ""
+
+#: .\kmuhelper\views.py:34
+msgid "Eingeschränkte Verwaltung von Daten in verschiedenen Arbeitsschritten"
+msgstr ""
+
+#: .\kmuhelper\views.py:44
+msgid "Verwaltung und Erstellung von E-Mails"
+msgstr ""
+
+#: .\kmuhelper\views.py:51
+msgid "Diagramme und co."
+msgstr ""
+
+#: .\kmuhelper\views.py:60
+msgid "Einstellungen für den KMUHelper"
+msgstr ""
+
+#: .\kmuhelper\views.py:68
+msgid "Handbuch"
+msgstr ""
+
+#: .\kmuhelper\views.py:69
+msgid "Dokumentation zum KMUHelper"
+msgstr ""
+
+#: .\kmuhelper\views.py:109
+#, python-format
+msgid "Vorlage %s wurde nicht gefunden."
+msgstr ""
+
+#: .\kmuhelper\views.py:115
+#, python-format
+msgid "Vorlage %(name)s enthält einen Syntaxfehler: %(error)s"
+msgstr ""
+
+#: .\kmuhelper\views.py:120
+#, python-format
+msgid "Es ist ein Fehler aufgetreten: %s"
+msgstr ""
