@@ -15,7 +15,12 @@
 {% block pageinfo %}
     <p id="pageinfo">
         Diese App bietet dir im Vergleich zum
-        <a href="{% url 'admin:app_list' app_label='kmuhelper' %}" target="_top">Adminbereichs</a>
+        <a href="{% url 'admin:app_list' app_label='kmuhelper' %}" target="_top">
+            <abbr title="Admin"><i class="fa-solid fa-key"></i></abbr> Adminbereich
+        </a>
         eine vereinfachte Ansicht, welche auf bestimmte Arbeitsschritte abgestimmt ist.
+        <a href="{% docs_url 'app' %}" target="_blank">
+            <abbr title="Dokumentation"><i class="fa-solid fa-book"></i></abbr> Handbuch
+        </a>
     </p>
 {% endblock %}

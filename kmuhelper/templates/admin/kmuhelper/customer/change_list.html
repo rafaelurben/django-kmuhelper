@@ -1,5 +1,16 @@
 {% extends 'admin/kmuhelper/change_list.html' %}
 
+{% load kmuhelper_tags %}
+
+{% block pageinfo %}
+    <p id="pageinfo">
+        <b>Verwandte Seiten:</b>
+        <a href="{% docs_url 'customers' %}" target="_blank">
+            <abbr title="Dokumentation"><i class="fa-solid fa-book"></i></abbr> Kundenmanagement
+        </a>
+    </p>
+{% endblock %}
+
 {% block object-tools-items %}
     {% load kmuhelper_tags %}
     {% kmuhelper_woocommerce_connected as woocommerce_is_connected %}

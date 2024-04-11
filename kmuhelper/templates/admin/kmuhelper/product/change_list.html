@@ -1,9 +1,19 @@
 {% extends 'admin/kmuhelper/change_list.html' %}
 
+{% load kmuhelper_tags %}
+
 {% block pageinfo %}
     <p id="pageinfo">
-        <b>Verwandte Seiten:</b> <a href="{% url 'admin:kmuhelper_app_stock_changelist' %}">App: Lagerbestand</a>,
-        <a href="{% url 'admin:kmuhelper_productcategory_changelist' %}">Admin: Produktkategorien</a>
+        <b>Verwandte Seiten:</b>
+        <a href="{% url 'admin:kmuhelper_productcategory_changelist' %}">
+            <abbr title="Admin"><i class="fa-solid fa-key"></i></abbr> Produktkategorien
+        </a>
+        <a href="{% url 'admin:kmuhelper_app_stock_changelist' %}">
+            <abbr title="App"><i class="fa-solid fa-desktop"></i></abbr> Lagerbestand
+        </a>
+        <a href="{% docs_url 'storage' %}" target="_blank">
+            <abbr title="Dokumentation"><i class="fa-solid fa-book"></i></abbr> Lagermanagement
+        </a>
     </p>
 {% endblock %}
 

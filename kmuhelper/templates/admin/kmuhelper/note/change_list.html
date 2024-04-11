@@ -2,6 +2,9 @@
 
 {% block pageinfo %}
     <p id="pageinfo">
-        <b>Verwandte Seiten:</b> <a href="{% url 'admin:kmuhelper_app_todo_changelist' %}">App: ToDo-Liste</a>
+        <b>Verwandte Seiten:</b>
+        <a href="{% url 'admin:kmuhelper_app_todo_changelist' %}">
+            <abbr title="App"><i class="fa-solid fa-desktop"></i></abbr> ToDo-Liste
+        </a>
     </p>
 {% endblock %}

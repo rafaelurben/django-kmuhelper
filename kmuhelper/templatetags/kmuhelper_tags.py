@@ -3,7 +3,7 @@ from django.apps import apps
 from django.urls import reverse
 from django.utils.html import format_html
 
-from kmuhelper import settings
+from kmuhelper import settings, constants
 from kmuhelper.modules import config
 from kmuhelper.modules.integrations.woocommerce.utils import (
     is_connected as is_woocommerce_connected,
@@ -82,3 +82,8 @@ def kmuhelper_pagechooser_from_model_list(model_list):
 @register.inclusion_tag("kmuhelper/_includes/pagechooser.html", takes_context=False)
 def kmuhelper_pagechooser(griddata, pagechooserclass=""):
     return {"griddata": griddata, "pagechooserclass": pagechooserclass}
+
+
+@register.simple_tag(name="docs_url", takes_context=False)
+def docs_url(path=""):
+    return constants.URL_MANUAL + path

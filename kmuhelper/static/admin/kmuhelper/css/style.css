@@ -107,6 +107,7 @@ ul.messagelist li:not(:last-child) {
 
 #pageinfo {
     padding-bottom: 10px;
+    line-height: 1.75;
 }
 
 #pageinfo a {
@@ -115,11 +116,18 @@ ul.messagelist li:not(:last-child) {
     background-color: var(--kmuhelper-dark);
     transition-duration: 0.5s;
     text-decoration: none !important;
-    padding: 2px 6px;
+    padding: 0 0.3em;
+    margin: 0.1em 0.2em;
+    white-space: nowrap;
+    display: inline-block;
 }
 
 #pageinfo a:hover {
     background-color: var(--kmuhelper-darkest);
+}
+
+#pageinfo a i {
+    margin-right: 0.2em;
 }
 
 /* Fix overlapping object-tools buttons */

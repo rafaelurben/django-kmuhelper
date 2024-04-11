@@ -1,8 +1,19 @@
 {% extends 'admin/kmuhelper/change_list.html' %}
 
+{% load kmuhelper_tags %}
+
 {% block pageinfo %}
     <p id="pageinfo">
-        <b>Verwandte Seiten:</b> <a href="{% url 'admin:kmuhelper_app_shipping_changelist' %}">App: Warenausgang</a>, <a href="{% url 'admin:kmuhelper_app_incomingpayments_changelist' %}">App: Zahlungseingang</a>
+        <b>Verwandte Seiten:</b>
+        <a href="{% url 'admin:kmuhelper_app_shipping_changelist' %}">
+            <abbr title="App"><i class="fa-solid fa-desktop"></i></abbr> Warenausgang
+        </a>
+        <a href="{% url 'admin:kmuhelper_app_incomingpayments_changelist' %}">
+            <abbr title="App"><i class="fa-solid fa-desktop"></i></abbr> Zahlungseingang
+        </a>
+        <a href="{% docs_url 'order-and-invoice' %}" target="_blank">
+            <abbr title="Dokumentation"><i class="fa-solid fa-book"></i></abbr> Bestellung & Rechnung
+        </a>
     </p>
 
     {% block unpaid_orders %}

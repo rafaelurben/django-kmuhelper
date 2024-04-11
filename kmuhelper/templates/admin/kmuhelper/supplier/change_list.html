@@ -2,6 +2,9 @@
 
 {% block pageinfo %}
     <p id="pageinfo">
-        <b>Verwandte Seiten:</b> <a href="{% url 'admin:kmuhelper_supply_changelist' %}">Admin: Lieferungen</a>
+        <b>Verwandte Seiten:</b>
+        <a href="{% url 'admin:kmuhelper_supply_changelist' %}">
+            <abbr title="Admin"><i class="fa-solid fa-key"></i></abbr> Lieferungen
+        </a>
     </p>
 {% endblock %}

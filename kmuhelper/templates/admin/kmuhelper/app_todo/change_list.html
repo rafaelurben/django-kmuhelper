@@ -4,7 +4,10 @@
 
 {% block pageinfo %}
     <p id="pageinfo">
-        <b>Verwandte Seiten:</b> <a href="{% url 'admin:kmuhelper_note_changelist' %}">Admin: Notizen</a>
+        <b>Verwandte Seiten:</b>
+        <a href="{% url 'admin:kmuhelper_note_changelist' %}">
+            <abbr title="Admin"><i class="fa-solid fa-key"></i></abbr> Alle Notizen
+        </a>
     </p>
 {% endblock %}
 
