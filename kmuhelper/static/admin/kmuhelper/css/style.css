@@ -151,6 +151,9 @@ ul.messagelist li:not(:last-child) {
 .object-tools {
     overflow-inline: visible !important;
     display: inline-block;
+
+    /* Object tools overflow */
+    overflow-y: visible !important;
 }
 
 .object-tools .dropdown {
@@ -203,10 +206,6 @@ ul.messagelist li:not(:last-child) {
     color: grey;
 }
 
-.object-tools .dropdown div a.disabled:hover {
-    background-color: none !important;
-}
-
 .object-tools .dropdown div hr {
     color: lightgray;
     background-color: lightgray;
@@ -235,8 +234,3 @@ ul.messagelist li:not(:last-child) {
     user-select: none;
 }
 
-/* Object tools overflow */
-
-.object-tools {
-    overflow-y: visible !important;
-}

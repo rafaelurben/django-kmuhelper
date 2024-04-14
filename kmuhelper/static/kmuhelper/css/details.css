@@ -11,6 +11,12 @@ details > summary {
     border-radius: 5px;
     position: sticky;
     background-color: var(--body-bg);
+
+    --details-level: 0;
+
+    /* Make all summaries sticky */
+    top: calc(var(--details-level) * 32px);
+    z-index: calc(100 - var(--details-level));
 }
 
 details[open] > summary {
@@ -31,13 +37,7 @@ details > div > *:last-child {
     margin-bottom: 0;
 }
 
-/* Stick to top for embedded details */
-
-details > summary {
-    --details-level: 0;
-    top: calc(var(--details-level) * 32px);
-    z-index: calc(100 - var(--details-level));
-}
+/* Detail levels */
 
 details details > summary {
     --details-level: 1;
