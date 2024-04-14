@@ -1,17 +1,16 @@
 import datetime
 import json
 
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required
 from django.core.serializers.json import DjangoJSONEncoder
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.utils import timezone
-from django.utils.translation import gettext_lazy, gettext
-
+from django.utils.translation import gettext_lazy
 from kmuhelper.decorators import require_all_kmuhelper_perms
-from kmuhelper.utils import render_error
-from kmuhelper.translations import langselect
 from kmuhelper.modules.main.models import OrderItem, Order
+from kmuhelper.translations import langselect
+from kmuhelper.utils import render_error
 
 _ = gettext_lazy
 
@@ -121,13 +120,14 @@ def best_products(request):
 
     for bp in (
         OrderItem.objects.filter(order__date__gte=from_date, order__date__lte=to_date)
-        .order_by("product__name")
-        .values("product__name", "quantity")
+        .order_by("linked_product__name")
+        .values("linked_product__name", "name", "quantity")
     ):
-        if bp["product__name"] in products:
-            products[langselect(bp["product__name"])] += bp["quantity"]
+        product_name = langselect(bp["linked_product__name"] or bp["name"])
+        if product_name in products:
+            products[product_name] += bp["quantity"]
         else:
-            products[langselect(bp["product__name"])] = bp["quantity"]
+            products[product_name] = bp["quantity"]
 
     products = sorted(products.items(), key=lambda x: x[1], reverse=True)
     products = products[:max_count] if len(products) > max_count else products
