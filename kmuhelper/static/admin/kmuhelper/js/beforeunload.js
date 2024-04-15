@@ -3,10 +3,11 @@
  */
 
 window.addEventListener("load", function () {
+    let $;
     if (typeof django !== 'undefined') {
-        const $ = django.jQuery;
+        $ = django.jQuery;
     } else if (typeof jQuery !== 'undefined') {
-        const $ = jQuery;
+        $ = jQuery;
     } else if (typeof $ === 'undefined') {
         console.error("jQuery not found!");
         return;
