@@ -181,7 +181,7 @@
             document.querySelector("#orderitem_set-group h2").append(
                 document.getElementById("orderitem-column-collapser")
             )
-            
+
             {% if errors %}
                 toggleProductInlineExtend();
             {% endif %}
@@ -240,5 +240,13 @@
                 $("#auto-copy").on("input", updateShippingFormVisibility);
             });
         </script>
+    {% endif %}
+{% endblock %}
+
+{% block submit_buttons_bottom %}
+    {{ block.super }}
+
+    {% if not "unlock" in request.GET %}
+        <a href="?unlock" title="Gesperrte Felder freischalten"><i class="fa-solid fa-lock-open"></i></a>
     {% endif %}
 {% endblock %}
