@@ -5,10 +5,10 @@
 
     <script>
         function openURL(url, doPrint) {
-            var $ = django.jQuery;
+            const $ = django.jQuery;
 
             // Check if the form has been changed
-            var formChanged = $('form').serialize() != window.initialData;
+            const formChanged = $('form').serialize() !== window.initialData;
             if (formChanged) {
                 if (!confirm('Achtung: Es liegen ungespeicherte Änderungen vor. Die PDF-Datei wird mit den aktuell gespeicherten Daten generiert. Trotzdem fortfahren?')) {
                     return false;
@@ -16,7 +16,7 @@
             }
 
             // Open the URL in a new window
-            var win = window.open(url, '_blank');
+            const win = window.open(url, '_blank');
 
             // (Try to) automatically print the document
             if (doPrint) {
@@ -118,9 +118,9 @@
 
         {% if perms.kmuhelper.add_supply and original.is_shipped %}
             <li>
-                <attr title="Die Produkte dieser Bestellung zu einer Lieferung kopieren">
+                <abbr title="Die Produkte dieser Bestellung zu einer Lieferung kopieren">
                     <a href="{% url 'admin:kmuhelper_order_copy_to_supply' object_id %}" rel="noopener">Rücksendung</a>
-                </attr>
+                </abbr>
             </li>
         {% endif %}
 
@@ -152,6 +152,11 @@
             cursor: pointer;
         }
 
+        #orderitem-column-collapser a:hover {
+            text-decoration: underline;
+            color: var(--header-link-color);
+        }
+
         #orderitem_set-group, #orderfee_set-group {
             .field-vat_rate select {
                 max-width: 6em;
@@ -176,6 +181,10 @@
             document.querySelector("#orderitem_set-group h2").append(
                 document.getElementById("orderitem-column-collapser")
             )
+            
+            {% if errors %}
+                toggleProductInlineExtend();
+            {% endif %}
         })
     </script>
 
