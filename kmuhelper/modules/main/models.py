@@ -41,7 +41,10 @@ def default_delivery_title():
 
 # noinspection DuplicatedCode
 def default_payment_recipient():
-    if PaymentReceiver.objects.filter(is_default=True).exists():
+    if (
+        PaymentReceiver.objects.exists()
+        and PaymentReceiver.objects.filter(is_default=True).exists()
+    ):
         return PaymentReceiver.objects.filter(is_default=True).first().pk
     # Fallback if there isn't a default payment receiver: Use the most recently used one
     if Order.objects.exists():
@@ -54,7 +57,10 @@ def default_payment_recipient():
 
 # noinspection DuplicatedCode
 def default_contact_person():
-    if ContactPerson.objects.filter(is_default=True).exists():
+    if (
+        ContactPerson.objects.exists()
+        and ContactPerson.objects.filter(is_default=True).exists()
+    ):
         return ContactPerson.objects.filter(is_default=True).first().pk
     # Fallback if there isn't a default contact person: Use the most recently used one
     if Order.objects.exists():
