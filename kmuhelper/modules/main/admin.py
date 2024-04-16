@@ -14,6 +14,7 @@ from kmuhelper.modules.integrations.woocommerce.api import (
 from kmuhelper.modules.integrations.woocommerce.filters import WooCommerceStateFilter
 from kmuhelper.modules.integrations.woocommerce.utils import is_connected
 from kmuhelper.modules.main import views
+from kmuhelper.modules.main.filters import ProductTypeFilter
 from kmuhelper.modules.main.models import (
     ContactPerson,
     Order,
@@ -1099,7 +1100,12 @@ class ProductAdmin(CustomModelAdmin):
 
     ordering = ("article_number", "name")
 
-    list_filter = ("supplier", WooCommerceStateFilter, "categories")
+    list_filter = (
+        ProductTypeFilter,
+        WooCommerceStateFilter,
+        "supplier",
+        "categories",
+    )
     search_fields = [
         "pk",
         "article_number",
