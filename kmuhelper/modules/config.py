@@ -61,6 +61,13 @@ MODULES = {
         "viewname": "kmuhelper:stats",
         "model_names": [],
     },
+    "log": {
+        "title": _("Log"),
+        "viewname": "kmuhelper:log",
+        "model_names": [
+            "AdminLogEntry",
+        ],
+    },
 }
 
 MODULE_ASSOCIATIONS = {}
