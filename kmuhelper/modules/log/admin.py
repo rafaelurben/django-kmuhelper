@@ -10,7 +10,7 @@ _ = gettext_lazy
 
 @admin.register(AdminLogEntry)
 class AdminLogEntryAdmin(CustomModelAdmin):
-    hidden = True
+    HIDDEN = True
 
     list_filter = [
         "action_flag",
