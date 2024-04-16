@@ -1588,6 +1588,7 @@ class Product(CustomModel, WooCommerceModelMixin):
 
     parent = models.ForeignKey(
         to="self",
+        related_name="children",
         verbose_name=_("Übergeordnetes Produkt"),
         on_delete=models.SET_NULL,
         blank=True,

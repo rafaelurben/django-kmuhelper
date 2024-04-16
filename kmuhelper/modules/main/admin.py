@@ -1061,7 +1061,21 @@ class ProductAdminChildrenInline(CustomTabularInline):
     verbose_name = _("Untergeordnetes Produkt")
     verbose_name_plural = _("Untergeordnete Produkte")
 
-    fields = ("id", "article_number", "name", "selling_price")
+    fields = [
+        "pkfill",
+        "article_number",
+        "name",
+        "selling_price",
+    ]
+
+    readonly_fields = ["pkfill", "display_woocommerce_state"]
+
+    def get_fields(self, request, obj=None):
+        if is_connected():
+            ls = self.fields.copy()
+            ls.insert(1, "display_woocommerce_state")
+            return ls
+        return self.fields
 
     # Permissions
 
