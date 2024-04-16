@@ -101,7 +101,7 @@ class PaymentImport(CustomModel):
         verbose_name = _("Zahlungsimport")
         verbose_name_plural = _("Zahlungsimporte")
 
-    admin_icon = "fas fa-file-import"
+    ADMIN_ICON = "fa-solid fa-file-import"
 
 
 class PaymentImportEntry(models.Model):

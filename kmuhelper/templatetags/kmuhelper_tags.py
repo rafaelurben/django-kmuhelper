@@ -68,11 +68,11 @@ def kmuhelper_pagechooser_from_model_list(model_list):
             dbmodel = None
         griddata.append(
             {
-                "title": getattr(dbmodel, "admin_title", "") or model["name"],
+                "title": getattr(dbmodel, "ADMIN_TITLE", "") or model["name"],
                 "url": model["admin_url"],
-                "subtitle": getattr(dbmodel, "admin_description", ""),
+                "subtitle": getattr(dbmodel, "ADMIN_DESCRIPTION", ""),
                 "icon": getattr(
-                    dbmodel, "admin_icon", "fa-solid fa-circle-exclamation"
+                    dbmodel, "ADMIN_ICON", "fa-solid fa-circle-exclamation"
                 ),
             }
         )

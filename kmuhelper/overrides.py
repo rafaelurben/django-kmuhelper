@@ -15,6 +15,16 @@ class CustomModel(models.Model):
 
     PKFILL_WIDTH = 6
 
+    ADMIN_TITLE = None
+    ADMIN_DESCRIPTION = None
+    ADMIN_ICON = "fa-solid fa-circle-exclamation"
+
+    IS_APP_MODEL = False
+    NOTE_RELATION = None
+
+    DICT_FIELDS = []
+    DICT_EXCLUDE_FIELDS = []
+
     @admin.display(description="ID", ordering="pk")
     def pkfill(self, width=None):
         """Get the primary key of this object padded with zeros"""
@@ -25,8 +35,8 @@ class CustomModel(models.Model):
     def to_dict(self):
         """Return the model fields as a dict"""
 
-        exclude = getattr(self.__class__, "DICT_EXCLUDE_FIELDS", list())
-        fields = getattr(self.__class__, "DICT_FIELDS", list())
+        exclude = self.DICT_EXCLUDE_FIELDS
+        fields = self.DICT_FIELDS
 
         if fields:
             return model_to_dict(self, fields=fields, exclude=exclude)
@@ -41,27 +51,27 @@ class CustomModel(models.Model):
 
     @admin.display(description=_("🔗 Notiz"), ordering="linked_note")
     def linked_note_html(self):
-        is_app = getattr(self.__class__, "IS_APP_MODEL", False)
-        relname = getattr(self.__class__, "NOTE_RELATION", None)
+        is_app = self.IS_APP_MODEL
+        rel_name = self.NOTE_RELATION
 
-        if relname is None:
+        if rel_name is None:
             return None
 
         if hasattr(self, "linked_note"):
             if is_app:
-                viewname = "admin:kmuhelper_app_todo_change"
+                view_name = "admin:kmuhelper_app_todo_change"
             else:
-                viewname = "admin:kmuhelper_note_change"
+                view_name = "admin:kmuhelper_note_change"
 
-            link = reverse(viewname, kwargs={"object_id": self.linked_note.pk})
+            link = reverse(view_name, kwargs={"object_id": self.linked_note.pk})
             text = gettext("Notiz #%d") % self.linked_note.pk
         else:
             if is_app:
-                viewname = "admin:kmuhelper_app_todo_add"
+                view_name = "admin:kmuhelper_app_todo_add"
             else:
-                viewname = "admin:kmuhelper_note_add"
+                view_name = "admin:kmuhelper_note_add"
 
-            link = reverse(viewname) + f"?from_{relname}={self.pk}"
+            link = reverse(view_name) + f"?from_{rel_name}={self.pk}"
             text = gettext("Notiz erstellen")
         return format_html('<a target="_blank" href="{}">{}</a>', link, text)
 
@@ -71,6 +81,8 @@ class CustomModel(models.Model):
 
 class CustomModelAdmin(admin.ModelAdmin):
     """django.contrib.admin.ModelAdmin with custom overrides"""
+
+    HIDDEN = False
 
     formfield_overrides = {models.JSONField: {"widget": widgets.PrettyJSONWidget}}
     list_max_show_all = 1000
@@ -96,7 +108,7 @@ class CustomModelAdmin(admin.ModelAdmin):
     def has_module_permission(self, request):
         """Add option to hide model in default admin"""
 
-        if getattr(self.__class__, "hidden", False):
+        if self.HIDDEN:
             return {}
 
         return super().has_module_permission(request)

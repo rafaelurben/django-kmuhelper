@@ -36,7 +36,7 @@ class AttachmentAdmin(CustomModelAdmin):
 
     save_on_top = True
 
-    hidden = True
+    HIDDEN = True
 
     def get_readonly_fields(self, request, obj=None):
         if obj:
@@ -129,7 +129,7 @@ class EMailAdmin(CustomModelAdmin):
 
     save_on_top = True
 
-    hidden = True
+    HIDDEN = True
 
     # Views
 
@@ -184,7 +184,7 @@ class EMailTemplateAdmin(CustomModelAdmin):
 
     save_on_top = True
 
-    hidden = True
+    HIDDEN = True
 
     # Views
 

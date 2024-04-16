@@ -18,7 +18,7 @@ class ApiKeyAdmin(CustomModelAdmin):
 
     ordering = ("id",)
 
-    hidden = True
+    HIDDEN = True
 
 
 #

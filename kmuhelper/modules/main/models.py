@@ -117,7 +117,7 @@ class ContactPerson(CustomModel):
 
     objects = models.Manager()
 
-    admin_icon = "fas fa-user-tie"
+    ADMIN_ICON = "fa-solid fa-user-tie"
 
 
 class OrderFee(CustomModel):
@@ -960,7 +960,7 @@ class Order(CustomModel, AddressModelMixin, WooCommerceModelMixin):
 
     objects = models.Manager()
 
-    admin_icon = "fas fa-clipboard-list"
+    ADMIN_ICON = "fa-solid fa-clipboard-list"
 
     DICT_EXCLUDE_FIELDS = [
         "products",
@@ -1014,7 +1014,7 @@ class Fee(CustomModel):
 
     objects = models.Manager()
 
-    admin_icon = "fas fa-coins"
+    ADMIN_ICON = "fa-solid fa-coins"
 
 
 class Customer(CustomModel, AddressModelMixin, WooCommerceModelMixin):
@@ -1193,7 +1193,7 @@ class Customer(CustomModel, AddressModelMixin, WooCommerceModelMixin):
 
     objects = models.Manager()
 
-    admin_icon = "fas fa-users"
+    ADMIN_ICON = "fa-solid fa-users"
 
     DICT_EXCLUDE_FIELDS = ["email_link_registered", "combine_with"]
 
@@ -1275,7 +1275,7 @@ class Supplier(CustomModel):
 
     objects = models.Manager()
 
-    admin_icon = "fas fa-truck"
+    ADMIN_ICON = "fa-solid fa-truck"
 
 
 class SupplyItem(CustomModel):
@@ -1365,7 +1365,7 @@ class Supply(CustomModel):
 
     objects = models.Manager()
 
-    admin_icon = "fas fa-truck-ramp-box"
+    ADMIN_ICON = "fa-solid fa-truck-ramp-box"
 
 
 class Note(CustomModel):
@@ -1467,7 +1467,7 @@ class Note(CustomModel):
 
     objects = models.Manager()
 
-    admin_icon = "fas fa-note-sticky"
+    ADMIN_ICON = "fa-solid fa-note-sticky"
 
 
 class Product(CustomModel, WooCommerceModelMixin):
@@ -1725,7 +1725,7 @@ class Product(CustomModel, WooCommerceModelMixin):
 
     objects = models.Manager()
 
-    admin_icon = "fas fa-cubes"
+    ADMIN_ICON = "fa-solid fa-cubes"
 
 
 class ProductCategory(CustomModel, WooCommerceModelMixin):
@@ -1787,7 +1787,7 @@ class ProductCategory(CustomModel, WooCommerceModelMixin):
 
     objects = models.Manager()
 
-    admin_icon = "fas fa-folder-tree"
+    ADMIN_ICON = "fa-solid fa-folder-tree"
 
 
 class ProductProductCategoryConnection(CustomModel):
@@ -2068,4 +2068,4 @@ class PaymentReceiver(CustomModel):
 
     objects = models.Manager()
 
-    admin_icon = "fas fa-hand-holding-dollar"
+    ADMIN_ICON = "fa-solid fa-hand-holding-dollar"

@@ -13,7 +13,7 @@ class SettingAdmin(CustomModelAdmin):
 
     readonly_fields = ["id", "name", "description"]
 
-    hidden = True
+    HIDDEN = True
 
     def get_fields(self, request, obj=None):
         return ["description", f"content_{obj.typ}"]

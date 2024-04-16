@@ -20,7 +20,7 @@ from kmuhelper.overrides import CustomModelAdmin
 
 
 class App_AdminBase(CustomModelAdmin):
-    hidden = True
+    HIDDEN = True
 
 
 @admin.register(App_ToDo)
