@@ -24,8 +24,8 @@ class App_ToDo(Note):
         verbose_name_plural = _("Notizen")
         default_permissions = []
 
-    admin_title = _("ToDo-Liste")
-    admin_description = _("Unerledigten Notizen")
+    ADMIN_TITLE = _("ToDo-Liste")
+    ADMIN_DESCRIPTION = _("Unerledigten Notizen")
 
 
 class App_ShippingManager(models.Manager):
@@ -44,9 +44,9 @@ class App_Shipping(Order):
         verbose_name_plural = _("Bestellungen")
         default_permissions = []
 
-    admin_title = _("Warenausgang")
-    admin_description = _("Nicht versendete Bestellungen")
-    admin_icon = "fas fa-box-open"
+    ADMIN_TITLE = _("Warenausgang")
+    ADMIN_DESCRIPTION = _("Nicht versendete Bestellungen")
+    ADMIN_ICON = "fa-solid fa-box-open"
 
 
 class App_IncomingPaymentsManager(models.Manager):
@@ -65,9 +65,9 @@ class App_IncomingPayments(Order):
         verbose_name_plural = _("Bestellungen")
         default_permissions = []
 
-    admin_title = _("Zahlungseingang")
-    admin_description = _("Nicht bezahlte Bestellungen")
-    admin_icon = "fas fa-hand-holding-dollar"
+    ADMIN_TITLE = _("Zahlungseingang")
+    ADMIN_DESCRIPTION = _("Nicht bezahlte Bestellungen")
+    ADMIN_ICON = "fa-solid fa-hand-holding-dollar"
 
 
 class App_Stock(Product):
@@ -82,8 +82,8 @@ class App_Stock(Product):
         verbose_name_plural = _("Produkte")
         default_permissions = []
 
-    admin_title = _("Lagerbestand")
-    admin_description = _("Alle Produkte im Lager")
+    ADMIN_TITLE = _("Lagerbestand")
+    ADMIN_DESCRIPTION = _("Alle Produkte im Lager")
 
 
 class App_ArrivalManager(models.Manager):
@@ -102,5 +102,5 @@ class App_Arrival(Supply):
         verbose_name_plural = _("Lieferungen")
         default_permissions = []
 
-    admin_title = _("Wareneingang")
-    admin_description = _("Nicht eingelagerte Lieferungen")
+    ADMIN_TITLE = _("Wareneingang")
+    ADMIN_DESCRIPTION = _("Nicht eingelagerte Lieferungen")

@@ -14,6 +14,7 @@ from kmuhelper.modules.integrations.woocommerce.api import (
 from kmuhelper.modules.integrations.woocommerce.filters import WooCommerceStateFilter
 from kmuhelper.modules.integrations.woocommerce.utils import is_connected
 from kmuhelper.modules.main import views
+from kmuhelper.modules.main.filters import ProductTypeFilter
 from kmuhelper.modules.main.models import (
     ContactPerson,
     Order,
@@ -1061,7 +1062,21 @@ class ProductAdminChildrenInline(CustomTabularInline):
     verbose_name = _("Untergeordnetes Produkt")
     verbose_name_plural = _("Untergeordnete Produkte")
 
-    fields = ("id", "article_number", "name", "selling_price")
+    fields = [
+        "pkfill",
+        "article_number",
+        "name",
+        "selling_price",
+    ]
+
+    readonly_fields = ["pkfill", "display_woocommerce_state"]
+
+    def get_fields(self, request, obj=None):
+        if is_connected():
+            ls = self.fields.copy()
+            ls.insert(1, "display_woocommerce_state")
+            return ls
+        return self.fields
 
     # Permissions
 
@@ -1085,7 +1100,12 @@ class ProductAdmin(CustomModelAdmin):
 
     ordering = ("article_number", "name")
 
-    list_filter = ("supplier", WooCommerceStateFilter, "categories")
+    list_filter = (
+        ProductTypeFilter,
+        WooCommerceStateFilter,
+        "supplier",
+        "categories",
+    )
     search_fields = [
         "pk",
         "article_number",

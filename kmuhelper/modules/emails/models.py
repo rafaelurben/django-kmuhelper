@@ -108,7 +108,7 @@ class Attachment(CustomModel):
 
     objects = AttachmentManager()
 
-    admin_icon = "fas fa-paperclip"
+    ADMIN_ICON = "fa-solid fa-paperclip"
 
     # Custom delete
 
@@ -389,7 +389,7 @@ class EMail(CustomModel):
 
     objects = models.Manager()
 
-    admin_icon = "fas fa-envelope"
+    ADMIN_ICON = "fa-solid fa-envelope"
 
 
 class EMailTemplate(CustomModel):
@@ -490,4 +490,4 @@ class EMailTemplate(CustomModel):
 
     objects = models.Manager()
 
-    admin_icon = "fas fa-envelope-open-text"
+    ADMIN_ICON = "fa-solid fa-envelope-open-text"

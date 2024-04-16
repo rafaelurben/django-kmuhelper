@@ -13,6 +13,8 @@ class WCOrdersAPI(WC_BaseObjectAPI):
     WC_API_BASEURL = "orders"
 
     def update_object_from_data(self, db_obj, wc_obj: dict):
+        db_obj.woocommerce_deleted = False
+
         if wc_obj["date_paid"]:
             db_obj.is_paid = True
         db_obj.status = wc_obj["status"]

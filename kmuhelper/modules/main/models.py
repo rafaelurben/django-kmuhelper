@@ -109,7 +109,7 @@ class ContactPerson(CustomModel):
 
     @admin.display(description=_("Ansprechpartner"), ordering="name")
     def __str__(self):
-        return f"{self.name} ({self.pk})"
+        return f"[{self.pk}] {self.name}"
 
     class Meta:
         verbose_name = _("Ansprechpartner")
@@ -117,7 +117,7 @@ class ContactPerson(CustomModel):
 
     objects = models.Manager()
 
-    admin_icon = "fas fa-user-tie"
+    ADMIN_ICON = "fa-solid fa-user-tie"
 
 
 class OrderFee(CustomModel):
@@ -189,8 +189,8 @@ class OrderFee(CustomModel):
 
     def __str__(self):
         if self.linked_fee:
-            return f"({self.pk}) {self.clean_name()} ({self.linked_fee.pk})"
-        return f"({self.pk}) {self.clean_name()}"
+            return f"[{self.pk}] {self.clean_name()} (#{self.linked_fee.pk})"
+        return f"[{self.pk}] {self.clean_name()}"
 
     def save(self, *args, **kwargs):
         if self.pk is None and self.linked_fee is not None:
@@ -302,8 +302,11 @@ class OrderItem(CustomModel):
 
     def __str__(self):
         if self.linked_product_id:
-            return f"({self.pk}) {self.quantity}x {self.clean_name()} (Art. {self.article_number}, #{self.linked_product_id})"
-        return f"({self.pk}) {self.quantity}x {self.clean_name()} (Art. {self.article_number})"
+            return (
+                f"[{self.pk}] {self.quantity}x {self.clean_name()} (Art. {self.article_number}, "
+                f"#{self.linked_product_id})"
+            )
+        return f"[{self.pk}] {self.quantity}x {self.clean_name()} (Art. {self.article_number})"
 
     def save(self, *args, **kwargs):
         if self.pk is None and self.linked_product is not None:
@@ -680,11 +683,8 @@ class Order(CustomModel, AddressModelMixin, WooCommerceModelMixin):
                 f"{self.pkfill()}"
                 + (f" (WC#{self.woocommerceid})" if self.woocommerceid else "")
             )
-            + (
-                f" - {self.customer}"
-                if self.customer is not None
-                else " " + gettext("Gast")
-            )
+            + " - "
+            + self.display_customer()
         )
 
     @admin.display(description=_("Info"))
@@ -725,7 +725,8 @@ class Order(CustomModel, AddressModelMixin, WooCommerceModelMixin):
         if self.customer:
             return str(self.customer)
 
-        text = f"{_('Gast')} - "
+        id0 = "0".zfill(Customer.PKFILL_WIDTH)
+        text = f"[{id0}] ({_('Gast')}) "
         if self.addr_billing_first_name:
             text += self.addr_billing_first_name + " "
         if self.addr_billing_last_name:
@@ -959,7 +960,7 @@ class Order(CustomModel, AddressModelMixin, WooCommerceModelMixin):
 
     objects = models.Manager()
 
-    admin_icon = "fas fa-clipboard-list"
+    ADMIN_ICON = "fa-solid fa-clipboard-list"
 
     DICT_EXCLUDE_FIELDS = [
         "products",
@@ -1004,11 +1005,8 @@ class Fee(CustomModel):
 
     @admin.display(description=_("Kosten"))
     def __str__(self):
-        return (
-            f"{ self.clean_name() } ({ self.price } CHF"
-            + (f" + {self.vat_rate}% MwSt" if self.vat_rate else "")
-            + f") ({self.pk})"
-        )
+        vat_addition = f" + {self.vat_rate}% MwSt" if self.vat_rate else ""
+        return f"[{self.pk}] { self.clean_name() } ({ self.price } CHF{vat_addition})"
 
     class Meta:
         verbose_name = _("Kosten")
@@ -1016,7 +1014,7 @@ class Fee(CustomModel):
 
     objects = models.Manager()
 
-    admin_icon = "fas fa-coins"
+    ADMIN_ICON = "fa-solid fa-coins"
 
 
 class Customer(CustomModel, AddressModelMixin, WooCommerceModelMixin):
@@ -1102,7 +1100,7 @@ class Customer(CustomModel, AddressModelMixin, WooCommerceModelMixin):
 
     @admin.display(description=_("Kunde"))
     def __str__(self):
-        s = f"{self.pkfill()} "
+        s = f"[{self.pkfill()}] "
         if self.woocommerceid:
             s += f"(WC#{self.woocommerceid}) "
         if self.first_name or self.addr_billing_first_name:
@@ -1195,7 +1193,7 @@ class Customer(CustomModel, AddressModelMixin, WooCommerceModelMixin):
 
     objects = models.Manager()
 
-    admin_icon = "fas fa-users"
+    ADMIN_ICON = "fa-solid fa-users"
 
     DICT_EXCLUDE_FIELDS = ["email_link_registered", "combine_with"]
 
@@ -1262,7 +1260,7 @@ class Supplier(CustomModel):
 
     @admin.display(description=_("Lieferant"))
     def __str__(self):
-        return f"{self.name} ({self.pk})"
+        return f"[{self.pk}] {self.name}"
 
     def assign(self):
         products = Product.objects.filter(supplier=None)
@@ -1277,7 +1275,7 @@ class Supplier(CustomModel):
 
     objects = models.Manager()
 
-    admin_icon = "fas fa-truck"
+    ADMIN_ICON = "fa-solid fa-truck"
 
 
 class SupplyItem(CustomModel):
@@ -1299,7 +1297,7 @@ class SupplyItem(CustomModel):
 
     @admin.display(description=_("Lieferungsposten"))
     def __str__(self):
-        return f"({self.supply.pk}) -> {self.quantity}x {self.product}"
+        return f"[{self.pk}] {self.quantity}x {self.product}"
 
     class Meta:
         verbose_name = _("Lieferungsposten")
@@ -1359,7 +1357,7 @@ class Supply(CustomModel):
 
     @admin.display(description=_("Lieferung"))
     def __str__(self):
-        return f"{self.name} ({self.pk})"
+        return f"[{self.pk}] {self.name}"
 
     class Meta:
         verbose_name = _("Lieferung")
@@ -1367,7 +1365,7 @@ class Supply(CustomModel):
 
     objects = models.Manager()
 
-    admin_icon = "fas fa-truck-ramp-box"
+    ADMIN_ICON = "fa-solid fa-truck-ramp-box"
 
 
 class Note(CustomModel):
@@ -1429,7 +1427,7 @@ class Note(CustomModel):
 
     @admin.display(description=_("🔗 Notiz"))
     def __str__(self):
-        return f"{self.name} ({self.pk})"
+        return f"[{self.pk}] {self.name}"
 
     def links(self):
         text = ""
@@ -1469,7 +1467,7 @@ class Note(CustomModel):
 
     objects = models.Manager()
 
-    admin_icon = "fas fa-note-sticky"
+    ADMIN_ICON = "fa-solid fa-note-sticky"
 
 
 class Product(CustomModel, WooCommerceModelMixin):
@@ -1588,6 +1586,7 @@ class Product(CustomModel, WooCommerceModelMixin):
 
     parent = models.ForeignKey(
         to="self",
+        related_name="children",
         verbose_name=_("Übergeordnetes Produkt"),
         on_delete=models.SET_NULL,
         blank=True,
@@ -1718,7 +1717,7 @@ class Product(CustomModel, WooCommerceModelMixin):
 
     @admin.display(description=_("Produkt"))
     def __str__(self):
-        return f"{self.article_number} - {self.clean_name()} ({self.pk})"
+        return f"[{self.pk}] {self.article_number} - {self.clean_name()}"
 
     class Meta:
         verbose_name = _("Produkt")
@@ -1726,7 +1725,7 @@ class Product(CustomModel, WooCommerceModelMixin):
 
     objects = models.Manager()
 
-    admin_icon = "fas fa-cubes"
+    ADMIN_ICON = "fa-solid fa-cubes"
 
 
 class ProductCategory(CustomModel, WooCommerceModelMixin):
@@ -1780,7 +1779,7 @@ class ProductCategory(CustomModel, WooCommerceModelMixin):
 
     @admin.display(description=_("Kategorie"))
     def __str__(self):
-        return f"{self.clean_name()} ({self.pk})"
+        return f"[{self.pk}] {self.clean_name()}"
 
     class Meta:
         verbose_name = _("Produktkategorie")
@@ -1788,7 +1787,7 @@ class ProductCategory(CustomModel, WooCommerceModelMixin):
 
     objects = models.Manager()
 
-    admin_icon = "fas fa-folder-tree"
+    ADMIN_ICON = "fa-solid fa-folder-tree"
 
 
 class ProductProductCategoryConnection(CustomModel):
@@ -1807,7 +1806,7 @@ class ProductProductCategoryConnection(CustomModel):
 
     @admin.display(description=_("Produkt-Kategorie-Verknüpfung"))
     def __str__(self):
-        return f"({self.category.pk}) {self.category.clean_name()} <-> {self.product}"
+        return f"{self.category.clean_name()} <- [{self.pk}] -> {self.product}"
 
     class Meta:
         verbose_name = _("Produkt-Kategorie-Verknüpfung")
@@ -2040,7 +2039,7 @@ class PaymentReceiver(CustomModel):
 
     @admin.display(description=_("Zahlungsempfänger"))
     def __str__(self):
-        return f"{self.admin_name} ({self.pk})"
+        return f"[{self.pk}] {self.admin_name}"
 
     def clean(self):
         super().clean()
@@ -2069,4 +2068,4 @@ class PaymentReceiver(CustomModel):
 
     objects = models.Manager()
 
-    admin_icon = "fas fa-hand-holding-dollar"
+    ADMIN_ICON = "fa-solid fa-hand-holding-dollar"

@@ -1,3 +1,4 @@
+import kmuhelper.modules.config as config
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import render, redirect
@@ -5,8 +6,6 @@ from django.template import TemplateDoesNotExist, TemplateSyntaxError
 from django.template.loader import get_template
 from django.urls import NoReverseMatch, reverse_lazy, reverse
 from django.utils.translation import gettext
-
-import kmuhelper.modules.config as config
 from kmuhelper.constants import URL_MANUAL
 from kmuhelper.decorators import require_any_kmuhelper_perms
 from kmuhelper.utils import render_error
@@ -25,7 +24,7 @@ def home(request):
                 "title": _("Admin"),
                 "subtitle": _("Volle Kontrolle über die Hauptfunktionen"),
                 "url": reverse("admin:app_list", kwargs={"app_label": "kmuhelper"}),
-                "icon": "fas fa-key",
+                "icon": "fa-solid fa-key",
                 "hidden": not config.user_has_module_permission(request.user, "main"),
             },
             {
@@ -34,7 +33,7 @@ def home(request):
                     "Eingeschränkte Verwaltung von Daten in verschiedenen Arbeitsschritten"
                 ),
                 "url": reverse("kmuhelper:app-index"),
-                "icon": "fas fa-desktop",
+                "icon": "fa-solid fa-desktop",
                 "hidden": not config.user_has_module_permission(request.user, "app"),
             },
         ],
@@ -43,14 +42,14 @@ def home(request):
                 "title": _("E-Mails"),
                 "subtitle": _("Verwaltung und Erstellung von E-Mails"),
                 "url": reverse("kmuhelper:email-index"),
-                "icon": "fas fa-envelope-open",
+                "icon": "fa-solid fa-envelope-open",
                 "hidden": not config.user_has_module_permission(request.user, "emails"),
             },
             {
                 "title": _("Statistiken"),
                 "subtitle": _("Diagramme und co."),
                 "url": reverse("kmuhelper:stats"),
-                "icon": "fas fa-chart-pie",
+                "icon": "fa-solid fa-chart-pie",
                 "hidden": not config.user_has_module_permission(request.user, "main"),
             },
         ],
@@ -59,7 +58,7 @@ def home(request):
                 "title": _("Einstellungen"),
                 "subtitle": _("Einstellungen für den KMUHelper"),
                 "url": reverse("kmuhelper:settings"),
-                "icon": "fas fa-cog",
+                "icon": "fa-solid fa-cog",
                 "hidden": not config.user_has_module_permission(
                     request.user, "settings"
                 ),
@@ -68,7 +67,7 @@ def home(request):
                 "title": _("Handbuch"),
                 "subtitle": _("Dokumentation zum KMUHelper"),
                 "url": URL_MANUAL,
-                "icon": "fas fa-book",
+                "icon": "fa-solid fa-book",
             },
         ],
     ]

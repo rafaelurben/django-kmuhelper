@@ -1,14 +1,13 @@
 "Models for KMUHelper settings"
 
 from django import forms
-from django.db import models
 from django.contrib import admin
+from django.db import models
 from django.templatetags.static import static
 from django.utils.html import mark_safe, urlize
-from django.utils.translation import gettext_lazy, gettext
-
-from kmuhelper.overrides import CustomModel
+from django.utils.translation import gettext_lazy
 from kmuhelper.modules.settings.constants import SETTINGS
+from kmuhelper.overrides import CustomModel
 
 _ = gettext_lazy
 
@@ -175,7 +174,7 @@ class Setting(SettingBase):
 
     objects = models.Manager()
 
-    admin_icon = "fas fa-cog"
+    ADMIN_ICON = "fa-solid fa-cog"
 
 
 class SettingHidden(SettingBase):

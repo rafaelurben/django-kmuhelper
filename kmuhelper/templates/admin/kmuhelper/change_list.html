@@ -9,7 +9,7 @@
 
     <div class="breadcrumbs">
         <a href="{% url module.viewname %}">KMUHelper {{ module.title }}</a>
-        &rsaquo; {{ model.admin_title | default:cl.opts.verbose_name_plural }}
+        &rsaquo; {{ model.ADMIN_TITLE | default:cl.opts.verbose_name_plural }}
     </div>
 {% endblock %}
 
