@@ -270,7 +270,7 @@ def wc_webhooks(request):
         return JsonResponse(
             {
                 "accepted": True,
-                "info": "Request was accepted but ignored because it doesn't contain any usable info!",
+                "reason": "Request was accepted but ignored because it doesn't contain any usable info!",
             },
             status=200,
         )
@@ -374,15 +374,13 @@ def wc_webhooks(request):
         case "product.updated" | "product.created" | "product.restored":
             if Product.objects.filter(woocommerceid=wc_obj_id).exists():
                 product = Product.objects.get(woocommerceid=wc_obj_id)
-                product.woocommerce_deleted = False
                 WCProductsAPI().update_object_from_data(product, wc_obj)
             else:
                 WCProductsAPI().create_object_from_data(wc_obj)
         case "product.deleted":
             if Product.objects.filter(woocommerceid=wc_obj_id).exists():
                 product = Product.objects.get(woocommerceid=wc_obj_id)
-                product.woocommerce_deleted = True
-                product.save()
+                WCProductsAPI().delete_object_from_data(product, wc_obj)
         case "customer.updated" | "customer.created" | "customer.restored":
             if Customer.objects.filter(woocommerceid=wc_obj_id).exists():
                 customer = Customer.objects.get(woocommerceid=wc_obj_id)
@@ -393,8 +391,7 @@ def wc_webhooks(request):
         case "customer.deleted":
             if Customer.objects.filter(woocommerceid=wc_obj_id).exists():
                 customer = Customer.objects.get(woocommerceid=wc_obj_id)
-                customer.woocommerce_deleted = True
-                customer.save()
+                WCCustomersAPI().delete_object_from_data(customer, wc_obj)
         case "order.updated" | "order.created" | "order.restored":
             if Order.objects.filter(woocommerceid=wc_obj_id).exists():
                 order = Order.objects.get(woocommerceid=wc_obj_id)
@@ -405,8 +402,7 @@ def wc_webhooks(request):
         case "order.deleted":
             if Order.objects.filter(woocommerceid=wc_obj_id).exists():
                 order = Order.objects.get(woocommerceid=wc_obj_id)
-                order.woocommerce_deleted = True
-                order.save()
+                WCOrdersAPI().delete_object_from_data(order, wc_obj)
         case _:
             log(f"[orange_red1]Unknown topic: '{topic}' - reporting to admins...")
             mail_admins(

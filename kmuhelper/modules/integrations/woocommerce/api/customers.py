@@ -10,6 +10,8 @@ class WCCustomersAPI(WC_BaseObjectAPI):
     WC_API_BASEURL = "customers"
 
     def update_object_from_data(self, db_obj, wc_obj: dict):
+        db_obj.woocommerce_deleted = False
+
         db_obj.email = wc_obj["email"]
         db_obj.first_name = wc_obj["first_name"]
         db_obj.last_name = wc_obj["last_name"]

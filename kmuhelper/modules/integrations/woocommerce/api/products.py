@@ -12,6 +12,8 @@ class WCProductsAPI(WC_BaseObjectAPI):
     WC_API_BASEURL = "products"
 
     def update_object_from_data(self, db_obj, wc_obj: dict):
+        db_obj.woocommerce_deleted = False
+
         try:
             db_obj.selling_price = float(wc_obj["price"])
         except ValueError:

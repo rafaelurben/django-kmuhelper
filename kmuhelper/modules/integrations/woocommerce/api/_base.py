@@ -8,17 +8,18 @@ from rich.progress import Progress
 from woocommerce import API as WCAPI
 
 
+def create_wc_api_object():
+    """Create a API object from data stored in settings"""
+    return WCAPI(
+        url=settings.get_secret_db_setting("wc-url"),
+        consumer_key=settings.get_secret_db_setting("wc-consumer_key"),
+        consumer_secret=settings.get_secret_db_setting("wc-consumer_secret"),
+    )
+
+
 class WC_BaseAPI(abc.ABC):
     def __init__(self, wcapi: WCAPI = None):
-        self.wcapi = wcapi or self.get_api()
-
-    def get_api(self):
-        """Create a API object from data stored in settings"""
-        return WCAPI(
-            url=settings.get_secret_db_setting("wc-url"),
-            consumer_key=settings.get_secret_db_setting("wc-consumer_key"),
-            consumer_secret=settings.get_secret_db_setting("wc-consumer_secret"),
-        )
+        self.wcapi = wcapi or create_wc_api_object()
 
     # Logging
 
@@ -41,6 +42,8 @@ class WC_BaseObjectAPI(WC_BaseAPI, abc.ABC):
     def create_object_from_data(self, wc_obj: dict):
         """Create a new object from WooCommerce data
 
+        Must be implemented in subclass.
+
         Returns: The created database object
         """
 
@@ -50,9 +53,21 @@ class WC_BaseObjectAPI(WC_BaseAPI, abc.ABC):
     def update_object_from_data(self, db_obj, wc_obj: dict):
         """Update an existing object with WooCommerce data
 
+        Must be implemented in subclass.
+
         Returns: nothing"""
 
         raise NotImplementedError()
+
+    def delete_object_from_data(self, db_obj, wc_obj: dict):
+        """Mark an existing object as deleted
+
+        Should be overridden by subclasses if there are dependencies that need to be removed.
+
+        Returns: nothing"""
+
+        db_obj.woocommerce_deleted = True
+        db_obj.save()
 
     def update_object_from_api(self, db_object) -> bool:
         """Update a specific product from WooCommerce"""
@@ -99,10 +114,10 @@ class WC_BaseObjectAPI(WC_BaseAPI, abc.ABC):
                 self.LOG_PREFIX + " [orange_red1]Updating objects...",
                 total=db_queryset.count(),
             )
-            for object in db_queryset:
-                if object.woocommerceid:
+            for db_obj in db_queryset:
+                if db_obj.woocommerceid:
                     try:
-                        self.update_object_from_api(object)
+                        self.update_object_from_api(db_obj)
                         success_count += 1
                     except Exception as e:
                         self.log(
@@ -119,7 +134,7 @@ class WC_BaseObjectAPI(WC_BaseAPI, abc.ABC):
                 request, success_count, warning_count, error_count
             )
 
-        return (success_count, warning_count, error_count)
+        return success_count, warning_count, error_count
 
     def _post_process_imported_objects(
         self, db_obj__wc_obj_list: list[tuple[object, dict]]

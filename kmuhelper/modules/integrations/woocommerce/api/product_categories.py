@@ -11,6 +11,8 @@ class WCProductCategoriesAPI(WC_BaseObjectAPI):
     WC_API_BASEURL = "products/categories"
 
     def update_object_from_data(self, db_obj, wc_obj: dict):
+        db_obj.woocommerce_deleted = False
+
         db_obj.name = preparestring(wc_obj["name"])
         db_obj.description = preparestring(wc_obj["description"])
         db_obj.image_url = (wc_obj["image"]["src"]) if wc_obj["image"] else ""
