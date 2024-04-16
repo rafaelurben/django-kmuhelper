@@ -374,7 +374,9 @@ def wc_webhooks(request):
         case "product.updated" | "product.created" | "product.restored":
             if Product.objects.filter(woocommerceid=wc_obj_id).exists():
                 product = Product.objects.get(woocommerceid=wc_obj_id)
-                WCProductsAPI().update_object_from_data(product, wc_obj)
+                WCProductsAPI().update_object_from_data(
+                    product, wc_obj, is_create_event=(topic == "product.created")
+                )
             else:
                 WCProductsAPI().create_object_from_data(wc_obj)
         case "product.deleted":
