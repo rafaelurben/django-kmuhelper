@@ -33,4 +33,5 @@ urlpatterns = [
     # User Interface
     path("settings", views.wc_settings, name="wc-settings"),
     path("system-status", views.wc_system_status, name="wc-system-status"),
+    path("webhooks-status", views.wc_webhooks_status, name="wc-webhooks-status"),
 ]

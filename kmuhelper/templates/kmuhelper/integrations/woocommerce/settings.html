@@ -155,9 +155,17 @@
     
         <h3>Schritt 4: Status der Webhooks überprüfen (optional)</h3>
         <p>
-            Der Status der Webhooks kann nur manuell überprüft werden, indem Daten in WooCommerce verändert werden (z.
-            B. ein Produkt erstellt oder bearbeitet).
+            Der Status der Webhooks kann über folgenden Button überprüft werden.
+            Um wirklich sicher zu gehen, sollten die Webhooks aber manuell überprüft werden, indem Daten in WooCommerce 
+            verändert werden (z. B. ein Produkt erstellt oder bearbeitet).
         </p>
+        {% if is_connected %}
+            <a href="{% url 'kmuhelper:wc-webhooks-status' %}">
+                <button class="button">Webhooks überprüfen</button>
+            </a>
+        {% else %}
+            <button class="button" disabled>Schritt 1 muss zuerst abgeschlossen werden</button>
+        {% endif %}
     </div>
 
     {% if is_connected %}

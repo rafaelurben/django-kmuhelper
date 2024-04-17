@@ -163,6 +163,38 @@ def wc_system_status(request):
     return redirect(reverse("kmuhelper:wc-settings"))
 
 
+# Note: Change permission is required because the view redirects to the settings page
+@login_required(login_url=reverse_lazy("kmuhelper:login"))
+@require_all_kmuhelper_perms(["change_setting"])
+def wc_webhooks_status(request):
+    if not is_connected():
+        messages.error(request, NOT_CONNECTED_ERRMSG)
+    else:
+        current_host = "https://" + request.get_host()
+
+        if current_host.endswith("localhost"):
+            messages.error(
+                request, gettext("Cannot check webhooks while on localhost!")
+            )
+            return redirect(reverse("kmuhelper:wc-settings"))
+
+        delivery_url = current_host + reverse("kmuhelper:wc-webhooks")
+        success, topics = WCGeneralAPI().get_enabled_webhooks_topics(delivery_url)
+
+        if success:
+            if topics:
+                messages.success(
+                    request,
+                    gettext("%(count)d topic(s) have been set up correctly: %(topics)s")
+                    % {"count": len(topics), "topics": ",".join(topics)},
+                )
+            else:
+                messages.warning(request, _("No correctly setup webhooks detected!"))
+        else:
+            messages.error(request, _("Checking webhook status failed!"))
+    return redirect(reverse("kmuhelper:wc-settings"))
+
+
 @login_required(login_url=reverse_lazy("kmuhelper:login"))
 @require_all_kmuhelper_perms(["add_product"])
 def wc_import_products(request):
