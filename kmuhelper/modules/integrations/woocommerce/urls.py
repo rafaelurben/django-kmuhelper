@@ -8,6 +8,7 @@ urlpatterns = [
     path("auth/start", views.wc_auth_start, name="wc-auth-start"),
     path("auth/end", views.wc_auth_end, name="wc-auth-end"),
     path("auth/key", views.wc_auth_key, name="wc-auth-key"),
+    path("auth/clear", views.wc_auth_clear, name="wc-auth-clear"),
     path("import/products", views.wc_import_products, name="wc-import-products"),
     path("import/customers", views.wc_import_customers, name="wc-import-customers"),
     path("import/categories", views.wc_import_categories, name="wc-import-categories"),
