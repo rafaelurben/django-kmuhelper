@@ -14,6 +14,8 @@ from django.utils.translation import (
     gettext,
     npgettext,
 )
+from rich import print
+
 from kmuhelper import settings, constants
 from kmuhelper.modules.emails.models import EMail, Attachment
 from kmuhelper.modules.integrations.woocommerce.mixins import WooCommerceModelMixin
@@ -22,7 +24,6 @@ from kmuhelper.modules.pdfgeneration import PDFOrder
 from kmuhelper.overrides import CustomModel
 from kmuhelper.translations import langselect, I18N_HELP_TEXT, Language
 from kmuhelper.utils import runden, formatprice, modulo10rekursiv, faq
-from rich import print
 
 _ = gettext_lazy
 
@@ -200,9 +201,11 @@ class OrderFee(CustomModel):
 
     def save(self, *args, **kwargs):
         if self.pk is None and self.linked_fee is not None:
+            # Copy data from linked fee
             self.name = self.linked_fee.name
-            self.price = self.linked_fee.price
             self.vat_rate = self.linked_fee.vat_rate
+            # Don't override price if already here (required for WooCommerce import)
+            self.price = self.price or self.linked_fee.price
         super().save(*args, **kwargs)
 
     class Meta:
@@ -316,11 +319,15 @@ class OrderItem(CustomModel):
 
     def save(self, *args, **kwargs):
         if self.pk is None and self.linked_product is not None:
+            # Copy data from linked product
             self.article_number = self.linked_product.article_number
             self.quantity_description = self.linked_product.quantity_description
             self.name = self.linked_product.name
-            self.product_price = runden(self.linked_product.get_current_price())
             self.vat_rate = self.linked_product.vat_rate
+            # Don't override price if already here (required for WooCommerce import)
+            self.product_price = runden(
+                self.product_price or self.linked_product.get_current_price()
+            )
         super().save(*args, **kwargs)
 
     class Meta:
