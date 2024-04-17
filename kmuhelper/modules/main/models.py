@@ -1627,15 +1627,21 @@ class Product(CustomModel, WooCommerceModelMixin):
         return langselect(self.description, lang)
 
     @admin.display(description=_("Aktion?"), boolean=True)
-    def is_on_sale(self, zeitpunkt: datetime = None):
-        zp = zeitpunkt or timezone.now()
-        if self.sale_from and self.sale_to and self.sale_price:
-            return bool((self.sale_from < zp) and (zp < self.sale_to))
-        return False
+    def is_on_sale(self):
+        dt = timezone.now()
+        if (not self.sale_price) or (self.selling_price == self.sale_price):
+            # No sale price or sale price = regular price
+            return None
+        if self.sale_from and dt < self.sale_from:
+            # Not yet started
+            return False
+        if self.sale_to and self.sale_to < dt:
+            # Already ended
+            return False
+        return True
 
-    def get_current_price(self, zeitpunkt: datetime = None):
-        zp = zeitpunkt or timezone.now()
-        return self.sale_price if self.is_on_sale(zp) else self.selling_price
+    def get_current_price(self):
+        return self.sale_price if self.is_on_sale() else self.selling_price
 
     @admin.display(description=_("Aktueller Preis"))
     def display_current_price(self):
