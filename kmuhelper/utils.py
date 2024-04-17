@@ -1,15 +1,15 @@
-import sys
 import subprocess
+import sys
+
 import requests
-
-from packaging.version import Version, InvalidVersion
-
 from django.contrib import messages
 from django.shortcuts import render
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
+from packaging.version import Version, InvalidVersion
 
 from kmuhelper.constants import URL_FAQ
+
 
 ################
 
@@ -129,7 +129,7 @@ def modulo10rekursiv(strNummer):
 
 
 def faq(anchor="", text=_("FAQ")):
-    "Get a link to the FAQ page in the manual."
+    """Get a link to the FAQ page in the manual."""
 
     href = f"{URL_FAQ}#{anchor}"
     return format_html('<a target="_blank" href="{}">{}</a>', href, text)

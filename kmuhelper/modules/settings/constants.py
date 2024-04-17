@@ -1,7 +1,7 @@
 from django.utils.functional import lazy
-from django.utils.translation import gettext_lazy
-from django.utils.text import format_lazy
 from django.utils.html import format_html
+from django.utils.text import format_lazy
+from django.utils.translation import gettext_lazy
 
 from kmuhelper.utils import faq
 
@@ -28,11 +28,13 @@ SETTINGS = {
         "description": _t(
             "{}\n\n{}\n\n{}",
             _(
-                "Wenn durch den Import von Bestellungen der Lagerbestand-Soll-Wert unterschritten wird, wird eine Warnung an diese E-Mail-Adresse gesendet."
+                "Wenn durch den Import von Bestellungen der Lagerbestand-Soll-Wert unterschritten wird, wird eine "
+                "Warnung an diese E-Mail-Adresse gesendet."
             ),
             _("Leer lassen, um diese E-Mails zu deaktivieren."),
             _(
-                "Bemerkung: Entsteht die Unterschreitung durch eine manuelle Aktion, wird eine Warnung direkt angezeigt."
+                "Bemerkung: Entsteht die Unterschreitung durch eine manuelle Aktion, wird eine Warnung direkt "
+                "angezeigt."
             ),
         ),
     },
@@ -54,7 +56,7 @@ SETTINGS = {
         "description": _h(
             "{} {}\n\n{} -> {}",
             _("Standardwert der Zahlungskonditionen für neue Bestellungen."),
-            _("Wenn leer gelassen, wird '0:30' als Standard verwendet."),
+            _("Beispiele: 0:30 oder 2:10;0:30"),
             _("Mehr über Zahlungskonditionen erfahren"),
             faq("wie-funktionieren-zahlungskonditionen"),
         ),
@@ -65,10 +67,12 @@ SETTINGS = {
         "description": _h(
             "{}\n\n{}\n\n{} -> {}",
             _(
-                "Wenn aktiviert, werden die Zahlungskonditionen bei Rechnungen in menschenlesbarer Form unter dem Rechnungstotal gedruckt."
+                "Wenn aktiviert, werden die Zahlungskonditionen bei Rechnungen in menschenlesbarer Form unter dem "
+                "Rechnungstotal gedruckt."
             ),
             _(
-                "Die Zahlungskonditionen werden unabhängig von dieser Einstellung immer auch in manschinenlesbarer Form im QR-Code integriert."
+                "Die Zahlungskonditionen werden unabhängig von dieser Einstellung immer auch in maschinenlesbarer "
+                "Form im QR-Code integriert."
             ),
             _("Mehr über Zahlungskonditionen erfahren"),
             faq("wie-funktionieren-zahlungskonditionen"),

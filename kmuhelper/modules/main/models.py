@@ -9,6 +9,7 @@ from django.forms import ValidationError
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.html import mark_safe, format_html
+from django.utils.text import format_lazy
 from django.utils.translation import (
     gettext_lazy,
     gettext,
@@ -77,7 +78,7 @@ def default_order_key():
 
 
 def default_payment_conditions():
-    return settings.get_db_setting("default-payment-conditions", "0:30")
+    return settings.get_db_setting("default-payment-conditions")
 
 
 #############
@@ -375,10 +376,14 @@ class Order(CustomModel, AddressModelMixin, WooCommerceModelMixin):
                 ),
             )
         ],
-        max_length=16,
-        help_text=_("Skonto und Zahlungsfrist")
-        + " -> "
-        + faq("wie-funktionieren-zahlungskonditionen"),
+        max_length=25,
+        blank=True,
+        null=True,
+        help_text=format_lazy(
+            "{} -> {}",
+            _("Skonto und Zahlungsfrist"),
+            faq("wie-funktionieren-zahlungskonditionen"),
+        ),
     )
 
     status = models.CharField(
@@ -390,9 +395,11 @@ class Order(CustomModel, AddressModelMixin, WooCommerceModelMixin):
     is_shipped = models.BooleanField(
         verbose_name=_("Versendet?"),
         default=False,
-        help_text=_("Mehr Infos")
-        + " -> "
-        + faq("was-passiert-wenn-ich-eine-bestellung-als-bezahltversendet-markiere"),
+        help_text=format_lazy(
+            "{} -> {}",
+            _("Mehr Infos"),
+            faq("was-passiert-wenn-ich-eine-bestellung-als-bezahltversendet-markiere"),
+        ),
     )
     shipped_on = models.DateField(
         verbose_name=_("Versendet am"),
@@ -430,9 +437,11 @@ class Order(CustomModel, AddressModelMixin, WooCommerceModelMixin):
     is_paid = models.BooleanField(
         verbose_name=_("Bezahlt?"),
         default=False,
-        help_text=_("Mehr Infos")
-        + " -> "
-        + faq("was-passiert-wenn-ich-eine-bestellung-als-bezahltversendet-markiere"),
+        help_text=format_lazy(
+            "{} -> {}",
+            _("Mehr Infos"),
+            faq("was-passiert-wenn-ich-eine-bestellung-als-bezahltversendet-markiere"),
+        ),
     )
     paid_on = models.DateField(
         verbose_name=_("Bezahlt am"),
@@ -585,7 +594,7 @@ class Order(CustomModel, AddressModelMixin, WooCommerceModelMixin):
         return _("Referenznummer") + ": " + str(self.id)
 
     def get_qr_reference_number(self):
-        "Returns the formatted reference number for the QR-Invoice"
+        """Returns the formatted reference number for the QR-Invoice"""
 
         a = self.pkfill(22) + "0000"
         b = a + str(modulo10rekursiv(a))
@@ -605,7 +614,13 @@ class Order(CustomModel, AddressModelMixin, WooCommerceModelMixin):
         return c
 
     def get_qr_billing_information(self):
-        "Returns the billing information for the QR-Invoice"
+        """Returns the billing information for the QR-Invoice
+
+        Definition 1:
+        https://www.swico.ch/media/filer_public/1c/cd/1ccd7062-fc69-40f8-be3f-2a3ba9048c5f/v2_qr-bill-s1-syntax-fr.pdf
+        Definition 2 (page 61...):
+        https://www.six-group.com/dam/download/banking-services/interbank-clearing/de/standardization/ig-qr-bill-de.pdf
+        """
 
         date = (self.invoice_date or self.date).strftime("%y%m%d")
 
@@ -614,15 +629,20 @@ class Order(CustomModel, AddressModelMixin, WooCommerceModelMixin):
         if self.payment_receiver.swiss_uid:
             uid = self.payment_receiver.swiss_uid.split("-")[1].replace(".", "")
             output += f"/30/{uid}"
-        cond = self.payment_conditions
+
         vat_dict = self.get_vat_dict()
         var_str = ";".join(f"{rate}:{vat_dict[rate]}" for rate in vat_dict)
+        output += f"/31/{date}/32/{var_str}"
 
-        output += f"/31/{date}/32/{var_str}/40/{cond}"
+        if self.payment_conditions:
+            output += f"/40/{self.payment_conditions}"
         return output
 
     def get_payment_conditions_data(self):
-        "Get the payment conditions as a list of dictionaries"
+        """Get the payment conditions as a list of dictionaries"""
+
+        if not self.payment_conditions:
+            return []
 
         data = []
         for pc in self.payment_conditions.split(";"):
@@ -720,7 +740,7 @@ class Order(CustomModel, AddressModelMixin, WooCommerceModelMixin):
 
     @admin.display(description=_("Konditionen"))
     def display_payment_conditions(self):
-        "Get the payment conditions as a multiline string of values"
+        """Get the payment conditions as a multiline string of values"""
 
         conditions = self.get_payment_conditions_data()
         output = ""
@@ -774,7 +794,7 @@ class Order(CustomModel, AddressModelMixin, WooCommerceModelMixin):
         return self.is_paid
 
     def is_correct_payment(self, amount: float, date: datetime):
-        "Check if a payment made on a certain date has the correct amount for this order"
+        """Check if a payment made on a certain date has the correct amount for this order"""
 
         if amount == self.cached_sum:
             return True
