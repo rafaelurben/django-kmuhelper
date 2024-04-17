@@ -1,8 +1,12 @@
+from django.utils.translation import gettext
+
 import kmuhelper.modules.main.models as models
 from kmuhelper import constants
 from kmuhelper.modules.integrations.woocommerce.api import products, customers
 from kmuhelper.modules.integrations.woocommerce.api._base import WC_BaseObjectAPI
 from kmuhelper.utils import runden
+
+_ = gettext
 
 
 class WCOrdersAPI(WC_BaseObjectAPI):
@@ -88,11 +92,15 @@ class WCOrdersAPI(WC_BaseObjectAPI):
             db_obj.addr_shipping_phone = customer.addr_shipping_phone
 
         for item in wc_obj["line_items"]:
-            # Use variation id if available
+            # Use variation id if available and != 0
             if "variation_id" in item and item["variation_id"]:
                 product_id = item["variation_id"]
             else:
                 product_id = item["product_id"]
+
+            quantity = int(item["quantity"])
+            product_price = runden(float(item["subtotal"]) / quantity)
+            # subtotal/quantity is used instead of price to exclude discounts => handled under "coupon_lines"
 
             if product_id != 0:
                 product, created = models.Product.objects.get_or_create(
@@ -104,16 +112,16 @@ class WCOrdersAPI(WC_BaseObjectAPI):
                 db_obj.products.through.objects.create(
                     order=db_obj,
                     linked_product=product,
-                    quantity=int(item["quantity"]),
-                    product_price=runden(float(item["price"])),
+                    quantity=quantity,
+                    product_price=product_price,
                 )
             else:
                 self.log("Product ID in a line item was 0!")
                 db_obj.products.through.objects.create(
                     order=db_obj,
                     linked_product=None,
-                    quantity=int(item["quantity"]),
-                    product_price=runden(float(item["price"])),
+                    quantity=quantity,
+                    product_price=product_price,
                     name=item["name"],
                     article_number=str(item["sku"]),
                 )
@@ -125,6 +133,26 @@ class WCOrdersAPI(WC_BaseObjectAPI):
                 price=float(item["total"]),
                 vat_rate=(
                     constants.VAT_RATE_DEFAULT if float(item["total_tax"]) > 0 else 0
+                ),
+            )
+
+        for item in wc_obj["fee_lines"]:
+            db_obj.fees.through.objects.create(
+                order=db_obj,
+                name=item["name"],
+                price=float(item["total"]),
+                vat_rate=(
+                    constants.VAT_RATE_DEFAULT if float(item["total_tax"]) > 0 else 0
+                ),
+            )
+
+        for item in wc_obj["coupon_lines"]:
+            db_obj.fees.through.objects.create(
+                order=db_obj,
+                name=_("Coupon: %(code)s") % {"code": item["code"]},
+                price=-float(item["discount"]),
+                vat_rate=(
+                    constants.VAT_RATE_DEFAULT if float(item["discount_tax"]) > 0 else 0
                 ),
             )
 

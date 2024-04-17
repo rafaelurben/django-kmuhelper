@@ -53,18 +53,17 @@
             Klicken Sie auf folgenden Knopf und melden Sie sich mit Ihren WooCommerce/WordPress
             Zugangsdaten an:
         </p>
-        {% if is_url_valid %}
-            {% if is_connected %}
-                <a href="{% url 'kmuhelper:wc-auth-start' %}">
-                    <button class="button">API erneut verbinden</button>
-                </a>
-            {% else %}
+
+        {% if is_connected %}
+            <button class="button" disabled>Verbunden!</button>
+        {% else %}
+            {% if is_url_valid %}
                 <a href="{% url 'kmuhelper:wc-auth-start' %}">
                     <button class="button">API verbinden</button>
                 </a>
+            {% else %}
+                <button class="button" disabled>Die angegebene URL ist ungültig</button>
             {% endif %}
-        {% else %}
-            <button class="button" disabled>Die angegebene URL ist ungültig</button>
         {% endif %}
 
         <br><br>
@@ -90,50 +89,111 @@
 
         <br><br>
 
-        <h3>Schritt 3: Webhooks einrichten (optional, aber empfohlen)</h3>
+        <h3>Schritt 3: Webhooks einrichten</h3>
         <p>
             Damit Daten automatisch von WooCommerce an den KMUHelper übertragen werden können, müssen Webhooks
             eingerichtet werden.
             Dieser Schritt muss manuell durchgeführt werden.
-            Öffnen Sie die WooCommerce Einstellungen via Knopf unten und folgen Sie folgenden Anweisungen:
+            Öffnen Sie die WooCommerce-Einstellungen via folgendem Knopf und erstellen sie die Webhooks gemäss
+            nachfolgender Tabelle.
         </p>
-        <p>
-            Erstellen Sie für die nachfolgende Themen je einen Webhook.
-            Wählen Sie jeweils den Status "Aktiviert" und die API-Version "WP REST-API Integration v3".
-            Verwenden Sie überall das Secret, welches sie oben gespeichert haben und verwenden Sie als
-            URL folgende Adresse:
-            <code>https://{{ kmuhelper_url }}{% url 'kmuhelper:wc-webhooks' %}</code>
-        </p>
-        <ul>
-            <li>Bestellung erstellt (order.created)</li>
-            <li>Bestellung aktualisiert (order.updated)</li>
-            <li>Bestellung gelöscht (order.deleted)</li>
-            <li>Bestellung wiederhergestellt (order.restored)</li>
-            <li>Kunde erstellt (customer.created)</li>
-            <li>Kunde aktualisiert (customer.updated)</li>
-            <li>Kunde gelöscht (customer.deleted)</li>
-            <li>Produkt erstellt (product.created)</li>
-            <li>Produkt aktualisiert (product.updated)</li>
-            <li>Produkt entfernt (product.deleted)</li>
-            <li>Produkt wiederhergestellt (product.restored)</li>
-        </ul>
+
         {% if is_connected %}
             <a href="{{ wc_url }}/wp-admin/admin.php?page=wc-settings&tab=advanced&section=webhooks" target="_blank"
                rel="noopener noreferrer">
-                <button class="button">Webhooks einrichten</button>
+                <button class="button">Webhook-Einstellungen öffnen</button>
             </a>
         {% else %}
             <button class="button" disabled>Schritt 1 muss zuerst abgeschlossen werden</button>
         {% endif %}
 
-        <br><br>
-
+        <table style="margin-bottom: 2em; margin-top: 2em;">
+            <thead>
+                <tr>
+                    <th>Feld</th>
+                    <th>Wert</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Name</td>
+                    <td><i>(nach Belieben, z. B. kmuhelper.product.created)</i></td>
+                </tr>
+                <tr>
+                    <td>Thema</td>
+                    <td>
+                        <span>Pro Thema ein Webhook:</span>
+                        <ul>
+                            <li>Bestellung erstellt (order.created)</li>
+                            <li>Bestellung aktualisiert (order.updated)</li>
+                            <li>Bestellung gelöscht (order.deleted)</li>
+                            <li>Bestellung wiederhergestellt (order.restored)</li>
+                            <li>Kunde erstellt (customer.created)</li>
+                            <li>Kunde aktualisiert (customer.updated)</li>
+                            <li>Kunde gelöscht (customer.deleted)</li>
+                            <li>Produkt erstellt (product.created)</li>
+                            <li>Produkt aktualisiert (product.updated)</li>
+                            <li>Produkt entfernt (product.deleted)</li>
+                            <li>Produkt wiederhergestellt (product.restored)</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Auslieferungs-URL</td>
+                    <td><code>{{ kmuhelper_url }}{% url 'kmuhelper:wc-webhooks' %}</code></td>
+                </tr>
+                <tr>
+                    <td>Secret</td>
+                    <td><i>(wie oben festgelegt)</i></td>
+                </tr>
+                <tr>
+                    <td>API-Version</td>
+                    <td>WP REST-API Integration v3</td>
+                </tr>
+            </tbody>
+        </table>
+    
         <h3>Schritt 4: Status der Webhooks überprüfen (optional)</h3>
         <p>
-            Der Status der Webhooks kann nur manuell überprüft werden, indem Daten in WooCommerce verändert werden (z.
-            B. eine Bestellung erstellen).
+            Der Status der Webhooks kann über folgenden Button überprüft werden.
+            Um wirklich sicher zu gehen, sollten die Webhooks aber manuell überprüft werden, indem Daten in WooCommerce 
+            verändert werden (z. B. ein Produkt erstellt oder bearbeitet).
         </p>
+        {% if is_connected %}
+            <a href="{% url 'kmuhelper:wc-webhooks-status' %}">
+                <button class="button">Webhooks überprüfen</button>
+            </a>
+        {% else %}
+            <button class="button" disabled>Schritt 1 muss zuerst abgeschlossen werden</button>
+        {% endif %}
     </div>
+
+    {% if is_connected %}
+        <hr style="margin-top: 2em; margin-bottom: 2em;">
+        <h2>Einstellungen zurücksetzen</h2>
+
+        <div style="margin-top: 2em;">
+            <h3>Schritt 1: Webhooks löschen oder deaktivieren</h3>
+            <p>
+                Nachdem die API-Zugangsdaten gelöscht wurden, werden auch Webhooks nicht mehr akzeptiert. Entfernen oder 
+                deaktivieren Sie daher zuerst alle Webhooks:
+            </p>
+            <a href="{{ wc_url }}/wp-admin/admin.php?page=wc-settings&tab=advanced&section=webhooks" target="_blank"
+               rel="noopener noreferrer">
+                <button class="button">Webhook-Einstellungen öffnen</button>
+            </a>
+        
+            <h3>Schritt 2: API-Zugangsdaten löschen</h3>
+            <p>
+                Durch Klick auf folgenden Knopf werden die Zugangsdaten vernichtet. Nach erfolgreichem Löschen 
+                sollten die Zugangsdaten ausserdem in den WooCommerce-Einstellungen annulliert werden. Ein Link
+                dazu wird nach dem Löschen automatisch angezeigt.
+            </p>
+            <a href="{% url 'kmuhelper:wc-auth-clear' %}">
+                <button class="button">API-Zugangsdaten löschen & Verbindung trennen</button>
+            </a>
+        </div>
+    {% endif %}
 
     <hr style="margin-top: 2em; margin-bottom: 2em;">
     <div style="margin-top: 2em;">

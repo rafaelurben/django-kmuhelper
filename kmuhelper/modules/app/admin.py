@@ -81,11 +81,12 @@ class App_StockAdmin(App_AdminBase, ProductAdmin):
         "display_article_number",
         "clean_name",
         "stock_current",
+        "stock_target",
         "display_current_price",
         "note",
         "linked_note_html",
     ]
-    list_editable = ["stock_current"]
+    list_editable = ["stock_current", "stock_target"]
 
     actions = ["reset_stock"]
 

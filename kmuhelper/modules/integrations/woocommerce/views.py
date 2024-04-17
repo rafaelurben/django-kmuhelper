@@ -8,13 +8,17 @@ from django.core.mail import mail_admins
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
+from django.utils.html import format_html
 from django.utils.translation import gettext_lazy, gettext
 from django.views.decorators.csrf import csrf_exempt
+from rich import print
+
 from kmuhelper import settings
 from kmuhelper.decorators import (
     require_object,
     require_all_kmuhelper_perms,
     require_any_kmuhelper_perms,
+    confirm_action,
 )
 from kmuhelper.modules.integrations.woocommerce.api import (
     WCGeneralAPI,
@@ -32,7 +36,6 @@ from kmuhelper.modules.integrations.woocommerce.utils import (
 )
 from kmuhelper.modules.main.models import Product, Customer, ProductCategory, Order
 from kmuhelper.utils import render_error
-from rich import print
 
 _ = gettext_lazy
 
@@ -94,18 +97,54 @@ def wc_auth_start(request):
         )
         return redirect(reverse("kmuhelper:wc-settings"))
 
-    kmuhelperurl = request.get_host()
+    current_host = "https://" + request.get_host()
+
+    if current_host.endswith("localhost"):
+        messages.error(request, gettext("Cannot set up while on localhost!"))
+        return redirect(reverse("kmuhelper:wc-settings"))
+
     params = {
         "app_name": "KMUHelper",
         "scope": "read",
         "user_id": randint(100000, 999999),
-        "return_url": kmuhelperurl + reverse("kmuhelper:wc-auth-end"),
-        "callback_url": kmuhelperurl + reverse("kmuhelper:wc-auth-key"),
+        "return_url": current_host + reverse("kmuhelper:wc-auth-end"),
+        "callback_url": current_host + reverse("kmuhelper:wc-auth-key"),
     }
     query_string = urlencode(params)
 
     url = "%s%s?%s" % (shopurl, "/wc-auth/v1/authorize", query_string)
     return redirect(url)
+
+
+@login_required(login_url=reverse_lazy("kmuhelper:login"))
+@require_all_kmuhelper_perms(["change_setting"])
+@confirm_action(_("Delete stored API credentials"))
+def wc_auth_clear(request):
+    wc_url = settings.get_secret_db_setting("wc-url")
+    wc_consumer_key = settings.get_secret_db_setting("wc-consumer_key")
+
+    if not wc_url or not wc_consumer_key:
+        messages.warning(request, gettext("WooCommerce was not set up."))
+    else:
+        api_keys_url = (
+            wc_url + "/wp-admin/admin.php?page=wc-settings&tab=advanced&section=keys"
+        )
+
+        settings.set_secret_db_setting("wc-url", "")
+        settings.set_secret_db_setting("wc-consumer_key", "")
+        settings.set_secret_db_setting("wc-consumer_secret", "")
+
+        messages.success(
+            request,
+            format_html(
+                '{} <a target="_blank" href="{}">{}</a> (Consumer key: {})',
+                gettext("Credentials deleted! Please revoke your API key manually:"),
+                api_keys_url,
+                gettext("click here"),
+                wc_consumer_key,
+            ),
+        )
+    return redirect(reverse("kmuhelper:wc-settings"))
 
 
 # Note: Change permission is required because the view redirects to the settings page
@@ -121,6 +160,38 @@ def wc_system_status(request):
             messages.success(request, _("WooCommerce is connected and works!"))
         else:
             messages.error(request, _("WooCommerce doesn't seem to work!"))
+    return redirect(reverse("kmuhelper:wc-settings"))
+
+
+# Note: Change permission is required because the view redirects to the settings page
+@login_required(login_url=reverse_lazy("kmuhelper:login"))
+@require_all_kmuhelper_perms(["change_setting"])
+def wc_webhooks_status(request):
+    if not is_connected():
+        messages.error(request, NOT_CONNECTED_ERRMSG)
+    else:
+        current_host = "https://" + request.get_host()
+
+        if current_host.endswith("localhost"):
+            messages.error(
+                request, gettext("Cannot check webhooks while on localhost!")
+            )
+            return redirect(reverse("kmuhelper:wc-settings"))
+
+        delivery_url = current_host + reverse("kmuhelper:wc-webhooks")
+        success, topics = WCGeneralAPI().get_enabled_webhooks_topics(delivery_url)
+
+        if success:
+            if topics:
+                messages.success(
+                    request,
+                    gettext("%(count)d topic(s) have been set up correctly: %(topics)s")
+                    % {"count": len(topics), "topics": ",".join(topics)},
+                )
+            else:
+                messages.warning(request, _("No correctly setup webhooks detected!"))
+        else:
+            messages.error(request, _("Checking webhook status failed!"))
     return redirect(reverse("kmuhelper:wc-settings"))
 
 
@@ -257,7 +328,18 @@ def wc_webhooks(request):
         )
         return render_error(request, status=405)
 
-    # 2. Check request source
+    # 2. Check if WooCommerce is connected
+
+    if not is_connected():
+        return JsonResponse(
+            {
+                "accepted": False,
+                "reason": "Webhooks are currently disabled.",
+            },
+            status=418,
+        )
+
+    # 3. Check request source
 
     if not (
         "x-wc-webhook-topic" in request.headers
@@ -304,7 +386,7 @@ def wc_webhooks(request):
             status=403,
         )
 
-    # 3. Check request signature
+    # 4. Check request signature
 
     secret = settings.get_db_setting("wc-webhook-secret")
 
@@ -446,7 +528,7 @@ def wc_settings(request):
             "form": form,
             "has_permission": True,
             "random_secret": random_secret(),
-            "kmuhelper_url": request.get_host(),
+            "kmuhelper_url": "https://" + request.get_host(),
             "wc_url": secreturl,
             "is_connected": is_connected(),
             "is_url_valid": test_wc_url(url),

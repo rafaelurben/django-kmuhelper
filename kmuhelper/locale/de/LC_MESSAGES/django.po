@@ -1331,7 +1331,7 @@ msgstr ""
 #: .\kmuhelper\modules\main\models.py:162
 #: .\kmuhelper\modules\main\models.py:988
 msgid "Zusätzliche Kosten"
-msgstr "Zusätzliche Informationen"
+msgstr ""
 
 #: .\kmuhelper\modules\main\models.py:166
 #: .\kmuhelper\modules\main\models.py:992
@@ -2293,7 +2293,7 @@ msgid "Standardwert der Zahlungskonditionen für neue Bestellungen."
 msgstr ""
 
 #: .\kmuhelper\modules\settings\constants.py:57
-msgid "Wenn leer gelassen, wird '0:30' als Standard verwendet."
+msgid "Beispiele: 0:30 oder 2:10;0:30"
 msgstr ""
 
 #: .\kmuhelper\modules\settings\constants.py:58
@@ -2314,7 +2314,7 @@ msgstr ""
 #: .\kmuhelper\modules\settings\constants.py:71
 msgid ""
 "Die Zahlungskonditionen werden unabhängig von dieser Einstellung immer auch "
-"in manschinenlesbarer Form im QR-Code integriert."
+"in maschinenlesbarer Form im QR-Code integriert."
 msgstr ""
 
 #: .\kmuhelper\modules\settings\models.py:17

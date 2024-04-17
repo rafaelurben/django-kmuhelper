@@ -17,9 +17,9 @@ class WCProductsAPI(WC_BaseObjectAPI):
         db_obj.woocommerce_deleted = False
 
         try:
-            db_obj.selling_price = float(wc_obj["price"])
+            db_obj.selling_price = float(wc_obj["regular_price"])
         except ValueError:
-            pass
+            self.log("[red]Failed to convert regular_price to float![/]")
 
         db_obj.article_number = wc_obj["sku"]
         db_obj.name = preparestring(wc_obj["name"])
@@ -28,12 +28,19 @@ class WCProductsAPI(WC_BaseObjectAPI):
         db_obj.image_url = (
             (wc_obj["images"][0]["src"]) if len(wc_obj["images"]) > 0 else ""
         )
+
         if wc_obj["date_on_sale_from_gmt"]:
             db_obj.sale_from = wc_obj["date_on_sale_from_gmt"] + "+00:00"
+        else:
+            db_obj.sale_from = None
         if wc_obj["date_on_sale_to_gmt"]:
             db_obj.sale_to = wc_obj["date_on_sale_to_gmt"] + "+00:00"
+        else:
+            db_obj.sale_to = None
         if wc_obj["sale_price"]:
-            db_obj.sale_price = wc_obj["sale_price"]
+            db_obj.sale_price = float(wc_obj["sale_price"])
+        else:
+            db_obj.sale_price = None
 
         # Update dependencies
         self._update_dependencies(
@@ -67,7 +74,7 @@ class WCProductsAPI(WC_BaseObjectAPI):
                 if wc_obj["date_on_sale_to"]
                 else None
             ),
-            sale_price=(wc_obj["sale_price"] if wc_obj["sale_price"] else None),
+            sale_price=(float(wc_obj["sale_price"]) if wc_obj["sale_price"] else None),
         )
         if wc_obj["manage_stock"]:
             db_obj.stock_current = wc_obj["stock_quantity"]

@@ -3,6 +3,12 @@
 from datetime import datetime
 
 from django.utils.translation import pgettext
+from reportlab.lib.colors import black
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.lib.units import mm
+from reportlab.lib.utils import ImageReader
+from reportlab.platypus import Table, TableStyle, Paragraph, Spacer, TopPadder, Flowable
+
 from kmuhelper import settings
 from kmuhelper.modules.pdfgeneration.base import PDFGenerator
 from kmuhelper.modules.pdfgeneration.swiss_qr_invoice import QRInvoiceFlowable
@@ -12,11 +18,6 @@ from kmuhelper.translations import (
     langselect,
 )
 from kmuhelper.utils import formatprice
-from reportlab.lib.colors import black
-from reportlab.lib.styles import ParagraphStyle
-from reportlab.lib.units import mm
-from reportlab.lib.utils import ImageReader
-from reportlab.platypus import Table, TableStyle, Paragraph, Spacer, TopPadder, Flowable
 
 style_default = ParagraphStyle("Normal", fontname="Helvetica")
 style_bold = ParagraphStyle("Bold", fontname="Helvetica-Bold")
@@ -141,14 +142,13 @@ class _PDFOrderPriceTable(Table):
                 "print-payment-conditions", False
             )
 
-        if show_payment_conditions:
-            payconds = order.get_payment_conditions_data()
+        if show_payment_conditions and order.payment_conditions:
             totaltext = (
                 pgettext(
                     "Text on generated order PDF",
                     "Rechnungsbetrag, zahlbar netto innert %s Tagen",
                 )
-                % payconds[-1]["days"]
+                % order.get_payment_conditions_data()[-1]["days"]
             )
         else:
             totaltext = pgettext("Text on generated order PDF", "Rechnungsbetrag")
@@ -165,8 +165,8 @@ class _PDFOrderPriceTable(Table):
         )
 
         h_paycond = 0
-        if show_payment_conditions:
-            for paycond in payconds:
+        if show_payment_conditions and order.payment_conditions:
+            for paycond in order.get_payment_conditions_data():
                 if paycond["percent"] != 0.0:
                     data.append(
                         (

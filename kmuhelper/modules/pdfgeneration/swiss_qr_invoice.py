@@ -1,17 +1,16 @@
-from reportlab.platypus import Flowable
-from reportlab.lib.units import mm
-from reportlab.graphics.shapes import Drawing
-from reportlab.graphics.barcode import qr
-from reportlab.graphics import renderPDF
-
 from django.utils.translation import pgettext
+from reportlab.graphics import renderPDF
+from reportlab.graphics.barcode import qr
+from reportlab.graphics.shapes import Drawing
+from reportlab.lib.units import mm
+from reportlab.platypus import Flowable
 
-from kmuhelper.utils import formatprice
 import kmuhelper.modules.main.models as models
+from kmuhelper.utils import formatprice
 
 
 class QRInvoiceFlowable(Flowable):
-    "A Flowable that draws a Swiss QR-Invoice."
+    """A Flowable that draws a Swiss QR-Invoice."""
 
     def __init__(
         self,
@@ -19,10 +18,12 @@ class QRInvoiceFlowable(Flowable):
         address,
         payment_receiver,
         billing_information,
-        qr_refernce_number="",
+        qr_reference_number="",
         unstructured_message="",
         add_cut_info=True,
     ):
+        super().__init__()
+
         self.width = 210
         self.height = 110
         self._fixedWidth = 210
@@ -32,7 +33,7 @@ class QRInvoiceFlowable(Flowable):
         self.address: dict = address
         self.payment_receiver: models.PaymentReceiver = payment_receiver
         self.billing_information: str = billing_information
-        self.qr_reference_number: str = qr_refernce_number
+        self.qr_reference_number: str = qr_reference_number
         self.unstructured_message: str = unstructured_message
         self.add_cut_info: bool = add_cut_info
 
@@ -43,7 +44,7 @@ class QRInvoiceFlowable(Flowable):
             address=order.addr_billing,
             payment_receiver=order.payment_receiver,
             billing_information=order.get_qr_billing_information(),
-            qr_refernce_number=order.get_qr_reference_number(),
+            qr_reference_number=order.get_qr_reference_number(),
             unstructured_message=order.get_unstructured_message(),
             add_cut_info=add_cut_lines,
         )
@@ -110,7 +111,7 @@ class QRInvoiceFlowable(Flowable):
         # - - - Ctry (2-stelliger Landescode gemäss ISO 3166-1)
         ln(recv.invoice_country)
 
-        # - UltmtCdtr (Entgültiger Zahlungsempfänger)
+        # - UltmtCdtr (Endgültiger Zahlungsempfänger)
         # - - AdrTp
         ln()
         # - - Name
@@ -132,7 +133,7 @@ class QRInvoiceFlowable(Flowable):
         # - - Ccy
         ln("CHF")
 
-        # - UltmtDbtr (Entgültiger Zahlungspflichtiger)
+        # - UltmtDbtr (Endgültiger Zahlungspflichtiger)
         # - - AdrTp
         ln("K")
         # - - Name
