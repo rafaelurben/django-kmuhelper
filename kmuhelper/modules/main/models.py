@@ -14,6 +14,7 @@ from django.utils.translation import (
     gettext_lazy,
     gettext,
     npgettext,
+    pgettext_lazy,
 )
 from rich import print
 
@@ -1973,28 +1974,33 @@ class PaymentReceiver(CustomModel):
     # Payment information
 
     invoice_name = models.CharField(
-        verbose_name=_("Name"),
+        verbose_name=_("Kontoinhaber"),
         max_length=70,
-        help_text=_("In QR-Rechnung 'Zahlbar an' - Kontoinhaber / Firma"),
+        help_text=_("Name / Firma"),
     )
-    invoice_address_1 = models.CharField(
-        verbose_name=_("Adresszeile 1"),
+    invoice_street = models.CharField(
+        verbose_name=pgettext_lazy("address", "Strasse"),
         max_length=70,
-        help_text=_(
-            "In QR-Rechnung 'Zahlbar an' - Strasse und Hausnummer oder 'Postfach'"
-        ),
+        help_text=_("Strasse oder Postfach"),
     )
-    invoice_address_2 = models.CharField(
-        verbose_name=_("Adresszeile 2"),
-        max_length=70,
-        help_text=_("In QR-Rechnung 'Zahlbar an' - PLZ und Ort"),
+    invoice_street_nr = models.CharField(
+        verbose_name=pgettext_lazy("address", "Hausnummer"),
+        max_length=16,
+        blank=True,
+    )
+    invoice_postcode = models.CharField(
+        verbose_name=pgettext_lazy("address", "Postleitzahl"),
+        max_length=16,
+    )
+    invoice_city = models.CharField(
+        verbose_name=pgettext_lazy("address", "Ort"),
+        max_length=35,
     )
     invoice_country = models.CharField(
         verbose_name=_("Land"),
         max_length=2,
         choices=constants.COUNTRIES,
         default="CH",
-        help_text=_("In QR-Rechnung 'Zahlbar an'"),
     )
 
     # Default
