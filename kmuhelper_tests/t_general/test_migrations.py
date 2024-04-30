@@ -7,7 +7,7 @@ import unittest
 from django.core.management import call_command
 
 
-class MyTestCase(unittest.TestCase):
+class GeneralTest(unittest.TestCase):
     def test_detected_changes(self):
         try:
             call_command("makemigrations", "kmuhelper", "--check", "--dry-run")
