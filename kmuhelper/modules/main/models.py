@@ -2,6 +2,7 @@ import string
 from datetime import datetime, timedelta
 from random import randint
 
+import requests
 from django.contrib import admin, messages
 from django.core.validators import RegexValidator, MinValueValidator, MaxValueValidator
 from django.db import models
@@ -16,8 +17,6 @@ from django.utils.translation import (
     npgettext,
     pgettext_lazy,
 )
-from rich import print
-
 from kmuhelper import settings, constants
 from kmuhelper.modules.emails.models import EMail, Attachment
 from kmuhelper.modules.integrations.woocommerce.mixins import WooCommerceModelMixin
@@ -26,6 +25,7 @@ from kmuhelper.modules.pdfgeneration import PDFOrder
 from kmuhelper.overrides import CustomModel
 from kmuhelper.translations import langselect, I18N_HELP_TEXT, Language
 from kmuhelper.utils import runden, formatprice, modulo10rekursiv, faq
+from rich import print
 
 _ = gettext_lazy
 
@@ -2103,6 +2103,15 @@ class PaymentReceiver(CustomModel):
             errors["swiss_uid"] = ValidationError(
                 _("Die UID ist ungültig!"), code="invalid"
             )
+        if self.logourl:
+            try:
+                response = requests.get(self.logourl)
+                response.raise_for_status()
+            except requests.RequestException as e:
+                errors["logourl"] = ValidationError(
+                    _("An dieser Adresse konnte kein Bild abgerufen werden! Fehler: %s")
+                    % str(e)
+                )
 
         if errors:
             raise ValidationError(errors)
