@@ -97,17 +97,17 @@ class QRInvoiceFlowable(Flowable):
             ln(recv.iban.replace(" ", ""))
         # - - Cdtr
         # - - - AdrTp
-        ln("K")
+        ln("S")
         # - - - Name
         ln(recv.invoice_name)
         # - - - StrtNmOrAdrLine1
-        ln(recv.invoice_address_1)
+        ln(recv.invoice_street)
         # - - - BldgNbOrAdrLine2
-        ln(recv.invoice_address_2)
+        ln(recv.invoice_street_nr)
         # - - - PstCd
-        ln()
+        ln(recv.invoice_postcode)
         # - - - TwnNm
-        ln()
+        ln(recv.invoice_city)
         # - - - Ctry (2-stelliger Landescode gemäss ISO 3166-1)
         ln(recv.invoice_country)
 
@@ -135,17 +135,17 @@ class QRInvoiceFlowable(Flowable):
 
         # - UltmtDbtr (Endgültiger Zahlungspflichtiger)
         # - - AdrTp
-        ln("K")
+        ln("S")
         # - - Name
         ln(addr["company"] or f"{addr['first_name']} {addr['last_name']}")
         # - - StrtNmOrAdrLine1
         ln(addr["address_1"])
         # - - BldgNbOrAdrLine2
-        ln(addr["postcode"] + " " + addr["city"])
+        ln()  # Version 2.3 of the specification allows the street number to be delivered in StrtNmOrAdrLine1 (above)
         # - - PstCd
-        ln()
+        ln(addr["postcode"])
         # - - TwnNm
-        ln()
+        ln(addr["city"])
         # - - Ctry (2-stelliger Landescode gemäss ISO 3166-1)
         ln(addr["country"])
 
@@ -186,7 +186,7 @@ class QRInvoiceFlowable(Flowable):
         # QR-Code
 
         qrpayload = self.get_swiss_qr_payload()
-        qr_code = qr.QrCodeWidget(qrpayload)
+        qr_code = qr.QrCodeWidget(qrpayload, barLevel="M")
         qrbounds = qr_code.getBounds()
         qrwidth = qrbounds[2] - qrbounds[0]
         qrheight = qrbounds[3] - qrbounds[1]
@@ -225,88 +225,76 @@ class QRInvoiceFlowable(Flowable):
                 ),
             )
 
-        # Titel
+        # Common parts
 
-        def titel(t, text, klein=False):
-            t.setFont("Helvetica-Bold", 6 if klein else 8)
-            t.textLine(text)
-            t.moveCursor(0, 2)
-            t.setFont("Helvetica", 8 if klein else 10)
+        def _draw_title(_t, text, small=False):
+            _t.setFont("Helvetica-Bold", 6 if small else 8)
+            _t.textLine(text)
+            _t.moveCursor(0, 2)
+            _t.setFont("Helvetica", 8 if small else 10)
+
+        def _draw_creditor_and_reference(_t, small=False):
+            _draw_title(
+                t,
+                pgettext(
+                    "QR-Invoice / fixed by SIX group style guide", "Konto / Zahlbar an"
+                ),
+                small=small,
+            )
+            t.textLine(recv.qriban if recv.mode == "QRR" else recv.iban)
+            t.textLine(recv.invoice_name)
+            t.textLine(f"{recv.invoice_street} {recv.invoice_street_nr}")
+            t.textLine(f"{recv.invoice_postcode} {recv.invoice_city}")
+            t.moveCursor(0, 9)
+            if recv.mode == "QRR":
+                _draw_title(
+                    t,
+                    pgettext("QR-Invoice / fixed by SIX group style guide", "Referenz"),
+                    small=small,
+                )
+                t.textLine(ref)
+                t.moveCursor(0, 9)
+
+        def _draw_additional_info(_t):
+            _draw_title(
+                t,
+                pgettext(
+                    "QR-Invoice / fixed by SIX group style guide",
+                    "Zusätzliche Informationen",
+                ),
+            )
+            t.textLine(self.unstructured_message)
+            t.moveCursor(0, 9)
+
+        def _draw_debitor(_t, small=False):
+            _draw_title(
+                t,
+                pgettext(
+                    "QR-Invoice / fixed by SIX group style guide", "Zahlbar durch"
+                ),
+                small=small,
+            )
+            t.textLine(addr["company"] or f"{addr['first_name']} {addr['last_name']}")
+            t.textLine(addr["address_1"])
+            t.textLine(f"{addr['postcode']} {addr['city']}")
 
         # Empfangsschein Angaben
+
         t = c.beginText(5 * mm, 90 * mm)
-        titel(
-            t,
-            pgettext(
-                "QR-Invoice / fixed by SIX group style guide", "Konto / Zahlbar an"
-            ),
-            True,
-        )
-        t.textLine(recv.qriban if recv.mode == "QRR" else recv.iban)
-        t.textLine(recv.invoice_name)
-        t.textLine(recv.invoice_address_1)
-        t.textLine(recv.invoice_address_2)
-        t.moveCursor(0, 9)
-        if recv.mode == "QRR":
-            titel(
-                t,
-                pgettext("QR-Invoice / fixed by SIX group style guide", "Referenz"),
-                True,
-            )
-            t.textLine(ref)
-            t.moveCursor(0, 9)
-        titel(
-            t,
-            pgettext("QR-Invoice / fixed by SIX group style guide", "Zahlbar durch"),
-            True,
-        )
-        t.textLine(addr["company"] or f"{addr['first_name']} {addr['last_name']}")
-        t.textLine(addr["address_1"])
-        t.textLine(f"{addr['postcode']} {addr['city']}")
+        _draw_creditor_and_reference(t, small=True)
+        _draw_debitor(t, small=True)
         c.drawText(t)
 
         # Zahlteil Angaben
+
         t = c.beginText(118 * mm, 97 * mm)
-        titel(
-            t,
-            pgettext(
-                "QR-Invoice / fixed by SIX group style guide", "Konto / Zahlbar an"
-            ),
-        )
-        t.textLine(recv.qriban if recv.mode == "QRR" else recv.iban)
-        t.textLine(recv.invoice_name)
-        t.textLine(recv.invoice_address_1)
-        t.textLine(recv.invoice_address_2)
-        t.moveCursor(0, 9)
-        if recv.mode == "QRR":
-            titel(
-                t, pgettext("QR-Invoice / fixed by SIX group style guide", "Referenz")
-            )
-            t.textLine(ref)
-            t.moveCursor(0, 9)
-        titel(
-            t,
-            pgettext(
-                "QR-Invoice / fixed by SIX group style guide",
-                "Zusätzliche Informationen",
-            ),
-        )
-        t.textLine(self.unstructured_message)
-        # Note: The billing information was originally printed on the
-        #       invoice but is now exclusively included in the QR code.
-        #       Reason: It's not human readable and just confusing.
-        # t.textLine(billing_info[:len(billing_info)//2)
-        # t.textLine(billing_info[len(billing_info)//2:])
-        t.moveCursor(0, 9)
-        titel(
-            t, pgettext("QR-Invoice / fixed by SIX group style guide", "Zahlbar durch")
-        )
-        t.textLine(addr["company"] or f"{addr['first_name']} {addr['last_name']}")
-        t.textLine(addr["address_1"])
-        t.textLine(f"{addr['postcode']} {addr['city']}")
+        _draw_creditor_and_reference(t)
+        _draw_additional_info(t)
+        _draw_debitor(t)
         c.drawText(t)
 
-        # Texte
+        # Überschriften
+
         c.setFont("Helvetica-Bold", 11)
         c.drawString(
             5 * mm,
@@ -318,6 +306,8 @@ class QRInvoiceFlowable(Flowable):
             97 * mm,
             pgettext("QR-Invoice / fixed by SIX group style guide", "Zahlteil"),
         )
+
+        # Empfangsschein Texte
 
         c.setFont("Helvetica-Bold", 6)
         c.drawString(
@@ -339,6 +329,8 @@ class QRInvoiceFlowable(Flowable):
         c.setFont("Helvetica", 8)
         c.drawString(5 * mm, 30 * mm, "CHF")
         c.drawString(20 * mm, 30 * mm, total)
+
+        # Zahlteil Texte
 
         c.setFont("Helvetica-Bold", 8)
         c.drawString(

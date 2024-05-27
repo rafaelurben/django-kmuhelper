@@ -130,7 +130,7 @@ class _PDFOrderPriceTable(Table):
                     vat_rate,
                     "%",
                     formatprice(float(vat_dict[vat_rate])),
-                    formatprice(float(vat_dict[vat_rate] * (float(vat_rate) / 100))),
+                    formatprice(float(vat_dict[vat_rate]) * (float(vat_rate) / 100)),
                 )
             )
             h_vat += 1
@@ -291,17 +291,19 @@ class _PDFOrderProductTable(Table):
 
 
 class _PDFOrderHeader(Flowable):
+    def __init__(self, order, title, is_delivery_note=False):
+        super().__init__()
+        self.order = order
+        self.title = str(title)
+        self.is_delivery_note = is_delivery_note
+
     @classmethod
     def from_order(cls, order, title, is_delivery_note=False):
-        elem = cls()
+        elem = cls(order, title, is_delivery_note)
         elem.width = 210
         elem.height = 75
         elem._fixedWidth = 210
         elem._fixedHeight = 75
-
-        elem.order = order
-        elem.title = str(title)
-        elem.is_delivery_note = is_delivery_note
         return elem
 
     def get_address_lines(self) -> list:
@@ -324,7 +326,7 @@ class _PDFOrderHeader(Flowable):
         return data
 
     def get_header_block1(self) -> list:
-        "Get titles and data for the first header block"
+        """Get titles and data for the first header block"""
 
         order = self.order
         recv = order.payment_receiver
@@ -349,7 +351,7 @@ class _PDFOrderHeader(Flowable):
         return data
 
     def get_header_block2(self) -> list:
-        "Get titles and data for the second header block"
+        """Get titles and data for the second header block"""
 
         order = self.order
         recv = order.payment_receiver
@@ -439,15 +441,24 @@ class _PDFOrderHeader(Flowable):
 
         # Logo
         if recv.logourl:
-            c.drawImage(
-                ImageReader(recv.logourl),
-                120 * mm,
-                67 * mm,
-                width=20 * mm,
-                height=-20 * mm,
-                mask="auto",
-                anchor="nw",
-            )
+            try:
+                image = ImageReader(
+                    recv.logourl
+                )  # this will raise OSError if image is not available
+                c.drawImage(
+                    image,
+                    120 * mm,
+                    67 * mm,
+                    width=20 * mm,
+                    height=-20 * mm,
+                    mask="auto",
+                    anchor="nw",
+                )
+            except OSError:
+                print(
+                    "[KMUHelper PDF generation] Loading logo image for _PDFOrderHeader failed! URL: "
+                    + recv.logourl
+                )
 
         # Payment receiver name
         c.setFont("Helvetica-Bold", 14)
@@ -539,12 +550,14 @@ class PDFOrder(PDFGenerator):
         add_cut_lines=True,
         show_payment_conditions=None,
     ):
+        super().__init__()
+
         order.cached_sum = order.calc_total()
 
         lang = lang or order.language
 
         # Header
-        elements = [
+        self.elements = [
             _PDFOrderHeader.from_order(
                 order, title=title, is_delivery_note=is_delivery_note
             ),
@@ -553,16 +566,16 @@ class PDFOrder(PDFGenerator):
 
         # Custom text
         if text:
-            elements += [
+            self.elements += [
                 Paragraph(text.replace("\n", "\n<br />")),
                 Spacer(1, 10 * mm),
             ]
 
         # Main body
         if is_delivery_note:
-            elements += [_PDFOrderProductTable.from_order(order, lang=lang)]
+            self.elements += [_PDFOrderProductTable.from_order(order, lang=lang)]
         else:
-            elements += [
+            self.elements += [
                 _PDFOrderPriceTable.from_order(
                     order, lang=lang, show_payment_conditions=show_payment_conditions
                 ),
@@ -571,6 +584,3 @@ class PDFOrder(PDFGenerator):
                     QRInvoiceFlowable.from_order(order, add_cut_lines=add_cut_lines)
                 ),
             ]
-
-        # Set the elements
-        self.elements = elements
