@@ -4,6 +4,32 @@ from kmuhelper.modules.integrations.woocommerce.api._base import WC_BaseObjectAP
 from kmuhelper.modules.integrations.woocommerce.api._utils import preparestring
 
 
+def parse_product_name(wc_obj):
+    """
+    This method is a workaround because the WooCommerce REST API sometimes includes the variation options
+    in the product name of the variation and sometimes doesn't:
+
+    The attributes are not included in the title if the product has 3+ attributes or 2+ attributes and one of the
+    attributes contains 2+ words.
+
+    See source code for details:
+    https://github.com/woocommerce/woocommerce/blob/43d9f10200e3d2132b472aa46b63398f79ce06ac/plugins/woocommerce/includes/data-stores/class-wc-product-variation-data-store-cpt.php#L294C1-L298C38
+
+    To potentially solve this problem in WooCommerce directly, see
+    https://wordpress.org/support/topic/help-with-variation-display-in-cart/#post-9158977
+    """
+
+    name = preparestring(wc_obj["name"])
+    if wc_obj["type"] != "variation" or len(wc_obj["attributes"]) <= 1:
+        return name
+
+    attr_str = ", ".join([a["option"] for a in wc_obj["attributes"]])
+
+    if attr_str not in name:
+        return f"{name} - {attr_str}"
+    return name
+
+
 class WCProductsAPI(WC_BaseObjectAPI):
     LOG_PREFIX = "[deep_pink4][KMUHelper WooCommerce Products][/] -"
 
@@ -19,10 +45,13 @@ class WCProductsAPI(WC_BaseObjectAPI):
         try:
             db_obj.selling_price = float(wc_obj["regular_price"])
         except ValueError:
-            self.log("[red]Failed to convert regular_price to float![/]")
+            self.log(
+                f"[red]Failed to convert regular_price ({wc_obj['regular_price']}) to float![/]"
+            )
+            db_obj.selling_price = 0
 
         db_obj.article_number = wc_obj["sku"]
-        db_obj.name = preparestring(wc_obj["name"])
+        db_obj.name = parse_product_name(wc_obj)
         db_obj.short_description = preparestring(wc_obj["short_description"])
         db_obj.description = preparestring(wc_obj["description"])
         db_obj.image_url = (
@@ -59,7 +88,7 @@ class WCProductsAPI(WC_BaseObjectAPI):
         db_obj = models.Product.objects.create(
             woocommerceid=wc_obj["id"],
             article_number=wc_obj["sku"],
-            name=preparestring(wc_obj["name"]),
+            name=parse_product_name(wc_obj),
             short_description=preparestring(wc_obj["short_description"]),
             description=preparestring(wc_obj["description"]),
             selling_price=selling_price,
