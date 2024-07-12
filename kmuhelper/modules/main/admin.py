@@ -4,6 +4,7 @@ from django.urls import path, reverse
 from django.utils import timezone
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy, ngettext
+
 from kmuhelper import constants
 from kmuhelper.modules.integrations.woocommerce.api import (
     WCCustomersAPI,
@@ -43,9 +44,9 @@ _ = gettext_lazy
 @admin.register(ContactPerson)
 class ContactPersonAdmin(CustomModelAdmin):
     fieldsets = [
+        (None, {"fields": ["is_default"]}),
         (_("Name"), {"fields": ["name"]}),
         (_("Kontaktinformationen"), {"fields": ["phone", "email"]}),
-        (_("Optionen"), {"fields": ["is_default"]}),
     ]
 
     ordering = ("name",)
@@ -1358,27 +1359,26 @@ class ProductCategoryAdmin(CustomModelAdmin):
 @admin.register(PaymentReceiver)
 class PaymentReceiverAdmin(CustomModelAdmin):
     fieldsets = [
-        (None, {"fields": ["internal_name"]}),
+        (None, {"fields": ["is_default", "internal_name"]}),
         (
             _("Anzeigeinformationen"),
             {"fields": ["display_name", "display_address_1", "display_address_2"]},
         ),
         (_("Zahlungsinformationen"), {"fields": ["mode", "qriban", "iban"]}),
         (
-            _("Rechnungsadresse"),
+            _("Rechnungsadresse / Zahlbar an"),
             {
                 "fields": [
                     "invoice_name",
-                    "invoice_address_1",
-                    "invoice_address_2",
+                    ("invoice_street", "invoice_street_nr"),
+                    ("invoice_postcode", "invoice_city"),
                     "invoice_country",
                 ]
             },
         ),
-        (_("Optionen"), {"fields": ["invoice_display_mode", "is_default"]}),
         (
-            _("Weitere Informationen & Darstellung"),
-            {"fields": ["swiss_uid", "website", "logourl"]},
+            _("Weitere Darstellungsoptionen"),
+            {"fields": ["invoice_display_mode", "swiss_uid", "website", "logourl"]},
         ),
     ]
 
@@ -1401,8 +1401,10 @@ class PaymentReceiverAdmin(CustomModelAdmin):
         "display_address_1",
         "display_address_2",
         "invoice_name",
-        "invoice_address_1",
-        "invoice_address_2",
+        "invoice_street",
+        "invoice_street_nr",
+        "invoice_postcode",
+        "invoice_city",
         "invoice_country",
         "swiss_uid",
         "website",

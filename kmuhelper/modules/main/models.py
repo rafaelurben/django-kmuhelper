@@ -2,6 +2,7 @@ import string
 from datetime import datetime, timedelta
 from random import randint
 
+import requests
 from django.contrib import admin, messages
 from django.core.validators import RegexValidator, MinValueValidator, MaxValueValidator
 from django.db import models
@@ -14,9 +15,8 @@ from django.utils.translation import (
     gettext_lazy,
     gettext,
     npgettext,
+    pgettext_lazy,
 )
-from rich import print
-
 from kmuhelper import settings, constants
 from kmuhelper.modules.emails.models import EMail, Attachment
 from kmuhelper.modules.integrations.woocommerce.mixins import WooCommerceModelMixin
@@ -25,6 +25,7 @@ from kmuhelper.modules.pdfgeneration import PDFOrder
 from kmuhelper.overrides import CustomModel
 from kmuhelper.translations import langselect, I18N_HELP_TEXT, Language
 from kmuhelper.utils import runden, formatprice, modulo10rekursiv, faq
+from rich import print
 
 _ = gettext_lazy
 
@@ -1973,28 +1974,33 @@ class PaymentReceiver(CustomModel):
     # Payment information
 
     invoice_name = models.CharField(
-        verbose_name=_("Name"),
+        verbose_name=_("Kontoinhaber"),
         max_length=70,
-        help_text=_("In QR-Rechnung 'Zahlbar an' - Kontoinhaber / Firma"),
+        help_text=_("Name / Firma"),
     )
-    invoice_address_1 = models.CharField(
-        verbose_name=_("Adresszeile 1"),
+    invoice_street = models.CharField(
+        verbose_name=pgettext_lazy("address", "Strasse"),
         max_length=70,
-        help_text=_(
-            "In QR-Rechnung 'Zahlbar an' - Strasse und Hausnummer oder 'Postfach'"
-        ),
+        help_text=_("Strasse oder Postfach"),
     )
-    invoice_address_2 = models.CharField(
-        verbose_name=_("Adresszeile 2"),
-        max_length=70,
-        help_text=_("In QR-Rechnung 'Zahlbar an' - PLZ und Ort"),
+    invoice_street_nr = models.CharField(
+        verbose_name=pgettext_lazy("address", "Hausnummer"),
+        max_length=16,
+        blank=True,
+    )
+    invoice_postcode = models.CharField(
+        verbose_name=pgettext_lazy("address", "Postleitzahl"),
+        max_length=16,
+    )
+    invoice_city = models.CharField(
+        verbose_name=pgettext_lazy("address", "Ort"),
+        max_length=35,
     )
     invoice_country = models.CharField(
         verbose_name=_("Land"),
         max_length=2,
         choices=constants.COUNTRIES,
         default="CH",
-        help_text=_("In QR-Rechnung 'Zahlbar an'"),
     )
 
     # Default
@@ -2097,6 +2103,15 @@ class PaymentReceiver(CustomModel):
             errors["swiss_uid"] = ValidationError(
                 _("Die UID ist ungültig!"), code="invalid"
             )
+        if self.logourl:
+            try:
+                response = requests.get(self.logourl)
+                response.raise_for_status()
+            except requests.RequestException as e:
+                errors["logourl"] = ValidationError(
+                    _("An dieser Adresse konnte kein Bild abgerufen werden! Fehler: %s")
+                    % str(e)
+                )
 
         if errors:
             raise ValidationError(errors)

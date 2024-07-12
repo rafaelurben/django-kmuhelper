@@ -88,7 +88,7 @@ def wc_auth_end(request):
 @login_required(login_url=reverse_lazy("kmuhelper:login"))
 @require_all_kmuhelper_perms(["change_setting"])
 def wc_auth_start(request):
-    shopurl = settings.get_db_setting("wc-url", "Bestätigt")
+    shopurl = settings.get_db_setting("wc-url", None)
 
     if not shopurl or not shopurl.startswith("http"):
         messages.error(
@@ -97,18 +97,17 @@ def wc_auth_start(request):
         )
         return redirect(reverse("kmuhelper:wc-settings"))
 
-    current_host = "https://" + request.get_host()
-
-    if current_host.endswith("localhost"):
-        messages.error(request, gettext("Cannot set up while on localhost!"))
+    if not request.is_secure():
+        # WooCommerce only accepts callback_urls via SSL
+        messages.error(request, gettext("Setting up WooCommerce is only possible when connected via HTTPS!"))
         return redirect(reverse("kmuhelper:wc-settings"))
 
     params = {
         "app_name": "KMUHelper",
         "scope": "read",
         "user_id": randint(100000, 999999),
-        "return_url": current_host + reverse("kmuhelper:wc-auth-end"),
-        "callback_url": current_host + reverse("kmuhelper:wc-auth-key"),
+        "return_url": request.build_absolute_uri(reverse("kmuhelper:wc-auth-end")),
+        "callback_url": request.build_absolute_uri(reverse("kmuhelper:wc-auth-key")),
     }
     query_string = urlencode(params)
 

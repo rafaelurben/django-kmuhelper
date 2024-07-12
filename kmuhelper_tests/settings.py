@@ -3,7 +3,7 @@
 DEBUG = True
 SECRET_KEY = "fa^c^jx6$epw$%#b3bc)=cn_dp@misn+5l-cogxw$w3lsdl3r="
 DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3"}}
-ROOT_URLCONF = "tests.urls"
+ROOT_URLCONF = "kmuhelper_tests.urls"
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -15,7 +15,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 INSTALLED_APPS = (
-    "tests",
+    "kmuhelper_tests",
     "kmuhelper",
     "django.contrib.admin",
     "django.contrib.auth",
