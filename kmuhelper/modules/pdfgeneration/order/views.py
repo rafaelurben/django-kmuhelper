@@ -1,7 +1,6 @@
 from datetime import datetime
 
 from django.contrib.admin.models import LogEntry, CHANGE
-from django.contrib.admin.options import get_content_type_for_model
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy, reverse
@@ -86,21 +85,20 @@ def order_view_pdf(request, obj):
                     add_cut_lines=not is_print_version,
                     show_payment_conditions=False,
                 )
-            case other:
+            case _:
                 return render_error(
-                    request, status=400, message="Ungültige Vorlage: " + str(other)
+                    request, status=400, message="Ungültige Vorlage: " + str(preset)
                 )
 
         # Log the action
-        LogEntry.objects.log_action(
+        LogEntry.objects.log_actions(
             user_id=request.user.id,
-            content_type_id=get_content_type_for_model(obj).pk,
-            object_id=obj.pk,
-            object_repr=str(obj),
+            queryset=[obj],
             action_flag=CHANGE,
             change_message=f'PDF "{title}" aus Vorlage "{preset}" erstellt mit Text: "{text}"'
             if text
             else f'PDF "{title}" aus Vorlage "{preset}" erstellt.',
+            single_object=True,
         )
 
         filename = f"{str(order)} - {title}.pdf"
