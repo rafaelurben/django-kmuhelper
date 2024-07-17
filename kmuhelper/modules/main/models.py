@@ -17,6 +17,8 @@ from django.utils.translation import (
     npgettext,
     pgettext_lazy,
 )
+from rich import print
+
 from kmuhelper import settings, constants
 from kmuhelper.modules.emails.models import EMail, Attachment
 from kmuhelper.modules.integrations.woocommerce.mixins import WooCommerceModelMixin
@@ -25,7 +27,6 @@ from kmuhelper.modules.pdfgeneration import PDFOrder
 from kmuhelper.overrides import CustomModel
 from kmuhelper.translations import langselect, I18N_HELP_TEXT, Language
 from kmuhelper.utils import runden, formatprice, modulo10rekursiv, faq
-from rich import print
 
 _ = gettext_lazy
 
@@ -951,7 +952,7 @@ class Order(CustomModel, AddressModelMixin, WooCommerceModelMixin):
             log("No email receiver for stock warning set.")
         return None
 
-    class Meta:
+    class Meta(WooCommerceModelMixin.Meta):
         verbose_name = _("Bestellung")
         verbose_name_plural = _("Bestellungen")
 
@@ -1147,7 +1148,7 @@ class Customer(CustomModel, AddressModelMixin, WooCommerceModelMixin):
             s += f"({self.addr_billing_postcode} {self.addr_billing_city})"
         return s
 
-    class Meta:
+    class Meta(WooCommerceModelMixin.Meta):
         verbose_name = _("Kunde")
         verbose_name_plural = _("Kunden")
 
@@ -1759,7 +1760,7 @@ class Product(CustomModel, WooCommerceModelMixin):
     def __str__(self):
         return f"[{self.pk}] {self.article_number} - {self.clean_name()}"
 
-    class Meta:
+    class Meta(WooCommerceModelMixin.Meta):
         verbose_name = _("Produkt")
         verbose_name_plural = _("Produkte")
 
@@ -1821,7 +1822,7 @@ class ProductCategory(CustomModel, WooCommerceModelMixin):
     def __str__(self):
         return f"[{self.pk}] {self.clean_name()}"
 
-    class Meta:
+    class Meta(WooCommerceModelMixin.Meta):
         verbose_name = _("Produktkategorie")
         verbose_name_plural = _("Produktkategorien")
 
