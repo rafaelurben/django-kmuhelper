@@ -90,7 +90,7 @@
 
             document.addEventListener("DOMContentLoaded", () => {
                 updateShippingFormVisibility();
-                $(".addr-shipping-fieldset h2").after(
+                $(".addr-shipping-fieldset .form-row.field-addr_shipping_first_name").before(
                     document.getElementById("auto-copy-form-row")
                 )
 

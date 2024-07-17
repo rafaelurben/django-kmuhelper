@@ -2,9 +2,10 @@
 'use strict';
 {
     window.addEventListener('load', function () {
-        var open_toggles = document.querySelectorAll('fieldset.collapse.default-open a.collapse-toggle, fieldset.collapse.start-open a.collapse-toggle');
-        for (var i = 0; i < open_toggles.length; i++) {
-            open_toggles[i].click();
+        const collapsers = document.querySelectorAll('fieldset.collapse.start-open :is(summary, .collapse-toggle)');
+        // Note: details is for Django>=5.1, .collapse-toggle for Django<5.1
+        for (let i = 0; i < collapsers.length; i++) {
+            collapsers[i].click();
         }
     });
 }
