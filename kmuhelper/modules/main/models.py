@@ -202,14 +202,14 @@ class OrderFee(CustomModel):
             return f"[{self.pk}] {self.clean_name()} (#{self.linked_fee.pk})"
         return f"[{self.pk}] {self.clean_name()}"
 
-    def save(self, *args, **kwargs):
+    def save(self, **kwargs):
         if self.pk is None and self.linked_fee is not None:
             # Copy data from linked fee
             self.name = self.linked_fee.name
             self.vat_rate = self.linked_fee.vat_rate
             # Don't override price if already here (required for WooCommerce import)
             self.price = self.price or self.linked_fee.price
-        super().save(*args, **kwargs)
+        super().save(**kwargs)
 
     class Meta:
         verbose_name = _("Bestellungskosten")
@@ -320,7 +320,7 @@ class OrderItem(CustomModel):
             )
         return f"[{self.pk}] {self.quantity}x {self.clean_name()} (Art. {self.article_number})"
 
-    def save(self, *args, **kwargs):
+    def save(self, **kwargs):
         if self.pk is None and self.linked_product is not None:
             # Copy data from linked product
             self.article_number = self.linked_product.article_number
@@ -331,7 +331,7 @@ class OrderItem(CustomModel):
             self.product_price = runden(
                 self.product_price or self.linked_product.get_current_price()
             )
-        super().save(*args, **kwargs)
+        super().save(**kwargs)
 
     class Meta:
         verbose_name = _("Bestellungsposten")
@@ -559,7 +559,7 @@ class Order(CustomModel, AddressModelMixin, WooCommerceModelMixin):
         for field in constants.ADDR_SHIPPING_FIELDS + constants.ADDR_BILLING_FIELDS:
             setattr(self, field, getattr(self.customer, field))
 
-    def second_save(self, *args, **kwargs):
+    def second_save(self, **kwargs):
         "This HAS to be called after all related models have been saved."
 
         self.cached_sum = self.calc_total()
@@ -570,13 +570,13 @@ class Order(CustomModel, AddressModelMixin, WooCommerceModelMixin):
                     i.linked_product.save()
             self.is_removed_from_stock = True
 
-        super().save(*args, **kwargs)
+        super().save(**kwargs)
 
-    def save(self, *args, **kwargs):
+    def save(self, **kwargs):
         if not self.pk and not self.woocommerceid and self.customer:
             self.import_customer_data()
 
-        super().save(*args, **kwargs)
+        super().save(**kwargs)
 
     @admin.display(description=_("Trackinglink"), ordering="tracking_number")
     def tracking_link(self):
@@ -1152,11 +1152,11 @@ class Customer(CustomModel, AddressModelMixin, WooCommerceModelMixin):
         verbose_name = _("Kunde")
         verbose_name_plural = _("Kunden")
 
-    def save(self, *args, **kwargs):
+    def save(self, **kwargs):
         if self.combine_with:
             self.combine_with_customer(self.combine_with)
             self.combine_with = None
-        super().save(*args, **kwargs)
+        super().save(**kwargs)
 
     def combine_with_customer(self, other: "Customer"):
         """Combine this customer with another customer.
