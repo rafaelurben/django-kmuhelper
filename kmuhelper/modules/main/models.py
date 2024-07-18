@@ -952,7 +952,7 @@ class Order(CustomModel, AddressModelMixin, WooCommerceModelMixin):
             log("No email receiver for stock warning set.")
         return None
 
-    class Meta:
+    class Meta(WooCommerceModelMixin.Meta):
         verbose_name = _("Bestellung")
         verbose_name_plural = _("Bestellungen")
 
@@ -1148,7 +1148,7 @@ class Customer(CustomModel, AddressModelMixin, WooCommerceModelMixin):
             s += f"({self.addr_billing_postcode} {self.addr_billing_city})"
         return s
 
-    class Meta:
+    class Meta(WooCommerceModelMixin.Meta):
         verbose_name = _("Kunde")
         verbose_name_plural = _("Kunden")
 
@@ -1760,7 +1760,7 @@ class Product(CustomModel, WooCommerceModelMixin):
     def __str__(self):
         return f"[{self.pk}] {self.article_number} - {self.clean_name()}"
 
-    class Meta:
+    class Meta(WooCommerceModelMixin.Meta):
         verbose_name = _("Produkt")
         verbose_name_plural = _("Produkte")
 
@@ -1822,7 +1822,7 @@ class ProductCategory(CustomModel, WooCommerceModelMixin):
     def __str__(self):
         return f"[{self.pk}] {self.clean_name()}"
 
-    class Meta:
+    class Meta(WooCommerceModelMixin.Meta):
         verbose_name = _("Produktkategorie")
         verbose_name_plural = _("Produktkategorien")
 

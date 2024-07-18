@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.db import models
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
+
 from kmuhelper import settings
 
 WC_STATE_DESCRIPTION = format_html(
@@ -60,3 +61,5 @@ class WooCommerceModelMixin(models.Model):
 
     class Meta:
         abstract = True
+
+        indexes = [models.Index(fields=["woocommerceid"])]
