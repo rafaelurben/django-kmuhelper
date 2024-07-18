@@ -131,25 +131,29 @@ class QRInvoiceFlowable(Flowable):
 
         # - CcyAmt
         # - - Amt
-        ln(formatprice(self.total))
+        ln(formatprice(self.total) if self.total != 0 else "")
         # - - Ccy
         ln("CHF")
 
         # - UltmtDbtr (Endgültiger Zahlungspflichtiger)
-        # - - AdrTp
-        ln("S")
-        # - - Name
-        ln(addr["company"] or f"{addr['first_name']} {addr['last_name']}")
-        # - - StrtNmOrAdrLine1
-        ln(addr["address_1"])
-        # - - BldgNbOrAdrLine2
-        ln()  # Version 2.3 of the specification allows the building number to be delivered in StrtNmOrAdrLine1 (above)
-        # - - PstCd
-        ln(addr["postcode"])
-        # - - TwnNm
-        ln(addr["city"])
-        # - - Ctry (2-stelliger Landescode gemäss ISO 3166-1)
-        ln(addr["country"])
+        if addr.is_empty():
+            ln("\n\n\n\n\n\n")
+        else:
+            # - - AdrTp
+            ln("S")
+            # - - Name
+            ln(addr.company or f"{addr.first_name} {addr.last_name}")
+            # - - StrtNmOrAdrLine1
+            ln(addr.address_1)
+            # - - BldgNbOrAdrLine2
+            # Version 2.3 of the specification allows the building number to be delivered in StrtNmOrAdrLine1 (above)
+            ln()
+            # - - PstCd
+            ln(addr.postcode)
+            # - - TwnNm
+            ln(addr.city)
+            # - - Ctry (2-stelliger Landescode gemäss ISO 3166-1)
+            ln(addr.country)
 
         # - RmtIn
         # - - TP
@@ -177,10 +181,10 @@ class QRInvoiceFlowable(Flowable):
 
     def draw_qr_invoice(self):
         ref = self.qr_reference_number
-        addr = self.address
-
         recv = self.payment_receiver
-        empty_receiver = False  # temporary
+
+        addr = self.address
+        empty_addr = addr.is_empty()
         total = format(self.total, ",.2f").replace(",", " ")
         empty_total = self.total == 0
 
@@ -299,13 +303,13 @@ class QRInvoiceFlowable(Flowable):
                     "QR-Invoice / fixed by SIX group style guide",
                     "Zahlbar durch (Name/Adresse)",
                 )
-                if empty_receiver
+                if empty_addr
                 else pgettext(
                     "QR-Invoice / fixed by SIX group style guide", "Zahlbar durch"
                 ),
                 small=small,
             )
-            if not empty_receiver:
+            if not empty_addr:
                 _t.textLine(
                     addr["company"] or f"{addr['first_name']} {addr['last_name']}"
                 )
@@ -364,7 +368,7 @@ class QRInvoiceFlowable(Flowable):
         _write_creditor_and_reference(t, small=True)
         _write_debitor(t, small=True)
         c.drawText(t)
-        if empty_receiver:
+        if empty_addr:
             _draw_corners(
                 5 * mm,
                 (59 if recv.mode == "QRR" else 68) * mm,
@@ -404,7 +408,7 @@ class QRInvoiceFlowable(Flowable):
         _write_additional_info(t)
         _write_debitor(t)
         c.drawText(t)
-        if empty_receiver:
+        if empty_addr:
             _draw_corners(
                 118 * mm,
                 (48 if recv.mode == "QRR" else 60) * mm,
