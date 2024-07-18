@@ -7,6 +7,7 @@ from reportlab.pdfgen.canvas import Canvas
 from reportlab.platypus import Flowable
 
 import kmuhelper.modules.main.models as models
+import modules.main.mixins as mixins
 from kmuhelper.utils import formatprice
 
 
@@ -31,7 +32,7 @@ class QRInvoiceFlowable(Flowable):
         self._fixedHeight = 110
 
         self.total: float = total
-        self.address: dict = address
+        self.address: mixins.Address = address
         self.payment_receiver: models.PaymentReceiver = payment_receiver
         self.billing_information: str = billing_information
         self.qr_reference_number: str = qr_reference_number
