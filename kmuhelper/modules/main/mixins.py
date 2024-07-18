@@ -9,17 +9,49 @@ from kmuhelper import constants
 _ = gettext_lazy
 
 
+class Address:
+    """Model representing an address"""
+
+    first_name: str
+    last_name: str
+    company: str
+    address_1: str
+    address_2: str
+    postcode: str
+    city: str
+    state: str
+    country: str
+    phone: str
+    email: str
+
+    def __getitem__(self, item):
+        return getattr(self, item)
+
+    def is_empty(self):
+        for field in [
+            "first_name",
+            "last_name",
+            "company",
+            "address_1",
+            "postcode",
+            "city",
+        ]:
+            if getattr(self, field, "") != "":
+                return False
+        return True
+
+
 class AddressModelMixin(models.Model):
     """This model mixin provides billing and shipping address fields and utility methods"""
 
     # Billing address
 
     @property
-    def addr_billing(self):
-        return {
-            field.replace("addr_billing_", ""): getattr(self, field)
-            for field in constants.ADDR_BILLING_FIELDS
-        }
+    def addr_billing(self) -> Address:
+        addr = Address()
+        for field in constants.ADDR_BILLING_FIELDS:
+            setattr(addr, field.replace("addr_billing_", ""), getattr(self, field))
+        return addr
 
     addr_billing_first_name = models.CharField(
         verbose_name=pgettext_lazy("address", "Vorname"),
@@ -91,11 +123,11 @@ class AddressModelMixin(models.Model):
     # Shipping address
 
     @property
-    def addr_shipping(self):
-        return {
-            field.replace("addr_shipping_", ""): getattr(self, field)
-            for field in constants.ADDR_SHIPPING_FIELDS
-        }
+    def addr_shipping(self) -> Address:
+        addr = Address()
+        for field in constants.ADDR_SHIPPING_FIELDS:
+            setattr(addr, field.replace("addr_shipping_", ""), getattr(self, field))
+        return addr
 
     addr_shipping_first_name = models.CharField(
         verbose_name=pgettext_lazy("address", "Vorname"),
