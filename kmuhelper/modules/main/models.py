@@ -812,6 +812,11 @@ class Order(CustomModel, AddressModelMixin, WooCommerceModelMixin):
         return self.name()
 
     def create_email_invoice(self, lang=None):
+        # Set invoice date if not present
+        if self.invoice_date is None:
+            self.invoice_date = timezone.now()
+            self.save()
+
         lang = lang or self.language
         with Language(lang):
             context = {
