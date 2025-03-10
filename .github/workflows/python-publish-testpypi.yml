@@ -6,7 +6,7 @@ name: Upload Python Package to TestPyPi
 on:
   push:
     branches:
-      - master
+      - main
     paths:
       - '_version.txt'
 

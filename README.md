@@ -5,7 +5,7 @@
 [![PyPI](https://img.shields.io/pypi/v/django-kmuhelper)](https://pypi.org/project/django-kmuhelper)
 [![PyPI - Django Version](https://img.shields.io/pypi/djversions/django-kmuhelper)](https://pypi.org/project/django-kmuhelper)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/django-kmuhelper)](https://pypi.org/project/django-kmuhelper)
-[![PyPI - License](https://img.shields.io/pypi/l/django-kmuhelper)](https://github.com/rafaelurben/django-kmuhelper/blob/master/LICENSE)
+[![PyPI - License](https://img.shields.io/pypi/l/django-kmuhelper)](https://github.com/rafaelurben/django-kmuhelper/blob/main/LICENSE)
 
 [![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/rafaelurben/django-kmuhelper)](https://github.com/rafaelurben/django-kmuhelper)
 [![GitHub lines of code](https://img.shields.io/tokei/lines/github.com/rafaelurben/django-kmuhelper)](https://github.com/rafaelurben/django-kmuhelper)
