@@ -6,6 +6,8 @@ from django.conf import settings
 from django.contrib.admin.models import ADDITION
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
+from django.utils import timezone
+
 from kmuhelper.modules.api.models import ApiKey
 from kmuhelper.modules.emails.models import Attachment, EMail, EMailTemplate
 from kmuhelper.modules.integrations.paymentimport.models import PaymentImport
@@ -162,7 +164,7 @@ class AdminURLTests(TestCase):
     # Test model admins: payment import
 
     def test_model_admin_payment_import(self):
-        obj = PaymentImport.objects.create(data_creationdate="2024-01-01")
+        obj = PaymentImport.objects.create(data_creationdate=timezone.now())
         self._test_model_admins("paymentimport", obj.pk, check_add=False)
 
     # Test model admins: settings

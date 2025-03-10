@@ -14,7 +14,7 @@ Bei Fragen können Sie mich gerne [kontaktieren](<{{ site.kontakt_url }}>).
 
 Mit Heroku postgres Datenbank:
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/rafaelurben/djangoproject-template-kmuhelper-heroku/tree/master)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/rafaelurben/djangoproject-template-kmuhelper-heroku/tree/main)
 
 Mit eigener Datenbank:
 

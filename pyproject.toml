@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "django-kmuhelper"
+description = "Ein Helfer für schweizer KMU"
+readme = "README.md"
+authors = [{ name = "Rafael Urben", email = "github@rafaelurben.ch" }]
+maintainers = [{ name = "Rafael Urben", email = "github@rafaelurben.ch" }]
+license = { file = "LICENSE" }
+classifiers = [
+    "Environment :: Web Environment",
+    "Framework :: Django",
+    "Framework :: Django :: 4.2",
+    "Framework :: Django :: 5.0",
+    "Framework :: Django :: 5.1",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+]
+requires-python = ">= 3.10"
+dependencies = [
+    "Django>=4.2.0",
+    "requests>=2.26.0",
+    "WooCommerce>=3.0.0",
+    "reportlab>=3.6.3",
+    "rich>=10.15.2",
+    "packaging>=21.3",
+    "defusedxml>=0.7.1",
+]
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://rafaelurben.github.io/django-kmuhelper"
+Docs = "https://rafaelurben.github.io/django-kmuhelper"
+GitHub = "https://github.com/rafaelurben/django-kmuhelper"
+Issues = "https://github.com/rafaelurben/django-kmuhelper/issues"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages]
+find = { namespaces = false }
+
+[tool.setuptools.dynamic]
+version = { file = ["_version.txt"] }
