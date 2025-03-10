@@ -98,7 +98,6 @@ def order_view_pdf(request, obj):
             change_message=f'PDF "{title}" aus Vorlage "{preset}" erstellt mit Text: "{text}"'
             if text
             else f'PDF "{title}" aus Vorlage "{preset}" erstellt.',
-            single_object=True,
         )
 
         filename = f"{str(order)} - {title}.pdf"
