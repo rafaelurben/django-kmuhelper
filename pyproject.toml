@@ -8,15 +8,15 @@ description = "Ein Helfer für schweizer KMU"
 readme = "README.md"
 authors = [{ name = "Rafael Urben", email = "github@rafaelurben.ch" }]
 maintainers = [{ name = "Rafael Urben", email = "github@rafaelurben.ch" }]
-license = { file = "LICENSE" }
+license = "MIT"
 classifiers = [
     "Environment :: Web Environment",
     "Framework :: Django",
     "Framework :: Django :: 4.2",
     "Framework :: Django :: 5.0",
     "Framework :: Django :: 5.1",
+    "Framework :: Django :: 5.2",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
@@ -29,10 +29,10 @@ classifiers = [
 ]
 requires-python = ">= 3.10"
 dependencies = [
-    "Django>=4.2.0",
+    "Django>=4.2.0, <6.0.0",
     "requests>=2.26.0",
-    "WooCommerce>=3.0.0",
-    "reportlab>=3.6.3",
+    "WooCommerce>=3.0.0, <4",
+    "reportlab>=3.6.3, <4",
     "rich>=10.15.2",
     "packaging>=21.3",
     "defusedxml>=0.7.1",
