@@ -24,58 +24,51 @@
                             label: 'Verkaufte Produkte',
                             data: productsSold,
                             backgroundColor: 'rgba(246,196,0,0.75)',
-                            yAxisID: 'y-products',
+                            yAxisID: 'yProducts',
                         },
                         {
-                            //type: 'line',
                             label: 'Brutto-Umsatz',
                             data: moneyIncome,
                             backgroundColor: 'rgba(221,17,85,1)',
-                            yAxisID: 'y-umsatz',
+                            yAxisID: 'yUmsatz',
                         },
                     ],
                 },
                 options: {
                     responsive: true,
                     scales: {
-                        xAxes: [
-                            {
-                                type: 'time',
-                                time: {
-                                    round: 'month',
-                                    displayFormats: {
-                                        month: 'MMM YY',
-                                    },
-                                    tooltipFormat: 'MMMM YYYY',
+                        x: {
+                            type: 'time',
+                            time: {
+                                round: 'month',
+                                displayFormats: {
+                                    month: 'MMM yy',
+                                },
+                                tooltipFormat: 'MMMM yyyy',
+                            },
+                        },
+                        yProducts: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function (value, index, values) {
+                                    return value + " P.";
                                 },
                             },
-                        ],
-                        yAxes: [
-                            {
-                                type: 'linear',
-                                display: true,
-                                position: 'left',
-                                id: 'y-products',
-                                ticks: {
-                                    beginAtZero: true,
-                                    callback: function (value, index, values) {
-                                        return value + " P.";
-                                    },
+                        },
+                        yUmsatz: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function (value, index, values) {
+                                    return value + " CHF";
                                 },
                             },
-                            {
-                                type: 'linear',
-                                display: true,
-                                position: 'right',
-                                id: 'y-umsatz',
-                                ticks: {
-                                    beginAtZero: true,
-                                    callback: function (value, index, values) {
-                                        return value + " CHF";
-                                    },
-                                },
-                            }
-                        ],
+                        }
                     },
                 },
             });
