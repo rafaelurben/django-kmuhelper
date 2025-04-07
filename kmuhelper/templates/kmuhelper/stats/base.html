@@ -6,14 +6,14 @@
 
 {% block extrahead %}
     {% block chartjs %}
-    <!-- ChartJS https://www.chartjs.org/docs/latest/getting-started/ -->
+        <!-- ChartJS https://www.chartjs.org/docs/latest/getting-started/ -->
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css"
-          integrity="sha512-/zs32ZEJh+/EO2N1b0PEdoA10JkdC3zJ8L5FTiQu82LR9S/rOQNfQN7U59U9BC12swNeRAz3HSzIL2vpp4fv3w=="
-          crossorigin="anonymous" referrerpolicy="no-referrer"/>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"
-            integrity="sha512-60KwWtZOhzgr840mc57MV8JqDZHAws3w61mhK45KsYHmhyNFJKmfg4M7/s2Jsn4PgtQ4Uhr9xItS+HCbGTIRYQ=="
-            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"
+                integrity="sha512-IMvjDnJzMKoQZLPYQHxR4g8nm0sSd9bR7Kl5ayxnPHV8ChqVpHCdBYXGib3ZftuDlfaceqn7t47fObseBCEEJw=="
+                crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"
+                integrity="sha512-VPUN3sK5Jce8lVuVWfTZolO+BDodUHFq1QsNHmszMbKpYrQzjCxvC0FDG7igWCYBcsFDpqhcVq4sQ851OqhAPg=="
+                crossorigin="anonymous"></script>
     {% endblock %}
 
     {{ block.super }}
