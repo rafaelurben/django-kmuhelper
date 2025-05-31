@@ -49,6 +49,10 @@ class WCOrdersAPI(WC_BaseObjectAPI):
         self.log("Order updated: ", str(db_obj))
 
     def create_object_from_data(self, wc_obj: dict, sendstockwarning=True):
+        if wc_obj["status"] == "checkout-draft":
+            self.log("Did not create order because order is a draft!")
+            return None
+
         db_obj = models.Order.objects.create(
             woocommerceid=wc_obj["id"],
             status=wc_obj["status"],
