@@ -1,5 +1,5 @@
 Django==5.2.2
-requests==2.32.3
+requests==2.32.4
 WooCommerce==3.0.0
 reportlab==4.4.1
 rich==14.0.0
