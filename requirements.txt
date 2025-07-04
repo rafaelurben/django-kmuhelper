@@ -1,4 +1,4 @@
-Django==5.2.3
+Django==5.2.4
 requests==2.32.4
 WooCommerce==3.0.0
 reportlab==4.4.2
