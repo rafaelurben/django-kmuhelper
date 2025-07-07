@@ -1,5 +1,5 @@
 {% extends "admin/index.html" %}
-{% load static %}
+{% load static kmuhelper_tags %}
 
 {% block extrastyle %}
     {{ block.super }}
@@ -12,12 +12,7 @@
 
     {% if not app_label %}
         {% if perms.kmuhelper %}
-            <div style="margin-bottom: 32px;">
-                <a href="{% url 'kmuhelper:home' %}" id="kmuhelperbutton">
-                    <i class="fa-fw fa-solid fa-box-open"></i>
-                    <h2>KMUHelper öffnen</h2>
-                </a>
-            </div>
+            {% kmuhelper_open_kmuhelper_button %}
         {% endif %}
     {% endif %}
 

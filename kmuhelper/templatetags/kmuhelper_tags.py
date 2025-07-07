@@ -1,6 +1,6 @@
 from django import template
 from django.apps import apps
-from django.urls import reverse
+from django.urls import reverse, NoReverseMatch
 from django.utils.html import format_html
 
 from kmuhelper import settings, constants
@@ -56,6 +56,22 @@ def kmuhelper_branding(context, module_name=None):
         url_module,
         module.get("title"),
     )
+
+
+@register.inclusion_tag("admin/kmuhelper/_includes/open_kmuhelper_button.html", takes_context=False)
+def kmuhelper_open_kmuhelper_button():
+    """
+    Renders a button to open the KMUHelper app, if the view is available.
+    """
+    try:
+        return {
+            "home_url": reverse("kmuhelper:home"),
+            "show": True
+        }
+    except NoReverseMatch:
+        return {
+            "show": False
+        }
 
 
 @register.inclusion_tag("kmuhelper/_includes/pagechooser.html", takes_context=False)
