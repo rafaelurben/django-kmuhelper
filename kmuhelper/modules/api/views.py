@@ -54,15 +54,15 @@ def orders_unpaid(request):
     """Get sums of currently unpaid orders."""
 
     sum_unsent = (
-        Order.objects.filter(is_paid=False, is_shipped=False).aggregate(
-            models.Sum("cached_sum")
-        )["cached_sum__sum"]
+        Order.objects.filter(is_paid=False, is_shipped=False).aggregate(models.Sum("cached_sum"))[
+            "cached_sum__sum"
+        ]
         or 0
     )
     sum_sent = (
-        Order.objects.filter(is_paid=False, is_shipped=True).aggregate(
-            models.Sum("cached_sum")
-        )["cached_sum__sum"]
+        Order.objects.filter(is_paid=False, is_shipped=True).aggregate(models.Sum("cached_sum"))[
+            "cached_sum__sum"
+        ]
         or 0
     )
 

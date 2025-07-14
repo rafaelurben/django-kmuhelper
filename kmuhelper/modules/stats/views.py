@@ -26,9 +26,7 @@ def stats(request):
 @require_all_kmuhelper_perms(["view_product", "view_order"])
 def stats_products_price(request):
     if not Order.objects.exists():
-        return render_error(
-            request, status=400, message=_("Keine Bestellungen vorhanden.")
-        )
+        return render_error(request, status=400, message=_("Keine Bestellungen vorhanden."))
 
     try:
         from_date = timezone.make_aware(
@@ -90,9 +88,7 @@ def stats_products_price(request):
 @require_all_kmuhelper_perms(["view_product", "view_order"])
 def best_products(request):
     if not Order.objects.exists():
-        return render_error(
-            request, status=400, message=_("Keine Bestellungen vorhanden.")
-        )
+        return render_error(request, status=400, message=_("Keine Bestellungen vorhanden."))
 
     try:
         if "max" in request.GET:

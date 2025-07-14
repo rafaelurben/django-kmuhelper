@@ -13,9 +13,7 @@ SETTINGS = {
     "wc-url": {
         "typ": "url",
         "name": _("Shop-URL"),
-        "description": _(
-            "URL des WooCommerce-/Wordpress-Shops, z.B. https://shop.example.com"
-        ),
+        "description": _("URL des WooCommerce-/Wordpress-Shops, z.B. https://shop.example.com"),
     },
     "wc-webhook-secret": {
         "typ": "char",

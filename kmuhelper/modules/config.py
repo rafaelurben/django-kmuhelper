@@ -126,18 +126,14 @@ def get_module_home_context(request, module_name):
                 "has_module_perms": True,
                 "models": [
                     {
-                        "add_url": reverse(
-                            f"admin:kmuhelper_{model._meta.model_name}_add"
-                        ),
+                        "add_url": reverse(f"admin:kmuhelper_{model._meta.model_name}_add"),
                         "admin_url": reverse(
                             f"admin:kmuhelper_{model._meta.model_name}_changelist"
                         ),
                         "name": model._meta.verbose_name_plural,
                         "object_name": model._meta.model_name,
                         "perms": {
-                            "add": request.user.has_perm(
-                                f"kmuhelper.add_{model._meta.model_name}"
-                            ),
+                            "add": request.user.has_perm(f"kmuhelper.add_{model._meta.model_name}"),
                             "change": request.user.has_perm(
                                 f"kmuhelper.change_{model._meta.model_name}"
                             ),
@@ -154,12 +150,8 @@ def get_module_home_context(request, module_name):
                     }
                     for model in get_models(module.get("model_names"))
                     if (
-                        request.user.has_perm(
-                            f"kmuhelper.view_{model._meta.model_name}"
-                        )
-                        or request.user.has_perm(
-                            f"kmuhelper.change_{model._meta.model_name}"
-                        )
+                        request.user.has_perm(f"kmuhelper.view_{model._meta.model_name}")
+                        or request.user.has_perm(f"kmuhelper.change_{model._meta.model_name}")
                     )
                 ],
                 "name": module.get("title"),
@@ -176,8 +168,6 @@ def user_has_module_permission(user, module_name):
     module = MODULES.get(module_name)
     for model_name in module.get("model_names"):
         name = model_name.lower()
-        if user.has_perm(f"kmuhelper.view_{name}") or user.has_perm(
-            f"kmuhelper.change_{name}"
-        ):
+        if user.has_perm(f"kmuhelper.view_{name}") or user.has_perm(f"kmuhelper.change_{name}"):
             return True
     return False

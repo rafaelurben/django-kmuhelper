@@ -81,9 +81,7 @@ def email_view(request, obj):
     token_received = request.GET.get("token", None)
     token_stored = str(obj.token)
 
-    if request.user.has_perm("kmuhelper.view_email") or (
-        token_received == token_stored
-    ):
+    if request.user.has_perm("kmuhelper.view_email") or (token_received == token_stored):
         if obj.is_valid():
             return HttpResponse(obj.render(online=True))
 
@@ -121,20 +119,14 @@ def attachment_view(request, obj):
     token_received = request.GET.get("token", None)
     token_stored = str(obj.token)
 
-    if request.user.has_perm("kmuhelper.download_attachment") or (
-        token_received == token_stored
-    ):
+    if request.user.has_perm("kmuhelper.download_attachment") or (token_received == token_stored):
         download = "download" in request.GET
         try:
             return obj.get_file_response(download=download)
         except FileNotFoundError:
-            messages.error(
-                request, gettext("Diese Datei ist leider nicht mehr verfügbar!")
-            )
+            messages.error(request, gettext("Diese Datei ist leider nicht mehr verfügbar!"))
     else:
-        messages.error(
-            request, gettext("Du hast keinen Zugriff auf diesen E-Mail-Anhang!")
-        )
+        messages.error(request, gettext("Du hast keinen Zugriff auf diesen E-Mail-Anhang!"))
 
     return render_error(request)
 
@@ -183,9 +175,7 @@ def emailtemplate_use(request, obj):
 
     mail = obj.create_mail(data)
 
-    messages.success(
-        request, _("Vorlage wurde mit folgenden Daten ausgefüllt: %s") % data
-    )
+    messages.success(request, _("Vorlage wurde mit folgenden Daten ausgefüllt: %s") % data)
     return redirect(reverse("admin:kmuhelper_email_change", args=[mail.pk]))
 
 

@@ -16,9 +16,7 @@ class WCCustomersAPI(WC_BaseObjectAPI):
         db_obj.first_name = wc_obj["first_name"]
         db_obj.last_name = wc_obj["last_name"]
         db_obj.company = (
-            wc_obj["billing"]["company"]
-            if wc_obj["billing"]["company"]
-            else db_obj.company
+            wc_obj["billing"]["company"] if wc_obj["billing"]["company"] else db_obj.company
         )
         db_obj.username = wc_obj["username"]
         db_obj.avatar_url = wc_obj["avatar_url"]

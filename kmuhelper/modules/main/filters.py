@@ -68,8 +68,6 @@ class ProductTypeFilter(admin.SimpleListFilter):
                     title = f"{title} (-)"
             yield {
                 "selected": self.value() == str(lookup),
-                "query_string": changelist.get_query_string(
-                    {self.parameter_name: lookup}
-                ),
+                "query_string": changelist.get_query_string({self.parameter_name: lookup}),
                 "display": title,
             }

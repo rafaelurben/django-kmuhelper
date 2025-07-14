@@ -22,9 +22,7 @@ def confirm_action(action_message):
         def wrap(request, *args, **kwargs):
             if request.method == "POST":
                 return function(request, *args, **kwargs)
-            return render(
-                request, "admin/kmuhelper/_confirm.html", {"action": action_message}
-            )
+            return render(request, "admin/kmuhelper/_confirm.html", {"action": action_message})
 
         return wrap
 
@@ -65,9 +63,7 @@ def require_object(
 
             return redirect(
                 redirect_url
-                or reverse(
-                    f"admin:{model._meta.app_label}_{model._meta.model_name}_changelist"
-                )
+                or reverse(f"admin:{model._meta.app_label}_{model._meta.model_name}_changelist")
             )
 
         return wrap
@@ -75,9 +71,7 @@ def require_object(
     return decorator
 
 
-def require_all_kmuhelper_perms(
-    permissions_required=[], login_url=None, raise_exception=True
-):
+def require_all_kmuhelper_perms(permissions_required=[], login_url=None, raise_exception=True):
     """
     Decorator for views that checks whether a user has ALL of the given kmuhelper
     permission enabled, redirecting to the log-in page if necessary.

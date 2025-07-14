@@ -31,13 +31,7 @@ def python_version():
 
 
 def _package_versions_pypi(project, testpypi=False, allow_prereleases=False):
-    url = (
-        "https://"
-        + ("test." if testpypi else "")
-        + "pypi.org/pypi/"
-        + project
-        + "/json"
-    )
+    url = f"https://{'test.' if testpypi else ''}pypi.org/pypi/{project}/json"
     versions = requests.get(url).json()["releases"].keys()
     versions_safe = []
     for v in versions:

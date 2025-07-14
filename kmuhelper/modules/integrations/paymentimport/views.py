@@ -35,17 +35,13 @@ def process(request, obj):
     if request.method == "POST":
         obj.is_processed = True
         obj.save()
-        messages.success(
-            request, gettext("Zahlungsimport wurde als verarbeitet markiert!")
-        )
+        messages.success(request, gettext("Zahlungsimport wurde als verarbeitet markiert!"))
         return redirect(reverse("admin:kmuhelper_paymentimport_changelist"))
 
     if obj.is_processed:
         messages.warning(
             request,
-            gettext(
-                "Achtung! Dieser Zahlungsimport wurde bereits als verarbeitet markiert!"
-            ),
+            gettext("Achtung! Dieser Zahlungsimport wurde bereits als verarbeitet markiert!"),
         )
 
     ctx = obj.get_processing_context()

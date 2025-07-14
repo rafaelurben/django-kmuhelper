@@ -61,10 +61,7 @@ def default_payment_recipient():
 
 # noinspection DuplicatedCode
 def default_contact_person():
-    if (
-        ContactPerson.objects.exists()
-        and ContactPerson.objects.filter(is_default=True).exists()
-    ):
+    if ContactPerson.objects.exists() and ContactPerson.objects.filter(is_default=True).exists():
         return ContactPerson.objects.filter(is_default=True).first().pk
     # Fallback if there isn't a default contact person: Use the most recently used one
     if Order.objects.exists():
@@ -293,9 +290,7 @@ class OrderItem(CustomModel):
 
     # Calculated data
     def calc_subtotal(self):
-        return runden(
-            self.product_price * self.quantity * ((100 - self.discount) / 100)
-        )
+        return runden(self.product_price * self.quantity * ((100 - self.discount) / 100))
 
     def calc_subtotal_without_discount(self):
         return runden(self.product_price * self.quantity)
@@ -373,9 +368,7 @@ class Order(CustomModel, AddressModelMixin, WooCommerceModelMixin):
         validators=[
             RegexValidator(
                 r"^([0-9]+(\.[0-9]+)?:[0-9]+;)*0:[0-9]+$",
-                _(
-                    "Bitte benutze folgendes Format: 'p:d;p:d' - p = Skonto in %; d = Tage"
-                ),
+                _("Bitte benutze folgendes Format: 'p:d;p:d' - p = Skonto in %; d = Tage"),
             )
         ],
         max_length=25,
@@ -417,9 +410,7 @@ class Order(CustomModel, AddressModelMixin, WooCommerceModelMixin):
         validators=[
             RegexValidator(
                 r"^[A-Z0-9\.]{8,}$",
-                _(
-                    "Erlaubte Zeichen: Grossbuchstaben, Zahlen und Punkte. Länge: 8-35 Zeichen"
-                ),
+                _("Erlaubte Zeichen: Grossbuchstaben, Zahlen und Punkte. Länge: 8-35 Zeichen"),
             )
         ],
         help_text=_("Trackingnummer ohne Leerzeichen. (optional)"),
@@ -600,19 +591,7 @@ class Order(CustomModel, AddressModelMixin, WooCommerceModelMixin):
 
         a = self.pkfill(22) + "0000"
         b = a + str(modulo10rekursiv(a))
-        c = (
-            b[0:2]
-            + " "
-            + b[2:7]
-            + " "
-            + b[7:12]
-            + " "
-            + b[12:17]
-            + " "
-            + b[17:22]
-            + " "
-            + b[22:27]
-        )
+        c = b[0:2] + " " + b[2:7] + " " + b[7:12] + " " + b[12:17] + " " + b[17:22] + " " + b[22:27]
         return c
 
     def get_qr_billing_information(self):
@@ -709,15 +688,8 @@ class Order(CustomModel, AddressModelMixin, WooCommerceModelMixin):
     @admin.display(description=_("Name"))
     def name(self):
         return (
-            (
-                f"{self.date.year}-"
-                if self.date and not isinstance(self.date, str)
-                else ""
-            )
-            + (
-                f"{self.pkfill()}"
-                + (f" (WC#{self.woocommerceid})" if self.woocommerceid else "")
-            )
+            (f"{self.date.year}-" if self.date and not isinstance(self.date, str) else "")
+            + (f"{self.pkfill()}" + (f" (WC#{self.woocommerceid})" if self.woocommerceid else ""))
             + " - "
             + self.display_customer()
         )
@@ -832,12 +804,8 @@ class Order(CustomModel, AddressModelMixin, WooCommerceModelMixin):
                     "id": str(self.pk),
                     "onlineid": str(self.woocommerceid),
                 }
-                subject = (
-                    gettext("Ihre Bestellung Nr. %(id)s (Online #%(onlineid)s)") % ctx
-                )
-                filename = (
-                    gettext("Rechnung Nr. %(id)s (Online #%(onlineid)s).pdf") % ctx
-                )
+                subject = gettext("Ihre Bestellung Nr. %(id)s (Online #%(onlineid)s)") % ctx
+                filename = gettext("Rechnung Nr. %(id)s (Online #%(onlineid)s).pdf") % ctx
             else:
                 ctx = {
                     "id": str(self.pk),
@@ -851,9 +819,7 @@ class Order(CustomModel, AddressModelMixin, WooCommerceModelMixin):
                 language=lang,
                 html_template="order_invoice.html",
                 html_context=context,
-                notes=gettext(
-                    "Diese E-Mail wurde automatisch aus Bestellung #%d generiert."
-                )
+                notes=gettext("Diese E-Mail wurde automatisch aus Bestellung #%d generiert.")
                 % self.pk,
             )
 
@@ -883,12 +849,8 @@ class Order(CustomModel, AddressModelMixin, WooCommerceModelMixin):
                     "id": str(self.pk),
                     "onlineid": str(self.woocommerceid),
                 }
-                subject = (
-                    gettext("Ihre Lieferung Nr. %(id)s (Online #%(onlineid)s)") % ctx
-                )
-                filename = (
-                    gettext("Lieferschein Nr. %(id)s (Online #%(onlineid)s).pdf") % ctx
-                )
+                subject = gettext("Ihre Lieferung Nr. %(id)s (Online #%(onlineid)s)") % ctx
+                filename = gettext("Lieferschein Nr. %(id)s (Online #%(onlineid)s).pdf") % ctx
             else:
                 ctx = {
                     "id": str(self.pk),
@@ -902,18 +864,14 @@ class Order(CustomModel, AddressModelMixin, WooCommerceModelMixin):
                 language=lang,
                 html_template="order_supply.html",
                 html_context=context,
-                notes=gettext(
-                    "Diese E-Mail wurde automatisch aus Bestellung #%d generiert."
-                )
+                notes=gettext("Diese E-Mail wurde automatisch aus Bestellung #%d generiert.")
                 % self.pk,
             )
 
             self.email_link_shipped.add_attachments(
                 Attachment.objects.create_from_binary(
                     filename=filename,
-                    content=PDFOrder(
-                        self, _("Lieferschein"), is_delivery_note=True
-                    ).get_pdf(),
+                    content=PDFOrder(self, _("Lieferschein"), is_delivery_note=True).get_pdf(),
                 )
             )
 
@@ -943,9 +901,7 @@ class Order(CustomModel, AddressModelMixin, WooCommerceModelMixin):
                     html_context={
                         "warnings": warnings,
                     },
-                    notes=gettext(
-                        "Diese E-Mail wurde automatisch aus Bestellung #%d generiert."
-                    )
+                    notes=gettext("Diese E-Mail wurde automatisch aus Bestellung #%d generiert.")
                     % self.pk,
                 )
 
@@ -992,9 +948,7 @@ class Order(CustomModel, AddressModelMixin, WooCommerceModelMixin):
         )
         for lp in self.products.through.objects.filter(order=self):
             if lp.linked_product is not None:
-                new.products.add(
-                    lp.linked_product, through_defaults={"quantity": lp.quantity}
-                )
+                new.products.add(lp.linked_product, through_defaults={"quantity": lp.quantity})
         new.save()
         return new
 
@@ -1224,8 +1178,7 @@ class Customer(CustomModel, AddressModelMixin, WooCommerceModelMixin):
                 language=lang,
                 html_template="customer_registered.html",
                 html_context=context,
-                notes=gettext("Diese E-Mail wurde automatisch aus Kunde #%d generiert.")
-                % self.pk,
+                notes=gettext("Diese E-Mail wurde automatisch aus Kunde #%d generiert.") % self.pk,
             )
 
             self.save()
@@ -1381,9 +1334,9 @@ class Supply(CustomModel):
 
     @admin.display(description=_("Anzahl Produkte"))
     def total_quantity(self):
-        return self.products.through.objects.filter(supply=self).aggregate(
-            models.Sum("quantity")
-        )["quantity__sum"]
+        return self.products.through.objects.filter(supply=self).aggregate(models.Sum("quantity"))[
+            "quantity__sum"
+        ]
 
     def add_to_stock(self):
         if not self.is_added_to_stock:
@@ -1688,9 +1641,9 @@ class Product(CustomModel, WooCommerceModelMixin):
 
     def get_reserved_stock(self):
         return (
-            OrderItem.objects.filter(
-                order__is_shipped=False, linked_product_id=self.pk
-            ).aggregate(models.Sum("quantity"))["quantity__sum"]
+            OrderItem.objects.filter(order__is_shipped=False, linked_product_id=self.pk).aggregate(
+                models.Sum("quantity")
+            )["quantity__sum"]
             or 0
         )
 
@@ -1777,9 +1730,7 @@ class Product(CustomModel, WooCommerceModelMixin):
 class ProductCategory(CustomModel, WooCommerceModelMixin):
     """Model representing a category for products"""
 
-    WOOCOMMERCE_URL_FORMAT = (
-        "{}/wp-admin/term.php?taxonomy=product_cat&tag_ID={}&post_type=product"
-    )
+    WOOCOMMERCE_URL_FORMAT = "{}/wp-admin/term.php?taxonomy=product_cat&tag_ID={}&post_type=product"
     PKFILL_WIDTH = 4
 
     name = models.CharField(
@@ -2106,17 +2057,14 @@ class PaymentReceiver(CustomModel):
                 _("Im Modus 'Ohne Referenz' muss eine gültige IBAN angegeben werden!")
             )
         if self.swiss_uid and not self.has_valid_uid():
-            errors["swiss_uid"] = ValidationError(
-                _("Die UID ist ungültig!"), code="invalid"
-            )
+            errors["swiss_uid"] = ValidationError(_("Die UID ist ungültig!"), code="invalid")
         if self.logourl:
             try:
                 response = requests.get(self.logourl)
                 response.raise_for_status()
             except requests.RequestException as e:
                 errors["logourl"] = ValidationError(
-                    _("An dieser Adresse konnte kein Bild abgerufen werden! Fehler: %s")
-                    % str(e)
+                    _("An dieser Adresse konnte kein Bild abgerufen werden! Fehler: %s") % str(e)
                 )
 
         if errors:

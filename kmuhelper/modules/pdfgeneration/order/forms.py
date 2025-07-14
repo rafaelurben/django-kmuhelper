@@ -56,7 +56,9 @@ class PDFOrderForm(forms.Form):
     )
 
     def get_url_params(self):
-        result = f"?custom&preset={self.cleaned_data['preset']}&language={self.cleaned_data['language']}"
+        result = (
+            f"?custom&preset={self.cleaned_data['preset']}&language={self.cleaned_data['language']}"
+        )
         if self.cleaned_data["do_print"]:
             result += "&print"
         if self.cleaned_data["do_download"]:

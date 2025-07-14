@@ -38,6 +38,4 @@ class PDFGenerator:
         return self.__buffer
 
     def get_response(self, as_attachment=False, filename="document.pdf"):
-        return FileResponse(
-            self.get_pdf(), as_attachment=as_attachment, filename=filename
-        )
+        return FileResponse(self.get_pdf(), as_attachment=as_attachment, filename=filename)

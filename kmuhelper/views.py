@@ -59,9 +59,7 @@ def home(request):
                 "subtitle": _("Einstellungen für den KMUHelper"),
                 "url": reverse("kmuhelper:settings"),
                 "icon": "fa-solid fa-cog",
-                "hidden": not config.user_has_module_permission(
-                    request.user, "settings"
-                ),
+                "hidden": not config.user_has_module_permission(request.user, "settings"),
             },
             {
                 "title": _("Handbuch"),
@@ -71,9 +69,7 @@ def home(request):
             },
         ],
     ]
-    return render(
-        request, "kmuhelper/home.html", {"has_permission": True, "grid": grid}
-    )
+    return render(request, "kmuhelper/home.html", {"has_permission": True, "grid": grid})
 
 
 def manifest(request):

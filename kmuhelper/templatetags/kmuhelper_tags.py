@@ -64,14 +64,9 @@ def kmuhelper_open_kmuhelper_button():
     Renders a button to open the KMUHelper app, if the view is available.
     """
     try:
-        return {
-            "home_url": reverse("kmuhelper:home"),
-            "show": True
-        }
+        return {"home_url": reverse("kmuhelper:home"), "show": True}
     except NoReverseMatch:
-        return {
-            "show": False
-        }
+        return {"show": False}
 
 
 @register.inclusion_tag("kmuhelper/_includes/pagechooser.html", takes_context=False)
@@ -87,9 +82,7 @@ def kmuhelper_pagechooser_from_model_list(model_list):
                 "title": getattr(dbmodel, "ADMIN_TITLE", "") or model["name"],
                 "url": model["admin_url"],
                 "subtitle": getattr(dbmodel, "ADMIN_DESCRIPTION", ""),
-                "icon": getattr(
-                    dbmodel, "ADMIN_ICON", "fa-solid fa-circle-exclamation"
-                ),
+                "icon": getattr(dbmodel, "ADMIN_ICON", "fa-solid fa-circle-exclamation"),
             }
         )
     return {"griddata": [griddata], "pagechooserclass": "smallboxes"}

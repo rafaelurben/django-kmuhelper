@@ -135,9 +135,7 @@ class WCOrdersAPI(WC_BaseObjectAPI):
                 order=db_obj,
                 name=item["method_title"],
                 price=float(item["total"]),
-                vat_rate=(
-                    constants.VAT_RATE_DEFAULT if float(item["total_tax"]) > 0 else 0
-                ),
+                vat_rate=(constants.VAT_RATE_DEFAULT if float(item["total_tax"]) > 0 else 0),
             )
 
         for item in wc_obj["fee_lines"]:
@@ -145,9 +143,7 @@ class WCOrdersAPI(WC_BaseObjectAPI):
                 order=db_obj,
                 name=item["name"],
                 price=float(item["total"]),
-                vat_rate=(
-                    constants.VAT_RATE_DEFAULT if float(item["total_tax"]) > 0 else 0
-                ),
+                vat_rate=(constants.VAT_RATE_DEFAULT if float(item["total_tax"]) > 0 else 0),
             )
 
         for item in wc_obj["coupon_lines"]:
@@ -155,9 +151,7 @@ class WCOrdersAPI(WC_BaseObjectAPI):
                 order=db_obj,
                 name=_("Coupon: %(code)s") % {"code": item["code"]},
                 price=-float(item["discount"]),
-                vat_rate=(
-                    constants.VAT_RATE_DEFAULT if float(item["discount_tax"]) > 0 else 0
-                ),
+                vat_rate=(constants.VAT_RATE_DEFAULT if float(item["discount_tax"]) > 0 else 0),
             )
 
         db_obj.save()

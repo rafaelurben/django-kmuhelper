@@ -10,9 +10,7 @@ class Command(BaseCommand):
     help = "Imports customers from a .csv file."
 
     def add_arguments(self, parser):
-        parser.add_argument(
-            "filepath", help="Absolute filepath to the .csv file", type=str
-        )
+        parser.add_argument("filepath", help="Absolute filepath to the .csv file", type=str)
 
     def handle(self, *args, **options):
         self.stdout.write(self.style.SUCCESS("Import gestartet!"))
@@ -49,9 +47,7 @@ class Command(BaseCommand):
                 objid = row[index_id] if index_id is not None else None
 
                 email = row[index_email] if index_email is not None else ""
-                first_name = (
-                    row[index_first_name] if index_first_name is not None else ""
-                )
+                first_name = row[index_first_name] if index_first_name is not None else ""
                 last_name = row[index_last_name] if index_last_name is not None else ""
                 language = (
                     (
@@ -62,12 +58,10 @@ class Command(BaseCommand):
                             if row[index_language].upper() in ["F", "FR", "FRANZÖSISCH"]
                             else (
                                 "it"
-                                if row[index_language].upper()
-                                in ["I", "IT", "ITALIENISCH"]
+                                if row[index_language].upper() in ["I", "IT", "ITALIENISCH"]
                                 else (
                                     "en"
-                                    if row[index_language].upper()
-                                    in ["E", "EN", "ENGLISCH"]
+                                    if row[index_language].upper() in ["E", "EN", "ENGLISCH"]
                                     else "de"
                                 )
                             )
@@ -89,12 +83,8 @@ class Command(BaseCommand):
                 website = row[index_web] if index_web is not None else ""
 
                 oldwithid = Customer.objects.filter(pk=objid).exists()
-                oldwithemail = (
-                    Customer.objects.filter(email=email).exists() if email else False
-                )
-                oldwithidandemail = Customer.objects.filter(
-                    pk=objid, email=email
-                ).exists()
+                oldwithemail = Customer.objects.filter(email=email).exists() if email else False
+                oldwithidandemail = Customer.objects.filter(pk=objid, email=email).exists()
 
                 self.stdout.write(self.style.SUCCESS(""))
 

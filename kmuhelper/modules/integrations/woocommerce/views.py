@@ -64,9 +64,7 @@ def wc_auth_key(request):
         if saveddomain == storedomain:
             settings.set_secret_db_setting("wc-url", storeurl)
             settings.set_secret_db_setting("wc-consumer_key", data["consumer_key"])
-            settings.set_secret_db_setting(
-                "wc-consumer_secret", data["consumer_secret"]
-            )
+            settings.set_secret_db_setting("wc-consumer_secret", data["consumer_secret"])
 
             return JsonResponse({"success": True}, status=200)
 
@@ -99,7 +97,9 @@ def wc_auth_start(request):
 
     if not request.is_secure():
         # WooCommerce only accepts callback_urls via SSL
-        messages.error(request, gettext("Setting up WooCommerce is only possible when connected via HTTPS!"))
+        messages.error(
+            request, gettext("Setting up WooCommerce is only possible when connected via HTTPS!")
+        )
         return redirect(reverse("kmuhelper:wc-settings"))
 
     params = {
@@ -125,9 +125,7 @@ def wc_auth_clear(request):
     if not wc_url or not wc_consumer_key:
         messages.warning(request, gettext("WooCommerce was not set up."))
     else:
-        api_keys_url = (
-            wc_url + "/wp-admin/admin.php?page=wc-settings&tab=advanced&section=keys"
-        )
+        api_keys_url = wc_url + "/wp-admin/admin.php?page=wc-settings&tab=advanced&section=keys"
 
         settings.set_secret_db_setting("wc-url", "")
         settings.set_secret_db_setting("wc-consumer_key", "")
@@ -172,9 +170,7 @@ def wc_webhooks_status(request):
         current_host = "https://" + request.get_host()
 
         if current_host.endswith("localhost"):
-            messages.error(
-                request, gettext("Cannot check webhooks while on localhost!")
-            )
+            messages.error(request, gettext("Cannot check webhooks while on localhost!"))
             return redirect(reverse("kmuhelper:wc-settings"))
 
         delivery_url = current_host + reverse("kmuhelper:wc-webhooks")
@@ -281,9 +277,7 @@ def wc_update_category(request, obj):
     else:
         try:
             WCProductCategoriesAPI().update_object_from_api(obj)
-            messages.success(
-                request, gettext("Product category '%s' updated!") % str(obj)
-            )
+            messages.success(request, gettext("Product category '%s' updated!") % str(obj))
         except Exception as e:
             messages.error(
                 request,
@@ -321,9 +315,7 @@ def wc_webhooks(request):
     if request.method != "POST":
         messages.warning(
             request,
-            gettext(
-                "This endpoint is only available via POST and not meant to be used by humans!"
-            ),
+            gettext("This endpoint is only available via POST and not meant to be used by humans!"),
         )
         return render_error(request, status=405)
 
@@ -340,10 +332,7 @@ def wc_webhooks(request):
 
     # 3. Check request source
 
-    if not (
-        "x-wc-webhook-topic" in request.headers
-        and "x-wc-webhook-source" in request.headers
-    ):
+    if not ("x-wc-webhook-topic" in request.headers and "x-wc-webhook-source" in request.headers):
         log(
             "[orange_red1]WooCommerce Webhook accepted but ignored (no usable headers)![/] "
             + "(Might be a test request from WooCommerce)"
@@ -357,22 +346,15 @@ def wc_webhooks(request):
         )
 
     stored_url = (
-        settings.get_secret_db_setting("wc-url")
-        .lstrip("https://")
-        .lstrip("http://")
-        .split("/")[0]
+        settings.get_secret_db_setting("wc-url").lstrip("https://").lstrip("http://").split("/")[0]
     )
     received_url = (
-        request.headers["x-wc-webhook-source"]
-        .lstrip("https://")
-        .lstrip("http://")
-        .split("/")[0]
+        request.headers["x-wc-webhook-source"].lstrip("https://").lstrip("http://").split("/")[0]
     )
 
     if not received_url == stored_url:
         log(
-            "[orange_red1]WooCommerce Webhook rejected (unexpected domain)![/] "
-            + "- Expected:",
+            "[orange_red1]WooCommerce Webhook rejected (unexpected domain)![/] " + "- Expected:",
             stored_url,
             "- Received:",
             received_url,
@@ -400,17 +382,14 @@ def wc_webhooks(request):
                 status=403,
             )
 
-        received_signature = bytes(
-            request.headers["x-wc-webhook-signature"], encoding="utf-8"
-        )
+        received_signature = bytes(request.headers["x-wc-webhook-signature"], encoding="utf-8")
         expected_signature = base64_hmac_sha256(str(secret).encode(), request.body)
 
         if received_signature == expected_signature:
             log("[green]WooCommerce Webhook signature check successful![/]")
         else:
             log(
-                "[orange_red1]WooCommerce Webhook signature check failed![/] "
-                + "- Expected:",
+                "[orange_red1]WooCommerce Webhook signature check failed![/] " + "- Expected:",
                 expected_signature,
                 "- Received:",
                 received_signature,
@@ -424,9 +403,7 @@ def wc_webhooks(request):
             )
 
     else:
-        log(
-            "[orange_red1]Skipped WooCommerce Webhook signature check (no secret available)![/]"
-        )
+        log("[orange_red1]Skipped WooCommerce Webhook signature check (no secret available)![/]")
 
     # Do stuff
 
@@ -492,13 +469,9 @@ def wc_webhooks(request):
                 "ERROR: WooCommerce Webhook with unknown topic received!",
                 f"Delivery ID: {delivery_id}\nTopic: {topic}\nObject: {str(wc_obj)}",
             )
-            return JsonResponse(
-                {"accepted": False, "message": "Topic not supported!"}, status=400
-            )
+            return JsonResponse({"accepted": False, "message": "Topic not supported!"}, status=400)
 
-    return JsonResponse(
-        {"accepted": True, "message": "Successfully processed!"}, status=200
-    )
+    return JsonResponse({"accepted": True, "message": "Successfully processed!"}, status=200)
 
 
 # Settings

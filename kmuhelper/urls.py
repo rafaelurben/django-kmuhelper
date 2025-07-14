@@ -11,9 +11,7 @@ urlpatterns = [
     path("manifest.json", views.manifest, name="manifest"),
     path("login", views.login, name="login"),
     # Developing tools
-    path(
-        "_templatetest/<path:templatename>", views._templatetest, name="_templatetest"
-    ),
+    path("_templatetest/<path:templatename>", views._templatetest, name="_templatetest"),
     # Main modules
     path("main/", include("kmuhelper.modules.main.urls")),
     path("api/", include("kmuhelper.modules.api.urls")),

@@ -80,9 +80,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="paymentreceiver",
             name="internal_name",
-            field=models.CharField(
-                default="", max_length=250, verbose_name="Interne Bezeichnung"
-            ),
+            field=models.CharField(default="", max_length=250, verbose_name="Interne Bezeichnung"),
         ),
         migrations.AlterField(
             model_name="paymentreceiver",
