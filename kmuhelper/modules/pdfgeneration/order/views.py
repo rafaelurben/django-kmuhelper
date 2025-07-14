@@ -59,9 +59,7 @@ def order_view_pdf(request, obj):
                 )
             case "delivery-note":
                 title = title or _("Lieferschein")
-                pdf = PDFOrder(
-                    order, title, text=text, lang=lang, is_delivery_note=True
-                )
+                pdf = PDFOrder(order, title, text=text, lang=lang, is_delivery_note=True)
             case "payment-reminder":
                 days_to_pay = 14
                 title = title or _("Zahlungserinnerung")
@@ -95,9 +93,11 @@ def order_view_pdf(request, obj):
             user_id=request.user.id,
             queryset=[obj],
             action_flag=CHANGE,
-            change_message=f'PDF "{title}" aus Vorlage "{preset}" erstellt mit Text: "{text}"'
-            if text
-            else f'PDF "{title}" aus Vorlage "{preset}" erstellt.',
+            change_message=(
+                f'PDF "{title}" aus Vorlage "{preset}" erstellt mit Text: "{text}"'
+                if text
+                else f'PDF "{title}" aus Vorlage "{preset}" erstellt.'
+            ),
         )
 
         filename = f"{str(order)} - {title}.pdf"

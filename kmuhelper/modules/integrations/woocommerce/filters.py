@@ -15,9 +15,7 @@ class WooCommerceStateFilter(admin.SimpleListFilter):
     parameter_name = "wc_state"
 
     def __init__(self, request, params, model, model_admin):
-        super(WooCommerceStateFilter, self).__init__(
-            request, params, model, model_admin
-        )
+        super(WooCommerceStateFilter, self).__init__(request, params, model, model_admin)
 
     def lookups(self, request, model_admin):
         return [
@@ -61,9 +59,7 @@ class WooCommerceStateFilter(admin.SimpleListFilter):
                     title = f"{title} (-)"
             yield {
                 "selected": self.value() == str(lookup),
-                "query_string": changelist.get_query_string(
-                    {self.parameter_name: lookup}
-                ),
+                "query_string": changelist.get_query_string({self.parameter_name: lookup}),
                 "display": title,
             }
 

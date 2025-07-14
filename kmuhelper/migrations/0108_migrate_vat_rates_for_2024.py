@@ -36,9 +36,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(
-            migrate_vat_rates_forward, migrate_vat_rates_reverse, elidable=True
-        ),
+        migrations.RunPython(migrate_vat_rates_forward, migrate_vat_rates_reverse, elidable=True),
         migrations.AlterField(
             model_name="fee",
             name="vat_rate",

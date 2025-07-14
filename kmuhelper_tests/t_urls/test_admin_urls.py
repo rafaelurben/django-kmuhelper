@@ -130,9 +130,7 @@ class AdminURLTests(TestCase):
 
     def test_model_admin_order(self):
         obj = Order.objects.create(
-            contact_person=ContactPerson.objects.create(
-                name="X X", phone="x", email="x@x"
-            ),
+            contact_person=ContactPerson.objects.create(name="X X", phone="x", email="x@x"),
             payment_receiver=PaymentReceiver.objects.create(),
         )
         self._test_model_admins("order", obj.pk)

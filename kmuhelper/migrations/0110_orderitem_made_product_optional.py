@@ -11,9 +11,7 @@ def copy_values(apps, schema_editor):
     db_alias = schema_editor.connection.alias
     OrderItem = apps.get_model("kmuhelper", "OrderItem")
 
-    for item in (
-        OrderItem.objects.using(db_alias).all().select_related("order", "product")
-    ):
+    for item in OrderItem.objects.using(db_alias).all().select_related("order", "product"):
         item.article_number = item.product.article_number
         item.quantity_description = item.product.quantity_description
         item.name = item.product.name
@@ -21,9 +19,7 @@ def copy_values(apps, schema_editor):
 
         if (
             item.order.date
-            < timezone.make_aware(
-                datetime(year=2024, month=1, day=1, hour=0, minute=0, second=0)
-            )
+            < timezone.make_aware(datetime(year=2024, month=1, day=1, hour=0, minute=0, second=0))
             and item.vat_rate in VAT_RATE_REVERSE_MIGRATION
         ):
             item.vat_rate = VAT_RATE_REVERSE_MIGRATION[item.vat_rate]
@@ -40,9 +36,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="orderitem",
             name="article_number",
-            field=models.CharField(
-                default="", max_length=25, verbose_name="Artikelnummer"
-            ),
+            field=models.CharField(default="", max_length=25, verbose_name="Artikelnummer"),
             preserve_default=False,
         ),
         migrations.AddField(

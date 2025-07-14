@@ -117,9 +117,7 @@ class _PDFOrderPriceTable(Table):
 
         vat_dict = dict(order.get_vat_dict())
         for vat_rate in vat_dict:
-            if float(vat_rate) == 0.0 and not settings.get_file_setting(
-                "PRINT_ZERO_VAT", False
-            ):
+            if float(vat_rate) == 0.0 and not settings.get_file_setting("PRINT_ZERO_VAT", False):
                 # Skip zero VAT if not explicitly enabled
                 continue
 
@@ -138,9 +136,7 @@ class _PDFOrderPriceTable(Table):
         # Total & Payment conditions
 
         if show_payment_conditions is None:
-            show_payment_conditions = settings.get_db_setting(
-                "print-payment-conditions", False
-            )
+            show_payment_conditions = settings.get_db_setting("print-payment-conditions", False)
 
         if show_payment_conditions and order.payment_conditions:
             totaltext = (
@@ -341,9 +337,7 @@ class _PDFOrderHeader(Flowable):
         if recv.website:
             data.append((pgettext("Text on generated order PDF", "Web"), recv.website))
         if recv.swiss_uid:
-            data.append(
-                (pgettext("Text on generated order PDF", "MwSt."), recv.swiss_uid)
-            )
+            data.append((pgettext("Text on generated order PDF", "MwSt."), recv.swiss_uid))
 
         if len(data) > 4:
             # Only return last 4 elements if 4 lines are exceeded
@@ -558,9 +552,7 @@ class PDFOrder(PDFGenerator):
 
         # Header
         self.elements = [
-            _PDFOrderHeader.from_order(
-                order, title=title, is_delivery_note=is_delivery_note
-            ),
+            _PDFOrderHeader.from_order(order, title=title, is_delivery_note=is_delivery_note),
             Spacer(1, 48 * mm),
         ]
 
@@ -580,7 +572,5 @@ class PDFOrder(PDFGenerator):
                     order, lang=lang, show_payment_conditions=show_payment_conditions
                 ),
                 Spacer(1, 65 * mm),
-                TopPadder(
-                    QRInvoiceFlowable.from_order(order, add_cut_lines=add_cut_lines)
-                ),
+                TopPadder(QRInvoiceFlowable.from_order(order, add_cut_lines=add_cut_lines)),
             ]

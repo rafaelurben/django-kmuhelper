@@ -57,21 +57,15 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "description",
-                    models.TextField(
-                        blank=True, default="", verbose_name="Beschreibung"
-                    ),
+                    models.TextField(blank=True, default="", verbose_name="Beschreibung"),
                 ),
                 (
                     "autocreated",
-                    models.BooleanField(
-                        default=False, verbose_name="Automatisch generiert"
-                    ),
+                    models.BooleanField(default=False, verbose_name="Automatisch generiert"),
                 ),
                 (
                     "token",
-                    models.UUIDField(
-                        default=uuid.uuid4, editable=False, verbose_name="Token"
-                    ),
+                    models.UUIDField(default=uuid.uuid4, editable=False, verbose_name="Token"),
                 ),
                 (
                     "time_created",
@@ -144,9 +138,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "email",
-                    models.EmailField(
-                        blank=True, max_length=254, verbose_name="E-Mail Adresse"
-                    ),
+                    models.EmailField(blank=True, max_length=254, verbose_name="E-Mail Adresse"),
                 ),
                 (
                     "first_name",
@@ -162,9 +154,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "company",
-                    models.CharField(
-                        blank=True, default="", max_length=250, verbose_name="Firma"
-                    ),
+                    models.CharField(blank=True, default="", max_length=250, verbose_name="Firma"),
                 ),
                 (
                     "username",
@@ -177,9 +167,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "avatar_url",
-                    models.URLField(
-                        blank=True, editable=False, verbose_name="Avatar URL"
-                    ),
+                    models.URLField(blank=True, editable=False, verbose_name="Avatar URL"),
                 ),
                 (
                     "language",
@@ -209,9 +197,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "addr_billing_company",
-                    models.CharField(
-                        blank=True, default="", max_length=250, verbose_name="Firma"
-                    ),
+                    models.CharField(blank=True, default="", max_length=250, verbose_name="Firma"),
                 ),
                 (
                     "addr_billing_address_1",
@@ -235,15 +221,11 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "addr_billing_city",
-                    models.CharField(
-                        blank=True, default="", max_length=250, verbose_name="Ort"
-                    ),
+                    models.CharField(blank=True, default="", max_length=250, verbose_name="Ort"),
                 ),
                 (
                     "addr_billing_state",
-                    models.CharField(
-                        blank=True, default="", max_length=50, verbose_name="Kanton"
-                    ),
+                    models.CharField(blank=True, default="", max_length=50, verbose_name="Kanton"),
                 ),
                 (
                     "addr_billing_postcode",
@@ -265,15 +247,11 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "addr_billing_email",
-                    models.EmailField(
-                        blank=True, max_length=254, verbose_name="E-Mail-Adresse"
-                    ),
+                    models.EmailField(blank=True, max_length=254, verbose_name="E-Mail-Adresse"),
                 ),
                 (
                     "addr_billing_phone",
-                    models.CharField(
-                        blank=True, default="", max_length=50, verbose_name="Telefon"
-                    ),
+                    models.CharField(blank=True, default="", max_length=50, verbose_name="Telefon"),
                 ),
                 (
                     "addr_shipping_first_name",
@@ -289,9 +267,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "addr_shipping_company",
-                    models.CharField(
-                        blank=True, default="", max_length=250, verbose_name="Firma"
-                    ),
+                    models.CharField(blank=True, default="", max_length=250, verbose_name="Firma"),
                 ),
                 (
                     "addr_shipping_address_1",
@@ -313,15 +289,11 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "addr_shipping_city",
-                    models.CharField(
-                        blank=True, default="", max_length=250, verbose_name="Ort"
-                    ),
+                    models.CharField(blank=True, default="", max_length=250, verbose_name="Ort"),
                 ),
                 (
                     "addr_shipping_state",
-                    models.CharField(
-                        blank=True, default="", max_length=50, verbose_name="Kanton"
-                    ),
+                    models.CharField(blank=True, default="", max_length=50, verbose_name="Kanton"),
                 ),
                 (
                     "addr_shipping_postcode",
@@ -343,15 +315,11 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "addr_shipping_email",
-                    models.EmailField(
-                        blank=True, max_length=254, verbose_name="E-Mail-Adresse"
-                    ),
+                    models.EmailField(blank=True, max_length=254, verbose_name="E-Mail-Adresse"),
                 ),
                 (
                     "addr_shipping_phone",
-                    models.CharField(
-                        blank=True, default="", max_length=50, verbose_name="Telefon"
-                    ),
+                    models.CharField(blank=True, default="", max_length=50, verbose_name="Telefon"),
                 ),
                 (
                     "website",
@@ -465,9 +433,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "token",
-                    models.UUIDField(
-                        default=uuid.uuid4, editable=False, verbose_name="Token"
-                    ),
+                    models.UUIDField(default=uuid.uuid4, editable=False, verbose_name="Token"),
                 ),
                 (
                     "time_created",
@@ -519,9 +485,7 @@ class Migration(migrations.Migration):
                 ("title", models.CharField(max_length=50, verbose_name="Titel")),
                 (
                     "description",
-                    models.TextField(
-                        blank=True, default="", verbose_name="Beschreibung"
-                    ),
+                    models.TextField(blank=True, default="", verbose_name="Beschreibung"),
                 ),
                 (
                     "mail_to",
@@ -544,9 +508,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "mail_context",
-                    models.JSONField(
-                        blank=True, default=dict, null=True, verbose_name="Daten"
-                    ),
+                    models.JSONField(blank=True, default=dict, null=True, verbose_name="Daten"),
                 ),
             ],
             options={
@@ -619,9 +581,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "date",
-                    models.DateTimeField(
-                        default=django.utils.timezone.now, verbose_name="Datum"
-                    ),
+                    models.DateTimeField(default=django.utils.timezone.now, verbose_name="Datum"),
                 ),
                 (
                     "invoice_date",
@@ -760,9 +720,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "addr_billing_company",
-                    models.CharField(
-                        blank=True, default="", max_length=250, verbose_name="Firma"
-                    ),
+                    models.CharField(blank=True, default="", max_length=250, verbose_name="Firma"),
                 ),
                 (
                     "addr_billing_address_1",
@@ -786,15 +744,11 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "addr_billing_city",
-                    models.CharField(
-                        blank=True, default="", max_length=250, verbose_name="Ort"
-                    ),
+                    models.CharField(blank=True, default="", max_length=250, verbose_name="Ort"),
                 ),
                 (
                     "addr_billing_state",
-                    models.CharField(
-                        blank=True, default="", max_length=50, verbose_name="Kanton"
-                    ),
+                    models.CharField(blank=True, default="", max_length=50, verbose_name="Kanton"),
                 ),
                 (
                     "addr_billing_postcode",
@@ -816,15 +770,11 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "addr_billing_email",
-                    models.EmailField(
-                        blank=True, max_length=254, verbose_name="E-Mail-Adresse"
-                    ),
+                    models.EmailField(blank=True, max_length=254, verbose_name="E-Mail-Adresse"),
                 ),
                 (
                     "addr_billing_phone",
-                    models.CharField(
-                        blank=True, default="", max_length=50, verbose_name="Telefon"
-                    ),
+                    models.CharField(blank=True, default="", max_length=50, verbose_name="Telefon"),
                 ),
                 (
                     "addr_shipping_first_name",
@@ -840,9 +790,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "addr_shipping_company",
-                    models.CharField(
-                        blank=True, default="", max_length=250, verbose_name="Firma"
-                    ),
+                    models.CharField(blank=True, default="", max_length=250, verbose_name="Firma"),
                 ),
                 (
                     "addr_shipping_address_1",
@@ -864,15 +812,11 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "addr_shipping_city",
-                    models.CharField(
-                        blank=True, default="", max_length=250, verbose_name="Ort"
-                    ),
+                    models.CharField(blank=True, default="", max_length=250, verbose_name="Ort"),
                 ),
                 (
                     "addr_shipping_state",
-                    models.CharField(
-                        blank=True, default="", max_length=50, verbose_name="Kanton"
-                    ),
+                    models.CharField(blank=True, default="", max_length=50, verbose_name="Kanton"),
                 ),
                 (
                     "addr_shipping_postcode",
@@ -894,15 +838,11 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "addr_shipping_email",
-                    models.EmailField(
-                        blank=True, max_length=254, verbose_name="E-Mail-Adresse"
-                    ),
+                    models.EmailField(blank=True, max_length=254, verbose_name="E-Mail-Adresse"),
                 ),
                 (
                     "addr_shipping_phone",
-                    models.CharField(
-                        blank=True, default="", max_length=50, verbose_name="Telefon"
-                    ),
+                    models.CharField(blank=True, default="", max_length=50, verbose_name="Telefon"),
                 ),
                 (
                     "cached_sum",
@@ -910,9 +850,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "pdf_title",
-                    models.CharField(
-                        blank=True, default="", editable=False, max_length=32
-                    ),
+                    models.CharField(blank=True, default="", editable=False, max_length=32),
                 ),
                 ("pdf_text", models.TextField(blank=True, default="", editable=False)),
                 (
@@ -975,9 +913,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "time_imported",
-                    models.DateTimeField(
-                        auto_now_add=True, verbose_name="Importiert am"
-                    ),
+                    models.DateTimeField(auto_now_add=True, verbose_name="Importiert am"),
                 ),
                 (
                     "is_processed",
@@ -1199,9 +1135,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "selling_price",
-                    models.FloatField(
-                        default=0, verbose_name="Normalpreis in CHF (exkl. MwSt)"
-                    ),
+                    models.FloatField(default=0, verbose_name="Normalpreis in CHF (exkl. MwSt)"),
                 ),
                 (
                     "vat_rate",
@@ -1238,15 +1172,11 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "sale_from",
-                    models.DateTimeField(
-                        blank=True, null=True, verbose_name="In Aktion von"
-                    ),
+                    models.DateTimeField(blank=True, null=True, verbose_name="In Aktion von"),
                 ),
                 (
                     "sale_to",
-                    models.DateTimeField(
-                        blank=True, null=True, verbose_name="In Aktion bis"
-                    ),
+                    models.DateTimeField(blank=True, null=True, verbose_name="In Aktion bis"),
                 ),
                 (
                     "sale_price",
@@ -1319,9 +1249,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "name",
-                    models.CharField(
-                        default="", max_length=250, verbose_name="Bezeichnung"
-                    ),
+                    models.CharField(default="", max_length=250, verbose_name="Bezeichnung"),
                 ),
                 (
                     "description",
@@ -1399,9 +1327,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "content_int",
-                    models.IntegerField(
-                        blank=True, default=0, verbose_name="Inhalt (Zahl)"
-                    ),
+                    models.IntegerField(blank=True, default=0, verbose_name="Inhalt (Zahl)"),
                 ),
                 (
                     "content_float",
@@ -1411,9 +1337,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "content_url",
-                    models.URLField(
-                        blank=True, default="", verbose_name="Inhalt (Url)"
-                    ),
+                    models.URLField(blank=True, default="", verbose_name="Inhalt (Url)"),
                 ),
                 (
                     "content_email",
@@ -1494,9 +1418,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "content_int",
-                    models.IntegerField(
-                        blank=True, default=0, verbose_name="Inhalt (Zahl)"
-                    ),
+                    models.IntegerField(blank=True, default=0, verbose_name="Inhalt (Zahl)"),
                 ),
                 (
                     "content_float",
@@ -1506,9 +1428,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "content_url",
-                    models.URLField(
-                        blank=True, default="", verbose_name="Inhalt (Url)"
-                    ),
+                    models.URLField(blank=True, default="", verbose_name="Inhalt (Url)"),
                 ),
                 (
                     "content_email",
@@ -1550,15 +1470,11 @@ class Migration(migrations.Migration):
                 ("website", models.URLField(blank=True, verbose_name="Webseite")),
                 (
                     "phone",
-                    models.CharField(
-                        blank=True, default="", max_length=50, verbose_name="Telefon"
-                    ),
+                    models.CharField(blank=True, default="", max_length=50, verbose_name="Telefon"),
                 ),
                 (
                     "email",
-                    models.EmailField(
-                        blank=True, max_length=254, null=True, verbose_name="E-Mail"
-                    ),
+                    models.EmailField(blank=True, max_length=254, null=True, verbose_name="E-Mail"),
                 ),
                 (
                     "address",
@@ -1570,15 +1486,11 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "contact_person_name",
-                    models.CharField(
-                        blank=True, default="", max_length=250, verbose_name="Name"
-                    ),
+                    models.CharField(blank=True, default="", max_length=250, verbose_name="Name"),
                 ),
                 (
                     "contact_person_phone",
-                    models.CharField(
-                        blank=True, default="", max_length=50, verbose_name="Telefon"
-                    ),
+                    models.CharField(blank=True, default="", max_length=50, verbose_name="Telefon"),
                 ),
                 (
                     "contact_person_email",
@@ -1667,9 +1579,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="supply",
             name="products",
-            field=models.ManyToManyField(
-                through="kmuhelper.SupplyItem", to="kmuhelper.product"
-            ),
+            field=models.ManyToManyField(through="kmuhelper.SupplyItem", to="kmuhelper.product"),
         ),
         migrations.AddField(
             model_name="supply",
@@ -1751,9 +1661,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "ref",
-                    models.CharField(
-                        default="", max_length=50, verbose_name="Referenznummer"
-                    ),
+                    models.CharField(default="", max_length=50, verbose_name="Referenznummer"),
                 ),
                 (
                     "additionalref",
@@ -1823,9 +1731,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "product_price",
-                    models.FloatField(
-                        default=0.0, verbose_name="Produktpreis (exkl. MwSt)"
-                    ),
+                    models.FloatField(default=0.0, verbose_name="Produktpreis (exkl. MwSt)"),
                 ),
                 (
                     "order",
@@ -1937,9 +1843,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="order",
             name="fees",
-            field=models.ManyToManyField(
-                through="kmuhelper.OrderFee", to="kmuhelper.fee"
-            ),
+            field=models.ManyToManyField(through="kmuhelper.OrderFee", to="kmuhelper.fee"),
         ),
         migrations.AddField(
             model_name="order",
@@ -1954,9 +1858,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="order",
             name="products",
-            field=models.ManyToManyField(
-                through="kmuhelper.OrderItem", to="kmuhelper.product"
-            ),
+            field=models.ManyToManyField(through="kmuhelper.OrderItem", to="kmuhelper.product"),
         ),
         migrations.CreateModel(
             name="Note",
@@ -1978,9 +1880,7 @@ class Migration(migrations.Migration):
                 ("done", models.BooleanField(default=False, verbose_name="Erledigt?")),
                 (
                     "priority",
-                    models.IntegerField(
-                        blank=True, default=0, verbose_name="Priorität"
-                    ),
+                    models.IntegerField(blank=True, default=0, verbose_name="Priorität"),
                 ),
                 (
                     "created_at",
@@ -2096,15 +1996,11 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "key",
-                    models.UUIDField(
-                        default=uuid.uuid4, unique=True, verbose_name="Key"
-                    ),
+                    models.UUIDField(default=uuid.uuid4, unique=True, verbose_name="Key"),
                 ),
                 (
                     "name",
-                    models.CharField(
-                        blank=True, default="", max_length=100, verbose_name="Name"
-                    ),
+                    models.CharField(blank=True, default="", max_length=100, verbose_name="Name"),
                 ),
                 (
                     "read",
@@ -2112,9 +2008,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "write",
-                    models.BooleanField(
-                        default=False, verbose_name="Write permission?"
-                    ),
+                    models.BooleanField(default=False, verbose_name="Write permission?"),
                 ),
                 (
                     "user",

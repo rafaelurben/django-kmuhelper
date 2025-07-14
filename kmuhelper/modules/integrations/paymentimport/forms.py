@@ -58,8 +58,7 @@ class CamtUploadForm(forms.Form):
                 self.cleaned_data["camt.053.001.04"] = msg
             except ParseError as error:
                 raise forms.ValidationError(
-                    gettext("Die Datei kann nicht verarbeitet werden! Fehler: %s")
-                    % error
+                    gettext("Die Datei kann nicht verarbeitet werden! Fehler: %s") % error
                 )
 
         return file
@@ -79,14 +78,10 @@ class CamtUploadForm(forms.Form):
                     )
                     % msgid,
                 )
-                return redirect(
-                    reverse("admin:kmuhelper_paymentimport_change", args=[dbentry.pk])
-                )
+                return redirect(reverse("admin:kmuhelper_paymentimport_change", args=[dbentry.pk]))
 
             creationdate = msg.find("./{*}GrpHdr/{*}CreDtTm").text
-            log(
-                f"Start processing - Message id: '{msgid}' - Creation date: '{creationdate}'"
-            )
+            log(f"Start processing - Message id: '{msgid}' - Creation date: '{creationdate}'")
 
             dbentry = PaymentImport.objects.create(
                 data_msgid=msgid,
@@ -100,9 +95,7 @@ class CamtUploadForm(forms.Form):
                 valuedate = entry.find("./{*}ValDt/{*}Dt")
                 valuedate = valuedate.text if valuedate is not None else None
 
-                log(
-                    f"- Entry {iscredit} Description: '{description}' Value: {valuedate}"
-                )
+                log(f"- Entry {iscredit} Description: '{description}' Value: {valuedate}")
                 if iscredit:
                     if description in ["Sammelbuchung QR-Rechnung mit QR-Referenz"]:
                         for txdtls in entry.findall("./{*}NtryDtls/{*}TxDtls"):
@@ -112,20 +105,14 @@ class CamtUploadForm(forms.Form):
 
                             name = txdtls.find("./{*}RltdPties/{*}Dbtr/{*}Nm")
                             name = name.text if name is not None else ""
-                            iban = txdtls.find(
-                                "./{*}RltdPties/{*}DbtrAcct/{*}Id/{*}IBAN"
-                            )
+                            iban = txdtls.find("./{*}RltdPties/{*}DbtrAcct/{*}Id/{*}IBAN")
                             iban = iban.text if iban is not None else ""
-                            ref = txdtls.find(
-                                "./{*}RmtInf/{*}Strd/{*}CdtrRefInf/{*}Ref"
-                            )
+                            ref = txdtls.find("./{*}RmtInf/{*}Strd/{*}CdtrRefInf/{*}Ref")
                             ref = ref.text if ref is not None else ""
                             addref = txdtls.find("./{*}RmtInf/{*}Strd/{*}AddtlRmtInf")
                             addref = addref.text if addref is not None else ""
 
-                            log(
-                                f"- - {amount} {currency} '{name}' '{iban}' {ref} '{addref}'"
-                            )
+                            log(f"- - {amount} {currency} '{name}' '{iban}' {ref} '{addref}'")
 
                             PaymentImportEntry.objects.create(
                                 parent=dbentry,
@@ -139,9 +126,7 @@ class CamtUploadForm(forms.Form):
                             )
 
             messages.success(request, _("Zahlungsimport wurde erfolgreich importiert!"))
-            return redirect(
-                reverse("admin:kmuhelper_paymentimport_process", args=[dbentry.pk])
-            )
+            return redirect(reverse("admin:kmuhelper_paymentimport_process", args=[dbentry.pk]))
         except AttributeError as error:
             log(error)
             messages.error(

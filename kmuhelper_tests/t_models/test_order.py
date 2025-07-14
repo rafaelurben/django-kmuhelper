@@ -17,9 +17,7 @@ from kmuhelper.utils import runden
 
 class OrderTest(TestCase):
     def setUp(self):
-        self.contact_person = ContactPerson.objects.create(
-            name="X X", phone="x", email="x@x"
-        )
+        self.contact_person = ContactPerson.objects.create(name="X X", phone="x", email="x@x")
         self.payment_receiver = PaymentReceiver.objects.create()
 
     # Order total
@@ -46,9 +44,7 @@ class OrderTest(TestCase):
         total_expected = 10.5 + (5.05 * 2) + 9.95
         total_calculated = obj.calc_total()
 
-        self.assertAlmostEqual(
-            total_expected, total_calculated, 2, "Order total does not match!"
-        )
+        self.assertAlmostEqual(total_expected, total_calculated, 2, "Order total does not match!")
 
     def test_order_total__with_vat(self):
         obj = Order.objects.create(
@@ -58,12 +54,8 @@ class OrderTest(TestCase):
 
         obj.products.through.objects.bulk_create(
             [
-                OrderItem(
-                    product_price=10.5, quantity=1, vat_rate=VAT_RATE_DEFAULT, order=obj
-                ),
-                OrderItem(
-                    product_price=5.05, quantity=2, vat_rate=VAT_RATE_DEFAULT, order=obj
-                ),
+                OrderItem(product_price=10.5, quantity=1, vat_rate=VAT_RATE_DEFAULT, order=obj),
+                OrderItem(product_price=5.05, quantity=2, vat_rate=VAT_RATE_DEFAULT, order=obj),
             ]
         )
 
@@ -75,9 +67,7 @@ class OrderTest(TestCase):
 
         VAT_FACTOR = 1 + 0.01 * VAT_RATE_DEFAULT
         total_expected = runden(
-            runden(10.5 * VAT_FACTOR)
-            + runden(5.05 * 2 * VAT_FACTOR)
-            + runden(9.95 * VAT_FACTOR)
+            runden(10.5 * VAT_FACTOR) + runden(5.05 * 2 * VAT_FACTOR) + runden(9.95 * VAT_FACTOR)
         )
         total_calculated = obj.calc_total()
 

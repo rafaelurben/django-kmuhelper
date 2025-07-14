@@ -26,9 +26,7 @@ def settings_form(request):
     else:
         form = SettingsForm()
 
-    return render(
-        request, "kmuhelper/settings/form.html", {"form": form, "has_permission": True}
-    )
+    return render(request, "kmuhelper/settings/form.html", {"form": form, "has_permission": True})
 
 
 @login_required(login_url=reverse_lazy("admin:login"))

@@ -40,9 +40,7 @@ class AdminLogEntryAdmin(CustomModelAdmin):
             return None
         try:
             url = reverse(
-                "admin:{}_{}_changelist".format(
-                    obj.content_type.app_label, obj.content_type.model
-                )
+                "admin:{}_{}_changelist".format(obj.content_type.app_label, obj.content_type.model)
             )
             return format_html(
                 '<a href="{}">{}</a>',

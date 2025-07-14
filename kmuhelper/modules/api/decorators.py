@@ -37,10 +37,7 @@ def protected(read=False, write=False, perms_required=[]):
             perms = [f"kmuhelper.{perm}" if not "." in perm else perm for perm in perms]
 
             if apikey:
-                if (
-                    _is_valid_uuid(apikey)
-                    and ApiKey.objects.filter(key=apikey).exists()
-                ):
+                if _is_valid_uuid(apikey) and ApiKey.objects.filter(key=apikey).exists():
                     keyobject = ApiKey.objects.get(key=apikey)
 
                     if (

@@ -76,11 +76,7 @@ class WC_BaseObjectAPI(WC_BaseAPI, abc.ABC):
         wc_obj = response.json()
 
         if response.status_code != 200:
-            self.log(
-                "[red]Object update failed with status code {}".format(
-                    response.status_code
-                )
-            )
+            self.log("[red]Object update failed with status code {}".format(response.status_code))
             if "code" in wc_obj and wc_obj["code"] == self.WC_OBJ_DOES_NOT_EXIST_CODE:
                 self.log(
                     "[red]Object does not exist in WooCommerce![/] Link removed.",
@@ -100,9 +96,7 @@ class WC_BaseObjectAPI(WC_BaseAPI, abc.ABC):
             return False
         return True
 
-    def bulk_update_objects_from_api(
-        self, db_queryset, request=None
-    ) -> (int, int, int):
+    def bulk_update_objects_from_api(self, db_queryset, request=None) -> (int, int, int):
         """Update every object in a queryset"""
 
         success_count = 0
@@ -120,9 +114,7 @@ class WC_BaseObjectAPI(WC_BaseAPI, abc.ABC):
                         self.update_object_from_api(db_obj)
                         success_count += 1
                     except Exception as e:
-                        self.log(
-                            "[red]Object update failed with exception {}".format(e)
-                        )
+                        self.log("[red]Object update failed with exception {}".format(e))
                         error_count += 1
                 else:
                     warning_count += 1
@@ -136,9 +128,7 @@ class WC_BaseObjectAPI(WC_BaseAPI, abc.ABC):
 
         return success_count, warning_count, error_count
 
-    def _post_process_imported_objects(
-        self, db_obj__wc_obj_list: list[tuple[object, dict]]
-    ):
+    def _post_process_imported_objects(self, db_obj__wc_obj_list: list[tuple[object, dict]]):
         """Post-process imported objects after all objects have been imported"""
         ...
 
@@ -164,16 +154,12 @@ class WC_BaseObjectAPI(WC_BaseAPI, abc.ABC):
             progress.update(task_prepare, advance=1)
             progress.stop_task(task_prepare)
 
-            task_download = progress.add_task(
-                self.LOG_PREFIX + " [green]Downloading objects..."
-            )
+            task_download = progress.add_task(self.LOG_PREFIX + " [green]Downloading objects...")
 
             r = self.wcapi.get(f"{self.WC_API_BASEURL}?exclude={excludeids}")
             wc_objects += r.json()
 
-            progress.update(
-                task_download, advance=1, total=int(r.headers["X-WP-TotalPages"])
-            )
+            progress.update(task_download, advance=1, total=int(r.headers["X-WP-TotalPages"]))
 
             for page in range(2, int(r.headers["X-WP-TotalPages"]) + 1):
                 wc_objects += self.wcapi.get(

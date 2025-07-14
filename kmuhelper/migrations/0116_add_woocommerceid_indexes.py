@@ -11,26 +11,18 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddIndex(
             model_name="customer",
-            index=models.Index(
-                fields=["woocommerceid"], name="kmuhelper_c_woocomm_b647fd_idx"
-            ),
+            index=models.Index(fields=["woocommerceid"], name="kmuhelper_c_woocomm_b647fd_idx"),
         ),
         migrations.AddIndex(
             model_name="order",
-            index=models.Index(
-                fields=["woocommerceid"], name="kmuhelper_o_woocomm_8db6e3_idx"
-            ),
+            index=models.Index(fields=["woocommerceid"], name="kmuhelper_o_woocomm_8db6e3_idx"),
         ),
         migrations.AddIndex(
             model_name="product",
-            index=models.Index(
-                fields=["woocommerceid"], name="kmuhelper_p_woocomm_34f8a4_idx"
-            ),
+            index=models.Index(fields=["woocommerceid"], name="kmuhelper_p_woocomm_34f8a4_idx"),
         ),
         migrations.AddIndex(
             model_name="productcategory",
-            index=models.Index(
-                fields=["woocommerceid"], name="kmuhelper_p_woocomm_a29e62_idx"
-            ),
+            index=models.Index(fields=["woocommerceid"], name="kmuhelper_p_woocomm_a29e62_idx"),
         ),
     ]

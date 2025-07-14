@@ -23,7 +23,7 @@ def send_pdf(
     pdf: BytesIO,
     pdf_filename: str = "file.pdf",
     context: dict = {},
-    **kwargs
+    **kwargs,
 ):
     html_message = get_template("kmuhelper/emails/" + template_name).render(context)
 

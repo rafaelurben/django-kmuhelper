@@ -54,7 +54,5 @@ class Migration(migrations.Migration):
                 verbose_name="Standard?",
             ),
         ),
-        migrations.RunPython(
-            set_initial_defaults, migrations.RunPython.noop, elidable=True
-        ),
+        migrations.RunPython(set_initial_defaults, migrations.RunPython.noop, elidable=True),
     ]

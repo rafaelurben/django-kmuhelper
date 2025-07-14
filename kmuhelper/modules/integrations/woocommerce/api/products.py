@@ -54,9 +54,7 @@ class WCProductsAPI(WC_BaseObjectAPI):
         db_obj.name = parse_product_name(wc_obj)
         db_obj.short_description = preparestring(wc_obj["short_description"])
         db_obj.description = preparestring(wc_obj["description"])
-        db_obj.image_url = (
-            (wc_obj["images"][0]["src"]) if len(wc_obj["images"]) > 0 else ""
-        )
+        db_obj.image_url = (wc_obj["images"][0]["src"]) if len(wc_obj["images"]) > 0 else ""
 
         if wc_obj["date_on_sale_from_gmt"]:
             db_obj.sale_from = wc_obj["date_on_sale_from_gmt"] + "+00:00"
@@ -72,9 +70,7 @@ class WCProductsAPI(WC_BaseObjectAPI):
             db_obj.sale_price = None
 
         # Update dependencies
-        self._update_dependencies(
-            db_obj, wc_obj, force_update_variations=is_create_event
-        )
+        self._update_dependencies(db_obj, wc_obj, force_update_variations=is_create_event)
 
         db_obj.save()
         self.log("Product updated:", str(db_obj))
@@ -94,14 +90,10 @@ class WCProductsAPI(WC_BaseObjectAPI):
             selling_price=selling_price,
             image_url=(wc_obj["images"][0]["src"]) if len(wc_obj["images"]) > 0 else "",
             sale_from=(
-                wc_obj["date_on_sale_from_gmt"] + "+00:00"
-                if wc_obj["date_on_sale_from"]
-                else None
+                wc_obj["date_on_sale_from_gmt"] + "+00:00" if wc_obj["date_on_sale_from"] else None
             ),
             sale_to=(
-                wc_obj["date_on_sale_to_gmt"] + "+00:00"
-                if wc_obj["date_on_sale_to"]
-                else None
+                wc_obj["date_on_sale_to_gmt"] + "+00:00" if wc_obj["date_on_sale_to"] else None
             ),
             sale_price=(float(wc_obj["sale_price"]) if wc_obj["sale_price"] else None),
         )
@@ -141,11 +133,7 @@ class WCProductsAPI(WC_BaseObjectAPI):
                 db_variation, created = models.Product.objects.get_or_create(
                     woocommerceid=variation_id
                 )
-                if (
-                    created
-                    or db_variation.woocommerce_deleted
-                    or force_update_variations
-                ):
+                if created or db_variation.woocommerce_deleted or force_update_variations:
                     self.log("Updating variation...")
                     self.update_object_from_api(db_variation)
             # Delete orphan variations
@@ -164,9 +152,9 @@ class WCProductsAPI(WC_BaseObjectAPI):
             )
             if created:
                 self.log("Created linked category! Updating...")
-                product_categories.WCProductCategoriesAPI(
-                    self.wcapi
-                ).update_object_from_api(db_category)
+                product_categories.WCProductCategoriesAPI(self.wcapi).update_object_from_api(
+                    db_category
+                )
             db_obj.categories.add(db_category, through_defaults=None)
 
     def delete_object_from_data(self, db_obj, wc_obj: dict):

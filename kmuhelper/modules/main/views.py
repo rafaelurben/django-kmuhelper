@@ -29,8 +29,7 @@ def supplier_assign(request, obj):
     else:
         messages.success(
             request,
-            _("Lieferant wurde %d neuen Produkten einem neuen Produkt zugeordnet!")
-            % count,
+            _("Lieferant wurde %d neuen Produkten einem neuen Produkt zugeordnet!") % count,
         )
     return redirect(reverse("admin:kmuhelper_supplier_change", args=[obj.pk]))
 
@@ -91,9 +90,7 @@ def duplicate_order(request, obj):
     new = obj.duplicate()
     messages.success(
         request,
-        _(
-            "Bestellung wurde dupliziert! HINWEIS: Dies ist die neu erstellte Bestellung!"
-        ),
+        _("Bestellung wurde dupliziert! HINWEIS: Dies ist die neu erstellte Bestellung!"),
     )
     return redirect(reverse("admin:kmuhelper_order_change", args=[new.pk]))
 

@@ -12,9 +12,7 @@ from kmuhelper.modules.main.models import ContactPerson, PaymentReceiver, Order,
 
 def _create_test_order():
     return Order.objects.create(
-        contact_person=ContactPerson.objects.create(
-            name="X X", phone="x", email="x@x"
-        ),
+        contact_person=ContactPerson.objects.create(name="X X", phone="x", email="x@x"),
         payment_receiver=PaymentReceiver.objects.create(),
     )
 
@@ -35,14 +33,18 @@ class CustomAdminURLTests(TestCase):
         """Checks that a GET request to a given URL is successful and returns the request object."""
         response = self.client.get(url)
         print(f"Checking GET to {url}")
-        self.assertEqual(response.status_code, code, msg=f"Couldn't GET {url}, code {response.status_code}")
+        self.assertEqual(
+            response.status_code, code, msg=f"Couldn't GET {url}, code {response.status_code}"
+        )
         return response
 
     def _require_successful_post(self, url, data=None, code=200):
         """Checks that a POST request to a given URL is successful and returns the request object."""
         response = self.client.post(url, data)
         print(f"Checking POST to {url}")
-        self.assertEqual(response.status_code, code, msg=f"Couldn't POST {url}, code {response.status_code}")
+        self.assertEqual(
+            response.status_code, code, msg=f"Couldn't POST {url}, code {response.status_code}"
+        )
         return response
 
     # Custom order admin URLs
@@ -78,7 +80,11 @@ class CustomAdminURLTests(TestCase):
     def test_admin_order_pdf(self):
         obj = _create_test_order()
         response = self._require_successful_get(f"/admin/kmuhelper/order/{obj.pk}/pdf/")
-        self.assertEqual(response.headers.get('Content-Type'), 'application/pdf', msg="Returned wrong content type!")
+        self.assertEqual(
+            response.headers.get("Content-Type"),
+            "application/pdf",
+            msg="Returned wrong content type!",
+        )
 
     def test_admin_order_pdf_form(self):
         obj = _create_test_order()

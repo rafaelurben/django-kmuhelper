@@ -266,9 +266,7 @@ class QRInvoiceFlowable(Flowable):
         def _write_creditor_and_reference(_t, small=False):
             _write_title(
                 _t,
-                pgettext(
-                    "QR-Invoice / fixed by SIX group style guide", "Konto / Zahlbar an"
-                ),
+                pgettext("QR-Invoice / fixed by SIX group style guide", "Konto / Zahlbar an"),
                 small=small,
             )
             _t.textLine(recv.qriban if recv.mode == "QRR" else recv.iban)
@@ -299,20 +297,18 @@ class QRInvoiceFlowable(Flowable):
         def _write_debitor(_t, small=False):
             _write_title(
                 _t,
-                pgettext(
-                    "QR-Invoice / fixed by SIX group style guide",
-                    "Zahlbar durch (Name/Adresse)",
-                )
-                if empty_addr
-                else pgettext(
-                    "QR-Invoice / fixed by SIX group style guide", "Zahlbar durch"
+                (
+                    pgettext(
+                        "QR-Invoice / fixed by SIX group style guide",
+                        "Zahlbar durch (Name/Adresse)",
+                    )
+                    if empty_addr
+                    else pgettext("QR-Invoice / fixed by SIX group style guide", "Zahlbar durch")
                 ),
                 small=small,
             )
             if not empty_addr:
-                _t.textLine(
-                    addr["company"] or f"{addr['first_name']} {addr['last_name']}"
-                )
+                _t.textLine(addr["company"] or f"{addr['first_name']} {addr['last_name']}")
                 _t.textLine(addr["address_1"])
                 _t.textLine(f"{addr['postcode']} {addr['city']}")
 
@@ -373,7 +369,7 @@ class QRInvoiceFlowable(Flowable):
                 5 * mm,
                 (59 if recv.mode == "QRR" else 68) * mm,
                 52 * mm,
-                20 * mm
+                20 * mm,
                 # this is a very hacky solution because t.getY() returns a wrong result and cannot be used
                 # to determine the end of the text box
             )  # Leerer Zahlungspflichtiger
@@ -395,9 +391,7 @@ class QRInvoiceFlowable(Flowable):
         c.setFont("Helvetica", 10)
         c.drawString(67 * mm, 29 * mm, "CHF")
         if empty_total:
-            _draw_corners(
-                77 * mm, 31.5 * mm, 40 * mm, 15 * mm
-            )  # Leerer Betrag (Zahlteil)
+            _draw_corners(77 * mm, 31.5 * mm, 40 * mm, 15 * mm)  # Leerer Betrag (Zahlteil)
         else:
             c.drawString(87 * mm, 29 * mm, total)
 
@@ -413,7 +407,7 @@ class QRInvoiceFlowable(Flowable):
                 118 * mm,
                 (48 if recv.mode == "QRR" else 60) * mm,
                 65 * mm,
-                25 * mm
+                25 * mm,
                 # this is a very hacky solution because t.getY() returns a wrong result and cannot be used
                 # to determine the end of the text box
             )  # Leerer Zahlungspflichtiger

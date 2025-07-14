@@ -23,32 +23,24 @@ def langselect(string, lang="de"):
 def autotranslate_quantity_description(quantity_description, quantity=1):
     match quantity_description:
         case "Stück" | "Stück" | "Stück(e)":
-            return translation.npgettext(
-                "quantity description", "Stück", "Stück", quantity
-            )
+            return translation.npgettext("quantity description", "Stück", "Stück", quantity)
         case "Stunde" | "Stunden" | "Stunde(n)":
-            return translation.npgettext(
-                "quantity description", "Stunde", "Stunden", quantity
-            )
+            return translation.npgettext("quantity description", "Stunde", "Stunden", quantity)
         case "Einheit" | "Einheiten" | "Einheit(en)":
-            return translation.npgettext(
-                "quantity description", "Einheit", "Einheiten", quantity
-            )
+            return translation.npgettext("quantity description", "Einheit", "Einheiten", quantity)
         case "Flasche" | "Flaschen" | "Flasche(n)":
-            return translation.npgettext(
-                "quantity description", "Flasche", "Flaschen", quantity
-            )
+            return translation.npgettext("quantity description", "Flasche", "Flaschen", quantity)
         case "Tube" | "Tuben" | "Tube(n)":
-            return translation.npgettext(
-                "quantity description", "Tube", "Tuben", quantity
-            )
+            return translation.npgettext("quantity description", "Tube", "Tuben", quantity)
     return quantity_description
 
 
 def autotranslate_fee_name(name):
     match name:
         case "Versandkosten":
-            return "[:de]Versandkosten[:fr]Frais d'envoi[:it]Spese di spedizione[:en]Delivery costs[:]"
+            return (
+                "[:de]Versandkosten[:fr]Frais d'envoi[:it]Spese di spedizione[:en]Delivery costs[:]"
+            )
     return name
 
 

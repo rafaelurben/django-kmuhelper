@@ -46,11 +46,11 @@ class ApiKey(CustomModel):
         perms = (
             _("read")
             if self.read and not self.write
-            else _("write")
-            if self.write and not self.read
-            else _("read/write")
-            if self.read and self.write
-            else _("UNUSABLE")
+            else (
+                _("write")
+                if self.write and not self.read
+                else _("read/write") if self.read and self.write else _("UNUSABLE")
+            )
         )
         return f"{self.name} ({perms}; {self.user.username})"
 

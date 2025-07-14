@@ -103,9 +103,7 @@ class OrderAdminOrderItemInline(CustomTabularInline):
 
         link = reverse("admin:kmuhelper_product_change", args=(obj.linked_product_id,))
 
-        return format_html(
-            '<a href="{}">{}</a>', link, str(obj.linked_product_id).zfill(6)
-        )
+        return format_html('<a href="{}">{}</a>', link, str(obj.linked_product_id).zfill(6))
 
     @admin.display(description=_("Summe (exkl. MwSt)"))
     def display_subtotal(self, obj):
@@ -207,16 +205,10 @@ class OrderAdminOrderFeeInline(CustomTabularInline):
     # Permissions
 
     def has_add_permission(self, request, obj=None):
-        return (
-            False if (obj and obj.is_paid) else super().has_add_permission(request, obj)
-        )
+        return False if (obj and obj.is_paid) else super().has_add_permission(request, obj)
 
     def has_delete_permission(self, request, obj=None):
-        return (
-            False
-            if (obj and obj.is_paid)
-            else super().has_delete_permission(request, obj)
-        )
+        return False if (obj and obj.is_paid) else super().has_delete_permission(request, obj)
 
     # Custom queryset
 
@@ -246,9 +238,7 @@ class OrderAdminOrderFeeInlineImport(CustomTabularInline):
     NO_VIEW = True
 
     def has_add_permission(self, request, obj=None):
-        return (
-            False if (obj and obj.is_paid) else super().has_add_permission(request, obj)
-        )
+        return False if (obj and obj.is_paid) else super().has_add_permission(request, obj)
 
 
 @admin.register(Order)
@@ -351,27 +341,29 @@ class OrderAdmin(CustomModelAdmin):
                 (
                     _("Rechnungsadresse"),
                     {
-                        "fields": constants.ADDR_BILLING_FIELDS
-                        if obj.is_paid
-                        else constants.ADDR_BILLING_FIELDS_CATEGORIZED,
+                        "fields": (
+                            constants.ADDR_BILLING_FIELDS
+                            if obj.is_paid
+                            else constants.ADDR_BILLING_FIELDS_CATEGORIZED
+                        ),
                         "classes": ["collapse start-open addr-billing-fieldset"],
                     },
                 ),
                 (
                     _("Lieferadresse"),
                     {
-                        "fields": constants.ADDR_SHIPPING_FIELDS
-                        if obj.is_shipped
-                        else constants.ADDR_SHIPPING_FIELDS_CATEGORIZED,
+                        "fields": (
+                            constants.ADDR_SHIPPING_FIELDS
+                            if obj.is_shipped
+                            else constants.ADDR_SHIPPING_FIELDS_CATEGORIZED
+                        ),
                         "classes": ["collapse start-open addr-shipping-fieldset"],
                     },
                 ),
             ]
 
             if obj.woocommerceid:
-                fieldsets.insert(
-                    1, (_("Verknüpfungen"), {"fields": ["display_woocommerce_id"]})
-                )
+                fieldsets.insert(1, (_("Verknüpfungen"), {"fields": ["display_woocommerce_id"]}))
 
             return fieldsets
 
@@ -410,9 +402,7 @@ class OrderAdmin(CustomModelAdmin):
         fields = []
         if obj:
             if obj.is_shipped:
-                fields += [
-                    "is_shipped"
-                ] + constants.ADDR_SHIPPING_FIELDS_WITHOUT_CONTACT
+                fields += ["is_shipped"] + constants.ADDR_SHIPPING_FIELDS_WITHOUT_CONTACT
             if obj.is_paid:
                 fields += [
                     "is_paid",
@@ -658,9 +648,7 @@ class CustomerAdmin(CustomModelAdmin):
 
         if obj:
             if obj.woocommerceid:
-                fieldsets.insert(
-                    0, (_("Verknüpfungen"), {"fields": ["display_woocommerce_id"]})
-                )
+                fieldsets.insert(0, (_("Verknüpfungen"), {"fields": ["display_woocommerce_id"]}))
             return fieldsets + [
                 (_("Diverses"), {"fields": ["website", "note", "linked_note_html"]}),
                 (_("Erweitert"), {"fields": ["combine_with"], "classes": ["collapse"]}),
@@ -670,9 +658,7 @@ class CustomerAdmin(CustomModelAdmin):
 
     # Actions
 
-    @admin.action(
-        description=_("Kunden von WooCommerce aktualisieren"), permissions=["change"]
-    )
+    @admin.action(description=_("Kunden von WooCommerce aktualisieren"), permissions=["change"])
     def wc_update(self, request, queryset):
         WCCustomersAPI().bulk_update_objects_from_api(queryset.all(), request)
 
@@ -760,16 +746,12 @@ class SupplyInlineSupplyItem(CustomTabularInline):
 
     def has_change_permission(self, request, obj=None):
         return (
-            False
-            if obj and obj.is_added_to_stock
-            else super().has_change_permission(request, obj)
+            False if obj and obj.is_added_to_stock else super().has_change_permission(request, obj)
         )
 
     def has_delete_permission(self, request, obj=None):
         return (
-            False
-            if obj and obj.is_added_to_stock
-            else super().has_delete_permission(request, obj)
+            False if obj and obj.is_added_to_stock else super().has_delete_permission(request, obj)
         )
 
 
@@ -798,11 +780,7 @@ class SupplyInlineProductsAdd(CustomTabularInline):
             or request.user.has_perm("kmuhelper.change_product")
         ):
             return False
-        return (
-            False
-            if obj and obj.is_added_to_stock
-            else super().has_add_permission(request, obj)
-        )
+        return False if obj and obj.is_added_to_stock else super().has_add_permission(request, obj)
 
 
 @admin.register(Supply)
@@ -981,9 +959,7 @@ class NoteAdmin(CustomModelAdmin):
                     product = Product.objects.get(pk=pk)
                     obj.linked_product = product
                     obj.save()
-                    messages.info(
-                        request, _("Produkt #%s wurde mit dieser Notiz verknüpft.") % pk
-                    )
+                    messages.info(request, _("Produkt #%s wurde mit dieser Notiz verknüpft.") % pk)
                 else:
                     messages.warning(
                         request,
@@ -998,9 +974,7 @@ class NoteAdmin(CustomModelAdmin):
                     customer = Customer.objects.get(pk=pk)
                     obj.linked_customer = customer
                     obj.save()
-                    messages.info(
-                        request, _("Kunde #%s wurde mit dieser Notiz verknüpft.") % pk
-                    )
+                    messages.info(request, _("Kunde #%s wurde mit dieser Notiz verknüpft.") % pk)
                 else:
                     messages.warning(
                         request,
@@ -1140,9 +1114,11 @@ class ProductAdmin(CustomModelAdmin):
             (
                 _("Verknüpfungen"),
                 {
-                    "fields": ["display_woocommerce_id", "parent"]
-                    if obj and obj.woocommerceid
-                    else ["parent"]
+                    "fields": (
+                        ["display_woocommerce_id", "parent"]
+                        if obj and obj.woocommerceid
+                        else ["parent"]
+                    )
                 },
             ),
             (_("Infos"), {"fields": ["article_number", "name"]}),
@@ -1201,9 +1177,7 @@ class ProductAdmin(CustomModelAdmin):
 
     # Actions
 
-    @admin.action(
-        description=_("Produkte von WooCommerce aktualisieren"), permissions=["change"]
-    )
+    @admin.action(description=_("Produkte von WooCommerce aktualisieren"), permissions=["change"])
     def wc_update(self, request, queryset):
         WCProductsAPI().bulk_update_objects_from_api(queryset.all(), request)
 
@@ -1332,9 +1306,7 @@ class ProductCategoryAdmin(CustomModelAdmin):
         ]
 
         if obj and obj.woocommerceid:
-            fieldsets.insert(
-                0, (_("Verknüpfungen"), {"fields": ["display_woocommerce_id"]})
-            )
+            fieldsets.insert(0, (_("Verknüpfungen"), {"fields": ["display_woocommerce_id"]}))
 
         return fieldsets
 

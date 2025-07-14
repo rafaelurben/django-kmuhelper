@@ -21,9 +21,7 @@ def migrate_address_fields_reverse(apps, schema_editor):
         receiver.invoice_address_1 = (
             f"{receiver.invoice_street} {receiver.invoice_street_nr}".strip()
         )
-        receiver.invoice_address_2 = (
-            f"{receiver.invoice_postcode} {receiver.invoice_city}".strip()
-        )
+        receiver.invoice_address_2 = f"{receiver.invoice_postcode} {receiver.invoice_city}".strip()
         receiver.save()
 
 
@@ -42,9 +40,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="paymentreceiver",
             name="invoice_postcode",
-            field=models.CharField(
-                default="", max_length=16, verbose_name="Postleitzahl"
-            ),
+            field=models.CharField(default="", max_length=16, verbose_name="Postleitzahl"),
             preserve_default=False,
         ),
         migrations.AddField(

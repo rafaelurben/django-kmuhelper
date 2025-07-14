@@ -196,9 +196,7 @@ class EMail(CustomModel):
         default=dict,
         blank=True,
         null=True,
-        help_text=_(
-            "Daten im JSON-Format, mit welchen die Designvorlage befüllt wird."
-        ),
+        help_text=_("Daten im JSON-Format, mit welchen die Designvorlage befüllt wird."),
     )
 
     token = models.UUIDField(
@@ -292,12 +290,10 @@ class EMail(CustomModel):
 
         ctx = dict(self.html_context) if self.html_context is not None else {}
 
-        defaultcontext = settings.get_file_setting(
-            "KMUHELPER_EMAILS_DEFAULT_CONTEXT", {}
+        defaultcontext = settings.get_file_setting("KMUHELPER_EMAILS_DEFAULT_CONTEXT", {})
+        signature = settings.get_db_setting("email-signature", "") or defaultcontext.get(
+            "postcontent", ""
         )
-        signature = settings.get_db_setting(
-            "email-signature", ""
-        ) or defaultcontext.get("postcontent", "")
 
         data = {
             **defaultcontext,
@@ -320,9 +316,7 @@ class EMail(CustomModel):
                 context["attachments"] = list(self.attachments.all())
             else:
                 context["view_online_url"] = self.get_url_with_domain()
-            return get_template("kmuhelper/emails/" + str(self.html_template)).render(
-                context
-            )
+            return get_template("kmuhelper/emails/" + str(self.html_template)).render(context)
 
     def add_attachments(self, *attachments):
         """Add one or more Attachment objects to this EMail"""
@@ -448,9 +442,7 @@ class EMailTemplate(CustomModel):
             try:
                 Template(getattr(self, field))
             except TemplateSyntaxError as error:
-                errors[field] = gettext(
-                    "Vorlage enthält ungültige Syntax: %(error)s"
-                ) % {
+                errors[field] = gettext("Vorlage enthält ungültige Syntax: %(error)s") % {
                     "error": error,
                 }
 
