@@ -119,11 +119,16 @@ class StockUtils:
             StockUtils.generate_admin_message(request, dat)
 
     @staticmethod
-    def send_stock_warning(stock_data: list[StockData], order_pk: int) -> bool | None:
+    def send_stock_warning(
+        stock_data: list[StockData],
+        trigger: str = "",
+        notes: str = "",
+        email_receiver: str | None = None,
+    ) -> bool | None:
         from kmuhelper import settings
         from kmuhelper.modules.emails.models import EMail
 
-        email_receiver = settings.get_db_setting("email-stock-warning-receiver")
+        email_receiver = email_receiver or settings.get_db_setting("email-stock-warning-receiver")
 
         if not email_receiver:
             log.warning("No email receiver for stock warning set in settings.")
@@ -140,12 +145,11 @@ class StockUtils:
                 html_template="order_stock_warning.html",
                 html_context={
                     "warnings": list(map(lambda w: w.as_dict(), warnings)),
+                    "trigger": trigger,
                 },
-                notes=_("Diese E-Mail wurde automatisch aus Bestellung #%d generiert.") % order_pk,
+                notes=notes,
             )
 
-            success = email.send(
-                headers={"KMUHelper-Order-ID": str(order_pk)},
-            )
+            success = email.send()
             return bool(success)
         return None

@@ -14,13 +14,7 @@
 
 {% block maincontent %}
 
-    <p>
-        Seit einer kürzlich importierten Bestellung
-        {% if orderinfo %}
-            ({{ orderinfo }})
-        {% endif %}
-        herrscht Knappheit beim Lagerbestand folgender Produkte:</p>
-    <br>
+    <p>Es herrscht Knappheit beim Lagerbestand folgender Produkte:</p>
 
     <table style="border-collapse: collapse; width: 100%;">
         <tbody>
@@ -70,6 +64,10 @@
     <p>Als "ausgehend" werden alle Produkte gezählt, welche sich in Bestellungen befinden, aber noch nicht als versendet
         markiert wurden. Als "eingehend" werden alle Produkte gezählt, welche sich in Lieferungen befinden, aber noch
         nicht als eingelagert markiert wurden.</p>
+
+    {% if trigger %}
+        <p>Der Auslöser für diese Warnung war: {{ trigger }}</p>
+    {% endif %}
 
     <p>PS: Sie erhalten diese E-Mail, weil Sie in den Einstellungen diese E-Mail Adresse für Warnungen zum Lagerbestand
         eingetragen haben.</p>

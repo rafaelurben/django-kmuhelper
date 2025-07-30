@@ -161,5 +161,9 @@ class WCOrdersAPI(WC_BaseObjectAPI):
 
         if sendstockwarning:
             stock_data = StockUtils.get_stock_data(db_obj.products.values_list("id", flat=True))
-            StockUtils.send_stock_warning(stock_data, db_obj.pk)
+            StockUtils.send_stock_warning(
+                stock_data,
+                trigger=_("Import der Bestellung #%d aus WooCommerce") % db_obj.pk,
+                notes=_("Diese E-Mail wurde automatisch aus Bestellung #%d generiert.") % db_obj.pk,
+            )
         return db_obj
