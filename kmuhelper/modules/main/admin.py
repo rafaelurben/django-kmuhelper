@@ -1214,7 +1214,38 @@ class ProductAdmin(CustomModelAdmin):
             % count,
         )
 
-    actions = ["wc_update", "reset_stock", "end_sale"]
+    @admin.action(
+        description=_("Lagerbestandswarnung an mich per E-Mail senden"), permissions=["view"]
+    )
+    def send_stock_warning_email(self, request, queryset):
+        stock_data = StockUtils.get_stock_data(queryset.values_list("pk", flat=True))
+        success = StockUtils.send_stock_warning(
+            stock_data,
+            trigger=str(_("Manuell via Produkte-Admin ausgelöst")),
+            notes=str(_("Diese E-Mail wurde über eine Aktion im Produkte-Admin ausgelöst.")),
+            email_receiver=request.user.email,
+        )
+        if success is None:
+            messages.success(
+                request,
+                _("Alle Lagerbestände sind im grünen Bereich. Es wurde keine E-Mail versendet."),
+            )
+        elif success:
+            messages.success(
+                request,
+                _(
+                    "Die Lagerbestandswarnung wurde erfolgreich versendet. Bitte überprüfe deine E-Mails."
+                ),
+            )
+        else:
+            messages.error(
+                request,
+                _(
+                    "Die Lagerbestandswarnung konnte nicht versendet werden. Bitte überprüfe die Einstellungen."
+                ),
+            )
+
+    actions = ["wc_update", "reset_stock", "end_sale", "send_stock_warning_email"]
 
     # Save
 
