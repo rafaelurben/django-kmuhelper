@@ -4,6 +4,7 @@ import kmuhelper.modules.main.models as models
 from kmuhelper import constants
 from kmuhelper.modules.integrations.woocommerce.api import products, customers
 from kmuhelper.modules.integrations.woocommerce.api._base import WC_BaseObjectAPI
+from kmuhelper.modules.main.utils import StockUtils
 from kmuhelper.utils import runden
 
 _ = gettext
@@ -159,5 +160,6 @@ class WCOrdersAPI(WC_BaseObjectAPI):
         self.log("Order created:", str(db_obj))
 
         if sendstockwarning:
-            db_obj.email_stock_warning()
+            stock_data = StockUtils.get_stock_data(db_obj.products.values_list("id", flat=True))
+            StockUtils.send_stock_warning(stock_data, db_obj.pk)
         return db_obj

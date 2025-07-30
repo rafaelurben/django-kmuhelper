@@ -28,6 +28,7 @@ from kmuhelper.modules.main.models import (
     Product,
     PaymentReceiver,
 )
+from kmuhelper.modules.main.utils import StockUtils
 from kmuhelper.modules.pdfgeneration.order import views as pdf_order_views
 from kmuhelper.overrides import (
     CustomModelAdmin,
@@ -476,8 +477,8 @@ class OrderAdmin(CustomModelAdmin):
 
         # stock warnings
         if obj:
-            for product in obj.products.all():
-                product.show_stock_warning(request)
+            stock_data = StockUtils.get_stock_data(obj.products.values_list("pk", flat=True))
+            StockUtils.generate_admin_messages(request, stock_data)
 
     def save_related(self, request, form, formsets, change):
         super().save_related(request, form, formsets, change)
@@ -1219,8 +1220,11 @@ class ProductAdmin(CustomModelAdmin):
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
+
+        # stock warnings
         if obj:
-            obj.show_stock_warning(request)
+            stock_data = StockUtils.get_stock_data([obj.pk])
+            StockUtils.generate_admin_messages(request, stock_data)
 
 
 class ProductCategoryAdminChildrenInline(CustomTabularInline):

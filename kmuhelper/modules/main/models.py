@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from random import randint
 
 import requests
-from django.contrib import admin, messages
+from django.contrib import admin
 from django.core.validators import RegexValidator, MinValueValidator, MaxValueValidator
 from django.db import models
 from django.forms import ValidationError
@@ -878,41 +878,6 @@ class Order(CustomModel, AddressModelMixin, WooCommerceModelMixin):
             self.save()
             return self.email_link_shipped
 
-    def get_stock_data(self):
-        """Get the stock data of all products in this order"""
-
-        return [p.get_stock_data() for p in self.products.all()]
-
-    def email_stock_warning(self):
-        email_receiver = settings.get_db_setting("email-stock-warning-receiver")
-
-        if email_receiver:
-            warnings = []
-            stock = self.get_stock_data()
-            for data in stock:
-                if data["stock_in_danger"]:
-                    warnings.append(data)
-
-            if warnings != []:
-                email = EMail.objects.create(
-                    subject=gettext("[KMUHelper] - Lagerbestand knapp!"),
-                    to=email_receiver,
-                    html_template="order_stock_warning.html",
-                    html_context={
-                        "warnings": warnings,
-                    },
-                    notes=gettext("Diese E-Mail wurde automatisch aus Bestellung #%d generiert.")
-                    % self.pk,
-                )
-
-                success = email.send(
-                    headers={"Bestellungs-ID": str(self.pk)},
-                )
-                return bool(success)
-        else:
-            log("No email receiver for stock warning set.")
-        return None
-
     class Meta(WooCommerceModelMixin.Meta):
         verbose_name = _("Bestellung")
         verbose_name_plural = _("Bestellungen")
@@ -1636,83 +1601,6 @@ class Product(CustomModel, WooCommerceModelMixin):
         if self.image_url:
             return format_html('<img src="{}" width="100px">', self.image_url)
         return ""
-
-    # Stock
-
-    def get_reserved_stock(self):
-        return (
-            OrderItem.objects.filter(order__is_shipped=False, linked_product_id=self.pk).aggregate(
-                models.Sum("quantity")
-            )["quantity__sum"]
-            or 0
-        )
-
-    def get_incoming_stock(self):
-        return (
-            SupplyItem.objects.filter(
-                supply__is_added_to_stock=False, product__id=self.pk
-            ).aggregate(models.Sum("quantity"))["quantity__sum"]
-            or 0
-        )
-
-    def get_stock_data(self, includemessage=False):
-        """Get the stock and product information as a dictionary"""
-
-        p_id = self.pk
-        p_name = self.clean_name()
-        p_article_number = self.article_number
-
-        n_current = self.stock_current
-        n_going = self.get_reserved_stock()
-        n_coming = self.get_incoming_stock()
-        n_min = self.stock_target
-
-        data = {
-            "product": {
-                "id": p_id,
-                "article_number": p_article_number,
-                "name": p_name,
-            },
-            "stock": {
-                "current": n_current,
-                "going": n_going,
-                "coming": n_coming,
-                "min": n_min,
-            },
-            "stock_overbooked": n_current - n_going < 0,
-            "stock_in_danger": n_current - n_going < n_min,
-        }
-
-        if includemessage:
-            t_current = gettext("Aktuell")
-            t_going = gettext("Ausgehend")
-            t_coming = gettext("Eingehend")
-
-            stockstring = f"{t_current}: { n_current } | {t_going}: { n_going }"
-            if t_coming:
-                stockstring += f" | {t_coming}: { n_coming }"
-
-            adminurl = reverse(f"admin:kmuhelper_product_change", args=[self.pk])
-            adminlink = format_html('<a href="{}">{}</a>', adminurl, p_name)
-
-            formatdata = (adminlink, p_article_number, stockstring)
-
-            if data["stock_overbooked"]:
-                msg = gettext("Zu wenig Lagerbestand bei")
-                data["message"] = format_html('{} "{}" [{}]: {}', msg, *formatdata)
-            elif data["stock_in_danger"]:
-                msg = gettext("Knapper Lagerbestand bei")
-                data["message"] = format_html('{} "{}" [{}]: {}', msg, *formatdata)
-
-        return data
-
-    def show_stock_warning(self, request):
-        data = self.get_stock_data(includemessage=True)
-
-        if data["stock_overbooked"]:
-            messages.error(request, data["message"])
-        elif data["stock_in_danger"]:
-            messages.warning(request, data["message"])
 
     @admin.display(description=_("Produkt"))
     def __str__(self):
