@@ -20,7 +20,7 @@
         <tbody>
         <tr>
             <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;"
-                colspan=2>Produkt
+                colspan=3>Produkt
             </th>
             <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;"
                 colspan=4>Lagerbestand
@@ -31,13 +31,13 @@
                 ID
             </th>
             <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;">
+                Art. Nr.
+            </th>
+            <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;">
                 Name
             </th>
             <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;">
                 Aktuell
-            </th>
-            <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;">
-                Soll
             </th>
             <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;">
                 Ausgehend
@@ -45,15 +45,19 @@
             <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;">
                 Eingehend
             </th>
+            <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;">
+                Soll
+            </th>
         </tr>
         {% for w in warnings %}
             <tr>
                 <td style="border: 1px solid #ddd; padding: 8px;">{{ w.product.id }}</td>
+                <td style="border: 1px solid #ddd; padding: 8px;">{{ w.product.article_number }}</td>
                 <td style="border: 1px solid #ddd; padding: 8px;">{{ w.product.name }}</td>
                 <td style="border: 1px solid #ddd; padding: 8px;">{{ w.stock.current }}</td>
-                <td style="border: 1px solid #ddd; padding: 8px;">{{ w.stock.min }}</td>
                 <td style="border: 1px solid #ddd; padding: 8px;">{{ w.stock.going }}</td>
                 <td style="border: 1px solid #ddd; padding: 8px;">{{ w.stock.coming }}</td>
+                <td style="border: 1px solid #ddd; padding: 8px;">{{ w.stock.min }}</td>
             </tr>
         {% endfor %}
         </tbody>
