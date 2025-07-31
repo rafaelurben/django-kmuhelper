@@ -13,42 +13,32 @@
     {% endblock %}
 </head>
 <body style="height: 100%; margin: 0; padding: 0; font-size: 14px; color: #333; background: #fff; font-family: 'Roboto','Lucida Grande','DejaVu Sans','Bitstream Vera Sans',Verdana,Arial,sans-serif;">
-<div id="container" style="position: relative; width: 100%; padding: 0; display: flex; flex-direction: column;">
+<div style="width: 100%; padding: 0;">
     {% block header %}
         {% if not noheader %}
-            <div id="header" style="flex-shrink: 0; color: {{ header_foreground|default:'#FFEE88' }}; background-color:
-                    {{ header_background|default:'#AA1155' }}; width: auto; height: auto; display: flex; justify-content: space-between; align-items: center; padding: 10px 40px; overflow: hidden;">
-                <div id="branding" style="float: left;">
-                    <h1 id="site-name" style=" padding: 0; margin: 0 20px 0 0; font-weight: 300; font-size: 24px;">
-                        {% block title %}{{ header_title|default:'KMUHelper | E-Mail' }}{% endblock %}</h1>
-                </div>
-                <div id="user-tools"
-                     style="float: right; padding: 0; margin: 0 0 0 20px; font-weight: 300; font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase; text-align: right; color: #F6C400;">
-
-                </div>
+            <div style="color: {{ header_foreground|default:'#FFEE88' }}; background-color:
+                    {{ header_background|default:'#AA1155' }}; width: auto; padding: 10px 20px;">
+                <h1 style="padding: 0; margin: 0 20px 0 0; font-weight: 300; font-size: 24px;">
+                    {% block title %}{{ header_title|default:'KMUHelper | E-Mail' }}{% endblock %}</h1>
             </div>
         {% endif %}
     {% endblock %}
 
     {% block content %}
-        <div id="main" style="display: flex; flex: 1 0 auto;">
-            <div class="content" style="flex: 1 0; max-width: 100%;">
-                <div id="content" style="padding: 20px 40px;">
-                    <h1 style="margin: 0 0 20px; font-weight: 300; font-size: 20px; color: #666;">
-                        {% block subtitle %}{{ subtitle }}{% endblock %}</h1>
+        <div style="padding: 20px;">
+            <h2 style="margin: 0 0 20px; font-weight: 300; font-size: 20px; color: #666;">
+                {% block subtitle %}{{ subtitle }}{% endblock %}</h2>
 
-                    {% block precontent %}
-                        {{ precontent|urlize|linebreaks }}
-                    {% endblock %}
-                    {% block maincontent %}
-                        {{ text|urlize|linebreaks }}
-                    {% endblock %}
-                    {% block postcontent %}
-                        <br>
-                        {{ postconent|urlize|linebreaks }}
-                    {% endblock %}
-                </div>
-            </div>
+            {% block precontent %}
+                {{ precontent|urlize|linebreaks }}
+            {% endblock %}
+            {% block maincontent %}
+                {{ text|urlize|linebreaks }}
+            {% endblock %}
+            {% block postcontent %}
+                <br>
+                {{ postcontent|urlize|linebreaks }}
+            {% endblock %}
         </div>
     {% endblock %}
 </div>
@@ -60,12 +50,11 @@
             <h3 style="margin-left: 20px;">Anhänge</h3>
             <p style="margin-left: 20px;">Achtung: Es kann unter Umständen vorkommen, dass nicht mehr alle Anhänge
                 verfügbar sind.</p>
-            <ul>
+            <ul style="padding-bottom: 20px;">
                 {% for attachment in attachments %}
                     <li><a href="{{ attachment.get_url }}">{{ attachment.filename }}</a></li>
                 {% endfor %}
             </ul>
-            <br>
         {% endif %}
     {% endblock %}
 {% else %}
@@ -73,8 +62,8 @@
         {% if not disable_viewonline %}
             {% if view_online_url %}
                 <hr>
-                <p>E-Mail wird nicht richtig dargestellt? - Sie können die E-Mail unter folgendem Link auch in Ihrem
-                    Webbrowser ansehen: <a href="{{ view_online_url }}">{{ view_online_url }}</a></p>
+                <p style="color: #404040; font-size: 11px;">E-Mail wird nicht richtig dargestellt? - Im Webbrowser
+                    ansehen: <a href="{{ view_online_url }}">{{ view_online_url }}</a></p>
             {% endif %}
         {% endif %}
     {% endblock %}

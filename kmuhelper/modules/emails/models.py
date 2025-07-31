@@ -12,11 +12,12 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy, gettext
+from rich import print
+
 from kmuhelper import settings, constants
 from kmuhelper.external.multi_email_field.fields import MultiEmailField
 from kmuhelper.overrides import CustomModel
 from kmuhelper.translations import Language
-from rich import print
 
 _ = gettext_lazy
 
@@ -298,7 +299,7 @@ class EMail(CustomModel):
         data = {
             **defaultcontext,
             "subtitle": self.subject,
-            "postconent": signature,
+            "postcontent": signature,
             **ctx,
             "text": self.text,
         }
