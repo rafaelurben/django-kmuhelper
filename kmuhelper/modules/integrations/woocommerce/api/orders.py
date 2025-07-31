@@ -4,6 +4,7 @@ import kmuhelper.modules.main.models as models
 from kmuhelper import constants
 from kmuhelper.modules.integrations.woocommerce.api import products, customers
 from kmuhelper.modules.integrations.woocommerce.api._base import WC_BaseObjectAPI
+from kmuhelper.modules.main.utils import StockUtils
 from kmuhelper.utils import runden
 
 _ = gettext
@@ -48,7 +49,7 @@ class WCOrdersAPI(WC_BaseObjectAPI):
         db_obj.save()
         self.log("Order updated: ", str(db_obj))
 
-    def create_object_from_data(self, wc_obj: dict, sendstockwarning=True):
+    def create_object_from_data(self, wc_obj: dict, send_stock_warning=False):
         if wc_obj["status"] == "checkout-draft":
             self.log("Did not create order because order is a draft!")
             return None
@@ -158,6 +159,30 @@ class WCOrdersAPI(WC_BaseObjectAPI):
         db_obj.second_save()
         self.log("Order created:", str(db_obj))
 
-        if sendstockwarning:
-            db_obj.email_stock_warning()
+        if send_stock_warning:
+            stock_data = StockUtils.get_stock_data(db_obj.products.values_list("id", flat=True))
+            StockUtils.send_stock_warning(
+                stock_data,
+                trigger=_("Import der Bestellung #%d aus WooCommerce") % db_obj.pk,
+                notes=_("Diese E-Mail wurde automatisch aus Bestellung #%d generiert.") % db_obj.pk,
+            )
         return db_obj
+
+    def _post_process_imported_objects(
+        self, db_obj__wc_obj_list: list[tuple[MODEL, dict]], request=None
+    ):
+        # Generate stock warning for all products in all imported orders
+
+        order_ids = map(lambda x: x[0].pk, db_obj__wc_obj_list)
+        product_ids = (
+            models.OrderItem.objects.filter(order_id__in=order_ids, linked_product_id__isnull=False)
+            .values_list("linked_product_id", flat=True)
+            .distinct()
+        )
+
+        stock_data = StockUtils.get_stock_data(product_ids)
+        StockUtils.send_stock_warning(
+            stock_data,
+            trigger=_("Massen-Import von Bestellungen aus WooCommerce"),
+            notes=_("Diese E-Mail wurde automatisch generiert."),
+        )

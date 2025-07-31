@@ -14,19 +14,13 @@
 
 {% block maincontent %}
 
-    <p>
-        Seit einer kürzlich importierten Bestellung
-        {% if orderinfo %}
-            ({{ orderinfo }})
-        {% endif %}
-        herrscht Knappheit beim Lagerbestand folgender Produkte:</p>
-    <br>
+    <p>Es herrscht Knappheit beim Lagerbestand folgender Produkte:</p>
 
     <table style="border-collapse: collapse; width: 100%;">
         <tbody>
         <tr>
             <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;"
-                colspan=2>Produkt
+                colspan=3>Produkt
             </th>
             <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;"
                 colspan=4>Lagerbestand
@@ -37,13 +31,13 @@
                 ID
             </th>
             <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;">
+                Art. Nr.
+            </th>
+            <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;">
                 Name
             </th>
             <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;">
                 Aktuell
-            </th>
-            <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;">
-                Soll
             </th>
             <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;">
                 Ausgehend
@@ -51,15 +45,19 @@
             <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;">
                 Eingehend
             </th>
+            <th style="border: 1px solid #ddd; padding: 12px 8px; text-align: left; background-color: #AA1155; color: white;">
+                Soll
+            </th>
         </tr>
         {% for w in warnings %}
             <tr>
                 <td style="border: 1px solid #ddd; padding: 8px;">{{ w.product.id }}</td>
+                <td style="border: 1px solid #ddd; padding: 8px;">{{ w.product.article_number }}</td>
                 <td style="border: 1px solid #ddd; padding: 8px;">{{ w.product.name }}</td>
                 <td style="border: 1px solid #ddd; padding: 8px;">{{ w.stock.current }}</td>
-                <td style="border: 1px solid #ddd; padding: 8px;">{{ w.stock.min }}</td>
                 <td style="border: 1px solid #ddd; padding: 8px;">{{ w.stock.going }}</td>
                 <td style="border: 1px solid #ddd; padding: 8px;">{{ w.stock.coming }}</td>
+                <td style="border: 1px solid #ddd; padding: 8px;">{{ w.stock.min }}</td>
             </tr>
         {% endfor %}
         </tbody>
@@ -70,6 +68,10 @@
     <p>Als "ausgehend" werden alle Produkte gezählt, welche sich in Bestellungen befinden, aber noch nicht als versendet
         markiert wurden. Als "eingehend" werden alle Produkte gezählt, welche sich in Lieferungen befinden, aber noch
         nicht als eingelagert markiert wurden.</p>
+
+    {% if trigger %}
+        <p>Der Auslöser für diese Warnung war: {{ trigger }}</p>
+    {% endif %}
 
     <p>PS: Sie erhalten diese E-Mail, weil Sie in den Einstellungen diese E-Mail Adresse für Warnungen zum Lagerbestand
         eingetragen haben.</p>

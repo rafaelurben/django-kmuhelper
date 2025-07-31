@@ -1,11 +1,13 @@
 import abc
 
 from django.contrib import messages
+from django.http import HttpRequest
 from django.utils.translation import ngettext
-from kmuhelper import settings
 from rich import print
 from rich.progress import Progress
 from woocommerce import API as WCAPI
+
+from kmuhelper import settings
 
 
 def create_wc_api_object():
@@ -128,11 +130,13 @@ class WC_BaseObjectAPI(WC_BaseAPI, abc.ABC):
 
         return success_count, warning_count, error_count
 
-    def _post_process_imported_objects(self, db_obj__wc_obj_list: list[tuple[object, dict]]):
+    def _post_process_imported_objects(
+        self, db_obj__wc_obj_list: list[tuple[object, dict]], request: HttpRequest = None
+    ):
         """Post-process imported objects after all objects have been imported"""
         ...
 
-    def import_all_objects_from_api(self, request=None) -> int:
+    def import_all_objects_from_api(self, request: HttpRequest = None) -> int:
         """Import new products from WooCommerce
 
         Returns: number of imported products
@@ -182,7 +186,7 @@ class WC_BaseObjectAPI(WC_BaseAPI, abc.ABC):
                     progress.update(task_process, advance=1)
                 progress.stop_task(task_process)
 
-                self._post_process_imported_objects(db_wc_object_list)
+                self._post_process_imported_objects(db_wc_object_list, request=request)
 
         if request is not None:
             self._add_request_messages_from_import_counts(request, len(wc_objects))
@@ -235,7 +239,7 @@ class WC_BaseObjectAPI(WC_BaseAPI, abc.ABC):
                 },
             )
 
-    def _add_request_messages_from_import_counts(self, request, success_count):
+    def _add_request_messages_from_import_counts(self, request: HttpRequest, success_count):
         messages.success(
             request,
             ngettext(

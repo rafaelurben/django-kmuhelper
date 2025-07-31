@@ -46,7 +46,7 @@ Zusätzlich können festgelegt werden:
         - `header_background`: Die Hintergrundfarbe des Headers (HEX, z. B. `#FFFFFF`)
         - `header_foreground`: Die Vordergrundfarbde des Headers (HEX, z. B. `#000000`)
         - `precontent`: Inhalt vor dem Hauptinhalt (gleiche Funktionen wie Text)
-        - `postconent`: Inhalt nach dem Hauptinhalt (gleiche Funktionen wie Text)
+        - `postcontent`: Inhalt nach dem Hauptinhalt (gleiche Funktionen wie Text)
           &dash;&gt; Überschreibt Signatur!
 
 ### Anhänge
