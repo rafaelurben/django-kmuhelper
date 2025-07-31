@@ -134,7 +134,7 @@ class StockUtils:
             log.warning("No email receiver for stock warning set in settings.")
             return None
 
-        warnings: list["StockUtils.StockData"] = list(
+        warnings: list[StockUtils.StockData] = list(
             filter(lambda s: s.stock.in_danger, stock_data)
         )
 
