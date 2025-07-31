@@ -458,7 +458,7 @@ def wc_webhooks(request):
                 order.woocommerce_deleted = False
                 WCOrdersAPI().update_object_from_data(order, wc_obj)
             else:
-                WCOrdersAPI().create_object_from_data(wc_obj)
+                WCOrdersAPI().create_object_from_data(wc_obj, send_stock_warning=True)
         case "order.deleted":
             if Order.objects.filter(woocommerceid=wc_obj_id).exists():
                 order = Order.objects.get(woocommerceid=wc_obj_id)

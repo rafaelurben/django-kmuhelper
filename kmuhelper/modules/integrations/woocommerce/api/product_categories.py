@@ -1,3 +1,5 @@
+from django.http import HttpRequest
+
 import kmuhelper.modules.main.models as models
 from kmuhelper.modules.integrations.woocommerce.api._base import WC_BaseObjectAPI
 from kmuhelper.modules.integrations.woocommerce.api._utils import preparestring
@@ -38,7 +40,9 @@ class WCProductCategoriesAPI(WC_BaseObjectAPI):
         self.log("Category created:", wc_obj["name"])
         return db_obj
 
-    def _post_process_imported_objects(self, db_obj__wc_obj_list: list[tuple[object, dict]]):
+    def _post_process_imported_objects(
+        self, db_obj__wc_obj_list: list[tuple[object, dict]], request: HttpRequest = None
+    ):
         for db_obj, wc_obj in db_obj__wc_obj_list:
             if wc_obj["parent"]:
                 db_obj.parent_category = models.ProductCategory.objects.get(
