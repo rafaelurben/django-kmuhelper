@@ -3,8 +3,8 @@ name: Check python code
 on:
   push:
     paths:
-      - kmuhelper/
-      - kmuhelper_tests/
+      - kmuhelper/**
+      - kmuhelper_tests/**
       - pyproject.toml
       - runtests.py
 
