@@ -43,21 +43,21 @@ jobs:
         language: [ 'javascript', 'python' ]
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+      - name: Checkout repository
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@5d4e8d1aca955e8d8589aabd499c5cae939e33c7 # v4.31.9
-      with:
-        languages: ${{ matrix.language }}
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@5d4e8d1aca955e8d8589aabd499c5cae939e33c7 # v4.31.9
+        with:
+          languages: ${{ matrix.language }}
 
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@5d4e8d1aca955e8d8589aabd499c5cae939e33c7 # v4.31.9
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@5d4e8d1aca955e8d8589aabd499c5cae939e33c7 # v4.31.9
 
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@5d4e8d1aca955e8d8589aabd499c5cae939e33c7 # v4.31.9
-      with:
-        category: "/language:${{matrix.language}}"
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@5d4e8d1aca955e8d8589aabd499c5cae939e33c7 # v4.31.9
+        with:
+          category: "/language:${{matrix.language}}"
 
   tests:
     name: KMUHelper tests
@@ -66,7 +66,7 @@ jobs:
       max-parallel: 2
       matrix:
         os: [ ubuntu-latest ]
-        python-version: [ "3.13" , "3.14"]
+        python-version: [ "3.13" , "3.14" ]
         include:
           - os: windows-latest
             python-version: 3.14
@@ -101,7 +101,7 @@ jobs:
     name: SonarQube Scan
 
     runs-on: ubuntu-latest
-    if: ${{ !contains(github.event.pull_request.labels.*.name, 'dependencies/renovate') }}
+    if: ${{ github.event_name == 'push' || !contains(github.event.pull_request.labels.*.name, 'dependencies/renovate') }}
     needs: [ tests ]
 
     permissions:
@@ -116,7 +116,7 @@ jobs:
         uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
           name: coverage-report
-          path: coverage.xml
+          path: .
 
       - name: Read version from file
         id: version
