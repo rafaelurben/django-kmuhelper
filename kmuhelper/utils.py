@@ -10,7 +10,6 @@ from packaging.version import Version, InvalidVersion
 
 from kmuhelper.constants import URL_FAQ
 
-
 ################
 
 
