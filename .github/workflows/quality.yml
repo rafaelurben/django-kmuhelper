@@ -124,7 +124,7 @@ jobs:
           echo "VERSION=$(cat _version.txt | tr -d '\r\n')" >> $GITHUB_OUTPUT
 
       - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@55e44800a8f495208cce6e4e82f5dedb45fcf0ef # v7.2.0
+        uses: SonarSource/sonarqube-scan-action@c7ee0f9df90b7aa20e8dcf9695dcfe2e7da5b4f2 # v7.2.1
         with:
           args: >
             -Dsonar.projectVersion=${{ steps.version.outputs.VERSION }}
