@@ -1,5 +1,6 @@
 import subprocess
 import sys
+from importlib import metadata
 
 import requests
 from django.contrib import messages
@@ -45,14 +46,24 @@ def _package_versions_pypi(project, testpypi=False, allow_prereleases=False):
 
 
 def _package_version_local(package) -> Version:
-    cmd = [sys.executable, "-m", "pip", "show", "{}".format(package)]
-    ver = str(subprocess.run(cmd, capture_output=True, text=True))
-    ver = ver[ver.find("Version:") + 8 :]
-    ver = ver[: ver.find("\\n")].replace(" ", "")
     try:
-        return Version(ver)
+        return Version(metadata.version(package))
+    except metadata.PackageNotFoundError:
+        pass
     except InvalidVersion:
         return None
+
+    cmd = [sys.executable, "-m", "pip", "show", "{}".format(package)]
+    result = subprocess.run(cmd, capture_output=True, text=True, check=False)
+
+    for line in result.stdout.splitlines():
+        if line.startswith("Version:"):
+            try:
+                return Version(line.split(":", 1)[1].strip())
+            except InvalidVersion:
+                return None
+
+    return None
 
 
 def package_version(package, testpypi=False):
