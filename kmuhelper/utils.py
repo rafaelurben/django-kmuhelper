@@ -1,5 +1,6 @@
-import subprocess
+import logging
 import sys
+from importlib import metadata
 
 import requests
 from django.contrib import messages
@@ -7,8 +8,12 @@ from django.shortcuts import render
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 from packaging.version import Version, InvalidVersion
+from requests.exceptions import RequestException
 
 from kmuhelper.constants import URL_FAQ
+
+log = logging.getLogger(__name__)
+
 
 ################
 
@@ -31,28 +36,38 @@ def python_version():
 
 def _package_versions_pypi(project, testpypi=False, allow_prereleases=False):
     url = f"https://{'test.' if testpypi else ''}pypi.org/pypi/{project}/json"
-    versions = requests.get(url).json()["releases"].keys()
-    versions_safe = []
-    for v in versions:
-        try:
-            vs = Version(v)
-            if not allow_prereleases and vs.is_prerelease:
-                continue
-            versions_safe.append(vs)
-        except InvalidVersion:
-            continue
-    return sorted(versions_safe)
-
-
-def _package_version_local(package) -> Version:
-    cmd = [sys.executable, "-m", "pip", "show", "{}".format(package)]
-    ver = str(subprocess.run(cmd, capture_output=True, text=True))
-    ver = ver[ver.find("Version:") + 8 :]
-    ver = ver[: ver.find("\\n")].replace(" ", "")
     try:
-        return Version(ver)
+        log.info("Fetching package versions for package %s at %s", project, url)
+        response = requests.get(url, timeout=5)
+        response.raise_for_status()
+        versions = response.json()["releases"].keys()
+        versions_safe = []
+        for v in versions:
+            try:
+                vs = Version(v)
+                if not allow_prereleases and vs.is_prerelease:
+                    continue
+                versions_safe.append(vs)
+            except InvalidVersion:
+                continue
+        return sorted(versions_safe)
+    except (RequestException, KeyError):
+        log.exception("Error while fetching package versions for package %s", project)
+        return []
+
+
+def _package_version_local(package) -> Version | None:
+    try:
+        return Version(metadata.version(package))
+    except metadata.PackageNotFoundError:
+        log.exception("Local package not found %s", package)
     except InvalidVersion:
-        return None
+        log.exception(
+            "Invalid local package version for package %s: %s",
+            package,
+            metadata.version(package),
+        )
+    return None
 
 
 def package_version(package, testpypi=False):
@@ -67,8 +82,8 @@ def package_version(package, testpypi=False):
 
     return {
         # "all":      all_versions,
-        "latest": str(latest_version),
-        "current": str(current_version),
+        "latest": str(latest_version) if latest_version else None,
+        "current": str(current_version) if current_version else None,
         "uptodate": uptodate,
     }
 
