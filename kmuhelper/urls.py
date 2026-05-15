@@ -1,6 +1,5 @@
 from django.urls import path, include, re_path
 
-from kmuhelper import startup  # noqa
 from kmuhelper import views
 
 #######################

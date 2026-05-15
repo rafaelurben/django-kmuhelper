@@ -10,16 +10,6 @@ DEBUG = djangoconfig.DEBUG
 AUTH_USER_MODEL = djangoconfig.AUTH_USER_MODEL
 
 
-def setup_settings():
-    """Setup the database settings"""
-
-    for key, value in SETTINGS.items():
-        Setting.objects.update_or_create(id=key, defaults={"typ": value["typ"]})
-
-    for key, value in SECRET_SETTINGS.items():
-        SettingHidden.objects.update_or_create(id=key, defaults={"typ": value["typ"]})
-
-
 # File settings
 
 
