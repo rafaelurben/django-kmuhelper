@@ -24,7 +24,7 @@ SETTINGS = {
         "typ": "email",
         "name": _("E-Mail-Adresse für Warnungen zum Lagerbestand"),
         "description": _t(
-            "{}\n\n{}\n\n{}",
+            "{}\n{}\n{}",
             _(
                 "Wenn durch den Import von Bestellungen der Lagerbestand-Soll-Wert unterschritten wird, wird eine "
                 "Warnung an diese E-Mail-Adresse gesendet."
@@ -52,7 +52,7 @@ SETTINGS = {
         "typ": "char",
         "name": _("Standardzahlungskonditionen"),
         "description": _h(
-            "{} {}\n\n{} -> {}",
+            "{} {}\n{} -> {}",
             _("Standardwert der Zahlungskonditionen für neue Bestellungen."),
             _("Beispiele: 0:30 oder 2:10;0:30"),
             _("Mehr über Zahlungskonditionen erfahren"),
@@ -63,7 +63,7 @@ SETTINGS = {
         "typ": "bool",
         "name": _("Zahlungskonditionen drucken"),
         "description": _h(
-            "{}\n\n{}\n\n{} -> {}",
+            "{}\n{}\n{} -> {}",
             _(
                 "Wenn aktiviert, werden die Zahlungskonditionen bei Rechnungen in menschenlesbarer Form unter dem "
                 "Rechnungstotal gedruckt."
@@ -82,7 +82,6 @@ SETTINGS_FIELDSETS = [
     {
         "name": _("Zahlungskonditionen"),
         "fields": ["default-payment-conditions", "print-payment-conditions"],
-        "classes": "wide",
     },
     {
         "name": _("E-Mails"),
@@ -91,7 +90,6 @@ SETTINGS_FIELDSETS = [
             "email-signature",
             "email-stock-warning-receiver",
         ],
-        "classes": "wide",
     },
 ]
 

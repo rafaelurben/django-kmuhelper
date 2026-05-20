@@ -4,12 +4,20 @@
 {% block title %}Aktion bestätigen | KMUHelper{% endblock %}
 
 {% block breadcrumbs %}
-    <div id="breadcrumbs" class="breadcrumbs">
-        <a href="{% url 'admin:app_list' app_label='kmuhelper' %}">KMUHelper Admin</a>
-        &rsaquo; <a href="{% url 'admin:kmuhelper_paymentimport_changelist' %}">Zahlungsimporte</a>
-        &rsaquo; <a href="{% url 'admin:kmuhelper_paymentimport_change' object_id=original.pk %}">{{ original }}</a>
-        &rsaquo; Verarbeiten
-    </div>
+    <ol id="breadcrumbs" class="breadcrumbs">
+        <li>
+            <a href="{% url 'admin:app_list' app_label='kmuhelper' %}">KMUHelper Admin</a>
+        </li>
+        <li>
+            <a href="{% url 'admin:kmuhelper_paymentimport_changelist' %}">Zahlungsimporte</a>
+        </li>
+        <li>
+            <a href="{% url 'admin:kmuhelper_paymentimport_change' object_id=original.pk %}">{{ original }}</a>
+        </li>
+        <li aria-current="page">
+            Verarbeiten
+        </li>
+    </ol>
 {% endblock %}
 
 {% block content_title %}

@@ -7,12 +7,19 @@
     {% get_admin_module as module %}
     {% get_admin_model as model %}
 
-    <div class="breadcrumbs">
-        <a href="{% url module.viewname %}">KMUHelper {{ module.title }}</a>
-        &rsaquo; <a href="{% url opts|admin_urlname:'changelist' %}">
-        {{ model.ADMIN_TITLE | default:opts.verbose_name_plural }}</a>
-        &rsaquo; {% translate 'Delete multiple objects' %}
-    </div>
+    <ol class="breadcrumbs">
+        <li>
+            <a href="{% url module.viewname %}">KMUHelper {{ module.title }}</a>
+        </li>
+        <li>
+            <a href="{% url opts|admin_urlname:'changelist' %}">
+                {{ model.ADMIN_TITLE | default:opts.verbose_name_plural }}
+            </a>
+        </li>
+        <li aria-current="page">
+            {% translate 'Delete multiple objects' %}
+        </li>
+    </ol>
 {% endblock %}
 
 {% block branding %}

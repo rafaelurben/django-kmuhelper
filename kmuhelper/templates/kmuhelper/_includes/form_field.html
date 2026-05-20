@@ -1,23 +1,13 @@
 {% comment %} This is representing a form row in a form {% endcomment %}
 
 <div class="form-row field-{{ field.name }}">
-    {{ field.errors }}
-    <div{% if field.is_checkbox %} class="checkbox-row"{% endif %}>
-        <div class="flex-container">
-            {% if field.is_checkbox %}
-                {{ field }}{{ field.label_tag }}
-            {% else %}
-                {{ field.label_tag }}
-                {% if field.is_readonly %}
-                    <div class="readonly">{{ field.contents }}</div>
-                {% else %}
-                    {{ field }}
-                {% endif %}
-            {% endif %}
-        </div>
+    <div class="flex-container{% if not field.is_readonly and field.errors %} errors{% endif %}{% if field.is_checkbox %} checkbox-row{% endif %}">
+        {{ field.label_tag }}
         {% if field.help_text %}
-            <div class="help"{% if field.id_for_label %}
-                 id="{{ field.id_for_label }}_helptext"{% endif %}>{{ field.help_text|safe }}</div>
+            <div class="help{% if field.is_hidden %} hidden{% endif %}"{% if field.id_for_label %} id="{{ field.id_for_label }}_helptext"{% endif %}>
+                <div>{{ field.help_text|safe }}</div>
+            </div>
         {% endif %}
+        {{ field }}
     </div>
 </div>

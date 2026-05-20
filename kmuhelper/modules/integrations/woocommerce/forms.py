@@ -12,7 +12,6 @@ class WooCommerceSettingsForm(forms.Form):
         {
             "name": _("WooCommerce-Einstellungen"),
             "fields": ["wc-url", "wc-webhook-secret"],
-            "classes": "wide",
         },
     ]
 
