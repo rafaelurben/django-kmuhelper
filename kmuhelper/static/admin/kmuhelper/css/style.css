@@ -56,13 +56,6 @@ form div.help {
     white-space: pre-line;
 }
 
-/* Margin fix for textarea */
-
-form .wide textarea + p.help,
-form .wide textarea + div.help {
-    margin-left: 200px;
-}
-
 /* More styling */
 
 .field-display_customer {
@@ -130,19 +123,9 @@ ul.messagelist li:not(:last-child) {
     margin-right: 0.2em;
 }
 
-/* Fix overlapping object-tools buttons */
+/* Smaller margin for object-tools buttons */
 
-@media (min-width: 768px) {
-    .change-form #content-main {
-        margin-top: 50px;
-    }
-
-    .change-form .object-tools li {
-        margin-bottom: 10px;
-    }
-}
-
-.change-form .object-tools li {
+.change-form .object-tools li + li {
     margin-left: 5px;
 }
 
@@ -219,7 +202,7 @@ ul.messagelist li:not(:last-child) {
 /* Additional buttons in submit row */
 
 .submit-row a.button {
-    text-decoration: none;
+    text-decoration: none !important;
     padding: 10px 15px;
     width: auto;
     box-sizing: border-box;
