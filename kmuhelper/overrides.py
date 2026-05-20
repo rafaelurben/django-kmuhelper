@@ -1,6 +1,7 @@
 from urllib.parse import urlencode
 
 from django.contrib import admin
+from django.contrib.admin import ActionLocation
 from django.db import models
 from django.forms.models import model_to_dict
 from django.shortcuts import redirect
@@ -94,10 +95,10 @@ class CustomModelAdmin(admin.ModelAdmin):
         info = self.model._meta.app_label, self.model._meta.model_name
         return redirect(reverse("admin:%s_%s_changelist" % info))
 
-    def get_actions(self, request):
+    def get_actions(self, request, action_location=ActionLocation.CHANGE_LIST):
         """Make some action not always available"""
 
-        actions = super().get_actions(request)
+        actions = super().get_actions(request, action_location)
         if "wc_update" in actions:
             from kmuhelper.modules.integrations.woocommerce.utils import is_connected
 

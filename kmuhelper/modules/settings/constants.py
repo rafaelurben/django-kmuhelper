@@ -82,7 +82,6 @@ SETTINGS_FIELDSETS = [
     {
         "name": _("Zahlungskonditionen"),
         "fields": ["default-payment-conditions", "print-payment-conditions"],
-        "classes": "wide",
     },
     {
         "name": _("E-Mails"),
@@ -91,7 +90,6 @@ SETTINGS_FIELDSETS = [
             "email-signature",
             "email-stock-warning-receiver",
         ],
-        "classes": "wide",
     },
 ]
 
