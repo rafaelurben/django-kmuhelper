@@ -45,7 +45,7 @@ Issues = "https://github.com/rafaelurben/django-kmuhelper/issues"
 
 [project.optional-dependencies]
 dev = [
-    "black==26.5.0",
+    "black==26.5.1",
     "pylint==4.0.5",
     "pylint-django==2.7.0",
     "coverage==7.14.0",
