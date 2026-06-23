@@ -2,6 +2,8 @@
 Tests admin URLs to check for unexpected 500 errors caused by mistakes in admin configs or templates.
 """
 
+import logging
+
 from django.conf import settings
 from django.contrib.admin.models import ADDITION
 from django.contrib.auth.models import User
@@ -26,6 +28,8 @@ from kmuhelper.modules.main.models import (
 )
 from kmuhelper.modules.settings.models import Setting
 
+logger = logging.getLogger(__name__)
+
 
 class AdminURLTests(TestCase):
     def setUp(self):
@@ -42,7 +46,7 @@ class AdminURLTests(TestCase):
     def _require_successful_get(self, url):
         """Checks that a GET request to a given URL is successful and returns the request object."""
         response = self.client.get(url)
-        print(f"Checking GET to {url}")
+        logger.info(f"Checking GET to %s", url)
         self.assertEqual(response.status_code, 200, msg=f"Couldn't open {url}")
         return response
 

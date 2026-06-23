@@ -2,12 +2,16 @@
 Tests custom admin URLs to check for unexpected 500 errors caused by mistakes in views or templates.
 """
 
+import logging
+
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 
 from kmuhelper.modules.emails.models import EMail
 from kmuhelper.modules.main.models import ContactPerson, PaymentReceiver, Order, Supply
+
+logger = logging.getLogger(__name__)
 
 
 def _create_test_order():
@@ -32,7 +36,7 @@ class CustomAdminURLTests(TestCase):
     def _require_successful_get(self, url, code=200):
         """Checks that a GET request to a given URL is successful and returns the request object."""
         response = self.client.get(url)
-        print(f"Checking GET to {url}")
+        logger.info("Checking GET to %s", url)
         self.assertEqual(
             response.status_code, code, msg=f"Couldn't GET {url}, code {response.status_code}"
         )
@@ -41,7 +45,7 @@ class CustomAdminURLTests(TestCase):
     def _require_successful_post(self, url, data=None, code=200):
         """Checks that a POST request to a given URL is successful and returns the request object."""
         response = self.client.post(url, data)
-        print(f"Checking POST to {url}")
+        logger.info("Checking POST to %s", url)
         self.assertEqual(
             response.status_code, code, msg=f"Couldn't POST {url}, code {response.status_code}"
         )

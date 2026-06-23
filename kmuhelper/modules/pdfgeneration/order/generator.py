@@ -1,5 +1,7 @@
 """PDF creator for invoices and delivery notes"""
 
+import logging
+
 from datetime import datetime
 
 from django.utils.translation import pgettext
@@ -18,6 +20,8 @@ from kmuhelper.translations import (
     langselect,
 )
 from kmuhelper.utils import formatprice
+
+logger = logging.getLogger(__name__)
 
 style_default = ParagraphStyle("Normal", fontname="Helvetica")
 style_bold = ParagraphStyle("Bold", fontname="Helvetica-Bold")
@@ -448,10 +452,11 @@ class _PDFOrderHeader(Flowable):
                     mask="auto",
                     anchor="nw",
                 )
-            except OSError:
-                print(
-                    "[KMUHelper PDF generation] Loading logo image for _PDFOrderHeader failed! URL: "
-                    + recv.logourl
+            except OSError as e:
+                logger.error(
+                    "[KMUHelper PDF generation] Loading logo image for _PDFOrderHeader failed! URL %s",
+                    recv.logourl,
+                    exc_info=e,
                 )
 
         # Payment receiver name
