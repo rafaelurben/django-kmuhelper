@@ -40,8 +40,8 @@ class QRInvoiceFlowable(Flowable):
         self.add_cut_info: bool = add_cut_info
 
     @classmethod
-    def from_order(cls, order, add_cut_lines=True):
-        elem = cls(
+    def from_order(cls, order, add_cut_lines=True) -> "QRInvoiceFlowable":
+        return cls(
             total=order.cached_sum,
             address=order.addr_billing,
             payment_receiver=order.payment_receiver,
@@ -50,8 +50,6 @@ class QRInvoiceFlowable(Flowable):
             unstructured_message=order.get_unstructured_message(),
             add_cut_info=add_cut_lines,
         )
-
-        return elem
 
     def __repr__(self):
         return "QR-Invoice"
