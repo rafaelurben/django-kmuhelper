@@ -39,7 +39,7 @@ CHF
 
 QRR
 000000000000000000000100002
-23.06.2026
+Meine Referenz!
 EPD
 //S1/10/1/11/260623/31/260623/32/0.0:30.55;7.7:9.95"""
 
@@ -73,6 +73,7 @@ class OrderPdfGenerationTest(TestCase):
 
 class QRInvoiceFlowableTest(OrderPdfGenerationTest):
     def testQrPayload(self):
+        self.order.payment_purpose = "Meine Referenz!"
         # add some products to the order
         self.order.products.through.objects.bulk_create(
             [
