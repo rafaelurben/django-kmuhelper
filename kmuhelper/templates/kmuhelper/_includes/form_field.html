@@ -8,6 +8,7 @@
                 <div>{{ field.help_text|safe }}</div>
             </div>
         {% endif %}
+        {% if field.errors %}{{ field.errors }}{% endif %}
         {{ field }}
     </div>
 </div>

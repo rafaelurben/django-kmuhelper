@@ -189,7 +189,6 @@ ul.messagelist li:not(:last-child) {
 /* Additional buttons in submit row */
 
 .submit-row a.button {
-    text-decoration: none !important;
     padding: 10px 15px;
     width: auto;
     box-sizing: border-box;

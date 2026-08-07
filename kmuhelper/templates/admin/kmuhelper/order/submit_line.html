@@ -3,7 +3,7 @@
 {% block submit-row %}
 
     {% if change and perms.kmuhelper.add_order %}
-        <a class="button" href="{% url 'admin:kmuhelper_order_duplicate' object_id %}">Duplizieren</a>
+        <a role="button" class="button" href="{% url 'admin:kmuhelper_order_duplicate' object_id %}">Duplizieren</a>
     {% endif %}
 
     {{ block.super }}
