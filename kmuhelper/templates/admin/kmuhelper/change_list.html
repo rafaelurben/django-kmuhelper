@@ -7,10 +7,14 @@
     {% get_admin_module as module %}
     {% get_admin_model as model %}
 
-    <div class="breadcrumbs">
-        <a href="{% url module.viewname %}">KMUHelper {{ module.title }}</a>
-        &rsaquo; {{ model.ADMIN_TITLE | default:cl.opts.verbose_name_plural }}
-    </div>
+    <ol class="breadcrumbs">
+        <li>
+            <a href="{% url module.viewname %}">KMUHelper {{ module.title }}</a>
+        </li>
+        <li aria-current="page">
+            {{ model.ADMIN_TITLE | default:cl.opts.verbose_name_plural }}
+        </li>
+    </ol>
 {% endblock %}
 
 {% block branding %}

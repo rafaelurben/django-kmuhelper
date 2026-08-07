@@ -7,16 +7,27 @@
     {% get_admin_module as module %}
     {% get_admin_model as model %}
 
-    <div class="breadcrumbs">
-        <a href="{% url module.viewname %}">KMUHelper {{ module.title }}</a>
-        &rsaquo; {% if has_view_permission %}
-        <a href="{% url opts|admin_urlname:'changelist' %}">
-            {{ model.ADMIN_TITLE | default:opts.verbose_name_plural }}</a>{% else %}
-        {{ model.ADMIN_TITLE | default:opts.verbose_name_plural }}{% endif %}
-        &rsaquo;
-        {% if add %}{% blocktranslate with name=opts.verbose_name %}Add {{ name }}{% endblocktranslate %}{% else %}
-            {{ original|truncatewords:"18" }}{% endif %}
-    </div>
+    <ol class="breadcrumbs">
+        <li>
+          <a href="{% url module.viewname %}">KMUHelper {{ module.title }}</a>
+        </li>
+        <li>
+          {% if has_view_permission %}
+            <a href="{% url opts|admin_urlname:'changelist' %}">
+              {{ model.ADMIN_TITLE | default:opts.verbose_name_plural }}
+            </a>
+          {% else %}
+            {{ model.ADMIN_TITLE | default:opts.verbose_name_plural }}
+          {% endif %}
+        </li>
+        <li aria-current="page">
+          {% if add %}
+            {% blocktranslate with name=opts.verbose_name %}Add {{ name }}{% endblocktranslate %}
+          {% else %}
+            {{ original|truncatewords:"18" }}
+          {% endif %}
+        </li>
+    </ol>
 {% endblock %}
 
 {% block branding %}

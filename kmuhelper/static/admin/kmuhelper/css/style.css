@@ -31,20 +31,7 @@ html[data-theme="light"], html[data-theme="dark"], :root {
     --default-button-hover-bg: var(--kmuhelper-dark);
 }
 
-/* Django 5.0 Color "fixes" */
-
-#result_list tbody a,
-fieldset.module .form-row a,
-fieldset.module table a,
-a.link {
-    color: var(--link-fg);
-
-    &:hover, &:focus {
-        color: var(--link-hover-color);
-    }
-}
-
-/* Prevent the theme color to show behind the background color */
+/* Prevent the theme color from showing behind the background color */
 
 body {
     min-height: 100vh;
@@ -52,15 +39,8 @@ body {
 
 /* Help text preserve lines */
 
-form div.help {
+form div.help div {
     white-space: pre-line;
-}
-
-/* Margin fix for textarea */
-
-form .wide textarea + p.help,
-form .wide textarea + div.help {
-    margin-left: 200px;
 }
 
 /* More styling */
@@ -130,19 +110,9 @@ ul.messagelist li:not(:last-child) {
     margin-right: 0.2em;
 }
 
-/* Fix overlapping object-tools buttons */
+/* Smaller margin for object-tools buttons */
 
-@media (min-width: 768px) {
-    .change-form #content-main {
-        margin-top: 50px;
-    }
-
-    .change-form .object-tools li {
-        margin-bottom: 10px;
-    }
-}
-
-.change-form .object-tools li {
+.change-form .object-tools li + li {
     margin-left: 5px;
 }
 
@@ -219,7 +189,6 @@ ul.messagelist li:not(:last-child) {
 /* Additional buttons in submit row */
 
 .submit-row a.button {
-    text-decoration: none;
     padding: 10px 15px;
     width: auto;
     box-sizing: border-box;

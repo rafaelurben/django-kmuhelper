@@ -5,12 +5,20 @@
 {% block title %}PDF generieren | KMUHelper{% endblock %}
 
 {% block breadcrumbs %}
-    <div id="breadcrumbs" class="breadcrumbs">
-        <a href="{% url 'admin:app_list' app_label='kmuhelper' %}">KMUHelper Admin</a>
-        &rsaquo; <a href="{% url 'admin:kmuhelper_order_changelist' %}">Bestellungen</a>
-        &rsaquo; <a href="{% url 'admin:kmuhelper_order_change' object_id=original.pk %}">{{ original }}</a>
-        &rsaquo; PDF generieren
-    </div>
+    <ol id="breadcrumbs" class="breadcrumbs">
+        <li>
+            <a href="{% url 'admin:app_list' app_label='kmuhelper' %}">KMUHelper Admin</a>
+        </li>
+        <li>
+            <a href="{% url 'admin:kmuhelper_order_changelist' %}">Bestellungen</a>
+        </li>
+        <li>
+            <a href="{% url 'admin:kmuhelper_order_change' object_id=original.pk %}">{{ original }}</a>
+        </li>
+        <li aria-current="page">
+            PDF generieren
+        </li>
+    </ol>
 {% endblock %}
 
 {% block extrahead %}
